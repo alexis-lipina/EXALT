@@ -6,7 +6,7 @@ public class PlayerHandler : MonoBehaviour
 {
     [SerializeField] private GameObject playerCharacterSprite;
     [SerializeField] private GameObject playerPhysicsObject;
-    
+    private PlayerColliderScript PlayerCollider;
 
     private Rigidbody2D playerRigidBody;
 
@@ -42,7 +42,7 @@ public class PlayerHandler : MonoBehaviour
         playerRigidBody = playerPhysicsObject.GetComponent<Rigidbody2D>();
         TerrainTouched = new Dictionary<int, float>();
         TerrainTouched.Add(666, 0);
-
+        PlayerCollider = playerPhysicsObject.GetComponent<PlayerColliderScript>();
        
 
     }
@@ -63,9 +63,12 @@ public class PlayerHandler : MonoBehaviour
                 playerJump();
                 break;
         }
+        
         //updateHeight();
         moveCharacterPosition();
-	}
+        //reset button presses
+        if (JumpPressed) JumpPressed = false;
+    }
 
     //================================================================================| STATE METHODS |
 
@@ -76,12 +79,12 @@ public class PlayerHandler : MonoBehaviour
         //------------------------------------------------| STATE CHANGE
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
         {
-            Debug.Log("IDLE -> RUN");
+            //Debug.Log("IDLE -> RUN");
             CurrentState = PlayerState.RUN;
         }
         if (JumpPressed)
         {
-            Debug.Log("IDLE -> JUMP");
+            //Debug.Log("IDLE -> JUMP");
             ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
@@ -105,12 +108,12 @@ public class PlayerHandler : MonoBehaviour
         //Debug.Log("X:" + xInput + "Y:" + yInput);
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
         {
-            Debug.Log("RUN -> IDLE");
+            //Debug.Log("RUN -> IDLE");
             CurrentState = PlayerState.IDLE;
         }
         if (JumpPressed)
         {
-            Debug.Log("RUN -> JUMP");
+            //Debug.Log("RUN -> JUMP");
             ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
@@ -137,12 +140,12 @@ public class PlayerHandler : MonoBehaviour
             PlayerElevation = maxheight;
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
-                Debug.Log("JUMP -> IDLE");
+                //Debug.Log("JUMP -> IDLE");
                 CurrentState = PlayerState.IDLE;
             }
             else
             {
-                Debug.Log("JUMP -> RUN");
+                //Debug.Log("JUMP -> RUN");
                 CurrentState = PlayerState.RUN;
             }
         }
@@ -169,8 +172,8 @@ public class PlayerHandler : MonoBehaviour
     /// </summary>
     private void moveCharacterPositionPhysics()
     {
-        
-        playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
+        PlayerCollider.MoveWithCollision(xInput * 0.3f, yInput * 0.3f);
+        //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
     }
 
     /// <summary>
@@ -204,6 +207,13 @@ public class PlayerHandler : MonoBehaviour
     {
         JumpPressed = isPressed;
     }
+
+    public float getPlayerElevation()
+    {
+        return PlayerElevation;
+    }
+
+
 
     public void setXYAnalogInput(float x, float y)
     {

@@ -25,7 +25,7 @@ public class InputHandler : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal"); // GetAxis for smooth, GetAxisRaw for snappy
         float y = Input.GetAxisRaw("Vertical");
         
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("XBox One - A Button") > 0)
         {
             playerHandler.setJumpPressed(true);
         }

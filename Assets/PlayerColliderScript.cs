@@ -86,8 +86,8 @@ public class PlayerColliderScript : MonoBehaviour
         Vector2 tempPlayerPos;
         float tempFract = 1.0f;
         //Debug.Log("BoxCastDistance:" + boxCastDistance);
-
-        Debug.Log("X:" + velocityX + "Y:" + velocityY);
+        Debug.Log("------------------------------------------");
+        //Debug.Log("X:" + velocityX + "Y:" + velocityY);
         foreach(RaycastHit2D hit in impendingCollisions) //BoxCast in direction of motion
         {
             if (hit.transform.gameObject.tag == "Environment")
@@ -109,9 +109,10 @@ public class PlayerColliderScript : MonoBehaviour
                 {
                     //entry.Key is the colliding terrainObject
                     //determine which direction the player is CURRENTLY having a collision in - North, South, East or West
-                    Debug.Log("Player is currently touching a wall");
+                    //Debug.Log("Player is currently touching a wall");
+                    
                     //If player speed y component is positive, and left and right bounds are between right and left bounds, then there exists a Northern collision
-                    if (playerEnvironmentHandler.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y + playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y / 2.0 < entry.Key.GetComponent<Transform>().position.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0) //player moving North (velocityY > 0)
+                    if (playerEnvironmentHandler.GetComponent<Transform>().position.y  + (playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 < entry.Key.GetComponent<Transform>().position.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0) //player moving North (velocityY > 0)
                     {
                         if (entry.Key.GetComponent<Transform>().position.x + entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0 > playerEnvironmentHandler.GetComponent<Transform>().position.x - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0 && //if player left bound to left of terrain right bound
                            entry.Key.GetComponent<Transform>().position.x - entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0 < playerEnvironmentHandler.GetComponent<Transform>().position.x + playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0)  //if player right bound is to right of terrain left bound
@@ -120,11 +121,11 @@ public class PlayerColliderScript : MonoBehaviour
                             Debug.Log("NorthCollision");
                         }
                     }
-                    else if (playerEnvironmentHandler.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y / 2.0 > entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0) //player moving South (velocityY < 0) / player lower bound above box upper bound
+                    else if (playerEnvironmentHandler.GetComponent<Transform>().position.y - (playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 > entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y + entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0) //player moving South (velocityY < 0) / player lower bound above box upper bound
                     {
                         Debug.Log("Here!");
-                        if (entry.Key.GetComponent<Transform>().position.x + entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0> playerEnvironmentHandler.GetComponent<Transform>().position.x - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0 && //if player left bound to left of terrain right bound
-                           entry.Key.GetComponent<Transform>().position.x - entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0< playerEnvironmentHandler.GetComponent<Transform>().position.x + playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0)  //if player right bound is to right of terrain left bound
+                        if (entry.Key.GetComponent<Transform>().position.x + entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0 > playerEnvironmentHandler.GetComponent<Transform>().position.x - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0 && //if player left bound to left of terrain right bound
+                           entry.Key.GetComponent<Transform>().position.x - entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0 < playerEnvironmentHandler.GetComponent<Transform>().position.x + playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0)  //if player right bound is to right of terrain left bound
                         {
                             SouthCollision = true;
                             Debug.Log("SouthCollision");
@@ -141,12 +142,6 @@ public class PlayerColliderScript : MonoBehaviour
                     }
                     else if (playerEnvironmentHandler.GetComponent<Transform>().position.x - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0 > entry.Key.GetComponent<Transform>().position.x + entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0) //player moving West (velocityX < 0)
                     {
-                        Debug.Log("EYO!");
-                        Debug.Log(entry.Key.GetComponent<Transform>().position.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2.0);
-                       
-                        Debug.Log(PlayerRigidBody.GetComponent<Transform>().position.y + PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2);
-                        Debug.Log(entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2);
-
                         if (entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y + entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2.0 && //if player south bound to south of terrain north bound
                            entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2.0)  //if player north bound is to north of terrain south bound
                         {
@@ -172,19 +167,30 @@ public class PlayerColliderScript : MonoBehaviour
                 foreach(RaycastHit2D hit in impendingCollisions)
                 {
                     //check to see if the hit is an east or west wall (aka a problem) 
-                    //maybe check to see if the hit is a non-north/south wall?
-                    //if it were a north/south wall, player left and player right bounds would be within env right and left bounds, respectively
+                    //=====| !!! okay dude, basically figure out if the entity hit by a box is a potential problem. Maybe if it's not currently being touched, since if it were we'd be in a corner and that'd be handled?
                     if (hit.transform.gameObject.tag == "Environment" && 
-                        (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 && //if player left bound to left of terrain right bound
-                           (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
+                        ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
+                           (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
+                        Debug.Log("YEET");
+                        Debug.Log("HitDistance:" + hit.distance);
                         //found a problematic collision, go up to the shortest-distanced one
-                        if (hit.distance < velocityX && hit.distance > 0)
+                        if (hit.distance < Mathf.Abs(velocityX))
                         {
-                            velocityX = hit.distance;
+                            Debug.Log("YEETERRRR");
+                            if (velocityX >= 0)
+                            {
+                                velocityX = hit.distance;
+                            }
+                            else
+                            {
+                                velocityX = hit.distance * -1.0f;
+                            }
                         }
                     }
                 }
+                Debug.Log("VelocityX:" + velocityX);
+                velocityX = velocityX * 0.8f;
 
             }
             else if (EastCollision && velocityX > 0 || WestCollision && velocityX < 0)
@@ -199,17 +205,27 @@ public class PlayerColliderScript : MonoBehaviour
                     //check to see if the hit is a North or South wall (aka a problem) 
                     //maybe check to see if the hit is a non-east/west wall?
                     //if it were a east/west wall, player north and player south bounds would be within env south and north bounds, respectively
-                    if (hit.transform.gameObject.tag == "Environment" && 
-                        (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2.0 && 
-                           (hit.transform.position.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2)))
+                    if (hit.transform.gameObject.tag == "Environment" &&
+                        (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 &&
+                           (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
                     {
                         //found a problematic collision, go up to the shortest-distanced one
-                        if (hit.distance < velocityY && hit.distance > 0)
+                        if (hit.distance < Mathf.Abs(velocityY))
                         {
-                            velocityY = hit.distance;
+                            if (velocityY >= 0)
+                            {
+                                velocityY = hit.distance;
+
+                            }
+                            else
+                            {
+                                velocityY = hit.distance * -1.0f;
+
+                            }
                         }
                     }
                 }
+                velocityY = velocityY * 0.8f;
             }
             else
             {

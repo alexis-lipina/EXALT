@@ -19,14 +19,14 @@ public class PlayerColliderScript : MonoBehaviour
     [SerializeField] private GameObject playerHandlerObject;
     private PlayerHandler playerHandler;
     private Rigidbody2D PlayerRigidBody;
-    Dictionary<GameObject, float> TerrainTouching; //each element of terrain touching the collider
+    Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
 
 
     void Start()
     {
         playerHandler = playerHandlerObject.GetComponent<PlayerHandler>();
         PlayerRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        TerrainTouching = new Dictionary<GameObject, float>();
+        TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
     }
 
     //======================================================| Terrain Collision management
@@ -36,7 +36,7 @@ public class PlayerColliderScript : MonoBehaviour
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Blep");
-            TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeight());
+            TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
         }
     }
 
@@ -44,7 +44,7 @@ public class PlayerColliderScript : MonoBehaviour
     {
         if (!TerrainTouching.ContainsKey(other.gameObject))
         {
-            TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeight());
+            TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
         }
     }
 
@@ -71,6 +71,13 @@ public class PlayerColliderScript : MonoBehaviour
         //    Deal with both - if one of them goes further than 0.1 without collision, move along that axis until limit or 
     }
 
+    public bool playerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
+    {
+        if (playerTop > terrainBottom && playerBottom < terrainTop)
+            return true;
+        return false;
+    }
+
 
     public void MoveWithCollision(float velocityX, float velocityY)
     {
@@ -92,7 +99,7 @@ public class PlayerColliderScript : MonoBehaviour
         {
             if (hit.transform.gameObject.tag == "Environment")
             {
-                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getHeight() > playerHandler.getPlayerElevation()) // if the height of the terrain object is greater than the altitude of the player
+                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight() > playerHandler.getPlayerElevation()) // if the height of the terrain object is greater than the altitude of the player
                 {
                     //Debug.Log("Player is about to move illegally!");
                     badCollisions.Add(hit);
@@ -102,15 +109,15 @@ public class PlayerColliderScript : MonoBehaviour
         }
         if (badCollisions.Count > 0) //any problematic collisions?
         {
-            foreach(KeyValuePair<GameObject, float> entry in TerrainTouching)//is player currently colliding with anything
+            foreach(KeyValuePair<GameObject, KeyValuePair<float, float>> entry in TerrainTouching)//is player currently colliding with anything
             {
                 //Debug.Log("VALUE:" + entry.Value);
-                if (entry.Value > playerHandler.getPlayerElevation()) //if given element is a wall
+                if (playerWillCollide(entry.Key.GetComponent<EnvironmentPhysics>().getBottomHeight(), entry.Key.GetComponent<EnvironmentPhysics>().getTopHeight(), playerHandler.getPlayerElevation(), playerHandler.getPlayerElevation() + playerHandler.getPlayerHeight())) //if given element is a wall in the way
                 {
                     //entry.Key is the colliding terrainObject
                     //determine which direction the player is CURRENTLY having a collision in - North, South, East or West
                     //Debug.Log("Player is currently touching a wall");
-                    
+                    Debug.Log("PlayerGonnaCollide!!!");
                     //If player speed y component is positive, and left and right bounds are between right and left bounds, then there exists a Northern collision
                     if (playerEnvironmentHandler.GetComponent<Transform>().position.y  + (playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 < entry.Key.GetComponent<Transform>().position.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0) //player moving North (velocityY > 0)
                     {
@@ -142,8 +149,8 @@ public class PlayerColliderScript : MonoBehaviour
                     }
                     else if (playerEnvironmentHandler.GetComponent<Transform>().position.x - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x / 2.0 > entry.Key.GetComponent<Transform>().position.x + entry.Key.GetComponent<BoxCollider2D>().size.x / 2.0) //player moving West (velocityX < 0)
                     {
-                        if (entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y + entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2.0 && //if player south bound to south of terrain north bound
-                           entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + PlayerRigidBody.GetComponent<BoxCollider2D>().size.y / 2.0)  //if player north bound is to north of terrain south bound
+                        if (entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y + entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 > playerEnvironmentHandler.GetComponent<Transform>().position.y - playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y / 2.0 && //if player south bound to south of terrain north bound
+                           entry.Key.GetComponent<Transform>().position.y + entry.Key.GetComponent<BoxCollider2D>().offset.y - entry.Key.GetComponent<BoxCollider2D>().size.y / 2.0 < playerEnvironmentHandler.GetComponent<Transform>().position.y + playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             WestCollision = true;
                             Debug.Log("WestCollision");
@@ -172,19 +179,22 @@ public class PlayerColliderScript : MonoBehaviour
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
-                        Debug.Log("YEET");
-                        Debug.Log("HitDistance:" + hit.distance);
-                        //found a problematic collision, go up to the shortest-distanced one
-                        if (hit.distance < Mathf.Abs(velocityX))
+                        if (playerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), playerHandler.getPlayerElevation(), playerHandler.getPlayerElevation() + playerHandler.getPlayerHeight()))
                         {
-                            Debug.Log("YEETERRRR");
-                            if (velocityX >= 0)
+                            Debug.Log("YEET");
+                            Debug.Log("HitDistance:" + hit.distance);
+                            //found a problematic collision, go up to the shortest-distanced one
+                            if (hit.distance < Mathf.Abs(velocityX))
                             {
-                                velocityX = hit.distance;
-                            }
-                            else
-                            {
-                                velocityX = hit.distance * -1.0f;
+                                Debug.Log("YEETERRRR");
+                                if (velocityX >= 0)
+                                {
+                                    velocityX = hit.distance;
+                                }
+                                else
+                                {
+                                    velocityX = hit.distance * -1.0f;
+                                }
                             }
                         }
                     }
@@ -205,22 +215,25 @@ public class PlayerColliderScript : MonoBehaviour
                     //check to see if the hit is a North or South wall (aka a problem) 
                     //maybe check to see if the hit is a non-east/west wall?
                     //if it were a east/west wall, player north and player south bounds would be within env south and north bounds, respectively
+                    
                     if (hit.transform.gameObject.tag == "Environment" &&
                         (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 &&
                            (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
                     {
-                        //found a problematic collision, go up to the shortest-distanced one
-                        if (hit.distance < Mathf.Abs(velocityY))
-                        {
-                            if (velocityY >= 0)
+                        if (playerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), playerHandler.getPlayerElevation(), playerHandler.getPlayerElevation() + playerHandler.getPlayerHeight()))
+                        {//found a problematic collision, go up to the shortest-distanced one
+                            if (hit.distance < Mathf.Abs(velocityY))
                             {
-                                velocityY = hit.distance;
+                                if (velocityY >= 0)
+                                {
+                                    velocityY = hit.distance;
 
-                            }
-                            else
-                            {
-                                velocityY = hit.distance * -1.0f;
+                                }
+                                else
+                                {
+                                    velocityY = hit.distance * -1.0f;
 
+                                }
                             }
                         }
                     }

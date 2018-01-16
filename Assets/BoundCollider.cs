@@ -25,7 +25,7 @@ public class BoundCollider : MonoBehaviour
         if (other.gameObject.tag == "Environment")
         {
             touchingWall = true;
-            touchedTerrain.Add(other.gameObject.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getHeight());
+            touchedTerrain.Add(other.gameObject.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getTopHeight());
             updateMaxWallHeight();
         }
     }

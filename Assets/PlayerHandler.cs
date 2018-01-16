@@ -29,7 +29,7 @@ public class PlayerHandler : MonoBehaviour
     private int JumpImpulse;
     private float ZVelocity;
 
-    Dictionary<int, float> TerrainTouched;
+    Dictionary<int, KeyValuePair<float, float>> TerrainTouched;
 
 
 
@@ -37,11 +37,11 @@ public class PlayerHandler : MonoBehaviour
     {
         CurrentState = PlayerState.IDLE;
         PlayerElevation = 0;
-        PlayerHeight = 10; //----ARBITRARY VALUE - CHANGE LATER WHEN WORKING ON HITBOXES AND COLLISIONS
+        PlayerHeight = 3; //----ARBITRARY VALUE - CHANGE LATER WHEN WORKING ON HITBOXES AND COLLISIONS
         JumpImpulse = 1;
         playerRigidBody = playerPhysicsObject.GetComponent<Rigidbody2D>();
-        TerrainTouched = new Dictionary<int, float>();
-        TerrainTouched.Add(666, 0);
+        TerrainTouched = new Dictionary<int, KeyValuePair<float, float>>();
+        TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
         PlayerCollider = playerPhysicsObject.GetComponent<PlayerColliderScript>();
        
 
@@ -99,11 +99,16 @@ public class PlayerHandler : MonoBehaviour
 
         //-------| Z Azis Traversal 
         float maxheight = 0;
-        foreach(KeyValuePair<int, float> entry in TerrainTouched)
+        foreach(KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
         {
-            if (entry.Value > maxheight) maxheight = entry.Value;
+            if (entry.Value.Value > maxheight && PlayerHeight + PlayerElevation > entry.Value.Value) maxheight = entry.Value.Value;
         }
-        PlayerElevation = maxheight;
+        if (PlayerElevation > maxheight)
+        {
+            ZVelocity = 0;
+            CurrentState = PlayerState.JUMP;
+        }
+        //PlayerElevation = maxheight;
         //------------------------------------------------| STATE CHANGE
         //Debug.Log("X:" + xInput + "Y:" + yInput);
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
@@ -124,15 +129,17 @@ public class PlayerHandler : MonoBehaviour
     {
         //Debug.Log("Player Jumping");
         //------------------------------| MOVE
-        moveCharacterPositionPhysics();
+        moveCharacterPositionPhysics();        
         PlayerElevation += ZVelocity;
+        
         ZVelocity -= 0.05f;
 
         //------------------------------| STATE CHANGE
         float maxheight = 0;
-        foreach (KeyValuePair<int, float> entry in TerrainTouched)
+        foreach (KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
         {
-            if (entry.Value > maxheight) maxheight = entry.Value;
+            if (entry.Value.Value > maxheight && PlayerHeight + PlayerElevation > entry.Value.Value) maxheight = entry.Value.Value; // landing on ground
+            if (entry.Value.Key < PlayerHeight + PlayerElevation && PlayerElevation < entry.Value.Key && ZVelocity > 0) ZVelocity = 0; // hit head on ceiling
         }
 
         if (PlayerElevation <= maxheight)
@@ -212,6 +219,10 @@ public class PlayerHandler : MonoBehaviour
     {
         return PlayerElevation;
     }
+    public float getPlayerHeight()
+    {
+        return PlayerHeight;
+    }
 
 
 
@@ -221,13 +232,13 @@ public class PlayerHandler : MonoBehaviour
         yInput = y;
     }
 
-    public void addTerrainTouched(int terrainInstanceID, float height)
+    public void addTerrainTouched(int terrainInstanceID, float bottomHeight, float topHeight)
     {
         if (TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
         {
             Debug.Log("TerrainTouched already contains ID " + terrainInstanceID);
         }
-        TerrainTouched.Add(terrainInstanceID, height);
+        TerrainTouched.Add(terrainInstanceID, new KeyValuePair<float, float>(bottomHeight, topHeight));
     }
     public void removeTerrainTouched(int terrainInstanceID)
     {

@@ -25,7 +25,7 @@ public class PlayerEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Blep");
-            playerHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getHeight());
+            playerHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getBottomHeight(), other.GetComponent<EnvironmentPhysics>().getTopHeight());
         }
     }
 

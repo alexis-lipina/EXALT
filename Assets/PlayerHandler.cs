@@ -6,6 +6,8 @@ public class PlayerHandler : MonoBehaviour
 {
     [SerializeField] private GameObject playerCharacterSprite;
     [SerializeField] private GameObject playerPhysicsObject;
+    [SerializeField] private GameObject playerEnvironmentHandlerObject;
+    [SerializeField] private GameObject FirstShadow;
     private PlayerColliderScript PlayerCollider;
 
     private Rigidbody2D playerRigidBody;
@@ -26,10 +28,13 @@ public class PlayerHandler : MonoBehaviour
     private float PlayerRunSpeed;
     private float xInput; 
     private float yInput;   
-    private int JumpImpulse;
+    private float JumpImpulse;
     private float ZVelocity;
 
     Dictionary<int, KeyValuePair<float, float>> TerrainTouched;
+
+    Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
+    //          ^ instanceID       ^ height    ^ shadowobject 
 
 
 
@@ -37,12 +42,14 @@ public class PlayerHandler : MonoBehaviour
     {
         CurrentState = PlayerState.IDLE;
         PlayerElevation = 0;
-        PlayerHeight = 3; //----ARBITRARY VALUE - CHANGE LATER WHEN WORKING ON HITBOXES AND COLLISIONS
-        JumpImpulse = 1;
+        PlayerHeight = 3; 
+        JumpImpulse = 0.7f;
         playerRigidBody = playerPhysicsObject.GetComponent<Rigidbody2D>();
         TerrainTouched = new Dictionary<int, KeyValuePair<float, float>>();
         TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
         PlayerCollider = playerPhysicsObject.GetComponent<PlayerColliderScript>();
+        Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
+        Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
        
 
     }
@@ -189,8 +196,15 @@ public class PlayerHandler : MonoBehaviour
     private void moveCharacterPosition()
     {
         //                           X: Horizontal position                    Y: Vertical position - accounts for height and depth               Z: Depth - order of object draw calls
-        Vector3 coords = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + 1.4f + PlayerElevation, playerPhysicsObject.transform.position.z);
+        Vector3 coords = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + 1.4f + PlayerElevation, playerPhysicsObject.transform.position.y + playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().offset.y - playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
         playerCharacterSprite.transform.position = coords;
+        //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, playerPhysicsObject.transform.position.y + playerPhysicsObject.GetComponent<BoxCollider2D>().offset.y + playerPhysicsObject.GetComponent<BoxCollider2D>().size.y / 2);
+        
+        //move shadows
+        foreach (KeyValuePair<int, KeyValuePair<float, GameObject>> entry in Shadows)
+        {
+            entry.Value.Value.transform.position = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + entry.Value.Key, playerPhysicsObject.transform.position.y + playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().offset.y - playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
+        }
     }
 
     //================================================================================| SETTERS FOR INPUT |
@@ -238,7 +252,12 @@ public class PlayerHandler : MonoBehaviour
         {
             Debug.Log("TerrainTouched already contains ID " + terrainInstanceID);
         }
-        TerrainTouched.Add(terrainInstanceID, new KeyValuePair<float, float>(bottomHeight, topHeight));
+        else
+        {
+            TerrainTouched.Add(terrainInstanceID, new KeyValuePair<float, float>(bottomHeight, topHeight));
+            Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(topHeight, Instantiate(FirstShadow, this.transform.parent)));
+            Shadows[terrainInstanceID].Value.transform.position = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + topHeight, topHeight);
+        }
     }
     public void removeTerrainTouched(int terrainInstanceID)
     {
@@ -247,5 +266,7 @@ public class PlayerHandler : MonoBehaviour
             Debug.Log("TerrainTouched does not contain ID " + terrainInstanceID);
         }
         TerrainTouched.Remove(terrainInstanceID);
+        Destroy(Shadows[terrainInstanceID].Value);
+        Shadows.Remove(terrainInstanceID);
     }
 }

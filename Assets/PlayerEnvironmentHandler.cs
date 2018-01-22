@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerEnvironmentHandler : MonoBehaviour {
+public class PlayerEnvironmentHandler : MonoBehaviour
+{
 
-    [SerializeField] private GameObject playerHandlerObject;
-    private PlayerHandler playerHandler;
+    [SerializeField] private GameObject entityHandlerObject;
+    private PlayerHandler entityHandler;
 
 
-    void Start ()
+    void Start()
     {
-        playerHandler = playerHandlerObject.GetComponent<PlayerHandler>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
+        entityHandler = entityHandlerObject.GetComponent<PlayerHandler>();
+    }
+
+    // Update is called once per frame
+    void Update()
     {
-		
-	}
+
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -25,7 +26,8 @@ public class PlayerEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Blep");
-            playerHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getBottomHeight(), other.GetComponent<EnvironmentPhysics>().getTopHeight());
+
+            entityHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getBottomHeight(), other.GetComponent<EnvironmentPhysics>().getTopHeight());
         }
     }
 
@@ -35,7 +37,7 @@ public class PlayerEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Hurk");
-            playerHandler.removeTerrainTouched(other.GetInstanceID());
+            entityHandler.removeTerrainTouched(other.GetInstanceID());
         }
     }
 }

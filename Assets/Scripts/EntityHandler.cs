@@ -145,6 +145,7 @@ public class EntityHandler : MonoBehaviour
         {
             TerrainTouched.Add(terrainInstanceID, new KeyValuePair<float, float>(bottomHeight, topHeight));
             Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(topHeight, Instantiate(firstShadow, this.transform.parent)));
+            Shadows[terrainInstanceID].Value.SetActive(true);
             Shadows[terrainInstanceID].Value.transform.position = new Vector3(entityPhysicsObject.transform.position.x, entityPhysicsObject.transform.position.y + topHeight, topHeight);
         }
         

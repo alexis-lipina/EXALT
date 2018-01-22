@@ -24,7 +24,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         //Debug.Log("Entering!");
         if (other.gameObject.tag == "Environment")
         {
-            Debug.Log("Blep");
+            //Debug.Log("Blep");
             entityHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>().getBottomHeight(), other.GetComponent<EnvironmentPhysics>().getTopHeight());
         }
     }

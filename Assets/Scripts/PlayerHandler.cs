@@ -19,7 +19,7 @@ public class PlayerHandler : MonoBehaviour
     private Rigidbody2D playerRigidBody;
 
 
-    enum PlayerState {IDLE, RUN, JUMP};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_STAB, HEAVY_STAB, LIGHT_SWING, HEAVY_SWING};
 
     private PlayerState CurrentState;
     private bool UpPressed;
@@ -66,13 +66,25 @@ public class PlayerHandler : MonoBehaviour
         switch (CurrentState)
         {
             case (PlayerState.IDLE):
-                playerIdle();
+                PlayerIdle();
                 break;
             case (PlayerState.RUN):
-                playerRun();
+                PlayerRun();
                 break;
             case (PlayerState.JUMP):
-                playerJump();
+                PlayerJump();
+                break;
+            case (PlayerState.LIGHT_STAB):
+                PlayerLightStab();
+                break;
+            case (PlayerState.HEAVY_STAB):
+                PlayerHeavyStab();
+                break;
+            case (PlayerState.LIGHT_SWING):
+                PlayerLightSwing();
+                break;
+            case (PlayerState.HEAVY_SWING):
+                PlayerHeavySwing();
                 break;
         }
         
@@ -85,7 +97,7 @@ public class PlayerHandler : MonoBehaviour
 
     //================================================================================| STATE METHODS |
 
-    private void playerIdle()
+    private void PlayerIdle()
     {
         //do nothing, maybe later have them breathing or getting bored, sitting down
 
@@ -104,7 +116,7 @@ public class PlayerHandler : MonoBehaviour
         }
     }
 
-    private void playerRun()
+    private void PlayerRun()
     {
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
@@ -141,7 +153,7 @@ public class PlayerHandler : MonoBehaviour
         }
     }
 
-    private void playerJump()
+    private void PlayerJump()
     {
         //Debug.Log("Player Jumping");
         //------------------------------| MOVE
@@ -176,6 +188,22 @@ public class PlayerHandler : MonoBehaviour
         }
     }
 
+    private void PlayerLightStab()
+    {
+        //todo
+    }
+    private void PlayerHeavyStab()
+    {
+        //todo
+    }
+    private void PlayerLightSwing()
+    {
+        //todo
+    }
+    private void PlayerHeavySwing()
+    {
+        //todo
+    }
     //=============| Update Height Method - legacy method that makes more sense to be a part of each player state
     /*
     private void updateHeight()

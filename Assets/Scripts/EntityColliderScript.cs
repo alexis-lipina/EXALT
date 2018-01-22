@@ -147,22 +147,22 @@ public class EntityColliderScript : MonoBehaviour
                     //If player speed y component is positive, and left and right bounds are between right and left bounds, then there exists a Northern collision
                     if (playerEnvtHandlerYPos  + playerEnvtHandlerYSize / 2.0 < obstacleYPos + obstacleYOffset - obstacleYSize / 2.0) //player moving North (velocityY > 0)
                     {
-                        Debug.Log("here");
+                        //Debug.Log("here");
                         if (obstacleXPos + obstacleXSize / 2.0 > playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 && //if player left bound to left of terrain right bound
                            obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
                         {
                             NorthCollision = true;
-                            Debug.Log("NorthCollision");
+                            //Debug.Log("NorthCollision");
                         }
                     }
                     else if (playerEnvtHandlerYPos - playerEnvtHandlerYSize / 2.0 > obstacleYPos + obstacleYOffset + obstacleYSize / 2.0) //player moving South (velocityY < 0) / player lower bound above box upper bound
                     {
-                        Debug.Log("here");
+                        //Debug.Log("here");
                         if (obstacleXPos + obstacleXSize / 2.0 > playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 && //if player left bound to left of terrain right bound
                            obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
                         { 
                             SouthCollision = true;
-                            Debug.Log("SouthCollision");
+                            //Debug.Log("SouthCollision");
                         }
                     }
                     if (playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0 < obstacleXPos - obstacleXSize / 2.0) //player moving East (velocityX > 0) / player to left
@@ -171,7 +171,7 @@ public class EntityColliderScript : MonoBehaviour
                            obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             EastCollision = true;
-                            Debug.Log("EastCollision");
+                            //Debug.Log("EastCollision");
                         }
                     }
                     else if (playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 > obstacleXPos + obstacleXSize / 2.0) //player moving West (velocityX < 0)
@@ -180,7 +180,7 @@ public class EntityColliderScript : MonoBehaviour
                            obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             WestCollision = true;
-                            Debug.Log("WestCollision");
+                            //Debug.Log("WestCollision");
                         }
                     }
                 }
@@ -201,7 +201,7 @@ public class EntityColliderScript : MonoBehaviour
                 foreach(RaycastHit2D hit in impendingCollisions)
                 {
                     //check to see if the hit is an east or west wall (aka a problem) 
-                    //=====| !!! okay dude, basically figure out if the entity hit by a box is a potential problem. Maybe if it's not currently being touched, since if it were we'd be in a corner and that'd be handled?
+                    //=====| basically figure out if the entity hit by a box is a potential problem. Maybe if it's not currently being touched, since if it were we'd be in a corner and that'd be handled?
                     if (hit.transform.gameObject.tag == "Environment" && 
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))

@@ -225,7 +225,7 @@ public class PlayerHandler : MonoBehaviour
     /// </summary>
     private void moveCharacterPositionPhysics()
     {
-        PlayerCollider.MoveWithCollision(xInput * 20f * Time.deltaTime, yInput * 20f * Time.deltaTime);
+        PlayerCollider.MoveWithCollision(xInput * 15f * Time.deltaTime, yInput * 15f * Time.deltaTime);
         //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
     }
 

@@ -203,9 +203,10 @@ public class PlayerHandler : MonoBehaviour
         {
             if (hit.tag == "Enemy")
             {
-                
+                hit.gameObject.GetComponent<HealthManager>().Inflict(1.0f);
             }
         }
+        CurrentState = PlayerState.RUN;
     }
     private void PlayerHeavyStab()
     {

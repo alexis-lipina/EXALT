@@ -25,5 +25,6 @@ public class HealthManager : MonoBehaviour {
     public void Inflict(float damage)
     {
         currentHP -= damage;
+        Debug.Log("Ow!!");
     }
 }

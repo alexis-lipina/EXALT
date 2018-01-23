@@ -29,6 +29,11 @@ public class InputHandler : MonoBehaviour
         {
             playerHandler.setJumpPressed(true);
         }
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetAxisRaw("XBox One - X Button") > 0)
+        {
+            playerHandler.setAttackPressed(true);
+        }
+
         //send input data
         playerHandler.setXYAnalogInput(x, y);
        

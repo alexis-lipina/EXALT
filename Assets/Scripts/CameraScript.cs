@@ -8,6 +8,7 @@ public class CameraScript : MonoBehaviour
     public Transform player;
     public float smoothTime;
     private Vector3 velocity = Vector3.zero;
+
     void Update()
     {
         Vector3 targetPosition = player.TransformPoint(new Vector3(0, 0, -100));

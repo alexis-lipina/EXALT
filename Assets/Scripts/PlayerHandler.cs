@@ -27,6 +27,7 @@ public class PlayerHandler : MonoBehaviour
     private bool LeftPressed;
     private bool RightPressed;
     private bool JumpPressed;
+    private bool AttackPressed;
 
     private float PlayerElevation;
     private float PlayerHeight;
@@ -91,7 +92,8 @@ public class PlayerHandler : MonoBehaviour
         //updateHeight();
         moveCharacterPosition();
         //reset button presses
-        if (JumpPressed) JumpPressed = false;
+        JumpPressed = false;
+        AttackPressed = false;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
     }
 
@@ -113,6 +115,11 @@ public class PlayerHandler : MonoBehaviour
             ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
+        }
+        if (AttackPressed)
+        {
+            Debug.Log("IDLE -> ATTACK");
+            CurrentState = PlayerState.LIGHT_STAB;
         }
     }
 
@@ -190,7 +197,15 @@ public class PlayerHandler : MonoBehaviour
 
     private void PlayerLightStab()
     {
-        //todo
+        //todo - test area for collision, if coll
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(new Vector2(PlayerCollider.transform.position.x + 2, PlayerCollider.transform.position.y), new Vector2(4, 4), 0);
+        foreach(Collider2D hit in hitobjects)
+        {
+            if (hit.tag == "Enemy")
+            {
+                
+            }
+        }
     }
     private void PlayerHeavyStab()
     {
@@ -269,6 +284,10 @@ public class PlayerHandler : MonoBehaviour
     public void setJumpPressed(bool isPressed)
     {
         JumpPressed = isPressed;
+    }
+    public void setAttackPressed(bool isPressed)
+    {
+        AttackPressed = isPressed;
     }
 
     public float getPlayerElevation()

@@ -17,11 +17,20 @@ public class PlayerHandler : MonoBehaviour
 
     private EntityColliderScript PlayerCollider;
     private Rigidbody2D playerRigidBody;
+    private Animator characterAnimator;
 
 
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_STAB, HEAVY_STAB, LIGHT_SWING, HEAVY_SWING};
 
+    const string IDLE_Anim = "Anim_CharacterTest1";
+    const string RUN_Anim = "Anim_CharacterTest2";
+    const string JUMP_Anim = "Anim_CharacterTest3";
+    const string LIGHT_STAB_Anim = "Anim_CharacterTest4";
+
+
+
     private PlayerState CurrentState;
+    private PlayerState PreviousState;
     private bool UpPressed;
     private bool DownPressed;
     private bool LeftPressed;
@@ -56,7 +65,7 @@ public class PlayerHandler : MonoBehaviour
         PlayerCollider = playerPhysicsObject.GetComponent<EntityColliderScript>();
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
         Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
-       
+        characterAnimator = playerCharacterSprite.GetComponent<Animator>();
 
     }
 
@@ -67,12 +76,15 @@ public class PlayerHandler : MonoBehaviour
         switch (CurrentState)
         {
             case (PlayerState.IDLE):
+                characterAnimator.Play(IDLE_Anim);
                 PlayerIdle();
                 break;
             case (PlayerState.RUN):
+                characterAnimator.Play(RUN_Anim);
                 PlayerRun();
                 break;
             case (PlayerState.JUMP):
+                characterAnimator.Play(JUMP_Anim);
                 PlayerJump();
                 break;
             case (PlayerState.LIGHT_STAB):
@@ -94,6 +106,7 @@ public class PlayerHandler : MonoBehaviour
         //reset button presses
         JumpPressed = false;
         AttackPressed = false;
+        PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
     }
 
@@ -264,6 +277,8 @@ public class PlayerHandler : MonoBehaviour
             entry.Value.Value.transform.position = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + entry.Value.Key, playerPhysicsObject.transform.position.y + playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().offset.y - playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
         }
     }
+    //================================================================================| ANIMATOR CONTROLLER HANDLING | 
+
 
     //================================================================================| SETTERS FOR INPUT |
     public void setUpPressed(bool isPressed)

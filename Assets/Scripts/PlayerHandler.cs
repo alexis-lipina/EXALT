@@ -61,7 +61,7 @@ public class PlayerHandler : MonoBehaviour
         JumpImpulse = 0.6f;
         playerRigidBody = playerPhysicsObject.GetComponent<Rigidbody2D>();
         TerrainTouched = new Dictionary<int, KeyValuePair<float, float>>();
-        TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
+        //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
         PlayerCollider = playerPhysicsObject.GetComponent<EntityColliderScript>();
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
         Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
@@ -325,6 +325,7 @@ public class PlayerHandler : MonoBehaviour
 
     public void addTerrainTouched(int terrainInstanceID, float bottomHeight, float topHeight)
     {
+        
         if (TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
         {
             Debug.Log("TerrainTouched already contains ID " + terrainInstanceID);

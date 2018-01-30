@@ -56,7 +56,7 @@ public class PlayerHandler : MonoBehaviour
     {
         
         CurrentState = PlayerState.IDLE;
-        PlayerElevation = 0;
+        PlayerElevation = 10;
         PlayerHeight = 3; 
         JumpImpulse = 0.6f;
         playerRigidBody = playerPhysicsObject.GetComponent<Rigidbody2D>();
@@ -129,10 +129,16 @@ public class PlayerHandler : MonoBehaviour
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
+
         if (AttackPressed)
         {
             Debug.Log("IDLE -> ATTACK");
             CurrentState = PlayerState.LIGHT_STAB;
+        }
+        float maxheight = -20;
+        foreach (KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
+        {
+            if (entry.Value.Value > maxheight && PlayerHeight + PlayerElevation > entry.Value.Value) maxheight = entry.Value.Value;
         }
     }
 
@@ -143,7 +149,7 @@ public class PlayerHandler : MonoBehaviour
         moveCharacterPositionPhysics();
 
         //-------| Z Azis Traversal 
-        float maxheight = 0;
+        float maxheight = -20;
         foreach(KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
         {
             if (entry.Value.Value > maxheight && PlayerHeight + PlayerElevation > entry.Value.Value) maxheight = entry.Value.Value;
@@ -185,7 +191,7 @@ public class PlayerHandler : MonoBehaviour
         ZVelocity -= 0.03f;
 
         //------------------------------| STATE CHANGE
-        float maxheight = 0;
+        float maxheight = -20;
         foreach (KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
         {
             if (entry.Value.Value > maxheight && PlayerHeight + PlayerElevation > entry.Value.Value) maxheight = entry.Value.Value; // landing on ground
@@ -325,7 +331,6 @@ public class PlayerHandler : MonoBehaviour
 
     public void addTerrainTouched(int terrainInstanceID, float bottomHeight, float topHeight)
     {
-        
         if (TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
         {
             Debug.Log("TerrainTouched already contains ID " + terrainInstanceID);
@@ -336,6 +341,7 @@ public class PlayerHandler : MonoBehaviour
             Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(topHeight, Instantiate(FirstShadow, this.transform.parent)));
             Shadows[terrainInstanceID].Value.transform.position = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + topHeight, topHeight);
         }
+        PrintTerrain();
     }
     public void removeTerrainTouched(int terrainInstanceID)
     {
@@ -346,5 +352,15 @@ public class PlayerHandler : MonoBehaviour
         TerrainTouched.Remove(terrainInstanceID);
         Destroy(Shadows[terrainInstanceID].Value);
         Shadows.Remove(terrainInstanceID);
+        PrintTerrain();
+    }
+    
+    private void PrintTerrain()
+    {
+        Debug.Log("Terrain touching:");
+        foreach(KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
+        {
+            Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.Key + " " + entry.Value);
+        }
     }
 }

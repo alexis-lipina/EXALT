@@ -135,10 +135,20 @@ public class PlayerHandler : MonoBehaviour
             Debug.Log("IDLE -> ATTACK");
             CurrentState = PlayerState.LIGHT_STAB;
         }
+       
         float maxheight = -20;
         foreach (KeyValuePair<int, KeyValuePair<float, float>> entry in TerrainTouched)
         {
             if (entry.Value.Value > maxheight && PlayerHeight + PlayerElevation > entry.Value.Value) maxheight = entry.Value.Value;
+        }
+        if (PlayerElevation > maxheight)
+        {
+            ZVelocity = 0;
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            PlayerElevation = maxheight;
         }
     }
 

@@ -45,12 +45,12 @@ public class PlayerHandler : MonoBehaviour
     private float yInput;   
     private float JumpImpulse;
     private float ZVelocity;
+    private KeyValuePair<Vector2, EnvironmentPhysics> lasttouched;
 
     Dictionary<int, EnvironmentPhysics> TerrainTouched;
     //         ^ instanceID       ^bottom   ^ topheight
     Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
     //          ^ instanceID       ^ height    ^ shadowobject 
-
 
 	void Start ()
     {
@@ -66,11 +66,12 @@ public class PlayerHandler : MonoBehaviour
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
         Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
         characterAnimator = playerCharacterSprite.GetComponent<Animator>();
+        lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>();
 
-    }
+}
 
 
-    void Update ()
+void Update ()
     {
         //---------------------------| Manage State Machine |
         switch (CurrentState)
@@ -166,6 +167,19 @@ public class PlayerHandler : MonoBehaviour
         }
         if (PlayerElevation > maxheight)
         {
+            EnvironmentPhysics temp = null;
+            //save position and terrain standing on
+            foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
+            {
+                if (entry.Value.getTopHeight() == PlayerElevation)
+                {
+                    temp = entry.Value;
+                }
+            }
+            if (temp != null)
+            {
+                lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>(PlayerCollider.GetComponent<Rigidbody2D>().position, temp);
+            }
             ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
@@ -182,6 +196,19 @@ public class PlayerHandler : MonoBehaviour
         }
         if (JumpPressed)
         {
+            EnvironmentPhysics temp = null;
+            //save position and terrain standing on
+            foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
+            {
+                if (entry.Value.getTopHeight() == PlayerElevation)
+                {
+                    temp = entry.Value;
+                }
+            }
+            if (temp != null)
+            {
+                lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>(PlayerCollider.GetComponent<Rigidbody2D>().position, temp);
+            }
             //Debug.Log("RUN -> JUMP");
             ZVelocity = JumpImpulse;
             JumpPressed = false;
@@ -207,7 +234,12 @@ public class PlayerHandler : MonoBehaviour
             if (entry.Value.getTopHeight() > maxheight && PlayerHeight + PlayerElevation > entry.Value.getTopHeight()) maxheight = entry.Value.getTopHeight(); // landing on ground
             if (entry.Value.getBottomHeight() < PlayerHeight + PlayerElevation && PlayerElevation < entry.Value.getBottomHeight() && ZVelocity > 0) ZVelocity = 0; // hit head on ceiling
         }
-
+        if (PlayerElevation < -18)
+        {
+            Debug.Log("AYEEEE");
+            //playerPhysicsObject.GetComponent<Rigidbody2D>().MovePosition();
+            WarpToPlatform();
+        }
         if (PlayerElevation <= maxheight)
         {
             PlayerElevation = maxheight;
@@ -372,5 +404,13 @@ public class PlayerHandler : MonoBehaviour
         {
             Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.getBottomHeight() + " " + entry.Value);
         }
+    }
+
+    private void WarpToPlatform()
+    {
+        playerPhysicsObject.GetComponent<Rigidbody2D>().MovePosition(lasttouched.Key);
+        ZVelocity = 0;
+        PlayerElevation = lasttouched.Value.getTopHeight() + 5;
+
     }
 }

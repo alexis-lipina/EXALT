@@ -75,6 +75,10 @@ public class EntityHandler : MonoBehaviour
     //================================================================================| STATE METHODS |
     private void entityIdle()
     {
+        if(xInput > 0 || yInput > 0)
+        {
+            CurrentState = entityState.RUN;
+        }
         //do stuff
     }
     private void entityRun()

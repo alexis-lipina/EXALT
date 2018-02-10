@@ -62,16 +62,7 @@ public class EntityColliderScript : MonoBehaviour
 
     //=====================================================================| MOVEMENT 
 
-    public void MoveWithCollisionTwo(float velocityX, float velocityY)
-    {
-        //boxcast along movement path, as normal
-        //if no collisions with high environment, move there
-        //if yes collisions with high environment...
-        //    Find boxcast-wall collision with shortest distance
-        //    Save the point of collision, but 0.1 (or something) before the wall
-        //    Subtract the traveled distance from  the original distance, and based on the remaining x and y components, fire off two more boxcasts in the cardinal directions
-        //    Deal with both - if one of them goes further than 0.1 without collision, move along that axis until limit or 
-    }
+    
 
     public bool playerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
@@ -83,6 +74,13 @@ public class EntityColliderScript : MonoBehaviour
 
     public void MoveWithCollision(float velocityX, float velocityY)
     {
+        //boxcast along movement path, as normal
+        //if no collisions with high environment, move there
+        //if yes collisions with high environment...
+        //    Find boxcast-wall collision with shortest distance
+        //    Save the point of collision, but 0.1 (or some other tolerance/buffer space) before the wall
+        //    Subtract the traveled distance from  the original distance, and based on the remaining x and y components, fire off two more boxcasts in the cardinal directions
+        //    Deal with both - if one of them goes further than 0.1 without collision, move along that axis until limit or collision
         float boxCastDistance = Mathf.Sqrt(velocityX * velocityX + velocityY * velocityY);
         List<RaycastHit2D> badCollisions = new List<RaycastHit2D>();
         GameObject tempEnvironmentObject;

@@ -19,6 +19,7 @@ public class EntityColliderScript : MonoBehaviour
     [SerializeField] private GameObject playerHandlerObject;
     private PlayerHandler playerHandler;
     private Rigidbody2D PlayerRigidBody;
+    private EntityHandler entityHandler;
     Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
 
 
@@ -290,6 +291,228 @@ public class EntityColliderScript : MonoBehaviour
             //PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
         }
         
+
+        PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
+
+    }
+    public void MoveEntityWithCollision(float velocityX, float velocityY)
+    {
+        //boxcast along movement path, as normal
+        //if no collisions with high environment, move there
+        //if yes collisions with high environment...
+        //    Find boxcast-wall collision with shortest distance
+        //    Save the point of collision, but 0.1 (or some other tolerance/buffer space) before the wall
+        //    Subtract the traveled distance from  the original distance, and based on the remaining x and y components, fire off two more boxcasts in the cardinal directions
+        //    Deal with both - if one of them goes further than 0.1 without collision, move along that axis until limit or collision
+        float boxCastDistance = Mathf.Sqrt(velocityX * velocityX + velocityY * velocityY);
+        List<RaycastHit2D> badCollisions = new List<RaycastHit2D>();
+        GameObject tempEnvironmentObject;
+        RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
+        bool NorthCollision = false;
+        bool SouthCollision = false;
+        bool EastCollision = false;
+        bool WestCollision = false;
+        Vector2 tempEnviroPos;
+        Vector2 tempPlayerPos;
+        float tempFract = 1.0f;
+        //Debug.Log("BoxCastDistance:" + boxCastDistance);
+        //Debug.Log("------------------------------------------");
+        //Debug.Log("X:" + velocityX + "Y:" + velocityY);
+        float bottomHeight;
+        float topHeight;
+        float playerElevation;
+        float playerHeight;
+
+
+
+        foreach (RaycastHit2D hit in impendingCollisions) //BoxCast in direction of motion
+        {
+            if (hit.transform.gameObject.tag == "Environment")
+            {
+                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight() > playerHandler.getPlayerElevation()) // if the height of the terrain object is greater than the altitude of the player
+                {
+                    //Debug.Log("Player is about to move illegally!");
+                    badCollisions.Add(hit);
+                    //return;
+                }
+            }
+        }
+        if (badCollisions.Count > 0) //any problematic collisions?
+        {
+            foreach (KeyValuePair<GameObject, KeyValuePair<float, float>> entry in TerrainTouching)//is player currently colliding with anything
+            {
+                //Debug.Log("VALUE:" + entry.Value);
+
+                bottomHeight = entry.Key.GetComponent<EnvironmentPhysics>().getBottomHeight();
+                topHeight = entry.Key.GetComponent<EnvironmentPhysics>().getTopHeight();
+                playerElevation = playerHandler.getPlayerElevation();
+                playerHeight = playerHandler.getPlayerHeight();
+
+
+
+                if (playerWillCollide(bottomHeight, topHeight, playerElevation, playerElevation + playerHeight)) //if given element is a wall in the way
+                {
+                    float playerEnvtHandlerYPos = playerEnvironmentHandler.GetComponent<Transform>().position.y;
+                    float playerEnvtHandlerYSize = playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.y;
+                    float obstacleYPos = entry.Key.GetComponent<Transform>().position.y;
+                    float obstacleYSize = entry.Key.GetComponent<BoxCollider2D>().size.y;
+                    float playerEnvtHandlerXPos = playerEnvironmentHandler.GetComponent<Transform>().position.x;
+                    float playerEnvtHandlerXSize = playerEnvironmentHandler.GetComponent<BoxCollider2D>().size.x;
+                    float obstacleXPos = entry.Key.GetComponent<Transform>().position.x;
+                    float obstacleXSize = entry.Key.GetComponent<BoxCollider2D>().size.x;
+                    float obstacleYOffset = entry.Key.GetComponent<BoxCollider2D>().offset.y;
+
+                    //entry.Key is the colliding terrainObject
+                    //determine which direction the player is CURRENTLY having a collision in - North, South, East or West
+                    //Debug.Log("Player is currently touching a wall");
+                    //If player speed y component is positive, and left and right bounds are between right and left bounds, then there exists a Northern collision
+                    if (playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0 < obstacleYPos + obstacleYOffset - obstacleYSize / 2.0) //player moving North (velocityY > 0)
+                    {
+                        //Debug.Log("here");
+                        if (obstacleXPos + obstacleXSize / 2.0 > playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 && //if player left bound to left of terrain right bound
+                           obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
+                        {
+                            NorthCollision = true;
+                            //Debug.Log("NorthCollision");
+                        }
+                    }
+                    else if (playerEnvtHandlerYPos - playerEnvtHandlerYSize / 2.0 > obstacleYPos + obstacleYOffset + obstacleYSize / 2.0) //player moving South (velocityY < 0) / player lower bound above box upper bound
+                    {
+                        //Debug.Log("here");
+                        if (obstacleXPos + obstacleXSize / 2.0 > playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 && //if player left bound to left of terrain right bound
+                           obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
+                        {
+                            SouthCollision = true;
+                            //Debug.Log("SouthCollision");
+                        }
+                    }
+                    if (playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0 < obstacleXPos - obstacleXSize / 2.0) //player moving East (velocityX > 0) / player to left
+                    {
+                        if (obstacleYPos + obstacleYOffset + obstacleYSize / 2.0 > playerEnvtHandlerYPos - playerEnvtHandlerYSize / 2.0 && //if player south bound to south of terrain north bound
+                           obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
+                        {
+                            EastCollision = true;
+                            //Debug.Log("EastCollision");
+                        }
+                    }
+                    else if (playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 > obstacleXPos + obstacleXSize / 2.0) //player moving West (velocityX < 0)
+                    {
+                        if (obstacleYPos + obstacleYOffset + obstacleYSize / 2.0 > playerEnvtHandlerYPos - playerEnvtHandlerYSize / 2.0 && //if player south bound to south of terrain north bound
+                           obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
+                        {
+                            WestCollision = true;
+                            //Debug.Log("WestCollision");
+                        }
+                    }
+                }
+            }
+
+            if ((NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0) && (EastCollision && velocityX > 0 || WestCollision && velocityX < 0)) //Wedged into a corner, disallow motion
+            {
+                //Debug.Log("Stuck in a corner!");
+                return;
+            }
+            else if (NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0)
+            {
+                //Debug.Log("North/South Collision");
+                //try to move along x axis
+                velocityY = 0;
+                //first, boxcast along axis
+                impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(1, 0), distance: velocityX);
+                foreach (RaycastHit2D hit in impendingCollisions)
+                {
+                    //check to see if the hit is an east or west wall (aka a problem) 
+                    //=====| basically figure out if the entity hit by a box is a potential problem. Maybe if it's not currently being touched, since if it were we'd be in a corner and that'd be handled?
+                    if (hit.transform.gameObject.tag == "Environment" &&
+                        ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
+                           (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
+                    {
+                        if (playerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), playerHandler.getPlayerElevation(), playerHandler.getPlayerElevation() + playerHandler.getPlayerHeight()))
+                        {
+                            // Debug.Log("YEET");
+                            //Debug.Log("HitDistance:" + hit.distance);
+                            //found a problematic collision, go up to the shortest-distanced one
+                            if (hit.distance < Mathf.Abs(velocityX))
+                            {
+                                // Debug.Log("YEETERRRR");
+                                if (velocityX >= 0)
+                                {
+                                    velocityX = hit.distance;
+                                }
+                                else
+                                {
+                                    velocityX = hit.distance * -1.0f;
+                                }
+                            }
+                        }
+                    }
+                }
+                //Debug.Log("VelocityX:" + velocityX);
+                velocityX = velocityX * 0.8f;
+
+            }
+            else if (EastCollision && velocityX > 0 || WestCollision && velocityX < 0)
+            {
+                //Debug.Log("East/WestCollision");
+                //try to move along y axis
+                velocityX = 0;
+                //first, boxcast along axis
+                impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(0, 1), distance: velocityY);
+                foreach (RaycastHit2D hit in impendingCollisions)
+                {
+                    //check to see if the hit is a North or South wall (aka a problem) 
+                    //maybe check to see if the hit is a non-east/west wall?
+                    //if it were a east/west wall, player north and player south bounds would be within env south and north bounds, respectively
+
+                    if (hit.transform.gameObject.tag == "Environment" &&
+                        (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 &&
+                           (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
+                    {
+                        if (playerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), playerHandler.getPlayerElevation(), playerHandler.getPlayerElevation() + playerHandler.getPlayerHeight()))
+                        {//found a problematic collision, go up to the shortest-distanced one
+                            if (hit.distance < Mathf.Abs(velocityY))
+                            {
+                                if (velocityY >= 0)
+                                {
+                                    velocityY = hit.distance;
+
+                                }
+                                else
+                                {
+                                    velocityY = hit.distance * -1.0f;
+
+                                }
+                            }
+                        }
+                    }
+                }
+                velocityY = velocityY * 0.8f;
+            }
+            else
+            {
+                //Debug.Log("No Problematic Collision");
+                //no current collision, go to shortest distance
+
+                foreach (RaycastHit2D hit in impendingCollisions)
+                {
+                    if (hit.transform.gameObject.tag == "Environment" && hit.fraction < tempFract && hit.distance > 0)
+                    {
+                        tempFract = hit.fraction;
+                    }
+                }
+                //Debug.Log(tempFract);
+                velocityX = velocityX * tempFract;
+                velocityY = velocityY * tempFract;
+                //Debug.Log("X:" + velocityX + " Y:" + velocityY);
+
+            }
+
+        }
+        else //move player character normally
+        {
+            //PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
+        }
+
 
         PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
 

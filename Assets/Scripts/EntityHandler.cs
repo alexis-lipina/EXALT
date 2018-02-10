@@ -26,7 +26,7 @@ public class EntityHandler : MonoBehaviour
     private float JumpImpulse;
     private float ZVelocity;
 
-    Dictionary<int, KeyValuePair<float, float>> TerrainTouched;
+    Dictionary<int, EnvironmentPhysics> TerrainTouched;
     //         ^ instanceID       ^bottom   ^ topheight
     Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
     //          ^ instanceID       ^ height    ^ shadowobject 
@@ -40,7 +40,7 @@ public class EntityHandler : MonoBehaviour
         entityHeight = 3;
         JumpImpulse = 0.6f;
         entityRigidBody = entityPhysicsObject.GetComponent<Rigidbody2D>();
-        TerrainTouched = new Dictionary<int, KeyValuePair<float, float>>();
+        TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
         entityCollider = entityPhysicsObject.GetComponent<EntityColliderScript>();
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
@@ -83,7 +83,30 @@ public class EntityHandler : MonoBehaviour
     }
     private void entityRun()
     {
-        //do other stuff
+        moveCharacterPositionPhysics();
+
+        //-------| Z Azis Traversal 
+        float maxheight = -20;
+        foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched) // handles falling if entity is above ground
+        {
+            if (entry.Value.getTopHeight() > maxheight && entityHeight + entityElevation > entry.Value.getTopHeight()) maxheight = entry.Value.getTopHeight();
+        }
+        if (entityElevation > maxheight)
+        {
+            ZVelocity = 0;
+            CurrentState = entityState.JUMP;
+        }
+        else
+        {
+            entityElevation = maxheight;
+        }
+        //------------------------------------------------| STATE CHANGE
+        //Debug.Log("X:" + xInput + "Y:" + yInput);
+        if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
+        {
+            //Debug.Log("RUN -> IDLE");
+            CurrentState = entityState.IDLE;
+        }
     }
     private void entityJump()
     {
@@ -138,7 +161,7 @@ public class EntityHandler : MonoBehaviour
         yInput = y;
     }
 
-    public void addTerrainTouched(int terrainInstanceID, float bottomHeight, float topHeight)
+    public void addTerrainTouched(int terrainInstanceID, EnvironmentPhysics environment)
     {
         
         if (TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
@@ -147,12 +170,12 @@ public class EntityHandler : MonoBehaviour
         }
         else
         {
-            TerrainTouched.Add(terrainInstanceID, new KeyValuePair<float, float>(bottomHeight, topHeight));
-            Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(topHeight, Instantiate(firstShadow, this.transform.parent)));
+            TerrainTouched.Add(terrainInstanceID, environment);
+            Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(environment.getTopHeight(), Instantiate(firstShadow, this.transform.parent)));
             Shadows[terrainInstanceID].Value.SetActive(true);
-            Shadows[terrainInstanceID].Value.transform.position = new Vector3(entityPhysicsObject.transform.position.x, entityPhysicsObject.transform.position.y + topHeight, topHeight);
+            Shadows[terrainInstanceID].Value.transform.position = new Vector3(entityPhysicsObject.transform.position.x, entityPhysicsObject.transform.position.y + environment.getTopHeight(), environment.getTopHeight());
         }
-        
+
     }
     public void removeTerrainTouched(int terrainInstanceID)
     {

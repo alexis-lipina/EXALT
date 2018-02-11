@@ -46,7 +46,7 @@ public class EntityColliderScript : MonoBehaviour
         
         if (!TerrainTouching.ContainsKey(other.gameObject))
         {
-            Debug.Log("N O T");
+            Debug.Log("This should never happen. ");
             TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
         }
     }

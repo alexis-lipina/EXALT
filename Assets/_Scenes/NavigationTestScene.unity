@@ -357,6 +357,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityHandlerObject: {fileID: 1494799001}
+  entityCollider: {fileID: 1977614951}
 --- !u!61 &50185041
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -445,8 +446,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerEnvironmentHandler: {fileID: 1022063264}
-  playerHandlerObject: {fileID: 220764817}
+  playerSpriteZOffset: 0
+  characterSprite: {fileID: 0}
+  environmentHandler: {fileID: 0}
+  handlerObject: {fileID: 0}
+  FirstShadow: {fileID: 0}
+  ZVelocity: 0
 --- !u!61 &63693159
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -999,11 +1004,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f74e0cf64260cd4f8fd0391323d968e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityCharacterSprite: {fileID: 1094413792}
-  entityPhysicsObject: {fileID: 63693156}
-  entityEnvironmentHandlerObject: {fileID: 1022063264}
-  firstShadow: {fileID: 1132475987}
-  entitySpriteZOffset: 1.4
 --- !u!114 &220764820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1015,11 +1015,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c4dbfc44283e7b4a872cca3a5275906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCharacterSprite: {fileID: 1094413792}
-  playerPhysicsObject: {fileID: 63693156}
+  PhysicsObject: {fileID: 0}
   playerEnvironmentHandlerObject: {fileID: 1022063264}
-  FirstShadow: {fileID: 1132475987}
-  playerSpriteZOffset: 0
+  characterSprite: {fileID: 0}
   FollowingCamera: {fileID: 0}
 --- !u!1 &259078130
 GameObject:
@@ -3811,6 +3809,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityHandlerObject: {fileID: 220764817}
+  entityCollider: {fileID: 0}
 --- !u!61 &1022063266
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6123,11 +6122,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c4dbfc44283e7b4a872cca3a5275906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCharacterSprite: {fileID: 653388157}
-  playerPhysicsObject: {fileID: 1977614949}
+  PhysicsObject: {fileID: 1977614949}
   playerEnvironmentHandlerObject: {fileID: 50185038}
-  FirstShadow: {fileID: 1132664743}
-  playerSpriteZOffset: 2
+  characterSprite: {fileID: 653388157}
   FollowingCamera: {fileID: 1773869302}
 --- !u!4 &1494799003
 Transform:
@@ -6182,7 +6179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06d0bfd36d39d264ca7eb6c1dc5ee9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  handler: {fileID: 220764819}
+  handler: {fileID: 0}
 --- !u!1 &1521264233
 GameObject:
   m_ObjectHideFlags: 0
@@ -8058,8 +8055,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerEnvironmentHandler: {fileID: 50185038}
-  playerHandlerObject: {fileID: 1494799001}
+  playerSpriteZOffset: 1.6
+  characterSprite: {fileID: 653388157}
+  environmentHandler: {fileID: 50185038}
+  handlerObject: {fileID: 1494799001}
+  FirstShadow: {fileID: 1132664743}
+  ZVelocity: 0
 --- !u!61 &1977614952
 BoxCollider2D:
   m_ObjectHideFlags: 0

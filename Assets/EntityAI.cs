@@ -26,6 +26,7 @@ public class EntityAI : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        
 		if (step <= 12)
         {
             Debug.Log("AI moving East");
@@ -48,5 +49,6 @@ public class EntityAI : MonoBehaviour {
             step = 0;
         }
         step++;
+        
     }
 }

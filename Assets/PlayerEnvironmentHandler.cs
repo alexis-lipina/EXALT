@@ -6,6 +6,7 @@ public class PlayerEnvironmentHandler : MonoBehaviour
 {
 
     [SerializeField] private GameObject entityHandlerObject;
+    [SerializeField] private EntityColliderScript entityCollider;
     private PlayerHandler entityHandler;
 
 
@@ -27,7 +28,7 @@ public class PlayerEnvironmentHandler : MonoBehaviour
         {
             //Debug.Log("Blep");
 
-            entityHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());
+            entityCollider.AddTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());//will be taken care of by EntityPhysics
         }
     }
 
@@ -37,7 +38,7 @@ public class PlayerEnvironmentHandler : MonoBehaviour
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Hurk");
-            entityHandler.removeTerrainTouched(other.GetInstanceID());
+            entityCollider.RemoveTerrainTouched(other.GetInstanceID());//EntityPhysics
         }
     }
 }

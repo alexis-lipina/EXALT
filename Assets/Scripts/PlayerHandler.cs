@@ -6,13 +6,13 @@ using System;
 /// This class controls player state and contains methods for each state. It also receives input from the InputHandler and acts in accordance with said input.
 /// In addition, it handles sprites, shadows, and player height
 /// </summary>
-public class PlayerHandler : MonoBehaviour
+public class PlayerHandler : EntityHandler
 {
-    [SerializeField] private GameObject playerCharacterSprite;
-    [SerializeField] private GameObject playerPhysicsObject;
+    
+    //[SerializeField] protected GameObject physicsobject;
     [SerializeField] private GameObject playerEnvironmentHandlerObject;
-    [SerializeField] private GameObject FirstShadow;
-    [SerializeField] private float playerSpriteZOffset;
+    [SerializeField] private GameObject characterSprite;
+
     [SerializeField] private GameObject FollowingCamera;
 
     private EntityColliderScript PlayerCollider;
@@ -38,43 +38,46 @@ public class PlayerHandler : MonoBehaviour
     private bool JumpPressed;
     private bool AttackPressed;
 
-    private float PlayerElevation;
-    private float PlayerHeight;
+    
     private float PlayerRunSpeed;
     private float xInput; 
     private float yInput;   
     private float JumpImpulse;
-    private float ZVelocity;
-    private KeyValuePair<Vector2, EnvironmentPhysics> lasttouched;
-    private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
 
-    Dictionary<int, EnvironmentPhysics> TerrainTouched;
-    //         ^ instanceID       ^bottom   ^ topheight
-    Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
-    //          ^ instanceID       ^ height    ^ shadowobject 
+    
 
 	void Start ()
     {
         
         CurrentState = PlayerState.IDLE;
-        PlayerElevation = 10;
-        PlayerHeight = 3; 
+        
         JumpImpulse = 0.6f;
-        playerRigidBody = playerPhysicsObject.GetComponent<Rigidbody2D>();
-        TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
+        playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
+        
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
-        PlayerCollider = playerPhysicsObject.GetComponent<EntityColliderScript>();
-        Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
+        PlayerCollider = PhysicsObject.GetComponent<EntityColliderScript>();
         //Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
-        characterAnimator = playerCharacterSprite.GetComponent<Animator>();
-        lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>();
+        characterAnimator = characterSprite.GetComponent<Animator>();
+
 
 }
 
 
-void Update ()
+    void Update ()
     {
         //---------------------------| Manage State Machine |
+        this.ExecuteState();
+        //updateHeight();
+        //moveCharacterPosition();
+        //reset button presses
+        JumpPressed = false;
+        AttackPressed = false;
+        PreviousState = CurrentState;
+        //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
+    }
+
+    protected override void ExecuteState()
+    {
         switch (CurrentState)
         {
             case (PlayerState.IDLE):
@@ -102,14 +105,6 @@ void Update ()
                 PlayerHeavySwing();
                 break;
         }
-        
-        //updateHeight();
-        moveCharacterPosition();
-        //reset button presses
-        JumpPressed = false;
-        AttackPressed = false;
-        PreviousState = CurrentState;
-        //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
     }
 
     //================================================================================| STATE METHODS |
@@ -117,7 +112,7 @@ void Update ()
     private void PlayerIdle()
     {
         //do nothing, maybe later have them breathing or getting bored, sitting down
-
+        Debug.Log("Player Idle");
         //------------------------------------------------| STATE CHANGE
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
         {
@@ -127,7 +122,7 @@ void Update ()
         if (JumpPressed)
         {
             //Debug.Log("IDLE -> JUMP");
-            ZVelocity = JumpImpulse;
+            PlayerCollider.ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
@@ -137,43 +132,37 @@ void Update ()
             Debug.Log("IDLE -> ATTACK");
             CurrentState = PlayerState.LIGHT_STAB;
         }
-       
-        float maxheight = -20;
-        foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
+
+        float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
+        if (PlayerCollider.GetEntityElevation() > maxheight)
         {
-            if (entry.Value.getTopHeight() > maxheight && PlayerHeight + PlayerElevation > entry.Value.getTopHeight()) maxheight = entry.Value.getTopHeight();
-        }
-        if (PlayerElevation > maxheight)
-        {
-            ZVelocity = 0;
+            PlayerCollider.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            PlayerElevation = maxheight;
+            PlayerCollider.SetEntityElevation(maxheight);
         }
+        
     }
 
     private void PlayerRun()
     {
-        //Debug.Log("Player Running");
+        Debug.Log("Player Running");
         //------------------------------------------------| MOVE
-        moveCharacterPositionPhysics();
+        PlayerCollider.MoveCharacterPositionPhysics(xInput, yInput);
 
         //-------| Z Azis Traversal 
-        float maxheight = -20;
-        foreach(KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched) // handles falling if player is above ground
+        // handles falling if player is above ground
+        float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
+        if (PlayerCollider.GetEntityElevation() > maxheight)
         {
-            if (entry.Value.getTopHeight() > maxheight && PlayerHeight + PlayerElevation > entry.Value.getTopHeight()) maxheight = entry.Value.getTopHeight();
-        }
-        if (PlayerElevation > maxheight)
-        {
-            ZVelocity = 0;
+            PlayerCollider.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            PlayerElevation = maxheight;
+            PlayerCollider.SetEntityElevation(maxheight);
         }
         //------------------------------------------------| STATE CHANGE
         //Debug.Log("X:" + xInput + "Y:" + yInput);
@@ -186,6 +175,7 @@ void Update ()
         {
             EnvironmentPhysics temp = null;
             //save position and terrain standing on
+            /*
             foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
             {
                 if (entry.Value.getTopHeight() == PlayerElevation)
@@ -197,47 +187,40 @@ void Update ()
             {
                 lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>(PlayerCollider.GetComponent<Rigidbody2D>().position, temp);
             }
+            */
+            PlayerCollider.SavePosition();
             //Debug.Log("RUN -> JUMP");
-            ZVelocity = JumpImpulse;
+            PlayerCollider.ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
         if (CurrentState == PlayerState.RUN)
         {
-            SavePosition();
+            PlayerCollider.SavePosition();
         }
     }
 
     private void PlayerJump()
     {
-        //Debug.Log("Player Jumping");
+        Debug.Log("Player Jumping");
         //------------------------------| MOVE
         
-        moveCharacterPositionPhysics();
+        PlayerCollider.MoveCharacterPositionPhysics(xInput, yInput);
         
-        PlayerElevation += ZVelocity;
+        PlayerCollider.SetEntityElevation(PlayerCollider.GetEntityElevation() + PlayerCollider.ZVelocity);
         
-        ZVelocity -= 0.03f;
+        PlayerCollider.ZVelocity -= 0.03f;
 
         //------------------------------| STATE CHANGE
-        float maxheight = -20;
-        foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
+        float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
+        PlayerCollider.CheckHitHeadOnCeiling();
+        
+        if (PlayerCollider.GetEntityElevation() <= maxheight)
         {
-            if (entry.Value.getTopHeight() > maxheight && PlayerHeight + PlayerElevation > entry.Value.getTopHeight()) maxheight = entry.Value.getTopHeight(); // landing on ground
-            if (entry.Value.getBottomHeight() < PlayerHeight + PlayerElevation && PlayerElevation < entry.Value.getBottomHeight() && ZVelocity > 0) ZVelocity = 0; // hit head on ceiling
-        }
-        if (PlayerElevation < -18)
-        {
-            //Debug.Log("AYEEEE");
-            //playerPhysicsObject.GetComponent<Rigidbody2D>().MovePosition();
-            WarpToPlatform();
-        }
-        if (PlayerElevation <= maxheight)
-        {
-            PlayerElevation = maxheight;
+            PlayerCollider.SetEntityElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
-                SavePosition();
+                PlayerCollider.SavePosition();
                 //Debug.Log("JUMP -> IDLE");
                 CurrentState = PlayerState.IDLE;
             }
@@ -293,31 +276,7 @@ void Update ()
     /// <summary>
     /// 
     /// </summary>
-    private void moveCharacterPositionPhysics()
-    {
-        PlayerCollider.MoveWithCollision(xInput * 15f * Time.deltaTime, yInput * 15f * Time.deltaTime);
-        //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
-    }
-
-    /// <summary>
-    /// Changes position of character image as player moves. 
-    /// </summary>
-    private void moveCharacterPosition()
-    {
-        //                           X: Horizontal position                    Y: Vertical position - accounts for height and depth               Z: Depth - order of object draw calls
-        Vector3 coords = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + playerSpriteZOffset + PlayerElevation, playerPhysicsObject.transform.position.y + playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().offset.y - playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
-        playerCharacterSprite.transform.position = coords;
-        //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, playerPhysicsObject.transform.position.y + playerPhysicsObject.GetComponent<BoxCollider2D>().offset.y + playerPhysicsObject.GetComponent<BoxCollider2D>().size.y / 2);
-        //Vector2 tempvect = new Vector2(xInput, yInput);
-        
-
-
-        //move shadows
-        foreach (KeyValuePair<int, KeyValuePair<float, GameObject>> entry in Shadows)
-        {
-            entry.Value.Value.transform.position = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + entry.Value.Key, playerPhysicsObject.transform.position.y + playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().offset.y - playerEnvironmentHandlerObject.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
-        }
-    }
+    
     //================================================================================| ANIMATOR CONTROLLER HANDLING | 
 
 
@@ -347,119 +306,19 @@ void Update ()
         AttackPressed = isPressed;
     }
 
-    public float getPlayerElevation()
-    {
-        return PlayerElevation;
-    }
-    public float getPlayerHeight()
-    {
-        return PlayerHeight;
-    }
 
 
-
-    public void setXYAnalogInput(float x, float y)
+    public override void setXYAnalogInput(float x, float y)
     {
         xInput = x;
         yInput = y;
     }
 
-    public void addTerrainTouched(int terrainInstanceID, EnvironmentPhysics environment)
-    {
-        if (TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
-        {
-            Debug.Log("TerrainTouched already contains ID " + terrainInstanceID);
-        }
-        else
-        {
-            TerrainTouched.Add(terrainInstanceID, environment);
-            Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(environment.getTopHeight(), Instantiate(FirstShadow, this.transform.parent)));
-            Shadows[terrainInstanceID].Value.transform.position = new Vector3(playerPhysicsObject.transform.position.x, playerPhysicsObject.transform.position.y + environment.getTopHeight(), environment.getTopHeight());
-            Shadows[terrainInstanceID].Value.SetActive(true);
-        }
-        //PrintTerrain();
-    }
-    public void removeTerrainTouched(int terrainInstanceID)
-    {
-        if ( !TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
-        {
-            Debug.Log("TerrainTouched does not contain ID " + terrainInstanceID);
-        }
-        TerrainTouched.Remove(terrainInstanceID);
-        Destroy(Shadows[terrainInstanceID].Value);
-        Shadows.Remove(terrainInstanceID);
-        //PrintTerrain();
-    }
     
-    private void PrintTerrain()
-    {
-        Debug.Log("Terrain touching:");
-        foreach(KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
-        {
-            Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.getBottomHeight() + " " + entry.Value);
-        }
-    }
+    
+   
 
-    private void SavePosition()
-    {
-        EnvironmentPhysics temp = null;
-        foreach(KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
-        {
-            if (entry.Value.getTopHeight() == PlayerElevation)
-            {
-                temp = entry.Value;
-            }
-        }
-        if (temp != null)
-        {
-            lastFootHold = new KeyValuePair<Vector2, EnvironmentPhysics>(playerPhysicsObject.GetComponent<Rigidbody2D>().position, temp);
-        }
-        
-    }
+    
 
-    private void WarpToPlatform()
-    {
-        /*
-        playerPhysicsObject.GetComponent<Rigidbody2D>().MovePosition(lasttouched.Key);
-        PlayerElevation = lasttouched.Value.getTopHeight() + 5;
-        */
-        Vector2 terrainsize = lastFootHold.Value.GetComponent<BoxCollider2D>().size;
-        Vector2 terrainpos = lastFootHold.Value.GetComponent<Transform>().position;
-        Vector2 terrainoffset = lastFootHold.Value.GetComponent<BoxCollider2D>().offset;
-        float terrainheight = lastFootHold.Value.getTopHeight();
-        //Vector2 playerpos = playerPhysicsObject.GetComponent<Transform>().position;
-        Vector2 warpcoordinates = lastFootHold.Key;
-
-
-        Debug.Log("Player warping");
-        //if lastfoothold player center is outside bounds of collider
-        Debug.Log("destination center:" + lastFootHold.Key);
-        Debug.Log("Terrain position:" + terrainpos);
-        Debug.Log("Terrain Size:" + terrainsize);
-        if (lastFootHold.Key.x < terrainpos.x + terrainoffset.x - terrainsize.x/2)
-        {
-            warpcoordinates.x = terrainpos.x + terrainoffset.x - terrainsize.x/2;
-            Debug.Log("Position too far to the left");
-        }
-        else if (lastFootHold.Key.x > terrainpos.x + terrainoffset.x + terrainsize.x/2)
-        {
-            warpcoordinates.x = terrainpos.x + terrainoffset.x + terrainsize.x/2;
-            Debug.Log("Position too far to the right");
-
-        }
-        if (lastFootHold.Key.y < terrainpos.y + terrainoffset.y - terrainsize.y/2)
-        {
-            warpcoordinates.y = terrainpos.y + terrainoffset.y - terrainsize.y/2;
-            Debug.Log("Position too far south");
-        }
-        else if (lastFootHold.Key.y > terrainpos.y + terrainoffset.y + terrainsize.y/2)
-        {
-            warpcoordinates.y = terrainpos.y + terrainoffset.y + terrainsize.y/2;
-            Debug.Log("Position too far north");
-
-        }
-        ZVelocity = 0;
-        playerPhysicsObject.GetComponent<Rigidbody2D>().MovePosition(warpcoordinates);
-        PlayerElevation = lastFootHold.Value.getTopHeight() + 0; //maybe have the player fall from a great height to reposition them?
-    }
+    
 }

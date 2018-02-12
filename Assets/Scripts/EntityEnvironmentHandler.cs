@@ -5,6 +5,7 @@ using UnityEngine;
 public class EntityEnvironmentHandler : MonoBehaviour {
 
     [SerializeField] private GameObject entityHandlerObject;
+    [SerializeField] private EntityColliderScript entityCollider;
     private EntityHandler entityHandler;
 
 
@@ -25,7 +26,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Blep");
-            entityHandler.addTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());
+            entityCollider.AddTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());
         }
     }
 
@@ -35,7 +36,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Hurk");
-            entityHandler.removeTerrainTouched(other.GetInstanceID());
+            entityCollider.RemoveTerrainTouched(other.GetInstanceID());
         }
     }
 }

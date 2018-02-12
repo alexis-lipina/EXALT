@@ -7,8 +7,7 @@ public class EnvironmentPhysics : MonoBehaviour {
     [SerializeField] private float topHeight;
     [SerializeField] private float bottomHeight;
     [SerializeField] private GameObject parent;
-    [SerializeField]
-    private float heightReferenceOffset;
+    [SerializeField] private float heightReferenceOffset;
     	
     void Start()
     {

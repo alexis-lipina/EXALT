@@ -206,15 +206,21 @@ public class PlayerHandler : EntityHandler
         //------------------------------| MOVE
         
         PlayerCollider.MoveCharacterPositionPhysics(xInput, yInput);
-        
+        PlayerCollider.FreeFall();
+        /*
         PlayerCollider.SetEntityElevation(PlayerCollider.GetEntityElevation() + PlayerCollider.ZVelocity);
         
         PlayerCollider.ZVelocity -= 0.03f;
-
+        */
         //------------------------------| STATE CHANGE
+
+        //Check for foot collision
+
         float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
-        PlayerCollider.CheckHitHeadOnCeiling();
-        
+        //PlayerCollider.CheckHitHeadOnCeiling();
+        if (PlayerCollider.TestFeetCollision())
+
+
         if (PlayerCollider.GetEntityElevation() <= maxheight)
         {
             PlayerCollider.SetEntityElevation(maxheight);

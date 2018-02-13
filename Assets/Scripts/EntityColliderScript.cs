@@ -20,10 +20,10 @@ public class EntityColliderScript : MonoBehaviour
     [SerializeField] private GameObject environmentHandler;
     [SerializeField] private GameObject handlerObject;
     [SerializeField] private GameObject FirstShadow;
+    [SerializeField] private float gravity;
 
 
 
-    private EntityHandler playerHandler;
     private Rigidbody2D PlayerRigidBody;
     private EntityHandler entityHandler;
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
@@ -45,7 +45,7 @@ public class EntityColliderScript : MonoBehaviour
     {
         entityElevation = 10;
         entityHeight = 3;
-        playerHandler = handlerObject.GetComponent<EntityHandler>();
+        entityHandler = handlerObject.GetComponent<EntityHandler>();
         PlayerRigidBody = gameObject.GetComponent<Rigidbody2D>();
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
@@ -58,7 +58,6 @@ public class EntityColliderScript : MonoBehaviour
         MoveCharacterPosition();
         if (entityElevation < -18)
         {
-
             WarpToPlatform();
         }
     }
@@ -102,6 +101,29 @@ public class EntityColliderScript : MonoBehaviour
     }
 
     /// <summary>
+    /// Moves entity along a (somewhat) ballistic trajectory, and checks for headbutt collisions
+    /// </summary>
+    public void FreeFall()
+    {
+        //CheckHitHeadOnCeiling();
+        entityElevation += ZVelocity;
+        ZVelocity -= gravity;
+        CheckHitHeadOnCeiling();
+    }
+    /// <summary>
+    /// Returns true if, during the next frame, the player will fall into an object
+    /// </summary>
+    /// <returns></returns>
+    public bool TestFeetCollision()
+    {
+        if (entityElevation + ZVelocity < GetMaxTerrainHeightBelow())
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    /// <summary>
     /// Changes position of character image as player moves. 
     /// </summary>
     private void MoveCharacterPosition()
@@ -112,23 +134,24 @@ public class EntityColliderScript : MonoBehaviour
         //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, physicsobject.transform.position.y + physicsobject.GetComponent<BoxCollider2D>().offset.y + physicsobject.GetComponent<BoxCollider2D>().size.y / 2);
         //Vector2 tempvect = new Vector2(xInput, yInput);
 
-
-
         //move shadows
         foreach (KeyValuePair<int, KeyValuePair<float, GameObject>> entry in Shadows)
         {
             entry.Value.Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + entry.Value.Key, gameObject.transform.position.y + environmentHandler.GetComponent<BoxCollider2D>().offset.y - environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
         }
     }
-
+     /// <summary>
+     /// If the entity is about to "hit their head" on the underside of a collider, set the ZVelocity to 0
+     /// </summary>
     public void CheckHitHeadOnCeiling()
     {
         foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
             if (entry.Value.getBottomHeight() < entityHeight + entityElevation && entityElevation < entry.Value.getBottomHeight() && ZVelocity > 0) ZVelocity = 0; // hit head on ceiling
-            Debug.Log("Testing if hit head");
+            //Debug.Log("Testing if hit head");
         }
     }
+
 
     public bool playerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
@@ -137,7 +160,12 @@ public class EntityColliderScript : MonoBehaviour
         return false;
     }
 
-
+    /// <summary>
+    /// Moves the entity in a direction, testing for collisions along that direction and acting accordingly to
+    /// prevent clipping through objects, and allow the player to move right up against objects
+    /// </summary>
+    /// <param name="velocityX">The desired change in x position</param>
+    /// <param name="velocityY">The desired change in y position</param>
     public void MoveWithCollision(float velocityX, float velocityY)
     {
         //boxcast along movement path, as normal

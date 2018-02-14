@@ -8,6 +8,7 @@ public class EnvironmentPhysics : MonoBehaviour {
     [SerializeField] private float bottomHeight;
     [SerializeField] private GameObject parent;
     [SerializeField] private float heightReferenceOffset;
+    [SerializeField] private GameObject[] neighbors;
     	
     void Start()
     {
@@ -42,6 +43,16 @@ public class EnvironmentPhysics : MonoBehaviour {
     public KeyValuePair<float, float> getHeightData()
     {
         return new KeyValuePair<float, float>(bottomHeight, topHeight);
+    }
+
+    public List<EnvironmentPhysics> getNeighbors()
+    {
+        List<EnvironmentPhysics> temp = new List<EnvironmentPhysics>();
+        foreach( GameObject obj in neighbors )
+        {
+            temp.Add(obj.GetComponent<EnvironmentPhysics>());
+        }
+        return temp;
     }
 
     

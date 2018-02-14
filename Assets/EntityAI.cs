@@ -19,20 +19,47 @@ public class EntityAI : MonoBehaviour
 {
     [SerializeField] EntityHandler handler;
     [SerializeField] GameObject player;
-    [SerializeField]
-    GameObject punchingBag;
+    [SerializeField] GameObject punchingBag; // physics object
+    [SerializeField] NavigationManager navManager;
+    [SerializeField] EnvironmentPhysics testStart;
+    [SerializeField] EnvironmentPhysics testEnd;
 
-    private int step;
+    private Stack<Vector2> path;
 
+	void Start()
+    {
+        TestAwfulPathfindingSystem();
+    }
 
-    void Start () {
-        step = 0;
-	}
-	
 	// Update is called once per frame
 	void Update ()
     {
-        MoveTowardPlayer();
+        //MoveTowardPlayer();
+
+
+        //----Test of god-awful pathfinding system
+        if(path.Count == 0)
+        {
+            //do nothing
+            handler.setXYAnalogInput(0, 0);
+        }
+        else
+        {
+            
+            //peek, test if collider is overlapping point
+            //if overlap, pop and exit
+            //if no overlap, movetowardpoint
+            Vector2 dest = path.Peek();
+            if ( punchingBag.GetComponent<BoxCollider2D>().OverlapPoint(dest) )
+            {
+                path.Pop();
+            }
+            else
+            {
+                Debug.Log(dest);
+                MoveTowardPoint(dest);
+            }
+        }
     }
 
     //=====================| AI Methods
@@ -48,4 +75,17 @@ public class EntityAI : MonoBehaviour
             handler.setXYAnalogInput(0, 0);
         }
     }
+
+    private void TestAwfulPathfindingSystem()
+    {
+        path = navManager.FindPath(testStart, testEnd);
+    }
+
+    private void MoveTowardPoint(Vector2 destination)
+    {
+        Vector2 direction = new Vector2(destination.x - punchingBag.transform.position.x, destination.y - punchingBag.transform.position.y);
+        handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+    }
+
+
 }

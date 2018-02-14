@@ -6,7 +6,7 @@ using UnityEngine;
 public class PunchingBagHandler : EntityHandler
 {
 
-    enum PunchingBagState { IDLE, RUN, JUMP };
+    enum PunchingBagState { IDLE, RUN, FALL, JUMP };
     private PunchingBagState currentState;
 
     float xInput;
@@ -42,6 +42,9 @@ public class PunchingBagHandler : EntityHandler
             case (PunchingBagState.RUN):
                 RunState();
                 break;
+            case (PunchingBagState.FALL):
+                FallState();
+                break;
             case (PunchingBagState.JUMP):
                 JumpState();
                 break;
@@ -63,7 +66,7 @@ public class PunchingBagHandler : EntityHandler
         if (EntityPhysics.GetEntityElevation() > maxheight)
         {
             EntityPhysics.ZVelocity = 0;
-            currentState = PunchingBagState.JUMP;
+            currentState = PunchingBagState.FALL;
         }
         else
         {
@@ -88,7 +91,7 @@ public class PunchingBagHandler : EntityHandler
         if (EntityPhysics.GetEntityElevation() > maxheight)
         {
             EntityPhysics.ZVelocity = 0;
-            currentState = PunchingBagState.JUMP;
+            currentState = PunchingBagState.FALL;
         }
         else
         {
@@ -96,7 +99,7 @@ public class PunchingBagHandler : EntityHandler
             EntityPhysics.SetEntityElevation(maxheight);
         }
     }
-    private void JumpState()
+    private void FallState()
     {
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         EntityPhysics.FreeFall();
@@ -120,6 +123,11 @@ public class PunchingBagHandler : EntityHandler
                 currentState = PunchingBagState.RUN;
             }
         }
+
+    }
+
+    private void JumpState()
+    {
 
     }
 

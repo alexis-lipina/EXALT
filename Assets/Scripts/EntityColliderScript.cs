@@ -28,7 +28,6 @@ public class EntityColliderScript : MonoBehaviour
     private Rigidbody2D PlayerRigidBody;
     private EntityHandler entityHandler;
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
-    private KeyValuePair<Vector2, EnvironmentPhysics> lasttouched;
 
 
     Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
@@ -51,7 +50,6 @@ public class EntityColliderScript : MonoBehaviour
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
-        lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>();
     }
 
     void Update()
@@ -182,14 +180,11 @@ public class EntityColliderScript : MonoBehaviour
         //    Deal with both - if one of them goes further than 0.1 without collision, move along that axis until limit or collision
         float boxCastDistance = Mathf.Sqrt(velocityX * velocityX + velocityY * velocityY);
         List<RaycastHit2D> badCollisions = new List<RaycastHit2D>();
-        GameObject tempEnvironmentObject;
         RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
         bool NorthCollision = false;
         bool SouthCollision = false;
         bool EastCollision = false;
         bool WestCollision = false;
-        Vector2 tempEnviroPos;
-        Vector2 tempPlayerPos;
         float tempFract = 1.0f;
         //Debug.Log("BoxCastDistance:" + boxCastDistance);
         //Debug.Log("------------------------------------------");
@@ -512,7 +507,7 @@ public class EntityColliderScript : MonoBehaviour
         // - - - For some reason, MovePosition() wasnt working for the test Punching Bag NPC. 
         //gameObject.GetComponent<Rigidbody2D>().MovePosition(warpcoordinates);
         gameObject.GetComponent<Rigidbody2D>().position = warpcoordinates;
-        entityElevation = lastFootHold.Value.getTopHeight() + 0; //maybe have the player fall from a great height to reposition them?
+        entityElevation = terrainheight + 0; //maybe have the player fall from a great height to reposition them?
     }
 
     //===============================================================| getters and setters

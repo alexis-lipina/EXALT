@@ -21,6 +21,7 @@ public class EntityColliderScript : MonoBehaviour
     [SerializeField] private GameObject handlerObject;
     [SerializeField] private GameObject FirstShadow;
     [SerializeField] private float gravity;
+    [SerializeField] private float speed;
 
 
 
@@ -65,9 +66,11 @@ public class EntityColliderScript : MonoBehaviour
     //======================================================| Terrain Collision management
     void OnTriggerEnter2D(Collider2D other)
     {
+        
         //Debug.Log("Entering!");
         if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
         {
+            //Debug.Log("Adding " + other.gameObject);
             //Debug.Log("N U T: " + other.gameObject.GetInstanceID());
             TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
         }
@@ -76,8 +79,9 @@ public class EntityColliderScript : MonoBehaviour
     void OnTriggerStay2D(Collider2D other)
     {
         
-        if (!TerrainTouching.ContainsKey(other.gameObject))
+        if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
         {
+            //Debug.Log("???? " + other.gameObject);
             Debug.Log("This should never happen. ");
             TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
         }
@@ -88,15 +92,16 @@ public class EntityColliderScript : MonoBehaviour
         //Debug.Log("Exiting!");
         if (other.gameObject.tag == "Environment")
         {
+            //Debug.Log("Removing " + other.gameObject);
             //Debug.Log("Hurk");
-           TerrainTouching.Remove(other.gameObject);
+            TerrainTouching.Remove(other.gameObject);
         }
     }
 
     //=====================================================================| MOVEMENT 
     public void MoveCharacterPositionPhysics(float xInput, float yInput)
     {
-        this.MoveWithCollision(xInput * 15f * Time.deltaTime, yInput * 15f * Time.deltaTime);
+        this.MoveWithCollision(xInput * speed * Time.deltaTime, yInput * speed * Time.deltaTime);
         //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
     }
 
@@ -406,6 +411,7 @@ public class EntityColliderScript : MonoBehaviour
         }
         //PrintTerrain();
     }
+
     public void RemoveTerrainTouched(int terrainInstanceID)
     {
         if (!TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
@@ -417,6 +423,7 @@ public class EntityColliderScript : MonoBehaviour
         Shadows.Remove(terrainInstanceID);
         //PrintTerrain();
     }
+
     public float GetMaxTerrainHeightBelow()
     {
         float max = -20;
@@ -427,6 +434,7 @@ public class EntityColliderScript : MonoBehaviour
 
         return max;
     }
+
     private void PrintTerrain()
     {
         Debug.Log("Terrain touching:");
@@ -435,6 +443,7 @@ public class EntityColliderScript : MonoBehaviour
             Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.getBottomHeight() + " " + entry.Value);
         }
     }
+
     public void SavePosition()
     {
         EnvironmentPhysics temp = null;
@@ -449,11 +458,16 @@ public class EntityColliderScript : MonoBehaviour
         {
             lastFootHold = new KeyValuePair<Vector2, EnvironmentPhysics>(gameObject.GetComponent<Rigidbody2D>().position, temp);
         }
+        else
+        {
+            Debug.Log("ALERT!!!");
+        }
 
     }
 
     private void WarpToPlatform()
     {
+        Debug.Log(lastFootHold.Key);
         /*
         physicsobject.GetComponent<Rigidbody2D>().MovePosition(lasttouched.Key);
         PlayerElevation = lasttouched.Value.getTopHeight() + 5;
@@ -493,8 +507,11 @@ public class EntityColliderScript : MonoBehaviour
             Debug.Log("Position too far north");
 
         }
+        Debug.Log("WARPING HERE:" + warpcoordinates);
         ZVelocity = 0;
-        gameObject.GetComponent<Rigidbody2D>().MovePosition(warpcoordinates);
+        // - - - For some reason, MovePosition() wasnt working for the test Punching Bag NPC. 
+        //gameObject.GetComponent<Rigidbody2D>().MovePosition(warpcoordinates);
+        gameObject.GetComponent<Rigidbody2D>().position = warpcoordinates;
         entityElevation = lastFootHold.Value.getTopHeight() + 0; //maybe have the player fall from a great height to reposition them?
     }
 

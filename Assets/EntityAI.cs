@@ -15,40 +15,37 @@ using UnityEngine;
 /// In future implementations, this might instead serve as a middleman between
 /// an "overlord" AI, but who knows. Who knows indeed.
 /// </summary>
-public class EntityAI : MonoBehaviour {
+public class EntityAI : MonoBehaviour
+{
     [SerializeField] EntityHandler handler;
+    [SerializeField] GameObject player;
+    [SerializeField]
+    GameObject punchingBag;
+
     private int step;
-	// Use this for initialization
-	void Start () {
+
+
+    void Start () {
         step = 0;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        
-		if (step <= 12)
+        MoveTowardPlayer();
+    }
+
+    //=====================| AI Methods
+    private void MoveTowardPlayer()
+    {
+        Vector2 direction = new Vector2(player.transform.position.x - punchingBag.transform.position.x, player.transform.position.y - punchingBag.transform.position.y);
+        if (direction.magnitude > 2)
         {
-            Debug.Log("AI moving East");
-            handler.setXYAnalogInput(1f, 0f);
-        }
-        else if (step <= 24)
-        {
-            handler.setXYAnalogInput(0f, 1f);
-        }
-        else if (step <= 36)
-        {
-            handler.setXYAnalogInput(-1f, 0f);
-        }
-        else if (step <= 48)
-        {
-            handler.setXYAnalogInput(0f, -1f);
+            handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }
         else
         {
-            step = 0;
+            handler.setXYAnalogInput(0, 0);
         }
-        step++;
-        
     }
 }

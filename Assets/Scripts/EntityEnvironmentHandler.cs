@@ -6,19 +6,19 @@ public class EntityEnvironmentHandler : MonoBehaviour {
 
     [SerializeField] private GameObject entityHandlerObject;
     [SerializeField] private EntityColliderScript entityCollider;
-    private EntityHandler entityHandler;
+    private PlayerHandler entityHandler;
 
 
-    void Start ()
+    void Start()
     {
-        entityHandler = entityHandlerObject.GetComponent<EntityHandler>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
+        entityHandler = entityHandlerObject.GetComponent<PlayerHandler>();
+    }
+
+    // Update is called once per frame
+    void Update()
     {
-		
-	}
+
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -26,7 +26,8 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Blep");
-            entityCollider.AddTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());
+
+            entityCollider.AddTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());//will be taken care of by EntityPhysics
         }
     }
 
@@ -36,7 +37,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Hurk");
-            entityCollider.RemoveTerrainTouched(other.GetInstanceID());
+            entityCollider.RemoveTerrainTouched(other.GetInstanceID());//EntityPhysics
         }
     }
 }

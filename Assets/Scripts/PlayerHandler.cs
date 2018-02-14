@@ -9,14 +9,8 @@ using System;
 public class PlayerHandler : EntityHandler
 {
     
-    //[SerializeField] protected GameObject physicsobject;
-    [SerializeField] private GameObject playerEnvironmentHandlerObject;
     [SerializeField] private GameObject characterSprite;
-
     [SerializeField] private GameObject FollowingCamera;
-
-    private EntityColliderScript PlayerCollider;
-    private Rigidbody2D playerRigidBody;
     private Animator characterAnimator;
 
 
@@ -52,10 +46,9 @@ public class PlayerHandler : EntityHandler
         CurrentState = PlayerState.IDLE;
         
         JumpImpulse = 0.6f;
-        playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
+        //playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
         
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
-        PlayerCollider = PhysicsObject.GetComponent<EntityColliderScript>();
         //Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
         characterAnimator = characterSprite.GetComponent<Animator>();
 
@@ -112,7 +105,7 @@ public class PlayerHandler : EntityHandler
     private void PlayerIdle()
     {
         //do nothing, maybe later have them breathing or getting bored, sitting down
-        Debug.Log("Player Idle");
+        //Debug.Log("Player Idle");
         //------------------------------------------------| STATE CHANGE
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
         {
@@ -122,7 +115,7 @@ public class PlayerHandler : EntityHandler
         if (JumpPressed)
         {
             //Debug.Log("IDLE -> JUMP");
-            PlayerCollider.ZVelocity = JumpImpulse;
+            EntityPhysics.ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
@@ -133,36 +126,36 @@ public class PlayerHandler : EntityHandler
             CurrentState = PlayerState.LIGHT_STAB;
         }
 
-        float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
-        if (PlayerCollider.GetEntityElevation() > maxheight)
+        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
+        if (EntityPhysics.GetEntityElevation() > maxheight)
         {
-            PlayerCollider.ZVelocity = 0;
+            EntityPhysics.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            PlayerCollider.SetEntityElevation(maxheight);
+            EntityPhysics.SetEntityElevation(maxheight);
         }
         
     }
 
     private void PlayerRun()
     {
-        Debug.Log("Player Running");
+        //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
-        PlayerCollider.MoveCharacterPositionPhysics(xInput, yInput);
+        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
         //-------| Z Azis Traversal 
         // handles falling if player is above ground
-        float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
-        if (PlayerCollider.GetEntityElevation() > maxheight)
+        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
+        if (EntityPhysics.GetEntityElevation() > maxheight)
         {
-            PlayerCollider.ZVelocity = 0;
+            EntityPhysics.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            PlayerCollider.SetEntityElevation(maxheight);
+            EntityPhysics.SetEntityElevation(maxheight);
         }
         //------------------------------------------------| STATE CHANGE
         //Debug.Log("X:" + xInput + "Y:" + yInput);
@@ -185,48 +178,48 @@ public class PlayerHandler : EntityHandler
             }
             if (temp != null)
             {
-                lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>(PlayerCollider.GetComponent<Rigidbody2D>().position, temp);
+                lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>(EntityPhysics.GetComponent<Rigidbody2D>().position, temp);
             }
             */
-            PlayerCollider.SavePosition();
+            EntityPhysics.SavePosition();
             //Debug.Log("RUN -> JUMP");
-            PlayerCollider.ZVelocity = JumpImpulse;
+            EntityPhysics.ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
         if (CurrentState == PlayerState.RUN)
         {
-            PlayerCollider.SavePosition();
+            EntityPhysics.SavePosition();
         }
     }
 
     private void PlayerJump()
     {
-        Debug.Log("Player Jumping");
+        //Debug.Log("Player Jumping");
         //------------------------------| MOVE
         
-        PlayerCollider.MoveCharacterPositionPhysics(xInput, yInput);
-        PlayerCollider.FreeFall();
+        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        EntityPhysics.FreeFall();
         /*
-        PlayerCollider.SetEntityElevation(PlayerCollider.GetEntityElevation() + PlayerCollider.ZVelocity);
+        EntityPhysics.SetEntityElevation(EntityPhysics.GetEntityElevation() + EntityPhysics.ZVelocity);
         
-        PlayerCollider.ZVelocity -= 0.03f;
+        EntityPhysics.ZVelocity -= 0.03f;
         */
         //------------------------------| STATE CHANGE
 
         //Check for foot collision
 
-        float maxheight = PlayerCollider.GetMaxTerrainHeightBelow();
-        //PlayerCollider.CheckHitHeadOnCeiling();
-        if (PlayerCollider.TestFeetCollision())
+        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
+        //EntityPhysics.CheckHitHeadOnCeiling();
+        if (EntityPhysics.TestFeetCollision())
 
 
-        if (PlayerCollider.GetEntityElevation() <= maxheight)
+        if (EntityPhysics.GetEntityElevation() <= maxheight)
         {
-            PlayerCollider.SetEntityElevation(maxheight);
+            EntityPhysics.SetEntityElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
-                PlayerCollider.SavePosition();
+                EntityPhysics.SavePosition();
                 //Debug.Log("JUMP -> IDLE");
                 CurrentState = PlayerState.IDLE;
             }
@@ -241,7 +234,7 @@ public class PlayerHandler : EntityHandler
     private void PlayerLightStab()
     {
         //todo - test area for collision, if coll
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(new Vector2(PlayerCollider.transform.position.x + 2, PlayerCollider.transform.position.y), new Vector2(4, 4), 0);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y), new Vector2(4, 4), 0);
         foreach(Collider2D hit in hitobjects)
         {
             if (hit.tag == "Enemy")

@@ -8,8 +8,8 @@ using UnityEngine;
 /// </summary>
 public abstract class EntityHandler : MonoBehaviour
 {
-    [SerializeField] protected GameObject PhysicsObject;
-
+    [SerializeField] protected EntityColliderScript EntityPhysics;
+    //[SerializeField] protected GameObject EntitySprite;
 
 
 

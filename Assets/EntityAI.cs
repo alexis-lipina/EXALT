@@ -25,17 +25,22 @@ public class EntityAI : MonoBehaviour
     [SerializeField] EnvironmentPhysics testEnd;
 
     private Stack<Vector2> path;
-
+    private bool pathfound;
 	void Start()
     {
-        TestAwfulPathfindingSystem();
+        pathfound = false;
+        //TestAwfulPathfindingSystem();
     }
 
 	// Update is called once per frame
 	void Update ()
     {
         //MoveTowardPlayer();
-
+        if (pathfound == false)
+        {
+            TestAwfulPathfindingSystem();
+            pathfound = true;
+        }
 
         //----Test of god-awful pathfinding system
         if(path.Count == 0)

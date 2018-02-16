@@ -445,7 +445,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 500689060}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 1333056195}
   - {fileID: 2136643127}
@@ -574,7 +573,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 577550456}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 1981821475}
 --- !u!61 &577550459
@@ -666,7 +664,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 649302819}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.9, y: 3.6, z: 2}
+  m_LocalPosition: {x: 6.25, y: 8, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 653388160}
@@ -798,7 +796,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 754588476}
-  heightReferenceOffset: 0
   neighbors: []
 --- !u!61 &754588478
 BoxCollider2D:
@@ -925,7 +922,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 951213788}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 1333056195}
   - {fileID: 2136643127}
@@ -1117,7 +1113,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1032399448}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 1470427534}
   - {fileID: 2136643127}
@@ -1530,7 +1525,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1333056195}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 951213788}
   - {fileID: 500689060}
@@ -1646,7 +1640,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1470427534}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 1981821475}
   - {fileID: 1032399448}
@@ -2164,7 +2157,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1981821475}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 577550456}
   - {fileID: 1470427534}
@@ -2280,7 +2272,6 @@ MonoBehaviour:
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 2136643127}
-  heightReferenceOffset: 0
   neighbors:
   - {fileID: 1032399448}
   - {fileID: 951213788}

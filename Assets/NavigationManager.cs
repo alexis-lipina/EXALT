@@ -8,7 +8,8 @@ using UnityEngine;
 public class NavigationManager : MonoBehaviour
 {
     List<int> visited;
-
+    public delegate void UpdatePathfindDelegate(GameObject changedEntity, EnvironmentPhysics newDestination);
+    public UpdatePathfindDelegate entityChangePositionDelegate;
 
 
     public Stack<Vector2> FindPath(EnvironmentPhysics start, EnvironmentPhysics destination)
@@ -62,14 +63,14 @@ public class NavigationManager : MonoBehaviour
 
     private Stack<Vector2> NewSearchPath(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
-        Debug.Log("Searching in " + start);
+        //Debug.Log("Searching in " + start);
         List<NavEdge> navedges = start.getNavEdges();
         Stack<Vector2> path = new Stack<Vector2>();
-        Debug.Log(navedges.Count);
+        //Debug.Log(navedges.Count);
 
         foreach (NavEdge edge in navedges) //visit each neighbor node
         {
-            Debug.Log("!!");
+            //Debug.Log("!!");
             if (!visited.Contains(edge.EnvironmentObject.gameObject.GetInstanceID()))// if that node hasnt already been visited
             {
                 visited.Add(edge.EnvironmentObject.gameObject.GetInstanceID());

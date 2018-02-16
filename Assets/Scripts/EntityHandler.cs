@@ -18,5 +18,9 @@ public abstract class EntityHandler : MonoBehaviour
     /// </summary>
     protected abstract void ExecuteState();
     public abstract void setXYAnalogInput(float x, float y);
+    public EntityColliderScript getEntityPhysics()
+    {
+        return EntityPhysics;
+    }
 
 }

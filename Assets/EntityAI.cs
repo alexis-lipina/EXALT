@@ -30,6 +30,7 @@ public class EntityAI : MonoBehaviour
     {
         pathfound = false;
         //TestAwfulPathfindingSystem();
+        navManager.entityChangePositionDelegate += CheckForPathUpdate;
     }
 
 	// Update is called once per frame
@@ -61,7 +62,7 @@ public class EntityAI : MonoBehaviour
             }
             else
             {
-                Debug.Log(dest);
+                //Debug.Log(dest);
                 MoveTowardPoint(dest);
             }
         }
@@ -92,5 +93,15 @@ public class EntityAI : MonoBehaviour
         handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
     }
 
+    // =================| Update path if target changes touched nav
+    private void CheckForPathUpdate(GameObject obj, EnvironmentPhysics newDestination)
+    {
+        if (obj == player)
+        {
+            Debug.Log("Success!!!");
+            //recalculate path
+            path = navManager.FindPath(handler.getEntityPhysics().getCurrentNavObject(), newDestination);
+        }
+    }
 
 }

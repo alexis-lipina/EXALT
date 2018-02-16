@@ -15,6 +15,7 @@ using System;
 /// </summary>
 public class EntityColliderScript : MonoBehaviour
 {
+    [SerializeField] private NavigationManager navManager;
     [SerializeField] private float playerSpriteZOffset;
     [SerializeField] private GameObject characterSprite;
     [SerializeField] private GameObject environmentHandler;
@@ -28,6 +29,7 @@ public class EntityColliderScript : MonoBehaviour
     private Rigidbody2D PlayerRigidBody;
     private EntityHandler entityHandler;
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
+    private EnvironmentPhysics currentNavEnvironmentObject;
 
 
     Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
@@ -59,6 +61,7 @@ public class EntityColliderScript : MonoBehaviour
         {
             WarpToPlatform();
         }
+        UpdateEntityNavigationObject();
     }
 
     //======================================================| Terrain Collision management
@@ -462,7 +465,7 @@ public class EntityColliderScript : MonoBehaviour
 
     private void WarpToPlatform()
     {
-        Debug.Log(lastFootHold.Key);
+        //Debug.Log(lastFootHold.Key);
         /*
         physicsobject.GetComponent<Rigidbody2D>().MovePosition(lasttouched.Key);
         PlayerElevation = lasttouched.Value.getTopHeight() + 5;
@@ -475,34 +478,34 @@ public class EntityColliderScript : MonoBehaviour
         Vector2 warpcoordinates = lastFootHold.Key;
 
 
-        Debug.Log("Player warping");
+        //Debug.Log("Player warping");
         //if lastfoothold player center is outside bounds of collider
-        Debug.Log("destination center:" + lastFootHold.Key);
-        Debug.Log("Terrain position:" + terrainpos);
-        Debug.Log("Terrain Size:" + terrainsize);
+        //Debug.Log("destination center:" + lastFootHold.Key);
+        //Debug.Log("Terrain position:" + terrainpos);
+        //Debug.Log("Terrain Size:" + terrainsize);
         if (lastFootHold.Key.x < terrainpos.x + terrainoffset.x - terrainsize.x / 2)
         {
             warpcoordinates.x = terrainpos.x + terrainoffset.x - terrainsize.x / 2;
-            Debug.Log("Position too far to the left");
+            //Debug.Log("Position too far to the left");
         }
         else if (lastFootHold.Key.x > terrainpos.x + terrainoffset.x + terrainsize.x / 2)
         {
             warpcoordinates.x = terrainpos.x + terrainoffset.x + terrainsize.x / 2;
-            Debug.Log("Position too far to the right");
+            //Debug.Log("Position too far to the right");
 
         }
         if (lastFootHold.Key.y < terrainpos.y + terrainoffset.y - terrainsize.y / 2)
         {
             warpcoordinates.y = terrainpos.y + terrainoffset.y - terrainsize.y / 2;
-            Debug.Log("Position too far south");
+            //Debug.Log("Position too far south");
         }
         else if (lastFootHold.Key.y > terrainpos.y + terrainoffset.y + terrainsize.y / 2)
         {
             warpcoordinates.y = terrainpos.y + terrainoffset.y + terrainsize.y / 2;
-            Debug.Log("Position too far north");
+            //Debug.Log("Position too far north");
 
         }
-        Debug.Log("WARPING HERE:" + warpcoordinates);
+        //Debug.Log("WARPING HERE:" + warpcoordinates);
         ZVelocity = 0;
         // - - - For some reason, MovePosition() wasnt working for the test Punching Bag NPC. 
         //gameObject.GetComponent<Rigidbody2D>().MovePosition(warpcoordinates);
@@ -510,7 +513,42 @@ public class EntityColliderScript : MonoBehaviour
         entityElevation = terrainheight + 0; //maybe have the player fall from a great height to reposition them?
     }
 
+    private void UpdateEntityNavigationObject()
+    {
+        List<EnvironmentPhysics> objectsbelow = new List<EnvironmentPhysics>();
+        foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched) //get list of all colliders touching point
+        {
+            if (entry.Value.gameObject.GetComponent<BoxCollider2D>().OverlapPoint(this.gameObject.GetComponent<BoxCollider2D>().offset + (Vector2)gameObject.transform.position)) //if point at center of entity collider overlaps
+            {
+                objectsbelow.Add(entry.Value);
+                //Debug.Log("Point!" + entry.Value.gameObject.GetInstanceID());
+            }
+        }
+        float max = float.NegativeInfinity;
+        EnvironmentPhysics tempphys = null;
+        foreach (EnvironmentPhysics physobj in objectsbelow)
+        {
+            if (physobj.getTopHeight() > max && entityHeight + entityElevation > physobj.getTopHeight())
+            {
+                max = physobj.getTopHeight();
+                tempphys = physobj;
+            }
+        }
+        if (tempphys == null || tempphys == currentNavEnvironmentObject)
+        {
+            return;
+        }
+        //Debug.Log("Updating point!!!");
+        navManager.entityChangePositionDelegate(this.gameObject, tempphys);
+        currentNavEnvironmentObject = tempphys;
+    }
+
     //===============================================================| getters and setters
+    public EnvironmentPhysics getCurrentNavObject()
+    {
+        return currentNavEnvironmentObject;
+    }
+
     public float GetEntityHeight()
     {
         return entityHeight;

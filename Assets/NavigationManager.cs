@@ -14,18 +14,22 @@ public class NavigationManager : MonoBehaviour
 
     public Stack<Vector2> FindPath(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
+        
         visited = new List<int>();
         //start at "start" physics object
         //Stack<Vector2> path = SearchPath(start, destination);
-        Stack<Vector2> path = NewSearchPath(start, destination);
+        //Stack<Vector2> path = NewSearchPath(start, destination);
+        Stack<Vector2> path = AStarSearch(start, destination);
         if (path.Count == 0)
         {
             Debug.Log("Pathfind failed!");
         }
         Debug.Log(path);
         return path;
+        
+        
     }
-
+    /*
     private Stack<Vector2> SearchPath(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
         Debug.Log("Searching in " + start);
@@ -60,7 +64,7 @@ public class NavigationManager : MonoBehaviour
         return path;
 
     }
-
+    */
     private Stack<Vector2> NewSearchPath(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
         //Debug.Log("Searching in " + start);
@@ -94,6 +98,67 @@ public class NavigationManager : MonoBehaviour
 
         return path;
 
+    }
+
+    private Stack<Vector2> AStarSearch(EnvironmentPhysics start, EnvironmentPhysics destination)
+    {
+        Dictionary<EnvironmentPhysics, float> frontier = new Dictionary<EnvironmentPhysics, float>(); //object, priority
+        Dictionary<EnvironmentPhysics, EnvironmentPhysics> cameFrom = new Dictionary<EnvironmentPhysics, EnvironmentPhysics>();//leaf, source
+        Dictionary<EnvironmentPhysics, float> costSoFar = new Dictionary<EnvironmentPhysics, float>();//object, priority
+        List<NavEdge> neighbors = new List<NavEdge>();
+        frontier.Add(start, 0);
+        cameFrom.Add(start, null);
+        costSoFar.Add(start, 0);
+
+        EnvironmentPhysics current = null;
+        Debug.Log("About to die!");
+        int iterations = 0;
+        while(frontier.Count != 0 && iterations < 20)
+        {
+            //Debug.Log("bloop");
+            //get least expensive frontier, set to current
+            float min = float.PositiveInfinity;
+            foreach(KeyValuePair<EnvironmentPhysics, float> entry in frontier)
+            {
+                if (entry.Value < min)
+                {
+                    current = entry.Key;
+                    min = entry.Value;
+                }
+            }
+            Debug.Log(min);
+
+
+            //get neighbors of current
+            neighbors = current.getNavEdges();
+            if (current == destination) break; //PATH FOUND!!!
+            foreach(NavEdge edge in neighbors)
+            {
+                //sets cost equal to cumulative cost of previous node plus cost to reach next node
+                float tempcost = costSoFar[current] + edge.Distance;
+                if (!costSoFar.ContainsKey(edge.EnvironmentObject) || tempcost < costSoFar[edge.EnvironmentObject] )
+                {
+                    costSoFar[edge.EnvironmentObject] = tempcost;
+                    float tempPriority = tempcost + Vector2.Distance(edge.EnvironmentObject.gameObject.transform.position, destination.transform.position);
+                    frontier.Add(edge.EnvironmentObject, tempPriority);
+                    cameFrom[edge.EnvironmentObject] = current;
+                }
+            }
+            frontier.Remove(current);
+            iterations++;
+        }
+        Stack<Vector2> path = new Stack<Vector2>();
+        if (iterations > 18) return null;
+        iterations = 0;
+        while (current != start && iterations < 20)//while current thing isnt start
+        {
+            //Debug.Log("nooo");
+            path.Push(current.transform.position);
+            current = cameFrom[current];
+            iterations++;
+        }
+        if (iterations > 18) return null;
+        return path;
     }
 
 

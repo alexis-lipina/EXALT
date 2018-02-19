@@ -20,7 +20,7 @@ public class NavigationManager : MonoBehaviour
         //Stack<Vector2> path = SearchPath(start, destination);
         //Stack<Vector2> path = NewSearchPath(start, destination);
         Stack<Vector2> path = AStarSearch(start, destination);
-        if (path.Count == 0)
+        if (path == null || path.Count == 0)
         {
             Debug.Log("Pathfind failed!");
         }
@@ -102,6 +102,10 @@ public class NavigationManager : MonoBehaviour
 
     private Stack<Vector2> AStarSearch(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
+        if (start == null || destination == null)
+        {
+            return new Stack<Vector2>();
+        }
         Dictionary<EnvironmentPhysics, float> frontier = new Dictionary<EnvironmentPhysics, float>(); //object, priority
         Dictionary<EnvironmentPhysics, EnvironmentPhysics> cameFrom = new Dictionary<EnvironmentPhysics, EnvironmentPhysics>();//leaf, source
         Dictionary<EnvironmentPhysics, float> costSoFar = new Dictionary<EnvironmentPhysics, float>();//object, priority
@@ -111,7 +115,7 @@ public class NavigationManager : MonoBehaviour
         costSoFar.Add(start, 0);
 
         EnvironmentPhysics current = null;
-        Debug.Log("About to die!");
+        //Debug.Log("About to die!");
         int iterations = 0;
         while(frontier.Count != 0 && iterations < 20)
         {
@@ -126,7 +130,7 @@ public class NavigationManager : MonoBehaviour
                     min = entry.Value;
                 }
             }
-            Debug.Log(min);
+            //Debug.Log(min);
 
 
             //get neighbors of current
@@ -140,7 +144,7 @@ public class NavigationManager : MonoBehaviour
                 {
                     costSoFar[edge.EnvironmentObject] = tempcost;
                     float tempPriority = tempcost + Vector2.Distance(edge.EnvironmentObject.gameObject.transform.position, destination.transform.position);
-                    frontier.Add(edge.EnvironmentObject, tempPriority);
+                    frontier[edge.EnvironmentObject] = tempPriority;
                     cameFrom[edge.EnvironmentObject] = current;
                 }
             }

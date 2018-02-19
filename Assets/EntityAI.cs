@@ -44,7 +44,7 @@ public class EntityAI : MonoBehaviour
         }
 
         //----Test of god-awful pathfinding system
-        if(path.Count == 0)
+        if(path == null || path.Count == 0)
         {
             //do nothing
             handler.setXYAnalogInput(0, 0);

@@ -19,12 +19,17 @@ public class PlayerHandler : EntityHandler
     const string IDLE_Anim = "Anim_CharacterTest1";
     const string RUN_Anim = "Anim_CharacterTest2";
     const string JUMP_Anim = "Anim_CharacterTest3";
-    const string LIGHT_STAB_Anim = "Anim_CharacterTest4";
+    const string SWING_NORTH_Anim = "PlayerSwingNorth";
+    const string SWING_SOUTH_Anim = "PlayerSwingSouth";
+    const string SWING_EAST_Anim = "PlayerSwingEast";
+    const string SWING_WEST_Anim = "PlayerSwingWest";
+
 
 
 
     private PlayerState CurrentState;
     private PlayerState PreviousState;
+    private FaceDirection currentFaceDirection;
     private bool UpPressed;
     private bool DownPressed;
     private bool LeftPressed;
@@ -37,22 +42,20 @@ public class PlayerHandler : EntityHandler
     private float xInput; 
     private float yInput;   
     private float JumpImpulse;
+    private float StateTimer;
 
     
 
 	void Start ()
     {
-        
         CurrentState = PlayerState.IDLE;
-        
+        StateTimer = 0;
         JumpImpulse = 0.6f;
         //playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
         
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
         //Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
         characterAnimator = characterSprite.GetComponent<Animator>();
-
-
 }
 
 
@@ -123,6 +126,7 @@ public class PlayerHandler : EntityHandler
         if (AttackPressed)
         {
             Debug.Log("IDLE -> ATTACK");
+            StateTimer = 0.25f;
             CurrentState = PlayerState.LIGHT_STAB;
         }
 
@@ -144,6 +148,23 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        Vector2 direction = new Vector2(xInput, yInput);
+        if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.EAST;
+        }
+        else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.NORTH;
+        }
+        else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.SOUTH;
+        }
+        else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.WEST;
+        }
 
         //-------| Z Azis Traversal 
         // handles falling if player is above ground
@@ -166,27 +187,20 @@ public class PlayerHandler : EntityHandler
         }
         if (JumpPressed)
         {
-            EnvironmentPhysics temp = null;
-            //save position and terrain standing on
-            /*
-            foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
-            {
-                if (entry.Value.getTopHeight() == PlayerElevation)
-                {
-                    temp = entry.Value;
-                }
-            }
-            if (temp != null)
-            {
-                lasttouched = new KeyValuePair<Vector2, EnvironmentPhysics>(EntityPhysics.GetComponent<Rigidbody2D>().position, temp);
-            }
-            */
             EntityPhysics.SavePosition();
             //Debug.Log("RUN -> JUMP");
             EntityPhysics.ZVelocity = JumpImpulse;
             JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
+        if (AttackPressed)
+        {
+            //Debug.Log("RUN -> ATTACK");
+            StateTimer = 0.25f;
+            CurrentState = PlayerState.LIGHT_STAB;
+        }
+
+
         if (CurrentState == PlayerState.RUN)
         {
             EntityPhysics.SavePosition();
@@ -233,8 +247,28 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerLightStab()
     {
+        Vector2 swingboxpos = Vector2.zero;
+        switch (currentFaceDirection)
+        {
+            case FaceDirection.EAST:
+                characterAnimator.Play(SWING_EAST_Anim);
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
+                break;
+            case FaceDirection.WEST:
+                characterAnimator.Play(SWING_WEST_Anim);
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
+                break;
+            case FaceDirection.NORTH:
+                characterAnimator.Play(SWING_NORTH_Anim);
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                break;
+            case FaceDirection.SOUTH:
+                characterAnimator.Play(SWING_SOUTH_Anim);
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                break;
+        }
         //todo - test area for collision, if coll
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y), new Vector2(4, 4), 0);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
         foreach(Collider2D hit in hitobjects)
         {
             if (hit.tag == "Enemy")
@@ -242,7 +276,11 @@ public class PlayerHandler : EntityHandler
                 hit.gameObject.GetComponent<HealthManager>().Inflict(1.0f);
             }
         }
-        CurrentState = PlayerState.RUN;
+        StateTimer -= Time.deltaTime;
+        if (StateTimer < 0)
+        {
+            CurrentState = PlayerState.RUN;
+        }
     }
     private void PlayerHeavyStab()
     {

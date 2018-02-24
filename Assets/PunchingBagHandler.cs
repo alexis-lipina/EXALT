@@ -6,7 +6,7 @@ using UnityEngine;
 public class PunchingBagHandler : EntityHandler
 {
 
-    enum PunchingBagState { IDLE, RUN, FALL, JUMP };
+    enum PunchingBagState { IDLE, RUN, FALL, JUMP, ATTACK };
     private PunchingBagState currentState;
 
     float xInput;
@@ -47,6 +47,9 @@ public class PunchingBagHandler : EntityHandler
                 break;
             case (PunchingBagState.JUMP):
                 JumpState();
+                break;
+            case PunchingBagState.ATTACK:
+                AttackState();
                 break;
         }
     }
@@ -127,6 +130,11 @@ public class PunchingBagHandler : EntityHandler
     }
 
     private void JumpState()
+    {
+
+    }
+
+    private void AttackState()
     {
 
     }

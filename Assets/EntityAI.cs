@@ -44,26 +44,32 @@ public class EntityAI : MonoBehaviour
         }
 
         //----Test of god-awful pathfinding system
-        if(path == null || path.Count == 0)
+        if(path == null )
         {
             //do nothing
             handler.setXYAnalogInput(0, 0);
         }
         else
         {
-            
-            //peek, test if collider is overlapping point
-            //if overlap, pop and exit
-            //if no overlap, movetowardpoint
-            Vector2 dest = path.Peek();
-            if ( punchingBag.GetComponent<BoxCollider2D>().OverlapPoint(dest) )
+            if (path.Count == 0)
             {
-                path.Pop();
+                MoveTowardPlayer();
             }
             else
             {
-                //Debug.Log(dest);
-                MoveTowardPoint(dest);
+                //peek, test if collider is overlapping point
+                //if overlap, pop and exit
+                //if no overlap, movetowardpoint
+                Vector2 dest = path.Peek();
+                if (punchingBag.GetComponent<BoxCollider2D>().OverlapPoint(dest))
+                {
+                    path.Pop();
+                }
+                else
+                {
+                    //Debug.Log(dest);
+                    MoveTowardPoint(dest);
+                }
             }
         }
     }

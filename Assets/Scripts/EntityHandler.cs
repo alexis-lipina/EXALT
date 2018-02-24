@@ -9,6 +9,7 @@ using UnityEngine;
 public abstract class EntityHandler : MonoBehaviour
 {
     [SerializeField] protected EntityColliderScript EntityPhysics;
+    protected enum FaceDirection {NORTH, WEST, SOUTH, EAST }
     //[SerializeField] protected GameObject EntitySprite;
 
 

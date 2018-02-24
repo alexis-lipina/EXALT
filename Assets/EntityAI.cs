@@ -24,7 +24,8 @@ public class EntityAI : MonoBehaviour
     [SerializeField] EnvironmentPhysics testStart;
     [SerializeField] EnvironmentPhysics testEnd;
 
-    private Stack<Vector2> path;
+    private Stack<Vector2> coordpath;
+    private Stack<EnvironmentPhysics> path;
     private bool pathfound;
 	void Start()
     {
@@ -57,18 +58,18 @@ public class EntityAI : MonoBehaviour
             }
             else
             {
-                //peek, test if collider is overlapping point
+                //peek, test if collider is overlapping other
                 //if overlap, pop and exit
                 //if no overlap, movetowardpoint
-                Vector2 dest = path.Peek();
-                if (punchingBag.GetComponent<BoxCollider2D>().OverlapPoint(dest))
+                EnvironmentPhysics dest = path.Peek();
+                if (punchingBag.GetComponent<BoxCollider2D>().IsTouching(dest.GetComponent<BoxCollider2D>()))
                 {
                     path.Pop();
                 }
                 else
                 {
                     //Debug.Log(dest);
-                    MoveTowardPoint(dest);
+                    MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
                 }
             }
         }

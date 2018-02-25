@@ -539,6 +539,7 @@ public class EntityColliderScript : MonoBehaviour
             return;
         }
         //Debug.Log("Updating point!!!");
+        //Debug.Log(this.handlerObject);
         navManager.entityChangePositionDelegate(this.gameObject, tempphys);
         currentNavEnvironmentObject = tempphys;
     }

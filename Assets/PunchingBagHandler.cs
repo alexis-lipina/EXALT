@@ -11,6 +11,7 @@ public class PunchingBagHandler : EntityHandler
 
     float xInput;
     float yInput;
+    bool jumpPressed;
 
 
 
@@ -19,6 +20,7 @@ public class PunchingBagHandler : EntityHandler
         xInput = 0;
         yInput = 0;
         currentState = PunchingBagState.IDLE;
+        jumpPressed = false;
 	}
 	
 	void Update ()
@@ -59,7 +61,7 @@ public class PunchingBagHandler : EntityHandler
     private void IdleState()
     {
         //===========| State Switching
-
+        Debug.Log("IDLE!!!");
         if (Mathf.Abs(xInput) > 0.1 || Mathf.Abs(yInput) > 0.1)
         {
             currentState = PunchingBagState.RUN;
@@ -79,9 +81,9 @@ public class PunchingBagHandler : EntityHandler
 
     private void RunState()
     {
-        //Debug.Log("Running!!!")
+        Debug.Log("Running!!!");
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-
+        
 
         //===========| State Switching
 
@@ -96,6 +98,11 @@ public class PunchingBagHandler : EntityHandler
             EntityPhysics.ZVelocity = 0;
             currentState = PunchingBagState.FALL;
         }
+        if (jumpPressed)
+        {
+            EntityPhysics.ZVelocity = 1;
+            currentState = PunchingBagState.JUMP;
+        }
         else
         {
             EntityPhysics.SavePosition();
@@ -104,6 +111,7 @@ public class PunchingBagHandler : EntityHandler
     }
     private void FallState()
     {
+        Debug.Log("Falling!!!");
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         EntityPhysics.FreeFall();
 
@@ -131,7 +139,29 @@ public class PunchingBagHandler : EntityHandler
 
     private void JumpState()
     {
+        Debug.Log("JUMPING!!!");
+        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        EntityPhysics.FreeFall();
+        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
+        //EntityPhysics.CheckHitHeadOnCeiling();
+        if (EntityPhysics.TestFeetCollision())
 
+
+            if (EntityPhysics.GetEntityElevation() <= maxheight)
+            {
+                EntityPhysics.SetEntityElevation(maxheight);
+                if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
+                {
+                    EntityPhysics.SavePosition();
+                    //Debug.Log("JUMP -> IDLE");
+                    currentState = PunchingBagState.IDLE;
+                }
+                else
+                {
+                    //Debug.Log("JUMP -> RUN");
+                    currentState = PunchingBagState.RUN;
+                }
+            }
     }
 
     private void AttackState()
@@ -139,5 +169,10 @@ public class PunchingBagHandler : EntityHandler
 
     }
 
+
+    public void SetJumpPressed(bool value)
+    {
+        jumpPressed = value;
+    }
 
 }

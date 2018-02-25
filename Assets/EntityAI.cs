@@ -54,6 +54,7 @@ public class EntityAI : MonoBehaviour
         {
             if (path.Count == 0)
             {
+                Debug.Log("Moving toward player!");
                 MoveTowardPlayer();
             }
             else
@@ -70,6 +71,11 @@ public class EntityAI : MonoBehaviour
                 {
                     //Debug.Log(dest);
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
+                    if (path.Peek().getTopHeight() > handler.getEntityPhysics().GetEntityElevation()) //Needs to jump
+                    {
+                        handler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
+                    }
+                    else { handler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(false); }
                 }
             }
         }

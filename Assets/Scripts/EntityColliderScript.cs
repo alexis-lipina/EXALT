@@ -45,7 +45,7 @@ public class EntityColliderScript : MonoBehaviour
 
     void Start()
     {
-        entityElevation = 10;
+        entityElevation = 20;
         entityHeight = 3;
         entityHandler = handlerObject.GetComponent<EntityHandler>();
         PlayerRigidBody = gameObject.GetComponent<Rigidbody2D>();

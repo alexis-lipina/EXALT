@@ -247,6 +247,7 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerLightStab()
     {
+        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         Vector2 swingboxpos = Vector2.zero;
         switch (currentFaceDirection)
         {
@@ -264,7 +265,7 @@ public class PlayerHandler : EntityHandler
                 break;
             case FaceDirection.SOUTH:
                 characterAnimator.Play(SWING_SOUTH_Anim);
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
                 break;
         }
         //todo - test area for collision, if coll

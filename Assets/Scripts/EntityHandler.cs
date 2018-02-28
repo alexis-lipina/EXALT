@@ -24,4 +24,6 @@ public abstract class EntityHandler : MonoBehaviour
         return EntityPhysics;
     }
 
+    public abstract void JustGotHit();
+
 }

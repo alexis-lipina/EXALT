@@ -25,9 +25,7 @@ public class NavigationManager : MonoBehaviour
             Debug.Log("Pathfind failed!");
         }
         Debug.Log(path);
-        return path;
-        
-        
+        return path;        
     }
     public Stack<EnvironmentPhysics> FindPath(EnvironmentPhysics start, EnvironmentPhysics destination)
     {

@@ -23,6 +23,10 @@ public class EntityColliderScript : MonoBehaviour
     [SerializeField] private GameObject FirstShadow;
     [SerializeField] private float gravity;
     [SerializeField] private float speed;
+    [SerializeField] private float MaxHP;
+    private float currentHP;
+    private bool hasBeenHit;
+
 
 
 
@@ -52,6 +56,8 @@ public class EntityColliderScript : MonoBehaviour
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
+        currentHP = MaxHP;
+        hasBeenHit = false;
     }
 
     void Update()
@@ -62,6 +68,7 @@ public class EntityColliderScript : MonoBehaviour
             WarpToPlatform();
         }
         UpdateEntityNavigationObject();
+        hasBeenHit = false;
     }
 
     //======================================================| Terrain Collision management
@@ -542,6 +549,31 @@ public class EntityColliderScript : MonoBehaviour
         //Debug.Log(this.handlerObject);
         navManager.entityChangePositionDelegate(this.gameObject, tempphys);
         currentNavEnvironmentObject = tempphys;
+    }
+
+
+
+    public void Inflict(float damage)
+    {
+        hasBeenHit = true;
+        currentHP -= damage;
+        Debug.Log("Ow!!");
+        StartCoroutine(TakeDamageFlash());
+    }
+
+    IEnumerator TakeDamageFlash()
+    {
+        Debug.Log("TakeDamageFlash entered");
+        entityHandler.JustGotHit();
+        for (float i = 0; i < 2; i++)
+        {
+            characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0);
+            yield return new WaitForSeconds(0.05f);
+            characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+            yield return new WaitForSeconds(0.05f);
+        }
+        characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+
     }
 
     //===============================================================| getters and setters

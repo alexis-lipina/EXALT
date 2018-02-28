@@ -274,7 +274,7 @@ public class PlayerHandler : EntityHandler
         {
             if (hit.tag == "Enemy")
             {
-                hit.gameObject.GetComponent<HealthManager>().Inflict(1.0f);
+                hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
             }
         }
         StateTimer -= Time.deltaTime;
@@ -352,11 +352,14 @@ public class PlayerHandler : EntityHandler
         yInput = y;
     }
 
-    
-    
-   
+    public override void JustGotHit()
+    {
+        throw new NotImplementedException();
+    }
 
-    
 
-    
+
+
+
+
 }

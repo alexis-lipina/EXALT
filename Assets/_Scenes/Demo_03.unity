@@ -159,7 +159,8 @@ MonoBehaviour:
   handlerObject: {fileID: 1581717237}
   FirstShadow: {fileID: 2115242767}
   gravity: 0.03
-  speed: 10
+  speed: 15
+  MaxHP: 0
   ZVelocity: 0
 --- !u!114 &5583428
 MonoBehaviour:
@@ -2880,8 +2881,9 @@ GameObject:
   - component: {fileID: 1234480456}
   - component: {fileID: 1234480455}
   - component: {fileID: 1234480454}
+  - component: {fileID: 1234480457}
   m_Layer: 0
-  m_Name: MovementCollisionBox
+  m_Name: PlayerCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2920,6 +2922,7 @@ MonoBehaviour:
   FirstShadow: {fileID: 1693878423}
   gravity: 0.03
   speed: 15
+  MaxHP: 0
   ZVelocity: 0
 --- !u!61 &1234480455
 BoxCollider2D:
@@ -2966,6 +2969,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1234480457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1234480452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4197bff5081781f42917cca1884abe12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHP: 10
+  CharacterSpriteObject: {fileID: 739285272}
 --- !u!1 &1285495478
 GameObject:
   m_ObjectHideFlags: 0

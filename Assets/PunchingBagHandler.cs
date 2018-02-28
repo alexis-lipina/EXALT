@@ -6,27 +6,29 @@ using UnityEngine;
 public class PunchingBagHandler : EntityHandler
 {
 
-    enum PunchingBagState { IDLE, RUN, FALL, JUMP, ATTACK };
+    enum PunchingBagState { IDLE, RUN, FALL, JUMP, ATTACK, WOUNDED };
     private PunchingBagState currentState;
 
     float xInput;
     float yInput;
     bool jumpPressed;
+    float cooldowntimer;
+    bool wasJustHit;
 
-
-
-    void Start ()
+    void Start()
     {
         xInput = 0;
         yInput = 0;
         currentState = PunchingBagState.IDLE;
         jumpPressed = false;
-	}
-	
-	void Update ()
+        wasJustHit = false;
+    }
+
+    void Update()
     {
         ExecuteState();
-	}
+        wasJustHit = false;
+    }
 
     public override void setXYAnalogInput(float x, float y)
     {
@@ -36,7 +38,7 @@ public class PunchingBagHandler : EntityHandler
 
     protected override void ExecuteState()
     {
-        switch ( currentState )
+        switch (currentState)
         {
             case (PunchingBagState.IDLE):
                 IdleState();
@@ -53,6 +55,9 @@ public class PunchingBagHandler : EntityHandler
             case PunchingBagState.ATTACK:
                 AttackState();
                 break;
+            case PunchingBagState.WOUNDED:
+                WoundedState();
+                break;
         }
     }
 
@@ -66,7 +71,11 @@ public class PunchingBagHandler : EntityHandler
         {
             currentState = PunchingBagState.RUN;
         }
-
+        if (wasJustHit)
+        {
+            cooldowntimer = 1;
+            currentState = PunchingBagState.WOUNDED;
+        }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
         {
@@ -83,7 +92,7 @@ public class PunchingBagHandler : EntityHandler
     {
         Debug.Log("Running!!!");
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        
+
 
         //===========| State Switching
 
@@ -102,6 +111,11 @@ public class PunchingBagHandler : EntityHandler
         {
             EntityPhysics.ZVelocity = 1;
             currentState = PunchingBagState.JUMP;
+        }
+        if (wasJustHit)
+        {
+            cooldowntimer = 1;
+            currentState = PunchingBagState.WOUNDED;
         }
         else
         {
@@ -169,10 +183,28 @@ public class PunchingBagHandler : EntityHandler
 
     }
 
+    private void WoundedState()
+    {
+        EntityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
+        cooldowntimer -= Time.deltaTime;
+        if (cooldowntimer < 0)
+        {
+            cooldowntimer = 0;
+            currentState = PunchingBagState.RUN;
+        }
+    }
+
 
     public void SetJumpPressed(bool value)
     {
         jumpPressed = value;
     }
+    public override void JustGotHit()
+    {
+        cooldowntimer = 1.0f;
+        wasJustHit = true;
+    }
+
+    
 
 }

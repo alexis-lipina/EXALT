@@ -36,6 +36,7 @@ public class PlayerHandler : EntityHandler
     private bool RightPressed;
     private bool JumpPressed;
     private bool AttackPressed;
+    private bool hasSwung;
 
     
     private float PlayerRunSpeed;
@@ -56,6 +57,7 @@ public class PlayerHandler : EntityHandler
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
         //Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
         characterAnimator = characterSprite.GetComponent<Animator>();
+        hasSwung = false;
 }
 
 
@@ -125,6 +127,7 @@ public class PlayerHandler : EntityHandler
 
         if (AttackPressed)
         {
+            hasSwung = false;
             Debug.Log("IDLE -> ATTACK");
             StateTimer = 0.25f;
             CurrentState = PlayerState.LIGHT_STAB;
@@ -196,6 +199,7 @@ public class PlayerHandler : EntityHandler
         if (AttackPressed)
         {
             //Debug.Log("RUN -> ATTACK");
+            hasSwung = false;
             StateTimer = 0.25f;
             CurrentState = PlayerState.LIGHT_STAB;
         }
@@ -269,14 +273,19 @@ public class PlayerHandler : EntityHandler
                 break;
         }
         //todo - test area for collision, if coll
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
-        foreach(Collider2D hit in hitobjects)
+        if (!hasSwung)
         {
-            if (hit.tag == "Enemy")
+            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
+            foreach (Collider2D hit in hitobjects)
             {
-                hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                if (hit.tag == "Enemy")
+                {
+                    hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                }
             }
+            hasSwung = true;
         }
+        
         StateTimer -= Time.deltaTime;
         if (StateTimer < 0)
         {

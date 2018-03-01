@@ -18,11 +18,12 @@ using UnityEngine;
 public class EntityAI : MonoBehaviour
 {
     [SerializeField] EntityHandler handler;
-    [SerializeField] GameObject player;
+    [SerializeField] GameObject target;
     [SerializeField] GameObject punchingBag; // physics object
     [SerializeField] NavigationManager navManager;
     [SerializeField] EnvironmentPhysics testStart;
     [SerializeField] EnvironmentPhysics testEnd;
+    [SerializeField] float detectionRange;
 
     private Stack<Vector2> coordpath;
     private Stack<EnvironmentPhysics> path;
@@ -45,7 +46,7 @@ public class EntityAI : MonoBehaviour
         }
 
         //----Test of god-awful pathfinding system
-        if(path == null )
+        if(path == null || !TargetInDetectionRange())
         {
             //do nothing
             handler.setXYAnalogInput(0, 0);
@@ -54,8 +55,8 @@ public class EntityAI : MonoBehaviour
         {
             if (path.Count == 0)
             {
-                Debug.Log("Moving toward player!");
-                MoveTowardPlayer();
+                Debug.Log("Moving toward target!");
+                MoveTowardTarget();
             }
             else
             {
@@ -82,9 +83,9 @@ public class EntityAI : MonoBehaviour
     }
 
     //=====================| AI Methods
-    private void MoveTowardPlayer()
+    private void MoveTowardTarget()
     {
-        Vector2 direction = new Vector2(player.transform.position.x - punchingBag.transform.position.x, player.transform.position.y - punchingBag.transform.position.y);
+        Vector2 direction = new Vector2(target.transform.position.x - punchingBag.transform.position.x, target.transform.position.y - punchingBag.transform.position.y);
         if (direction.magnitude > 2)
         {
             handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
@@ -109,12 +110,17 @@ public class EntityAI : MonoBehaviour
     // =================| Update path if target changes touched nav
     private void CheckForPathUpdate(GameObject obj, EnvironmentPhysics newDestination)
     {
-        if (obj == player)
+        if (obj == target)
         {
             Debug.Log("Success!!!");
             //recalculate path
             path = navManager.FindPath(handler.getEntityPhysics().getCurrentNavObject(), newDestination);
         }
+    }
+
+    private bool TargetInDetectionRange()
+    {
+        return Vector2.Distance(target.transform.position, punchingBag.transform.position) < detectionRange;
     }
 
 }

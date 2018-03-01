@@ -559,6 +559,12 @@ public class EntityColliderScript : MonoBehaviour
         currentHP -= damage;
         Debug.Log("Ow!!");
         StartCoroutine(TakeDamageFlash());
+        
+        if (currentHP <= 0)
+        {
+            GameObject.Destroy(gameObject.transform.parent.gameObject);
+        }
+        
     }
 
     IEnumerator TakeDamageFlash()
@@ -567,7 +573,7 @@ public class EntityColliderScript : MonoBehaviour
         entityHandler.JustGotHit();
         for (float i = 0; i < 2; i++)
         {
-            characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 1, 0);
+            characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
             yield return new WaitForSeconds(0.05f);
             characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
             yield return new WaitForSeconds(0.05f);

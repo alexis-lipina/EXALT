@@ -55,7 +55,7 @@ public class EntityAI : MonoBehaviour
         {
             if (path.Count == 0)
             {
-                Debug.Log("Moving toward target!");
+                //Debug.Log("Moving toward target!");
                 MoveTowardTarget();
             }
             else
@@ -112,7 +112,7 @@ public class EntityAI : MonoBehaviour
     {
         if (obj == target)
         {
-            Debug.Log("Success!!!");
+            //Debug.Log("Success!!!");
             //recalculate path
             path = navManager.FindPath(handler.getEntityPhysics().getCurrentNavObject(), newDestination);
         }

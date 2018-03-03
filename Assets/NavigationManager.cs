@@ -22,7 +22,7 @@ public class NavigationManager : MonoBehaviour
         Stack<Vector2> path = AStarSearch(start, destination);
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Pathfind failed!");
+            //Debug.Log("Pathfind failed!");
         }
         Debug.Log(path);
         return path;        
@@ -33,9 +33,9 @@ public class NavigationManager : MonoBehaviour
         Stack<EnvironmentPhysics> path = AStarSearchExceptItReturnsEnvironmentObjects(start, destination);
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Valid path not found");
+            //Debug.Log("Valid path not found");
         }
-        Debug.Log(path);
+        //Debug.Log(path);
         return path;
     }
     /*

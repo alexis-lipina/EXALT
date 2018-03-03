@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 /** Input Handler Script 
  *  This script receives input from the keyboard, and sends that input to the PlayerHandler
  *  @author Mark Lipina
@@ -12,7 +13,7 @@ public class InputHandler : MonoBehaviour
 
     [SerializeField] private GameObject playerHandlerObject;
     private PlayerHandler playerHandler;
-
+    
 
     void Start()
     {
@@ -36,6 +37,10 @@ public class InputHandler : MonoBehaviour
 
         //send input data
         playerHandler.setXYAnalogInput(x, y);
+        if (Input.GetAxisRaw("XBox One - Menu Button") > 0 || Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        }
        
     }
 }

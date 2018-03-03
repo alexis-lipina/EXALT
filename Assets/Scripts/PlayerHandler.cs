@@ -17,7 +17,8 @@ public class PlayerHandler : EntityHandler
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_STAB, HEAVY_STAB, LIGHT_SWING, HEAVY_SWING};
 
     const string IDLE_Anim = "Anim_CharacterTest1";
-    const string RUN_Anim = "Anim_CharacterTest2";
+    const string RUN_Anim = "TempCharacterRun";
+    const string RUN_Anim_flip = "TempCharacterRunFlipped";
     const string JUMP_Anim = "Anim_CharacterTest3";
     const string SWING_NORTH_Anim = "PlayerSwingNorth";
     const string SWING_SOUTH_Anim = "PlayerSwingSouth";
@@ -44,8 +45,13 @@ public class PlayerHandler : EntityHandler
     private float yInput;   
     private float JumpImpulse;
     private float StateTimer;
+    private bool isFlipped;
 
-    
+
+    void Awake()
+    {
+        this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
+    }
 
 	void Start ()
     {
@@ -83,6 +89,16 @@ public class PlayerHandler : EntityHandler
                 PlayerIdle();
                 break;
             case (PlayerState.RUN):
+                if (xInput > 0 && isFlipped)
+                {
+                    flipCharacterSprite();
+                    isFlipped = false;
+                }
+                if (xInput < 0 && !isFlipped)
+                {
+                    flipCharacterSprite();
+                    isFlipped = true;
+                }
                 characterAnimator.Play(RUN_Anim);
                 PlayerRun();
                 break;
@@ -91,6 +107,11 @@ public class PlayerHandler : EntityHandler
                 PlayerJump();
                 break;
             case (PlayerState.LIGHT_STAB):
+                if (isFlipped)
+                {
+                    flipCharacterSprite();
+                    isFlipped = false;
+                }
                 PlayerLightStab();
                 break;
             case (PlayerState.HEAVY_STAB):
@@ -103,6 +124,13 @@ public class PlayerHandler : EntityHandler
                 PlayerHeavySwing();
                 break;
         }
+    }
+
+    private void flipCharacterSprite()
+    {
+        Vector3 theScale = characterSprite.transform.localScale;
+        theScale.x *= -1;
+        characterSprite.transform.localScale = theScale;
     }
 
     //================================================================================| STATE METHODS |
@@ -168,7 +196,7 @@ public class PlayerHandler : EntityHandler
         {
             currentFaceDirection = FaceDirection.WEST;
         }
-
+        
         //-------| Z Azis Traversal 
         // handles falling if player is above ground
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();

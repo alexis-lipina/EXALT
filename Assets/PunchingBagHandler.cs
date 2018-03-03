@@ -8,12 +8,22 @@ public class PunchingBagHandler : EntityHandler
 
     enum PunchingBagState { IDLE, RUN, FALL, JUMP, ATTACK, WOUNDED };
     private PunchingBagState currentState;
+    [SerializeField] private bool isCompanion;
 
     float xInput;
     float yInput;
     bool jumpPressed;
     float cooldowntimer;
     bool wasJustHit;
+
+    void Awake()
+    {
+        if (isCompanion)
+        {
+            this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
+        }
+
+    }
 
     void Start()
     {
@@ -66,7 +76,7 @@ public class PunchingBagHandler : EntityHandler
     private void IdleState()
     {
         //===========| State Switching
-        Debug.Log("IDLE!!!");
+        //Debug.Log("IDLE!!!");
         if (Mathf.Abs(xInput) > 0.1 || Mathf.Abs(yInput) > 0.1)
         {
             currentState = PunchingBagState.RUN;
@@ -90,7 +100,7 @@ public class PunchingBagHandler : EntityHandler
 
     private void RunState()
     {
-        Debug.Log("Running!!!");
+        //Debug.Log("Running!!!");
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
 
@@ -125,7 +135,7 @@ public class PunchingBagHandler : EntityHandler
     }
     private void FallState()
     {
-        Debug.Log("Falling!!!");
+        //Debug.Log("Falling!!!");
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         EntityPhysics.FreeFall();
 
@@ -153,7 +163,7 @@ public class PunchingBagHandler : EntityHandler
 
     private void JumpState()
     {
-        Debug.Log("JUMPING!!!");
+        //Debug.Log("JUMPING!!!");
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         EntityPhysics.FreeFall();
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();

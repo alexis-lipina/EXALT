@@ -50,7 +50,7 @@ public class PlayerHandler : EntityHandler
 
     void Awake()
     {
-        this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
+        //this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
     }
 
 	void Start ()

@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PunchingBagHandler : EntityHandler
+public class TestEnemyHandler : EntityHandler
 {
 
-    enum PunchingBagState { IDLE, RUN, FALL, JUMP, ATTACK, WOUNDED };
-    private PunchingBagState currentState;
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, WOUNDED };
+    private TestEnemyState currentState;
     [SerializeField] private bool isCompanion;
 
     float xInput;
@@ -23,14 +23,13 @@ public class PunchingBagHandler : EntityHandler
             this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         }
         */
-
     }
 
     void Start()
     {
         xInput = 0;
         yInput = 0;
-        currentState = PunchingBagState.IDLE;
+        currentState = TestEnemyState.IDLE;
         jumpPressed = false;
         wasJustHit = false;
     }
@@ -51,22 +50,22 @@ public class PunchingBagHandler : EntityHandler
     {
         switch (currentState)
         {
-            case (PunchingBagState.IDLE):
+            case (TestEnemyState.IDLE):
                 IdleState();
                 break;
-            case (PunchingBagState.RUN):
+            case (TestEnemyState.RUN):
                 RunState();
                 break;
-            case (PunchingBagState.FALL):
+            case (TestEnemyState.FALL):
                 FallState();
                 break;
-            case (PunchingBagState.JUMP):
+            case (TestEnemyState.JUMP):
                 JumpState();
                 break;
-            case PunchingBagState.ATTACK:
+            case TestEnemyState.ATTACK:
                 AttackState();
                 break;
-            case PunchingBagState.WOUNDED:
+            case TestEnemyState.WOUNDED:
                 WoundedState();
                 break;
         }
@@ -80,18 +79,18 @@ public class PunchingBagHandler : EntityHandler
         //Debug.Log("IDLE!!!");
         if (Mathf.Abs(xInput) > 0.1 || Mathf.Abs(yInput) > 0.1)
         {
-            currentState = PunchingBagState.RUN;
+            currentState = TestEnemyState.RUN;
         }
         if (wasJustHit)
         {
             cooldowntimer = 1;
-            currentState = PunchingBagState.WOUNDED;
+            currentState = TestEnemyState.WOUNDED;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
         {
             EntityPhysics.ZVelocity = 0;
-            currentState = PunchingBagState.FALL;
+            currentState = TestEnemyState.FALL;
         }
         else
         {
@@ -110,23 +109,23 @@ public class PunchingBagHandler : EntityHandler
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
         {
             EntityPhysics.SavePosition();
-            currentState = PunchingBagState.IDLE;
+            currentState = TestEnemyState.IDLE;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
         {
             EntityPhysics.ZVelocity = 0;
-            currentState = PunchingBagState.FALL;
+            currentState = TestEnemyState.FALL;
         }
         if (jumpPressed)
         {
             EntityPhysics.ZVelocity = 1;
-            currentState = PunchingBagState.JUMP;
+            currentState = TestEnemyState.JUMP;
         }
         if (wasJustHit)
         {
             cooldowntimer = 1;
-            currentState = PunchingBagState.WOUNDED;
+            currentState = TestEnemyState.WOUNDED;
         }
         else
         {
@@ -151,12 +150,12 @@ public class PunchingBagHandler : EntityHandler
             {
                 //EntityPhysics.SavePosition();
                 //Debug.Log("JUMP -> IDLE");
-                currentState = PunchingBagState.IDLE;
+                currentState = TestEnemyState.IDLE;
             }
             else
             {
                 //Debug.Log("JUMP -> RUN");
-                currentState = PunchingBagState.RUN;
+                currentState = TestEnemyState.RUN;
             }
         }
 
@@ -179,12 +178,12 @@ public class PunchingBagHandler : EntityHandler
                 {
                     EntityPhysics.SavePosition();
                     //Debug.Log("JUMP -> IDLE");
-                    currentState = PunchingBagState.IDLE;
+                    currentState = TestEnemyState.IDLE;
                 }
                 else
                 {
                     //Debug.Log("JUMP -> RUN");
-                    currentState = PunchingBagState.RUN;
+                    currentState = TestEnemyState.RUN;
                 }
             }
     }
@@ -201,7 +200,7 @@ public class PunchingBagHandler : EntityHandler
         if (cooldowntimer < 0)
         {
             cooldowntimer = 0;
-            currentState = PunchingBagState.RUN;
+            currentState = TestEnemyState.RUN;
         }
     }
 
@@ -216,6 +215,6 @@ public class PunchingBagHandler : EntityHandler
         wasJustHit = true;
     }
 
-    
+
 
 }

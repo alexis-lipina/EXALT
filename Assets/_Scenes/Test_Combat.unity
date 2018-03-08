@@ -1093,7 +1093,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntityPhysics: {fileID: 1683500583}
+  characterSprite: {fileID: 1446746136}
   isCompanion: 0
+  tempAttackSprite:
+  - {fileID: 21300000, guid: fa19c8893d9637b43b903660d25690b1, type: 3}
+  - {fileID: 21300000, guid: 6fd1a7bf78f0a884189f729ab4c02a2c, type: 3}
+  - {fileID: 21300000, guid: 440f66db208e0e24fa2ed8f3ecba3fd7, type: 3}
+  - {fileID: 21300000, guid: 2f24329d83b216346bb4066d3d4f156c, type: 3}
+  tempReadySprite:
+  - {fileID: 21300000, guid: ff75d61620de17c479f5cf37b48303d1, type: 3}
+  - {fileID: 21300000, guid: 62534b87b92b82f488dc6d6021acea8b, type: 3}
+  - {fileID: 21300000, guid: 7622bc38893715748a6a58002ab87806, type: 3}
+  - {fileID: 21300000, guid: 30d0c931b6cd0a841bced052446d4506, type: 3}
+  tempSwingSprite:
+  - {fileID: 21300000, guid: 4ecd5517b6055564d94be42a44ab5626, type: 3}
+  - {fileID: 21300000, guid: d3b6263085f5ece438bf3ebdb8d961ec, type: 3}
+  - {fileID: 21300000, guid: 2c60e69e2b9ada343b7de95a27f10434, type: 3}
+  - {fileID: 21300000, guid: d26eca6e9ed804441b18655e5b4536ee, type: 3}
+  tempRunSprite:
+  - {fileID: 21300000, guid: 6532ea4738028c7459dbace96ec733ae, type: 3}
+  - {fileID: 21300000, guid: f7293b50ea904ac45979f33f2586d782, type: 3}
+  - {fileID: 21300000, guid: 83719dc72862a074fa46649b6c5b881d, type: 3}
+  - {fileID: 21300000, guid: f53b087b6a335b94eae1459f1164d2af, type: 3}
+  tempIdleSprite:
+  - {fileID: 21300000, guid: 4e44f452791ac164fbe720d38d3d70b7, type: 3}
+  - {fileID: 21300000, guid: bab9be6cb1a3c7c4da6cfed067db085a, type: 3}
+  - {fileID: 21300000, guid: c5a8edc17624a414990b0c36fb022174, type: 3}
+  - {fileID: 21300000, guid: 44466c23a5b38d24197d106c73e1a2a8, type: 3}
+  tempRecoilSprite:
+  - {fileID: 21300000, guid: cb96a6fdb9665344e876a6790f1cf7cd, type: 3}
+  - {fileID: 21300000, guid: cb96a6fdb9665344e876a6790f1cf7cd, type: 3}
+  - {fileID: 21300000, guid: cb96a6fdb9665344e876a6790f1cf7cd, type: 3}
+  - {fileID: 21300000, guid: cb96a6fdb9665344e876a6790f1cf7cd, type: 3}
 --- !u!4 &1379702482
 Transform:
   m_ObjectHideFlags: 0
@@ -1255,14 +1286,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   navManager: {fileID: 957900023}
-  playerSpriteZOffset: 1.4
+  playerSpriteZOffset: 0.4
   characterSprite: {fileID: 1446746135}
   environmentHandler: {fileID: 1894904265}
   handlerObject: {fileID: 1379702480}
   FirstShadow: {fileID: 902852690}
   gravity: 0.03
   speed: 8
-  MaxHP: 5
+  MaxHP: 10
   ZVelocity: 0
 --- !u!61 &1683500585
 BoxCollider2D:

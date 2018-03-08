@@ -5,10 +5,31 @@ using UnityEngine;
 
 public class TestEnemyHandler : EntityHandler
 {
+    [SerializeField] private SpriteRenderer characterSprite;
+
 
     enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, WOUNDED };
     private TestEnemyState currentState;
     [SerializeField] private bool isCompanion;
+    [SerializeField] private Sprite[] tempAttackSprite;
+    [SerializeField] private Sprite[] tempReadySprite;
+    [SerializeField] private Sprite[] tempSwingSprite;
+    [SerializeField] private Sprite[] tempRunSprite;
+    [SerializeField] private Sprite[] tempIdleSprite;
+    [SerializeField] private Sprite[] tempRecoilSprite;  
+
+    
+
+
+    private enum TempTexDirection
+    {
+        EAST=0,
+        NORTH=1,
+        WEST=2,
+        SOUTH=3
+    }
+    private TempTexDirection tempDirection;
+
 
     float xInput;
     float yInput;
@@ -32,6 +53,7 @@ public class TestEnemyHandler : EntityHandler
         currentState = TestEnemyState.IDLE;
         jumpPressed = false;
         wasJustHit = false;
+        tempDirection = TempTexDirection.EAST;
     }
 
     void Update()
@@ -48,24 +70,43 @@ public class TestEnemyHandler : EntityHandler
 
     protected override void ExecuteState()
     {
+        Vector2 tempDir = new Vector2(xInput, yInput).normalized;
+        if (tempDir.x > Math.Abs(tempDir.y))
+        {
+            tempDirection = TempTexDirection.EAST;
+        }
+        else if (-tempDir.x > Math.Abs(tempDir.y))
+        {
+            tempDirection = TempTexDirection.WEST;
+        }
+        else if (tempDir.y > 0) { tempDirection = TempTexDirection.NORTH; }
+        else if (tempDir.y < 0) { tempDirection = TempTexDirection.SOUTH; }
+
+
         switch (currentState)
         {
             case (TestEnemyState.IDLE):
+                characterSprite.sprite = tempIdleSprite[(int)tempDirection];
                 IdleState();
                 break;
             case (TestEnemyState.RUN):
+                characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 RunState();
                 break;
             case (TestEnemyState.FALL):
+                characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 FallState();
                 break;
             case (TestEnemyState.JUMP):
+                characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 JumpState();
                 break;
             case TestEnemyState.ATTACK:
+                characterSprite.sprite = tempAttackSprite[(int)tempDirection];
                 AttackState();
                 break;
             case TestEnemyState.WOUNDED:
+                characterSprite.sprite = tempRecoilSprite[(int)tempDirection];
                 WoundedState();
                 break;
         }
@@ -204,6 +245,34 @@ public class TestEnemyHandler : EntityHandler
         }
     }
 
+    /*
+    private void DrawSprite()
+    {
+        switch (currentState)
+        {
+            case (TestEnemyState.IDLE):
+                characterSprite.sprite = tempIdleSprite[(int)tempDirection];
+                break;
+            case (TestEnemyState.RUN):
+                characterSprite.sprite = tempRunSprite[(int)tempDirection];
+                RunState();
+                break;
+            case (TestEnemyState.FALL):
+                characterSprite.sprite = tempIdleSprite[(int)tempDirection];
+                FallState();
+                break;
+            case (TestEnemyState.JUMP):
+                JumpState();
+                break;
+            case TestEnemyState.ATTACK:
+                AttackState();
+                break;
+            case TestEnemyState.WOUNDED:
+                WoundedState();
+                break;
+        }
+    }
+    */
 
     public void SetJumpPressed(bool value)
     {

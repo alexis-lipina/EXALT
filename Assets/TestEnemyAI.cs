@@ -15,17 +15,16 @@ using UnityEngine;
 /// In future implementations, this might instead serve as a middleman between
 /// an "overlord" AI, but who knows. Who knows indeed.
 /// </summary>
-public class PunchingBagAI : EntityAI
+public class TestEnemyAI : EntityAI
 {
     //[SerializeField] EntityHandler handler;
     [SerializeField] GameObject target;
-    //[SerializeField] GameObject punchingBag; // physics object
-    //[SerializeField] NavigationManager navManager;
-    /*[SerializeField] EnvironmentPhysics testStart;
-    [SerializeField] EnvironmentPhysics testEnd;*/
     [SerializeField] float detectionRange;
     private Stack<Vector2> coordpath;
     private Stack<EnvironmentPhysics> path;
+    private TestEnemyHandler testhandler;
+
+
     private bool pathfound;
 
     void Start()
@@ -33,24 +32,25 @@ public class PunchingBagAI : EntityAI
         pathfound = false;
         //TestAwfulPathfindingSystem();
         navManager.entityChangePositionDelegate += CheckForPathUpdate;
+        testhandler = (TestEnemyHandler) handler;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
         //----Test of god-awful pathfinding system
         if (path == null || !TargetInDetectionRange())
         {
             //do nothing
-            handler.setXYAnalogInput(0, 0);
+            testhandler.setXYAnalogInput(0, 0);
         }
         else
         {
             if (path.Count == 0)
             {
                 //Debug.Log("Moving toward target!");
-                MoveTowardTarget();
+                MoveToAttackTarget();
             }
             else
             {
@@ -68,9 +68,9 @@ public class PunchingBagAI : EntityAI
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
                     if (path.Peek().getTopHeight() > handler.getEntityPhysics().GetEntityElevation()) //Needs to jump
                     {
-                        handler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
+                        testhandler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
                     }
-                    else { handler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(false); }
+                    else { testhandler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(false); }
                 }
             }
         }
@@ -82,18 +82,31 @@ public class PunchingBagAI : EntityAI
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
         if (direction.magnitude > 2)
         {
-            handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+            testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }
         else
         {
-            handler.setXYAnalogInput(0, 0);
+            testhandler.setXYAnalogInput(0, 0);
         }
     }
 
     private void MoveTowardPoint(Vector2 destination)
     {
         Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
-        handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+    }
+
+    private void MoveToAttackTarget()
+    {
+        Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
+        if (direction.magnitude > 2)
+        {
+            testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        }
+        else
+        {
+            testhandler.SetAttackPressed(true);
+        }
     }
 
     // =================| Update path if target changes touched nav

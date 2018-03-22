@@ -159,7 +159,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 458810591}
-  - component: {fileID: 458810592}
+  - component: {fileID: 458810593}
   m_Layer: 0
   m_Name: TestEnemyAI
   m_TagString: Untagged
@@ -180,7 +180,7 @@ Transform:
   m_Father: {fileID: 1576746760}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &458810592
+--- !u!114 &458810593
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -188,15 +188,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 458810590}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06d0bfd36d39d264ca7eb6c1dc5ee9ce, type: 3}
+  m_Script: {fileID: 11500000, guid: 05c93550f71cb804384bb8221078f634, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   handler: {fileID: 1379702481}
-  target: {fileID: 1234480452}
-  punchingBag: {fileID: 1683500581}
+  entityPhysics: {fileID: 1683500583}
   navManager: {fileID: 957900023}
-  testStart: {fileID: 0}
-  testEnd: {fileID: 0}
+  target: {fileID: 1234480452}
   detectionRange: 15
 --- !u!1 &495436333
 GameObject:
@@ -582,11 +580,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handler: {fileID: 880882929}
-  target: {fileID: 1234480452}
-  punchingBag: {fileID: 1798629017}
+  entityPhysics: {fileID: 0}
   navManager: {fileID: 957900023}
-  testStart: {fileID: 0}
-  testEnd: {fileID: 0}
+  target: {fileID: 1234480452}
   detectionRange: 1000
 --- !u!1 &880882928
 GameObject:
@@ -944,7 +940,7 @@ GameObject:
   - component: {fileID: 1204704181}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Friend
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1018,7 +1014,7 @@ MonoBehaviour:
   FirstShadow: {fileID: 1693878423}
   gravity: 0.03
   speed: 15
-  MaxHP: 20
+  MaxHP: 5
   ZVelocity: 0
 --- !u!61 &1234480455
 BoxCollider2D:

@@ -34,6 +34,11 @@ public class TestEnemyHandler : EntityHandler
     float xInput;
     float yInput;
     bool jumpPressed;
+
+    bool attackPressed; //temporary, probably
+    float attackTime;
+    bool hasSwung;
+
     float cooldowntimer;
     bool wasJustHit;
 
@@ -53,6 +58,7 @@ public class TestEnemyHandler : EntityHandler
         currentState = TestEnemyState.IDLE;
         jumpPressed = false;
         wasJustHit = false;
+        hasSwung = false;
         tempDirection = TempTexDirection.EAST;
     }
 
@@ -60,6 +66,8 @@ public class TestEnemyHandler : EntityHandler
     {
         ExecuteState();
         wasJustHit = false;
+        jumpPressed = false;
+        attackPressed = false;
     }
 
     public override void setXYAnalogInput(float x, float y)
@@ -70,17 +78,7 @@ public class TestEnemyHandler : EntityHandler
 
     protected override void ExecuteState()
     {
-        Vector2 tempDir = new Vector2(xInput, yInput).normalized;
-        if (tempDir.x > Math.Abs(tempDir.y))
-        {
-            tempDirection = TempTexDirection.EAST;
-        }
-        else if (-tempDir.x > Math.Abs(tempDir.y))
-        {
-            tempDirection = TempTexDirection.WEST;
-        }
-        else if (tempDir.y > 0) { tempDirection = TempTexDirection.NORTH; }
-        else if (tempDir.y < 0) { tempDirection = TempTexDirection.SOUTH; }
+        
 
 
         switch (currentState)
@@ -142,6 +140,17 @@ public class TestEnemyHandler : EntityHandler
     private void RunState()
     {
         //Debug.Log("Running!!!");
+        Vector2 tempDir = new Vector2(xInput, yInput).normalized;
+        if (tempDir.x > Math.Abs(tempDir.y))
+        {
+            tempDirection = TempTexDirection.EAST;
+        }
+        else if (-tempDir.x > Math.Abs(tempDir.y))
+        {
+            tempDirection = TempTexDirection.WEST;
+        }
+        else if (tempDir.y > 0) { tempDirection = TempTexDirection.NORTH; }
+        else if (tempDir.y < 0) { tempDirection = TempTexDirection.SOUTH; }
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
 
@@ -151,6 +160,11 @@ public class TestEnemyHandler : EntityHandler
         {
             EntityPhysics.SavePosition();
             currentState = TestEnemyState.IDLE;
+        }
+        if (attackPressed)
+        {
+            attackTime = 0;
+            currentState = TestEnemyState.ATTACK;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
@@ -231,7 +245,58 @@ public class TestEnemyHandler : EntityHandler
 
     private void AttackState()
     {
+        Debug.Log("Attacking!");
+        Vector2 swingboxpos = Vector2.zero;
+        switch (tempDirection)
+        {
+            case TempTexDirection.EAST:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
+                break;
+            case TempTexDirection.WEST:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
+                break;
+            case TempTexDirection.NORTH:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                break;
+            case TempTexDirection.SOUTH:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
+                break;
+        }
+        //todo - test area for collision, if coll
+        if (!hasSwung)
+        {
+            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
+            foreach (Collider2D hit in hitobjects)
+            {
+                if (hit.tag == "Friend")
+                {
+                    hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                }
+            }
+            hasSwung = true;
+        }
+        attackTime += Time.deltaTime;
+        if (attackTime > 1.0)
+        {
+            currentState = TestEnemyState.IDLE;
+        }
 
+    }
+    //telegraph about to swing, called in AttackState()
+    private void AttackSubState_Ready()
+    {
+
+    }
+    //flash attack
+    private void AttackSubState_Swing()
+    {
+
+    }
+    
+    //follow through swing animation
+    private void AttackSubState_FollowThrough()
+    {
+        //continue animation
     }
 
     private void WoundedState()
@@ -274,6 +339,12 @@ public class TestEnemyHandler : EntityHandler
     }
     */
 
+
+    public void SetAttackPressed(bool value)
+    {
+        attackPressed = value;
+    }
+    
     public void SetJumpPressed(bool value)
     {
         jumpPressed = value;

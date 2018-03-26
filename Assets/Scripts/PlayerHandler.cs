@@ -391,7 +391,7 @@ public class PlayerHandler : EntityHandler
 
     public override void JustGotHit()
     {
-        throw new NotImplementedException();
+        Debug.Log("Player: Ow!");
     }
 
 

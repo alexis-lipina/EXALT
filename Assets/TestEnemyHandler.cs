@@ -36,11 +36,10 @@ public class TestEnemyHandler : EntityHandler
     bool jumpPressed;
 
     bool attackPressed; //temporary, probably
-    float attackTime;
     bool hasSwung;
 
-    float cooldowntimer;
     bool wasJustHit;
+    float stateTimer;
 
     void Awake()
     {
@@ -78,9 +77,6 @@ public class TestEnemyHandler : EntityHandler
 
     protected override void ExecuteState()
     {
-        
-
-
         switch (currentState)
         {
             case (TestEnemyState.IDLE):
@@ -99,9 +95,17 @@ public class TestEnemyHandler : EntityHandler
                 characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 JumpState();
                 break;
+            case TestEnemyState.READY:
+                characterSprite.sprite = tempReadySprite[(int)tempDirection];
+                ReadyState();
+                break;
             case TestEnemyState.ATTACK:
                 characterSprite.sprite = tempAttackSprite[(int)tempDirection];
                 AttackState();
+                break;
+            case TestEnemyState.SWING:
+                characterSprite.sprite = tempSwingSprite[(int)tempDirection];
+                SwingState();
                 break;
             case TestEnemyState.WOUNDED:
                 characterSprite.sprite = tempRecoilSprite[(int)tempDirection];
@@ -122,7 +126,7 @@ public class TestEnemyHandler : EntityHandler
         }
         if (wasJustHit)
         {
-            cooldowntimer = 1;
+            stateTimer = 1;
             currentState = TestEnemyState.WOUNDED;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
@@ -163,8 +167,8 @@ public class TestEnemyHandler : EntityHandler
         }
         if (attackPressed)
         {
-            attackTime = 0;
-            currentState = TestEnemyState.ATTACK;
+            stateTimer = 0;
+            currentState = TestEnemyState.READY;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
@@ -179,7 +183,7 @@ public class TestEnemyHandler : EntityHandler
         }
         if (wasJustHit)
         {
-            cooldowntimer = 1;
+            stateTimer = 0.5f;
             currentState = TestEnemyState.WOUNDED;
         }
         else
@@ -245,6 +249,7 @@ public class TestEnemyHandler : EntityHandler
 
     private void AttackState()
     {
+        
         Debug.Log("Attacking!");
         Vector2 swingboxpos = Vector2.zero;
         switch (tempDirection)
@@ -268,44 +273,96 @@ public class TestEnemyHandler : EntityHandler
             Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
             foreach (Collider2D hit in hitobjects)
             {
-                if (hit.tag == "Friend")
+                EntityColliderScript hitEntity = hit.gameObject.GetComponent<EntityColliderScript>();
+                if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > EntityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < EntityPhysics.GetEntityElevation() + EntityPhysics.GetEntityHeight())
                 {
                     hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                    Debug.Log("Hit player!");
                 }
             }
             hasSwung = true;
         }
-        attackTime += Time.deltaTime;
-        if (attackTime > 1.0)
+        stateTimer += Time.deltaTime;
+        if (stateTimer > 0.1)
         {
-            currentState = TestEnemyState.IDLE;
+            stateTimer = 0;
+            currentState = TestEnemyState.SWING;
+            hasSwung = false;
         }
+        
 
+
+        /*
+        Debug.Log("Attacking!");
+        Vector2 swingboxpos = Vector2.zero;
+        switch (tempDirection)
+        {
+            case TempTexDirection.EAST:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
+                break;
+            case TempTexDirection.WEST:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
+                break;
+            case TempTexDirection.NORTH:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                break;
+            case TempTexDirection.SOUTH:
+                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
+                break;
+        }
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
+        foreach (Collider2D hit in hitobjects)
+        {
+            EntityColliderScript hitEntity = hit.gameObject.GetComponent<EntityColliderScript>();
+            if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > EntityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < EntityPhysics.GetEntityElevation() + EntityPhysics.GetEntityHeight())
+            {
+                hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                Debug.Log("Hit player!");
+            }
+        }
+        currentState = TestEnemyState.SWING;
+        */
     }
     //telegraph about to swing, called in AttackState()
-    private void AttackSubState_Ready()
+    private void ReadyState()
     {
-
+        Debug.Log("ReadyState");
+        stateTimer += Time.deltaTime;
+        if (stateTimer < 0.5) //if 500 ms have passed
+        {
+            //do nothing
+        }
+        else
+        {
+            stateTimer = 0;
+            currentState = TestEnemyState.ATTACK;
+        }
     }
-    //flash attack
-    private void AttackSubState_Swing()
-    {
 
+    //flash attack
+    private void SwingState()
+    {
+        stateTimer += Time.deltaTime;
+        if (stateTimer < 0.5) //if 500 ms have passed
+        {
+            //do nothing
+        }
+        else
+        {
+            stateTimer = 0;
+            currentState = TestEnemyState.RUN;
+        }
+        Debug.Log("SwingState");
     }
     
-    //follow through swing animation
-    private void AttackSubState_FollowThrough()
-    {
-        //continue animation
-    }
-
+    
     private void WoundedState()
     {
         EntityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
-        cooldowntimer -= Time.deltaTime;
-        if (cooldowntimer < 0)
+        stateTimer -= Time.deltaTime;
+        if (stateTimer < 0)
         {
-            cooldowntimer = 0;
+            stateTimer = 0;
             currentState = TestEnemyState.RUN;
         }
     }
@@ -351,7 +408,7 @@ public class TestEnemyHandler : EntityHandler
     }
     public override void JustGotHit()
     {
-        cooldowntimer = 1.0f;
+        stateTimer = 1.0f;
         wasJustHit = true;
     }
 

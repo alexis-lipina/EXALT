@@ -557,7 +557,6 @@ public class EntityColliderScript : MonoBehaviour
     {
         hasBeenHit = true;
         currentHP -= damage;
-        Debug.Log("Ow!!");
         StartCoroutine(TakeDamageFlash());
         
         if (currentHP <= 0)

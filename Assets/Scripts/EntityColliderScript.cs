@@ -107,6 +107,11 @@ public class EntityColliderScript : MonoBehaviour
     }
 
     //=====================================================================| MOVEMENT 
+    /// <summary>
+    /// Calls MoveWithCollision but with Time.deltaTime and "speed" field accounted for 
+    /// </summary>
+    /// <param name="xInput"></param>
+    /// <param name="yInput"></param>
     public void MoveCharacterPositionPhysics(float xInput, float yInput)
     {
         this.MoveWithCollision(xInput * speed * Time.deltaTime, yInput * speed * Time.deltaTime);
@@ -304,7 +309,7 @@ public class EntityColliderScript : MonoBehaviour
                 {
                     //check to see if the hit is an east or west wall (aka a problem) 
                     //=====| basically figure out if the entity hit by a box is a potential problem. Maybe if it's not currently being touched, since if it were we'd be in a corner and that'd be handled?
-                    if (hit.transform.gameObject.tag == "Environment" && 
+                    if ((hit.transform.gameObject.tag == "Environment" ) && //TODO: added in entity collision
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
@@ -598,5 +603,13 @@ public class EntityColliderScript : MonoBehaviour
     public void SetEntityElevation(float e)
     {
         entityElevation = e;
+    }
+    public float GetCurrentHealth()
+    {
+        return currentHP;
+    }
+    public float GetMaxHealth()
+    {
+        return MaxHP;
     }
 }

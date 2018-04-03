@@ -99,12 +99,13 @@ public class TestEnemyAI : EntityAI
     private void MoveToAttackTarget()
     {
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
-        if (direction.magnitude > 2)
+        if (direction.magnitude > 4)
         {
             testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }
         else
         {
+            testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
             testhandler.SetAttackPressed(true);
         }
     }

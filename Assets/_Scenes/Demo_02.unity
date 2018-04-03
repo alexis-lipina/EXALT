@@ -772,11 +772,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handler: {fileID: 1379702481}
-  target: {fileID: 1234480452}
-  punchingBag: {fileID: 1683500581}
+  entityPhysics: {fileID: 1683500583}
   navManager: {fileID: 957900023}
-  testStart: {fileID: 890269904}
-  testEnd: {fileID: 889697845}
+  target: {fileID: 1234480452}
   detectionRange: 15
 --- !u!1 &495436333
 GameObject:
@@ -1534,11 +1532,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handler: {fileID: 880882929}
-  target: {fileID: 1234480452}
-  punchingBag: {fileID: 1798629017}
+  entityPhysics: {fileID: 1798629019}
   navManager: {fileID: 957900023}
-  testStart: {fileID: 890269904}
-  testEnd: {fileID: 889697845}
+  target: {fileID: 1234480452}
   detectionRange: 1000
 --- !u!1 &880882928
 GameObject:

@@ -29,8 +29,8 @@ public class TestEnemyHandler : EntityHandler
         SOUTH=3
     }
     private TempTexDirection tempDirection;
-
-
+    private const float AttackMovementSpeed = 0.2f;
+    private float attackCoolDown;
     float xInput;
     float yInput;
     bool jumpPressed;
@@ -183,7 +183,7 @@ public class TestEnemyHandler : EntityHandler
         }
         if (wasJustHit)
         {
-            stateTimer = 0.5f;
+            stateTimer = 0.2f;
             currentState = TestEnemyState.WOUNDED;
         }
         else
@@ -256,15 +256,19 @@ public class TestEnemyHandler : EntityHandler
         {
             case TempTexDirection.EAST:
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
+                EntityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
                 break;
             case TempTexDirection.WEST:
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
+                EntityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
                 break;
             case TempTexDirection.NORTH:
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                EntityPhysics.MoveWithCollision(0, AttackMovementSpeed);
                 break;
             case TempTexDirection.SOUTH:
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
+                EntityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
                 break;
         }
         //todo - test area for collision, if coll
@@ -408,7 +412,7 @@ public class TestEnemyHandler : EntityHandler
     }
     public override void JustGotHit()
     {
-        stateTimer = 1.0f;
+        //stateTimer = 1.0f;
         wasJustHit = true;
     }
 

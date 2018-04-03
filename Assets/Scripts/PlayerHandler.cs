@@ -26,6 +26,8 @@ public class PlayerHandler : EntityHandler
     const string SWING_WEST_Anim = "PlayerSwingWest";
 
 
+    private const float AttackMovementSpeed = 0.2f;
+
 
 
     private PlayerState CurrentState;
@@ -38,6 +40,8 @@ public class PlayerHandler : EntityHandler
     private bool JumpPressed;
     private bool AttackPressed;
     private bool hasSwung;
+    
+
 
     
     private float PlayerRunSpeed;
@@ -46,7 +50,7 @@ public class PlayerHandler : EntityHandler
     private float JumpImpulse;
     private float StateTimer;
     private bool isFlipped;
-
+    private List<int> hitEnemies;
 
     void Awake()
     {
@@ -64,7 +68,8 @@ public class PlayerHandler : EntityHandler
         //Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
         characterAnimator = characterSprite.GetComponent<Animator>();
         hasSwung = false;
-}
+        hitEnemies = new List<int>();
+    }
 
 
     void Update ()
@@ -78,6 +83,7 @@ public class PlayerHandler : EntityHandler
         AttackPressed = false;
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
+        
     }
 
     protected override void ExecuteState()
@@ -112,6 +118,7 @@ public class PlayerHandler : EntityHandler
                     flipCharacterSprite();
                     isFlipped = false;
                 }
+                Debug.Log(hitEnemies.Count);
                 PlayerLightStab();
                 break;
             case (PlayerState.HEAVY_STAB):
@@ -285,22 +292,27 @@ public class PlayerHandler : EntityHandler
         {
             case FaceDirection.EAST:
                 characterAnimator.Play(SWING_EAST_Anim);
+                EntityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
                 break;
             case FaceDirection.WEST:
                 characterAnimator.Play(SWING_WEST_Anim);
+                EntityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
                 break;
             case FaceDirection.NORTH:
                 characterAnimator.Play(SWING_NORTH_Anim);
+                EntityPhysics.MoveWithCollision(0, AttackMovementSpeed);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
                 break;
             case FaceDirection.SOUTH:
                 characterAnimator.Play(SWING_SOUTH_Anim);
+                EntityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
                 break;
         }
-        //todo - test area for collision, if coll
+        //-----| Hitbox - the one directly below only flashes for one frame 
+        /*
         if (!hasSwung)
         {
             Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
@@ -313,11 +325,29 @@ public class PlayerHandler : EntityHandler
             }
             hasSwung = true;
         }
-        
+        */
+        //-----| Hitbox - This one is active for the entire time and only should deal damage to a given enemy once.
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
+        foreach (Collider2D hit in hitobjects)
+        {
+            if (hit.tag == "Enemy")
+            {
+                int temp = hit.GetComponent<EntityColliderScript>().GetInstanceID();
+
+                if (!hitEnemies.Contains(temp))
+                {
+                    hit.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                    hitEnemies.Add(temp);
+
+                }
+            }
+        }
+
         StateTimer -= Time.deltaTime;
         if (StateTimer < 0)
         {
             CurrentState = PlayerState.RUN;
+            hitEnemies.Clear();
         }
     }
     private void PlayerHeavyStab()

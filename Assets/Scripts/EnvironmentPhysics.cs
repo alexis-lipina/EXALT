@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentPhysics : MonoBehaviour {
-
+public class EnvironmentPhysics : MonoBehaviour
+{
+    [SerializeField] private GameObject playerSprite;
     [SerializeField] private float topHeight;
     [SerializeField] private float bottomHeight;
     [SerializeField] private GameObject parent;
     [SerializeField] private GameObject[] neighbors;
+    [SerializeField] private bool isTransparentOnOcclude;
 
     private List<NavEdge> neighborEdges;
 
@@ -27,6 +29,33 @@ public class EnvironmentPhysics : MonoBehaviour {
             neighborEdges.Add(temp);
         }
        // Debug.Log("navedge number:" + neighborEdges.Count);
+    }
+
+    void Update()
+    {
+        if (isTransparentOnOcclude) //if object can become transparent when player behind
+        {
+            if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z) //if player is behind
+            {
+                Debug.Log("Clear!");
+                Color temp = gameObject.GetComponent<SpriteRenderer>().color;
+                temp = new Color(temp.r, temp.g, temp.b, 0.5f);
+                gameObject.GetComponent<SpriteRenderer>().color = temp;
+            }
+            else
+            {
+                Color temp = gameObject.GetComponent<SpriteRenderer>().color;
+                temp = new Color(temp.r, temp.g, temp.b, 1f);
+                gameObject.GetComponent<SpriteRenderer>().color = temp;
+            }
+            
+        }
+        else
+        {
+            Color temp = gameObject.GetComponent<SpriteRenderer>().color;
+            temp = new Color(temp.r, temp.g, temp.b, 1f);
+            gameObject.GetComponent<SpriteRenderer>().color = temp;
+        }
     }
 
 

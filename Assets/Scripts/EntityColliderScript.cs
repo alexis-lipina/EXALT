@@ -171,7 +171,7 @@ public class EntityColliderScript : MonoBehaviour
     }
 
 
-    public bool playerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
+    private bool PlayerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
         if (playerTop > terrainBottom && playerBottom < terrainTop)
             return true;
@@ -236,7 +236,7 @@ public class EntityColliderScript : MonoBehaviour
 
 
 
-                if (playerWillCollide(bottomHeight, topHeight, playerElevation, playerElevation + playerHeight)) //if given element is a wall in the way
+                if (PlayerWillCollide(bottomHeight, topHeight, playerElevation, playerElevation + playerHeight)) //if given element is a wall in the way
                 {
                     float playerEnvtHandlerYPos = environmentHandler.GetComponent<Transform>().position.y;
                     float playerEnvtHandlerYSize = environmentHandler.GetComponent<BoxCollider2D>().size.y;
@@ -313,7 +313,7 @@ public class EntityColliderScript : MonoBehaviour
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
-                        if (playerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), entityElevation, entityElevation + entityHeight))
+                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), entityElevation, entityElevation + entityHeight))
                         {
                            // Debug.Log("YEET");
                             //Debug.Log("HitDistance:" + hit.distance);
@@ -354,7 +354,7 @@ public class EntityColliderScript : MonoBehaviour
                         (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 &&
                            (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
                     {
-                        if (playerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), entityElevation, entityElevation + entityHeight))
+                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), entityElevation, entityElevation + entityHeight))
                         {//found a problematic collision, go up to the shortest-distanced one
                             if (hit.distance < Mathf.Abs(velocityY))
                             {
@@ -552,7 +552,8 @@ public class EntityColliderScript : MonoBehaviour
         }
         //Debug.Log("Updating point!!!");
         //Debug.Log(this.handlerObject);
-        navManager.entityChangePositionDelegate(this.gameObject, tempphys);
+        if (navManager.entityChangePositionDelegate != null)
+            navManager.entityChangePositionDelegate(this.gameObject, tempphys);
         currentNavEnvironmentObject = tempphys;
     }
 

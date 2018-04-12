@@ -248,12 +248,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 87557580}
   neighbors:
   - {fileID: 1002951258}
   - {fileID: 454035718}
+  isTransparentOnOcclude: 0
 --- !u!61 &87557583
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -363,10 +365,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 20
   bottomHeight: -20
   parent: {fileID: 141161547}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &141161550
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -476,6 +480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 142601259}
@@ -486,6 +491,7 @@ MonoBehaviour:
   - {fileID: 1800172184}
   - {fileID: 1452095502}
   - {fileID: 576243872}
+  isTransparentOnOcclude: 0
 --- !u!61 &142601262
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -582,12 +588,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 207033599}
   neighbors:
   - {fileID: 890269901}
   - {fileID: 667122094}
+  isTransparentOnOcclude: 0
 --- !u!61 &207033601
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -710,12 +718,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: 8
   parent: {fileID: 218506549}
   neighbors:
   - {fileID: 663264009}
   - {fileID: 1650193643}
+  isTransparentOnOcclude: 1
 --- !u!61 &218506552
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1047,10 +1057,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 355622489}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &355622492
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1109,7 +1121,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: cf8bd88d3972d5a4f982acc71d8c420b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.65493375, g: 0.642301, b: 0.8088235, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1160,12 +1172,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 378291616}
   neighbors:
   - {fileID: 2036708635}
   - {fileID: 1163378064}
+  isTransparentOnOcclude: 0
 --- !u!61 &378291619
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1275,10 +1289,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 20
   bottomHeight: -20
   parent: {fileID: 391883943}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &391883946
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1499,10 +1515,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 415927148}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &415927151
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1655,6 +1673,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 454035718}
@@ -1663,6 +1682,7 @@ MonoBehaviour:
   - {fileID: 415927148}
   - {fileID: 1379805976}
   - {fileID: 355622489}
+  isTransparentOnOcclude: 0
 --- !u!61 &454035721
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1772,10 +1792,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 20
   bottomHeight: -20
   parent: {fileID: 567065212}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &567065215
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1885,10 +1907,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 576243872}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &576243875
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1947,7 +1971,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ddf7cfe55aec6d4478d331f99cb9a250, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.65493375, g: 0.642301, b: 0.8088235, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2039,12 +2063,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: 8
   parent: {fileID: 617136225}
   neighbors:
   - {fileID: 1463311767}
   - {fileID: 663264009}
+  isTransparentOnOcclude: 1
 --- !u!61 &617136228
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2153,11 +2179,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handler: {fileID: 1581717238}
-  target: {fileID: 1234480452}
-  punchingBag: {fileID: 5583425}
+  entityPhysics: {fileID: 1234480454}
   navManager: {fileID: 957900023}
-  testStart: {fileID: 890269904}
-  testEnd: {fileID: 1452095504}
+  target: {fileID: 1234480452}
   detectionRange: 1000
 --- !u!1 &663264009
 GameObject:
@@ -2201,12 +2225,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 663264009}
   neighbors:
   - {fileID: 617136225}
   - {fileID: 218506549}
+  isTransparentOnOcclude: 1
 --- !u!61 &663264012
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2316,12 +2342,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: 8
   parent: {fileID: 667122094}
   neighbors:
   - {fileID: 207033599}
   - {fileID: 1463311767}
+  isTransparentOnOcclude: 1
 --- !u!61 &667122097
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2609,6 +2637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 751690037}
@@ -2617,6 +2646,7 @@ MonoBehaviour:
   - {fileID: 1537495262}
   - {fileID: 1408512138}
   - {fileID: 1812342860}
+  isTransparentOnOcclude: 0
 --- !u!61 &751690040
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2768,11 +2798,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 890269901}
   neighbors:
   - {fileID: 751690037}
+  isTransparentOnOcclude: 0
 --- !u!61 &890269905
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2969,12 +3001,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 1002951258}
   neighbors:
   - {fileID: 87557580}
   - {fileID: 1163378064}
+  isTransparentOnOcclude: 0
 --- !u!61 &1002951261
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3084,12 +3118,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: 8
   parent: {fileID: 1163378064}
   neighbors:
   - {fileID: 378291616}
   - {fileID: 1002951258}
+  isTransparentOnOcclude: 0
 --- !u!61 &1163378067
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3179,7 +3215,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1204704180}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -41.6, y: -20.7, z: 2}
+  m_LocalPosition: {x: -41.6, y: -7.4, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 739285275}
@@ -3344,10 +3380,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 20
   bottomHeight: -20
   parent: {fileID: 1285495478}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &1285495481
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3457,10 +3495,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 1379805976}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &1379805979
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3570,12 +3610,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1408512138}
   neighbors:
   - {fileID: 751690037}
   - {fileID: 142601259}
+  isTransparentOnOcclude: 0
 --- !u!61 &1408512141
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3634,7 +3676,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ba4eac1363460684f90fd2fb4244fc19, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.65493375, g: 0.642301, b: 0.8088235, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3685,10 +3727,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1452095502}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &1452095505
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3785,12 +3829,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 1463311767}
   neighbors:
   - {fileID: 667122094}
   - {fileID: 617136225}
+  isTransparentOnOcclude: 1
 --- !u!61 &1463311769
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3913,10 +3959,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 24
   bottomHeight: 20
   parent: {fileID: 1515036037}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &1515036040
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4026,12 +4074,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1537495262}
   neighbors:
   - {fileID: 751690037}
   - {fileID: 142601259}
+  isTransparentOnOcclude: 0
 --- !u!61 &1537495265
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4090,7 +4140,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 1af0351dab62fad4e9fb47dd051875b8, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.65493375, g: 0.642301, b: 0.8088235, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4254,12 +4304,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: -20
   parent: {fileID: 1650193643}
   neighbors:
   - {fileID: 218506549}
   - {fileID: 2036708635}
+  isTransparentOnOcclude: 1
 --- !u!61 &1650193646
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4499,10 +4551,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1800172184}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &1800172187
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4612,12 +4666,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 0
   bottomHeight: -20
   parent: {fileID: 1812342860}
   neighbors:
   - {fileID: 751690037}
   - {fileID: 142601259}
+  isTransparentOnOcclude: 0
 --- !u!61 &1812342863
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4676,7 +4732,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ec6171e8177f60d48b285736ee582fbb, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.65493375, g: 0.642301, b: 0.8088235, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4727,10 +4783,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 24
   bottomHeight: 20
   parent: {fileID: 1909312517}
   neighbors: []
+  isTransparentOnOcclude: 0
 --- !u!61 &1909312520
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4812,7 +4870,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1954475208
 Transform:
   m_ObjectHideFlags: 0
@@ -4901,12 +4959,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerSprite: {fileID: 739285272}
   topHeight: 10
   bottomHeight: 8
   parent: {fileID: 2036708635}
   neighbors:
   - {fileID: 1650193643}
   - {fileID: 378291616}
+  isTransparentOnOcclude: 0
 --- !u!61 &2036708638
 BoxCollider2D:
   m_ObjectHideFlags: 0

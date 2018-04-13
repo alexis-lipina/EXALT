@@ -118,7 +118,7 @@ public class PlayerHandler : EntityHandler
                     flipCharacterSprite();
                     isFlipped = false;
                 }
-                Debug.Log(hitEnemies.Count);
+                //Debug.Log(hitEnemies.Count);
                 PlayerLightStab();
                 break;
             case (PlayerState.HEAVY_STAB):

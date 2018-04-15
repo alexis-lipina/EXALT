@@ -126,8 +126,8 @@ public class TestEnemyHandler : EntityHandler
         }
         if (wasJustHit)
         {
-            stateTimer = 1;
-            currentState = TestEnemyState.WOUNDED;
+            //stateTimer = 1;
+            //currentState = TestEnemyState.WOUNDED;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
@@ -183,8 +183,8 @@ public class TestEnemyHandler : EntityHandler
         }
         if (wasJustHit)
         {
-            stateTimer = 0.2f;
-            currentState = TestEnemyState.WOUNDED;
+            //stateTimer = 0.2f;
+            //currentState = TestEnemyState.WOUNDED;
         }
         else
         {

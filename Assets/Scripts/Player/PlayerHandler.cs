@@ -26,7 +26,7 @@ public class PlayerHandler : EntityHandler
     const string SWING_WEST_Anim = "PlayerSwingWest";
 
 
-    private const float AttackMovementSpeed = 0.2f;
+    private const float AttackMovementSpeed = 0.0f;
 
 
 
@@ -163,7 +163,7 @@ public class PlayerHandler : EntityHandler
         if (AttackPressed)
         {
             hasSwung = false;
-            Debug.Log("IDLE -> ATTACK");
+            //Debug.Log("IDLE -> ATTACK");
             StateTimer = 0.25f;
             CurrentState = PlayerState.LIGHT_STAB;
         }
@@ -288,29 +288,35 @@ public class PlayerHandler : EntityHandler
     {
         EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         Vector2 swingboxpos = Vector2.zero;
+        Vector2 thrustdirection = Vector2.zero;
         switch (currentFaceDirection)
         {
             case FaceDirection.EAST:
                 characterAnimator.Play(SWING_EAST_Anim);
-                EntityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
+                thrustdirection = new Vector2(1, 0);
+                //EntityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
                 break;
             case FaceDirection.WEST:
                 characterAnimator.Play(SWING_WEST_Anim);
-                EntityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
+                thrustdirection = new Vector2(-1, 0);
+                //EntityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
                 break;
             case FaceDirection.NORTH:
                 characterAnimator.Play(SWING_NORTH_Anim);
-                EntityPhysics.MoveWithCollision(0, AttackMovementSpeed);
+                thrustdirection = new Vector2(0, 1);
+                //EntityPhysics.MoveWithCollision(0, AttackMovementSpeed);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
                 break;
             case FaceDirection.SOUTH:
                 characterAnimator.Play(SWING_SOUTH_Anim);
-                EntityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
+                thrustdirection = new Vector2(0, -1);
+                //EntityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
                 swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
                 break;
         }
+        EntityPhysics.MoveWithCollision(thrustdirection.x*AttackMovementSpeed, thrustdirection.y*AttackMovementSpeed);
         //-----| Hitbox - the one directly below only flashes for one frame 
         /*
         if (!hasSwung)
@@ -336,11 +342,19 @@ public class PlayerHandler : EntityHandler
 
                 if (!hitEnemies.Contains(temp))
                 {
-                    hit.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                    Debug.Log("thrustdirection:" + thrustdirection);
+                    hit.GetComponent<EntityColliderScript>().Inflict(1.0f, thrustdirection, 10f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 6, 0.01f);
+                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.5f, new Vector2(xInput, yInput));
                     hitEnemies.Add(temp);
 
                 }
             }
+        }
+        if (StateTimer == 0.25f)
+        {
+            //FollowingCamera.GetComponent<CameraScript>().Jolt(1);
+            //FollowingCamera.GetComponent<CameraScript>().Shake(0.1f, 10, 0.01f);
         }
 
         StateTimer -= Time.deltaTime;

@@ -85,7 +85,7 @@ public class PunchingBagHandler : EntityHandler
         if (wasJustHit)
         {
             cooldowntimer = 1;
-            currentState = PunchingBagState.WOUNDED;
+            //currentState = PunchingBagState.WOUNDED;
         }
         float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
         if (EntityPhysics.GetEntityElevation() > maxheight)
@@ -126,7 +126,7 @@ public class PunchingBagHandler : EntityHandler
         if (wasJustHit)
         {
             cooldowntimer = 1;
-            currentState = PunchingBagState.WOUNDED;
+            //currentState = PunchingBagState.WOUNDED;
         }
         else
         {

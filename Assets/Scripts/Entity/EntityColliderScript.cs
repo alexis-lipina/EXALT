@@ -558,7 +558,10 @@ public class EntityColliderScript : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Deal this entity damage, causing them to flash and lose health
+    /// </summary>
+    /// <param name="damage">Quantity of health to subtract from the entity</param>
     public void Inflict(float damage)
     {
         hasBeenHit = true;
@@ -567,24 +570,39 @@ public class EntityColliderScript : MonoBehaviour
         
         if (currentHP <= 0)
         {
-            GameObject.Destroy(gameObject.transform.parent.gameObject);
+            GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
         }
-        
+    }
+
+    /// <summary>
+    /// Deal this entity damage, as well as push them in a direction
+    /// </summary>
+    /// <param name="damage"></param>
+    /// <param name="direction"></param>
+    public void Inflict(float damage, Vector2 direction, float force)
+    {
+        //Debug.Log(direction);
+        Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
+        MoveWithCollision(direction.x, direction.y);
+        Inflict(damage);
     }
 
     IEnumerator TakeDamageFlash()
     {
         Debug.Log("TakeDamageFlash entered");
         entityHandler.JustGotHit();
+        characterSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
         for (float i = 0; i < 2; i++)
         {
-            characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
             yield return new WaitForSeconds(0.05f);
-            characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 0, 0, 1));
             yield return new WaitForSeconds(0.05f);
         }
-        characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
 
+        characterSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
     }
 
     //===============================================================| getters and setters

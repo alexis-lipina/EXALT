@@ -150,13 +150,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 6
   bottomHeight: -20
+  topHeight: 6
+  playerSprite: {fileID: 0}
   parent: {fileID: 126526177}
   neighbors:
   - {fileID: 1317908148}
   - {fileID: 1343407147}
   - {fileID: 2000846568}
+  isTransparentOnOcclude: 0
 --- !u!61 &126526180
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -266,8 +268,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 6
   bottomHeight: -20
+  topHeight: 6
+  playerSprite: {fileID: 0}
   parent: {fileID: 209456748}
   neighbors:
   - {fileID: 495436333}
@@ -275,6 +278,7 @@ MonoBehaviour:
   - {fileID: 889697843}
   - {fileID: 246600009}
   - {fileID: 363971699}
+  isTransparentOnOcclude: 0
 --- !u!61 &209456751
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -384,12 +388,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 6
   bottomHeight: -20
+  topHeight: 6
+  playerSprite: {fileID: 0}
   parent: {fileID: 246600009}
   neighbors:
   - {fileID: 209456748}
   - {fileID: 363971699}
+  isTransparentOnOcclude: 0
 --- !u!61 &246600012
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -499,12 +505,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 100
   bottomHeight: -20
+  topHeight: 100
+  playerSprite: {fileID: 0}
   parent: {fileID: 258485636}
   neighbors:
   - {fileID: 1555697348}
   - {fileID: 209456748}
+  isTransparentOnOcclude: 0
 --- !u!61 &258485639
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -614,13 +622,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 8
   bottomHeight: -20
+  topHeight: 8
+  playerSprite: {fileID: 0}
   parent: {fileID: 363971699}
   neighbors:
   - {fileID: 994392804}
   - {fileID: 246600009}
   - {fileID: 209456748}
+  isTransparentOnOcclude: 0
 --- !u!61 &363971702
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -717,7 +727,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EntityPhysics: {fileID: 1234480454}
   characterSprite: {fileID: 739285272}
-  FollowingCamera: {fileID: 0}
+  FollowingCamera: {fileID: 2041898055}
 --- !u!4 &435567839
 Transform:
   m_ObjectHideFlags: 0
@@ -818,8 +828,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 495436333}
   neighbors:
   - {fileID: 209456748}
@@ -827,6 +838,7 @@ MonoBehaviour:
   - {fileID: 994392804}
   - {fileID: 1555697348}
   - {fileID: 1449862782}
+  isTransparentOnOcclude: 0
 --- !u!61 &495436336
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1056,13 +1068,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 8
   bottomHeight: -20
+  topHeight: 8
+  playerSprite: {fileID: 0}
   parent: {fileID: 567699759}
   neighbors:
   - {fileID: 753807362}
   - {fileID: 2000846568}
   - {fileID: 1449862782}
+  isTransparentOnOcclude: 0
 --- !u!61 &567699762
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1213,12 +1227,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 100
   bottomHeight: -20
+  topHeight: 100
+  playerSprite: {fileID: 0}
   parent: {fileID: 634531379}
   neighbors:
   - {fileID: 1555697348}
   - {fileID: 209456748}
+  isTransparentOnOcclude: 0
 --- !u!61 &634531382
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1417,13 +1433,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 753807362}
   neighbors:
   - {fileID: 495436333}
   - {fileID: 1449862782}
   - {fileID: 567699759}
+  isTransparentOnOcclude: 0
 --- !u!61 &753807365
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1620,12 +1638,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 889697843}
   neighbors:
   - {fileID: 1555697348}
   - {fileID: 209456748}
+  isTransparentOnOcclude: 0
 --- !u!61 &889697846
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1777,12 +1797,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 890269901}
   neighbors:
   - {fileID: 1954938366}
   - {fileID: 1441262544}
+  isTransparentOnOcclude: 0
 --- !u!61 &890269905
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1893,7 +1915,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &906514901
 Transform:
   m_ObjectHideFlags: 0
@@ -1994,11 +2016,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 994392804}
   neighbors:
   - {fileID: 495436333}
+  isTransparentOnOcclude: 0
 --- !u!61 &994392807
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2301,12 +2325,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 100
   bottomHeight: -20
+  topHeight: 100
+  playerSprite: {fileID: 0}
   parent: {fileID: 1207523612}
   neighbors:
   - {fileID: 1555697348}
   - {fileID: 209456748}
+  isTransparentOnOcclude: 0
 --- !u!61 &1207523615
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2514,14 +2540,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 6
   bottomHeight: -20
+  topHeight: 6
+  playerSprite: {fileID: 0}
   parent: {fileID: 1317908148}
   neighbors:
   - {fileID: 1954938366}
   - {fileID: 1441262544}
   - {fileID: 126526177}
   - {fileID: 1343407147}
+  isTransparentOnOcclude: 0
 --- !u!61 &1317908151
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2631,13 +2659,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 8
   bottomHeight: -20
+  topHeight: 8
+  playerSprite: {fileID: 0}
   parent: {fileID: 1343407147}
   neighbors:
   - {fileID: 126526177}
   - {fileID: 1317908148}
   - {fileID: 2000846568}
+  isTransparentOnOcclude: 0
 --- !u!61 &1343407150
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2789,13 +2819,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 2
   bottomHeight: -20
+  topHeight: 2
+  playerSprite: {fileID: 0}
   parent: {fileID: 1441262544}
   neighbors:
   - {fileID: 1317908148}
   - {fileID: 1954938366}
   - {fileID: 890269901}
+  isTransparentOnOcclude: 0
 --- !u!61 &1441262547
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2892,7 +2924,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c4785c01ed85fac40863c6d5eb2db333, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2976,13 +3008,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 8
   bottomHeight: -20
+  topHeight: 8
+  playerSprite: {fileID: 0}
   parent: {fileID: 1449862782}
   neighbors:
   - {fileID: 753807362}
   - {fileID: 994392804}
   - {fileID: 495436333}
+  isTransparentOnOcclude: 0
 --- !u!61 &1449862785
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3092,12 +3126,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 100
   bottomHeight: -20
+  topHeight: 100
+  playerSprite: {fileID: 0}
   parent: {fileID: 1529401398}
   neighbors:
   - {fileID: 1555697348}
   - {fileID: 209456748}
+  isTransparentOnOcclude: 0
 --- !u!61 &1529401401
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3207,13 +3243,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 1555697348}
   neighbors:
   - {fileID: 495436333}
   - {fileID: 209456748}
   - {fileID: 889697843}
+  isTransparentOnOcclude: 0
 --- !u!61 &1555697351
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3454,7 +3492,7 @@ MonoBehaviour:
   FirstShadow: {fileID: 902852690}
   gravity: 0.03
   speed: 8
-  MaxHP: 3
+  MaxHP: 100
   ZVelocity: 0
 --- !u!61 &1683500585
 BoxCollider2D:
@@ -3988,13 +4026,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 0
   bottomHeight: -20
+  topHeight: 0
+  playerSprite: {fileID: 0}
   parent: {fileID: 1954938366}
   neighbors:
   - {fileID: 890269901}
   - {fileID: 1441262544}
   - {fileID: 1317908148}
+  isTransparentOnOcclude: 0
 --- !u!61 &1954938368
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4145,13 +4185,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topHeight: 8
   bottomHeight: -20
+  topHeight: 8
+  playerSprite: {fileID: 0}
   parent: {fileID: 2000846568}
   neighbors:
   - {fileID: 567699759}
   - {fileID: 1343407147}
   - {fileID: 126526177}
+  isTransparentOnOcclude: 0
 --- !u!61 &2000846571
 BoxCollider2D:
   m_ObjectHideFlags: 0

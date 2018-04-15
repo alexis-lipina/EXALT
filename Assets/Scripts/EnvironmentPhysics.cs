@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnvironmentPhysics : MonoBehaviour
+public class EnvironmentPhysics : PhysicsObject
 {
     [SerializeField] private GameObject playerSprite;
-    [SerializeField] private float topHeight;
-    [SerializeField] private float bottomHeight;
     [SerializeField] private GameObject parent;
     [SerializeField] private GameObject[] neighbors;
     [SerializeField] private bool isTransparentOnOcclude;

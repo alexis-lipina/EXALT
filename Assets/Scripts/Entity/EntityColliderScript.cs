@@ -583,7 +583,7 @@ public class EntityColliderScript : MonoBehaviour
     {
         //Debug.Log(direction);
         Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
-        MoveWithCollision(direction.x, direction.y);
+        MoveWithCollision(direction.x * force, direction.y * force);
         Inflict(damage);
     }
 

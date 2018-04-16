@@ -26,7 +26,7 @@ public class PlayerHandler : EntityHandler
     const string SWING_WEST_Anim = "PlayerSwingWest";
 
 
-    private const float AttackMovementSpeed = 0.0f;
+    private const float AttackMovementSpeed = 0.1f;
 
 
 
@@ -343,7 +343,7 @@ public class PlayerHandler : EntityHandler
                 if (!hitEnemies.Contains(temp))
                 {
                     Debug.Log("thrustdirection:" + thrustdirection);
-                    hit.GetComponent<EntityColliderScript>().Inflict(1.0f, thrustdirection, 10f);
+                    hit.GetComponent<EntityColliderScript>().Inflict(1.0f, thrustdirection, 2f);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 6, 0.01f);
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.5f, new Vector2(xInput, yInput));
                     hitEnemies.Add(temp);

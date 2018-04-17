@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public abstract class EntityHandler : MonoBehaviour
 {
-    [SerializeField] protected EntityColliderScript EntityPhysics;
+    [SerializeField] protected EntityPhysics entityPhysics;
     protected enum FaceDirection {NORTH, WEST, SOUTH, EAST }
     //[SerializeField] protected GameObject EntitySprite;
 
@@ -18,10 +18,10 @@ public abstract class EntityHandler : MonoBehaviour
     /// Contains the state machine switch statement and calls state methods
     /// </summary>
     protected abstract void ExecuteState();
-    public abstract void setXYAnalogInput(float x, float y);
-    public EntityColliderScript getEntityPhysics()
+    public abstract void SetXYAnalogInput(float x, float y);
+    public EntityPhysics GetEntityPhysics()
     {
-        return EntityPhysics;
+        return entityPhysics;
     }
 
     public abstract void JustGotHit();

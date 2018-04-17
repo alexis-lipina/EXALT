@@ -725,7 +725,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c4dbfc44283e7b4a872cca3a5275906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityPhysics: {fileID: 1234480454}
+  entityPhysics: {fileID: 1234480454}
   characterSprite: {fileID: 739285272}
   FollowingCamera: {fileID: 2041898055}
 --- !u!4 &435567839
@@ -1581,7 +1581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83594abb0251495459db26421854a8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityPhysics: {fileID: 1798629019}
+  entityPhysics: {fileID: 0}
   isCompanion: 1
 --- !u!4 &880882930
 Transform:
@@ -2762,7 +2762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83594abb0251495459db26421854a8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityPhysics: {fileID: 1683500583}
+  entityPhysics: {fileID: 1683500583}
   isCompanion: 0
 --- !u!4 &1379702482
 Transform:

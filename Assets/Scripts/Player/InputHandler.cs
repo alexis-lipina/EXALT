@@ -36,7 +36,7 @@ public class InputHandler : MonoBehaviour
         }
 
         //send input data
-        playerHandler.setXYAnalogInput(x, y);
+        playerHandler.SetXYAnalogInput(x, y);
         if (Input.GetAxisRaw("XBox One - Menu Button") > 0 || Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);

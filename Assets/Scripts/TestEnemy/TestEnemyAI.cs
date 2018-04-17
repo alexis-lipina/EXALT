@@ -43,7 +43,7 @@ public class TestEnemyAI : EntityAI
         if (path == null || !TargetInDetectionRange())
         {
             //do nothing
-            testhandler.setXYAnalogInput(0, 0);
+            testhandler.SetXYAnalogInput(0, 0);
         }
         else
         {
@@ -66,7 +66,7 @@ public class TestEnemyAI : EntityAI
                 {
                     //Debug.Log(dest);
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
-                    if (path.Peek().getTopHeight() > handler.getEntityPhysics().GetEntityElevation()) //Needs to jump
+                    if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetEntityElevation()) //Needs to jump
                     {
                         testhandler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
                     }
@@ -82,18 +82,18 @@ public class TestEnemyAI : EntityAI
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
         if (direction.magnitude > 2)
         {
-            testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+            testhandler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }
         else
         {
-            testhandler.setXYAnalogInput(0, 0);
+            testhandler.SetXYAnalogInput(0, 0);
         }
     }
 
     private void MoveTowardPoint(Vector2 destination)
     {
         Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
-        testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        testhandler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
     }
 
     private void MoveToAttackTarget()
@@ -101,11 +101,11 @@ public class TestEnemyAI : EntityAI
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
         if (direction.magnitude > 4)
         {
-            testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+            testhandler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }
         else
         {
-            testhandler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+            testhandler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
             testhandler.SetAttackPressed(true);
         }
     }
@@ -117,7 +117,7 @@ public class TestEnemyAI : EntityAI
         {
             //Debug.Log("Success!!!");
             //recalculate path
-            path = navManager.FindPath(handler.getEntityPhysics().getCurrentNavObject(), newDestination);
+            path = navManager.FindPath(handler.GetEntityPhysics().getCurrentNavObject(), newDestination);
         }
     }
 

@@ -10,7 +10,7 @@ using UnityEngine;
 public abstract class EntityAI : MonoBehaviour
 {
     [SerializeField] protected EntityHandler handler;
-    [SerializeField] protected EntityColliderScript entityPhysics;
+    [SerializeField] protected EntityPhysics entityPhysics;
     [SerializeField] protected NavigationManager navManager;
 
     // Use this for initialization

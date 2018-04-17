@@ -45,7 +45,7 @@ public class TestEnemyHandler : EntityHandler
     {
         /*if (isCompanion)
         {
-            this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
+            this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         }
         */
     }
@@ -69,7 +69,7 @@ public class TestEnemyHandler : EntityHandler
         attackPressed = false;
     }
 
-    public override void setXYAnalogInput(float x, float y)
+    public override void SetXYAnalogInput(float x, float y)
     {
         xInput = x;
         yInput = y;
@@ -129,15 +129,15 @@ public class TestEnemyHandler : EntityHandler
             //stateTimer = 1;
             //currentState = TestEnemyState.WOUNDED;
         }
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        if (EntityPhysics.GetEntityElevation() > maxheight)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() > maxheight)
         {
-            EntityPhysics.ZVelocity = 0;
+            entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
         }
         else
         {
-            EntityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetEntityElevation(maxheight);
         }
     }
 
@@ -155,14 +155,14 @@ public class TestEnemyHandler : EntityHandler
         }
         else if (tempDir.y > 0) { tempDirection = TempTexDirection.NORTH; }
         else if (tempDir.y < 0) { tempDirection = TempTexDirection.SOUTH; }
-        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
 
         //===========| State Switching
 
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
         {
-            EntityPhysics.SavePosition();
+            entityPhysics.SavePosition();
             currentState = TestEnemyState.IDLE;
         }
         if (attackPressed)
@@ -170,15 +170,15 @@ public class TestEnemyHandler : EntityHandler
             stateTimer = 0;
             currentState = TestEnemyState.READY;
         }
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        if (EntityPhysics.GetEntityElevation() > maxheight)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() > maxheight)
         {
-            EntityPhysics.ZVelocity = 0;
+            entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
         }
         if (jumpPressed)
         {
-            EntityPhysics.ZVelocity = 1;
+            entityPhysics.ZVelocity = 1;
             currentState = TestEnemyState.JUMP;
         }
         if (wasJustHit)
@@ -188,26 +188,26 @@ public class TestEnemyHandler : EntityHandler
         }
         else
         {
-            EntityPhysics.SavePosition();
-            EntityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SavePosition();
+            entityPhysics.SetEntityElevation(maxheight);
         }
     }
     private void FallState()
     {
         //Debug.Log("Falling!!!");
-        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        EntityPhysics.FreeFall();
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.FreeFall();
 
 
         //===========| State Switching
 
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        if (EntityPhysics.GetEntityElevation() <= maxheight)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() <= maxheight)
         {
-            EntityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetEntityElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
-                //EntityPhysics.SavePosition();
+                //entityPhysics.SavePosition();
                 //Debug.Log("JUMP -> IDLE");
                 currentState = TestEnemyState.IDLE;
             }
@@ -223,19 +223,19 @@ public class TestEnemyHandler : EntityHandler
     private void JumpState()
     {
         //Debug.Log("JUMPING!!!");
-        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        EntityPhysics.FreeFall();
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        //EntityPhysics.CheckHitHeadOnCeiling();
-        if (EntityPhysics.TestFeetCollision())
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.FreeFall();
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        //entityPhysics.CheckHitHeadOnCeiling();
+        if (entityPhysics.TestFeetCollision())
 
 
-            if (EntityPhysics.GetEntityElevation() <= maxheight)
+            if (entityPhysics.GetEntityElevation() <= maxheight)
             {
-                EntityPhysics.SetEntityElevation(maxheight);
+                entityPhysics.SetEntityElevation(maxheight);
                 if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
                 {
-                    EntityPhysics.SavePosition();
+                    entityPhysics.SavePosition();
                     //Debug.Log("JUMP -> IDLE");
                     currentState = TestEnemyState.IDLE;
                 }
@@ -255,20 +255,20 @@ public class TestEnemyHandler : EntityHandler
         switch (tempDirection)
         {
             case TempTexDirection.EAST:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
-                EntityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x + 2, entityPhysics.transform.position.y);
+                entityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
                 break;
             case TempTexDirection.WEST:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
-                EntityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x - 2, entityPhysics.transform.position.y);
+                entityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
                 break;
             case TempTexDirection.NORTH:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
-                EntityPhysics.MoveWithCollision(0, AttackMovementSpeed);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y + 2);
+                entityPhysics.MoveWithCollision(0, AttackMovementSpeed);
                 break;
             case TempTexDirection.SOUTH:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
-                EntityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y - 2);
+                entityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
                 break;
         }
         //todo - test area for collision, if coll
@@ -277,10 +277,10 @@ public class TestEnemyHandler : EntityHandler
             Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
             foreach (Collider2D hit in hitobjects)
             {
-                EntityColliderScript hitEntity = hit.gameObject.GetComponent<EntityColliderScript>();
-                if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > EntityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < EntityPhysics.GetEntityElevation() + EntityPhysics.GetEntityHeight())
+                EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
+                if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > entityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < entityPhysics.GetEntityElevation() + entityPhysics.GetEntityHeight())
                 {
-                    hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
+                    hit.gameObject.GetComponent<EntityPhysics>().Inflict(1.0f);
                     Debug.Log("Hit player!");
                 }
             }
@@ -302,23 +302,23 @@ public class TestEnemyHandler : EntityHandler
         switch (tempDirection)
         {
             case TempTexDirection.EAST:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x + 2, EntityPhysics.transform.position.y);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x + 2, entityPhysics.transform.position.y);
                 break;
             case TempTexDirection.WEST:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x - 2, EntityPhysics.transform.position.y);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x - 2, entityPhysics.transform.position.y);
                 break;
             case TempTexDirection.NORTH:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y + 2);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y + 2);
                 break;
             case TempTexDirection.SOUTH:
-                swingboxpos = new Vector2(EntityPhysics.transform.position.x, EntityPhysics.transform.position.y - 2);
+                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y - 2);
                 break;
         }
         Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
         foreach (Collider2D hit in hitobjects)
         {
             EntityColliderScript hitEntity = hit.gameObject.GetComponent<EntityColliderScript>();
-            if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > EntityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < EntityPhysics.GetEntityElevation() + EntityPhysics.GetEntityHeight())
+            if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > entityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < entityPhysics.GetEntityElevation() + entityPhysics.GetEntityHeight())
             {
                 hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
                 Debug.Log("Hit player!");
@@ -362,7 +362,7 @@ public class TestEnemyHandler : EntityHandler
     
     private void WoundedState()
     {
-        EntityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
+        entityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
         stateTimer -= Time.deltaTime;
         if (stateTimer < 0)
         {

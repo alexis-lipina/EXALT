@@ -41,7 +41,7 @@ public class PunchingBagHandler : EntityHandler
         wasJustHit = false;
     }
 
-    public override void setXYAnalogInput(float x, float y)
+    public override void SetXYAnalogInput(float x, float y)
     {
         xInput = x;
         yInput = y;
@@ -87,40 +87,40 @@ public class PunchingBagHandler : EntityHandler
             cooldowntimer = 1;
             //currentState = PunchingBagState.WOUNDED;
         }
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        if (EntityPhysics.GetEntityElevation() > maxheight)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() > maxheight)
         {
-            EntityPhysics.ZVelocity = 0;
+            entityPhysics.ZVelocity = 0;
             currentState = PunchingBagState.FALL;
         }
         else
         {
-            EntityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetEntityElevation(maxheight);
         }
     }
 
     private void RunState()
     {
         //Debug.Log("Running!!!");
-        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
 
         //===========| State Switching
 
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
         {
-            EntityPhysics.SavePosition();
+            entityPhysics.SavePosition();
             currentState = PunchingBagState.IDLE;
         }
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        if (EntityPhysics.GetEntityElevation() > maxheight)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() > maxheight)
         {
-            EntityPhysics.ZVelocity = 0;
+            entityPhysics.ZVelocity = 0;
             currentState = PunchingBagState.FALL;
         }
         if (jumpPressed)
         {
-            EntityPhysics.ZVelocity = 1;
+            entityPhysics.ZVelocity = 1;
             currentState = PunchingBagState.JUMP;
         }
         if (wasJustHit)
@@ -130,26 +130,26 @@ public class PunchingBagHandler : EntityHandler
         }
         else
         {
-            EntityPhysics.SavePosition();
-            EntityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SavePosition();
+            entityPhysics.SetEntityElevation(maxheight);
         }
     }
     private void FallState()
     {
         //Debug.Log("Falling!!!");
-        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        EntityPhysics.FreeFall();
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.FreeFall();
 
 
         //===========| State Switching
 
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        if (EntityPhysics.GetEntityElevation() <= maxheight)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() <= maxheight)
         {
-            EntityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetEntityElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
-                //EntityPhysics.SavePosition();
+                //entityPhysics.SavePosition();
                 //Debug.Log("JUMP -> IDLE");
                 currentState = PunchingBagState.IDLE;
             }
@@ -165,19 +165,19 @@ public class PunchingBagHandler : EntityHandler
     private void JumpState()
     {
         //Debug.Log("JUMPING!!!");
-        EntityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        EntityPhysics.FreeFall();
-        float maxheight = EntityPhysics.GetMaxTerrainHeightBelow();
-        //EntityPhysics.CheckHitHeadOnCeiling();
-        if (EntityPhysics.TestFeetCollision())
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.FreeFall();
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        //entityPhysics.CheckHitHeadOnCeiling();
+        if (entityPhysics.TestFeetCollision())
 
 
-            if (EntityPhysics.GetEntityElevation() <= maxheight)
+            if (entityPhysics.GetEntityElevation() <= maxheight)
             {
-                EntityPhysics.SetEntityElevation(maxheight);
+                entityPhysics.SetEntityElevation(maxheight);
                 if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
                 {
-                    EntityPhysics.SavePosition();
+                    entityPhysics.SavePosition();
                     //Debug.Log("JUMP -> IDLE");
                     currentState = PunchingBagState.IDLE;
                 }
@@ -196,7 +196,7 @@ public class PunchingBagHandler : EntityHandler
 
     private void WoundedState()
     {
-        EntityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
+        entityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
         cooldowntimer -= Time.deltaTime;
         if (cooldowntimer < 0)
         {

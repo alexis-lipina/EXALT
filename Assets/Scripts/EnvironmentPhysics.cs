@@ -22,7 +22,7 @@ public class EnvironmentPhysics : PhysicsObject
             //Debug.Log("Neighbor visited in " + gameObject.name);
             NavEdge temp = new NavEdge();
             temp.EnvironmentObject = neighbor.GetComponent<EnvironmentPhysics>();
-            temp.HeightDifference = neighbor.GetComponent<EnvironmentPhysics>().getTopHeight() - topHeight;
+            temp.HeightDifference = neighbor.GetComponent<EnvironmentPhysics>().GetTopHeight() - topHeight;
             temp.Distance = Vector2.Distance(neighbor.transform.position, gameObject.transform.position); //change when using elevated objects, take into account collider offset
             neighborEdges.Add(temp);
         }
@@ -65,16 +65,7 @@ public class EnvironmentPhysics : PhysicsObject
 
 
 
-    //===================================| Getters and Setters
-
-    public float getTopHeight()
-    {
-        return topHeight;
-    }
-    public float getBottomHeight()
-    {
-        return bottomHeight;
-    }
+   
     /// <summary>
     /// Returns (bottomHeight, topHeight)
     /// </summary>

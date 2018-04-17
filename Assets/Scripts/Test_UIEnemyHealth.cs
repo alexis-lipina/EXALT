@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Test_UIEnemyHealth : MonoBehaviour {
 
-    [SerializeField] private EntityColliderScript _entityCollider;
+    [SerializeField] private EntityPhysics _entityCollider;
     [SerializeField] private string _name;
     private Text _text;
 

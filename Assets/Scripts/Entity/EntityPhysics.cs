@@ -13,7 +13,7 @@ using System;
 /// Thus, the terrain objects above which the player is standing are stored. These are referenced for physics calculations and interactions, such as 
 /// what height a player will land from a jump at, whether they just walked off a cliff, etc.
 /// </summary>
-public class EntityColliderScript : MonoBehaviour
+public class EntityPhysics : MonoBehaviour
 {
     [SerializeField] private NavigationManager navManager;
     [SerializeField] private float playerSpriteZOffset;
@@ -165,7 +165,7 @@ public class EntityColliderScript : MonoBehaviour
     {
         foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
-            if (entry.Value.getBottomHeight() < entityHeight + entityElevation && entityElevation < entry.Value.getBottomHeight() && ZVelocity > 0) ZVelocity = 0; // hit head on ceiling
+            if (entry.Value.GetBottomHeight() < entityHeight + entityElevation && entityElevation < entry.Value.GetBottomHeight() && ZVelocity > 0) ZVelocity = 0; // hit head on ceiling
             //Debug.Log("Testing if hit head");
         }
     }
@@ -215,7 +215,7 @@ public class EntityColliderScript : MonoBehaviour
         {
             if (hit.transform.gameObject.tag == "Environment")
             {
-                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight() > entityElevation) // if the height of the terrain object is greater than the altitude of the player
+                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > entityElevation) // if the height of the terrain object is greater than the altitude of the player
                 {
                     //Debug.Log("Player is about to move illegally!");
                     badCollisions.Add(hit);
@@ -229,8 +229,8 @@ public class EntityColliderScript : MonoBehaviour
             {
                 //Debug.Log("VALUE:" + entry.Value);
 
-                bottomHeight = entry.Key.GetComponent<EnvironmentPhysics>().getBottomHeight();
-                topHeight = entry.Key.GetComponent<EnvironmentPhysics>().getTopHeight();
+                bottomHeight = entry.Key.GetComponent<EnvironmentPhysics>().GetBottomHeight();
+                topHeight = entry.Key.GetComponent<EnvironmentPhysics>().GetTopHeight();
                 playerElevation = entityElevation;
                 playerHeight = entityHeight;
 
@@ -313,7 +313,7 @@ public class EntityColliderScript : MonoBehaviour
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
-                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), entityElevation, entityElevation + entityHeight))
+                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), entityElevation, entityElevation + entityHeight))
                         {
                            // Debug.Log("YEET");
                             //Debug.Log("HitDistance:" + hit.distance);
@@ -354,7 +354,7 @@ public class EntityColliderScript : MonoBehaviour
                         (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 &&
                            (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
                     {
-                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().getTopHeight(), entityElevation, entityElevation + entityHeight))
+                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), entityElevation, entityElevation + entityHeight))
                         {//found a problematic collision, go up to the shortest-distanced one
                             if (hit.distance < Mathf.Abs(velocityY))
                             {
@@ -415,8 +415,8 @@ public class EntityColliderScript : MonoBehaviour
         else
         {
             TerrainTouched.Add(terrainInstanceID, environment);
-            Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(environment.getTopHeight(), Instantiate(FirstShadow, this.transform.parent)));
-            Shadows[terrainInstanceID].Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + environment.getTopHeight(), environment.getTopHeight());
+            Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(environment.GetTopHeight(), Instantiate(FirstShadow, this.transform.parent)));
+            Shadows[terrainInstanceID].Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + environment.GetTopHeight(), environment.GetTopHeight());
             Shadows[terrainInstanceID].Value.SetActive(true);
         }
         //PrintTerrain();
@@ -439,7 +439,7 @@ public class EntityColliderScript : MonoBehaviour
         float max = -20;
         foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
-            if (entry.Value.getTopHeight() > max && entityHeight + entityElevation > entry.Value.getTopHeight()) max = entry.Value.getTopHeight();
+            if (entry.Value.GetTopHeight() > max && entityHeight + entityElevation > entry.Value.GetTopHeight()) max = entry.Value.GetTopHeight();
         }
 
         return max;
@@ -450,7 +450,7 @@ public class EntityColliderScript : MonoBehaviour
         Debug.Log("Terrain touching:");
         foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
-            Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.getBottomHeight() + " " + entry.Value);
+            Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.GetBottomHeight() + " " + entry.Value);
         }
     }
 
@@ -459,7 +459,7 @@ public class EntityColliderScript : MonoBehaviour
         EnvironmentPhysics temp = null;
         foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
-            if (entry.Value.getTopHeight() == entityElevation)
+            if (entry.Value.GetTopHeight() == entityElevation)
             {
                 temp = entry.Value;
             }
@@ -480,12 +480,12 @@ public class EntityColliderScript : MonoBehaviour
         //Debug.Log(lastFootHold.Key);
         /*
         physicsobject.GetComponent<Rigidbody2D>().MovePosition(lasttouched.Key);
-        PlayerElevation = lasttouched.Value.getTopHeight() + 5;
+        PlayerElevation = lasttouched.Value.GetTopHeight() + 5;
         */
         Vector2 terrainsize = lastFootHold.Value.GetComponent<BoxCollider2D>().size;
         Vector2 terrainpos = lastFootHold.Value.GetComponent<Transform>().position;
         Vector2 terrainoffset = lastFootHold.Value.GetComponent<BoxCollider2D>().offset;
-        float terrainheight = lastFootHold.Value.getTopHeight();
+        float terrainheight = lastFootHold.Value.GetTopHeight();
         //Vector2 playerpos = physicsobject.GetComponent<Transform>().position;
         Vector2 warpcoordinates = lastFootHold.Key;
 
@@ -540,9 +540,9 @@ public class EntityColliderScript : MonoBehaviour
         EnvironmentPhysics tempphys = null;
         foreach (EnvironmentPhysics physobj in objectsbelow)
         {
-            if (physobj.getTopHeight() > max && entityHeight + entityElevation > physobj.getTopHeight())
+            if (physobj.GetTopHeight() > max && entityHeight + entityElevation > physobj.GetTopHeight())
             {
-                max = physobj.getTopHeight();
+                max = physobj.GetTopHeight();
                 tempphys = physobj;
             }
         }

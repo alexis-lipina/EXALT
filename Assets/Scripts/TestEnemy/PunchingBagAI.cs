@@ -43,7 +43,7 @@ public class PunchingBagAI : EntityAI
         if (path == null || !TargetInDetectionRange())
         {
             //do nothing
-            handler.setXYAnalogInput(0, 0);
+            handler.SetXYAnalogInput(0, 0);
         }
         else
         {
@@ -66,7 +66,7 @@ public class PunchingBagAI : EntityAI
                 {
                     //Debug.Log(dest);
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
-                    if (path.Peek().getTopHeight() > handler.getEntityPhysics().GetEntityElevation()) //Needs to jump
+                    if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetEntityElevation()) //Needs to jump
                     {
                         handler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
                     }
@@ -82,18 +82,18 @@ public class PunchingBagAI : EntityAI
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
         if (direction.magnitude > 2)
         {
-            handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+            handler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }
         else
         {
-            handler.setXYAnalogInput(0, 0);
+            handler.SetXYAnalogInput(0, 0);
         }
     }
 
     private void MoveTowardPoint(Vector2 destination)
     {
         Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
-        handler.setXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        handler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
     }
 
     // =================| Update path if target changes touched nav
@@ -103,7 +103,7 @@ public class PunchingBagAI : EntityAI
         {
             //Debug.Log("Success!!!");
             //recalculate path
-            path = navManager.FindPath(handler.getEntityPhysics().getCurrentNavObject(), newDestination);
+            path = navManager.FindPath(handler.GetEntityPhysics().getCurrentNavObject(), newDestination);
         }
     }
 

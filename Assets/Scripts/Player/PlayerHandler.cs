@@ -97,12 +97,12 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.RUN):
                 if (xInput > 0 && isFlipped)
                 {
-                    flipCharacterSprite();
+                    FlipCharacterSprite();
                     isFlipped = false;
                 }
                 if (xInput < 0 && !isFlipped)
                 {
-                    flipCharacterSprite();
+                    FlipCharacterSprite();
                     isFlipped = true;
                 }
                 characterAnimator.Play(RUN_Anim);
@@ -115,7 +115,7 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.LIGHT_STAB):
                 if (isFlipped)
                 {
-                    flipCharacterSprite();
+                    FlipCharacterSprite();
                     isFlipped = false;
                 }
                 //Debug.Log(hitEnemies.Count);
@@ -133,7 +133,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void flipCharacterSprite()
+    private void FlipCharacterSprite()
     {
         Vector3 theScale = characterSprite.transform.localScale;
         theScale.x *= -1;
@@ -400,30 +400,32 @@ public class PlayerHandler : EntityHandler
 
 
     //================================================================================| SETTERS FOR INPUT |
-    public void setUpPressed(bool isPressed)
+    
+    public void SetUpPressed(bool isPressed)
     {
         UpPressed = isPressed;
     }
-    public void setDownPressed(bool isPressed)
+    public void SetDownPressed(bool isPressed)
     {
         DownPressed = isPressed;
     }
-    public void setLeftPressed(bool isPressed)
+    public void SetLeftPressed(bool isPressed)
     {
         LeftPressed = isPressed;
     }
-    public void setRightPressed(bool isPressed)
+    public void SetRightPressed(bool isPressed)
     {
         RightPressed = isPressed;
     }
-    public void setJumpPressed(bool isPressed)
+    public void SetJumpPressed(bool isPressed)
     {
         JumpPressed = isPressed;
     }
-    public void setAttackPressed(bool isPressed)
+    public void SetAttackPressed(bool isPressed)
     {
         AttackPressed = isPressed;
     }
+    
 
 
 

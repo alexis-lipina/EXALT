@@ -103,7 +103,7 @@ public class PunchingBagAI : EntityAI
         {
             //Debug.Log("Success!!!");
             //recalculate path
-            path = navManager.FindPath(handler.GetEntityPhysics().getCurrentNavObject(), newDestination);
+            path = navManager.FindPath(handler.GetEntityPhysics().GetCurrentNavObject(), newDestination);
         }
     }
 

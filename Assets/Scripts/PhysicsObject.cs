@@ -14,8 +14,8 @@ using UnityEngine;
 public abstract class PhysicsObject : MonoBehaviour
 {
 
-    [SerializeField] protected float bottomHeight;
-    [SerializeField] protected float topHeight;
+    protected float bottomHeight;
+    protected float topHeight;
 
 	
     public float GetTopHeight()

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnvironmentPhysics : PhysicsObject
 {
+    [SerializeField] private float environmentBottomHeight; //for initialization only
+    [SerializeField] private float environmentTopHeight; //for initialization only
     [SerializeField] private GameObject playerSprite;
     [SerializeField] private GameObject parent;
     [SerializeField] private GameObject[] neighbors;
@@ -11,12 +13,18 @@ public class EnvironmentPhysics : PhysicsObject
 
     private List<NavEdge> neighborEdges;
 
+    void Awake()
+    {
+        bottomHeight = environmentBottomHeight;
+        topHeight = environmentTopHeight;
+        neighborEdges = new List<NavEdge>();
+    }
+
     void Start()
     {
         //Debug.Log("POSITION BEFORE:" + parent.transform.position.z);
         parent.transform.position = new Vector3(parent.transform.position.x, parent.transform.position.y, parent.transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
         //Debug.Log("POSITION OF ME NOW:" + parent.transform.position.z);
-        neighborEdges = new List<NavEdge>();
         foreach(GameObject neighbor in neighbors)
         {
             //Debug.Log("Neighbor visited in " + gameObject.name);

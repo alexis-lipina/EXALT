@@ -28,11 +28,11 @@ public class InputHandler : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("XBox One - A Button") > 0)
         {
-            playerHandler.setJumpPressed(true);
+            playerHandler.SetJumpPressed(true);
         }
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetAxisRaw("XBox One - X Button") > 0)
         {
-            playerHandler.setAttackPressed(true);
+            playerHandler.SetAttackPressed(true);
         }
 
         //send input data

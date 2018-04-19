@@ -52,10 +52,15 @@ public class EntityPhysics : PhysicsObject
     //         ^ instanceID       ^bottom   ^ topheight
     Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
     //          ^ instanceID       ^ height    ^ shadowobject 
+    List<PhysicsObject> EntitiesTouched;
 
     //private float entityElevation; //replaced with bottomHeight
     public float ZVelocity;
 
+    void Awake()
+    {
+        EntitiesTouched = new List<PhysicsObject>();
+    }
 
     void Start()
     {
@@ -79,12 +84,62 @@ public class EntityPhysics : PhysicsObject
         }
         UpdateEntityNavigationObject();
         hasBeenHit = false;
+
+
+
+        
+
+        //Entity collision 
+        Collider2D[] touchingCollider = new Collider2D[10]; //TODO : arbitrary max number of collisions
+        gameObject.GetComponent<Collider2D>().OverlapCollider(new ContactFilter2D(), touchingCollider); //TODO : Use layer masking to only get entities
+        Debug.Log("TouchedEntities:" + EntitiesTouched.Count);
+        foreach (Collider2D touchedcollider in touchingCollider) //add new entities
+        {
+            if (touchedcollider != null)
+            {
+                if (touchedcollider.gameObject.tag == "Friend" || touchedcollider.gameObject.tag == "Enemy")
+                {
+                    //Debug.Log("Touching a thing!!!");
+                    if (!EntitiesTouched.Contains(touchedcollider.gameObject.GetComponent<PhysicsObject>()))
+                    {
+                        Debug.Log("Entering object: " + touchedcollider.gameObject.GetComponent<PhysicsObject>().GetInstanceID());
+                        EntitiesTouched.Add(touchedcollider.gameObject.GetComponent<PhysicsObject>());
+                    }
+                }
+            }
+        }
+        Debug.Log("NewTouchedEntities:" + EntitiesTouched.Count);
+        bool[] indicesToRemove = new bool[EntitiesTouched.Count]; //true if needs to be removed, false if not
+        ContactFilter2D filter = new ContactFilter2D();
+        Debug.Log("IS IT USING DEPTH:" + filter.useDepth);
+        for(int i = 0; i < EntitiesTouched.Count; i++)
+        {
+            if (!EntitiesTouched[i].gameObject.GetComponent<BoxCollider2D>().size.x)
+            {
+                //if the entitestouched object is no longer touching
+                indicesToRemove[i] = true;
+            }
+            else
+            {
+                indicesToRemove[i] = false;
+            }
+        }
+        for(int j = indicesToRemove.Length-1; j > -1; j--) //regresses back from end, so the changing list size doesnt mess up anything
+        {
+            if (indicesToRemove[j])
+            {
+                EntitiesTouched.RemoveAt(j);
+                Debug.Log("Leaving Object at " + j);
+
+            }
+        }
+        
+
     }
 
     //======================================================| Terrain Collision management
     void OnTriggerEnter2D(Collider2D other)
     {
-        
         //Debug.Log("Entering!");
         if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
         {
@@ -181,7 +236,6 @@ public class EntityPhysics : PhysicsObject
         }
     }
 
-
     private bool PlayerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
         if (playerTop > terrainBottom && playerBottom < terrainTop)
@@ -190,8 +244,33 @@ public class EntityPhysics : PhysicsObject
     }
 
     /// <summary>
+    /// Move in a direction, but get pushed away by entities using extrusion method.
+    /// 
+    /// Probably should do this before MoveWithCollision (which tests collision with static objects) because 
+    /// improper collision with other entities is less egregious than improper collision with static objects
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns>New velocity adjusted</returns>
+    public Vector2 MoveAvoidEntities(Vector2 velocity)
+    {
+        if (EntitiesTouched.Count > 0)
+        {
+            foreach (PhysicsObject entity in EntitiesTouched)
+            {
+                //get the location relative to this objects location
+                //negate the x and y values and add them to the velocity
+                velocity = new Vector2(velocity.x - entity.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, velocity.y - entity.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
+                
+            }
+        }
+        return velocity;
+    }
+
+    /// <summary>
     /// Moves the entity in a direction, testing for collisions along that direction and acting accordingly to
-    /// prevent clipping through objects, and allow the player to move right up against objects
+    /// prevent clipping through objects, and allow the player to move right up against objects.
+    /// 
+    /// Entity can only collide with EnvironmentObjects.
     /// </summary>
     /// <param name="velocityX">The desired change in x position</param>
     /// <param name="velocityY">The desired change in y position</param>
@@ -403,7 +482,6 @@ public class EntityPhysics : PhysicsObject
                 //Debug.Log("X:" + velocityX + " Y:" + velocityY);
 
             }
-
         }
         else //move player character normally
         {

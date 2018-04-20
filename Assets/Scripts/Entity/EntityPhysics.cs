@@ -87,44 +87,54 @@ public class EntityPhysics : PhysicsObject
 
 
 
-        
+
 
         //Entity collision 
+        if (gameObject.tag == "Friend")
+        {
+            HandleTouchedEntities();
+        }
+    }
+
+    /// <summary>
+    /// Makes sure EntitiesTouched is kept up to date
+    /// </summary>
+    protected void HandleTouchedEntities()
+    {
         Collider2D[] touchingCollider = new Collider2D[10]; //TODO : arbitrary max number of collisions
         gameObject.GetComponent<Collider2D>().OverlapCollider(new ContactFilter2D(), touchingCollider); //TODO : Use layer masking to only get entities
-        Debug.Log("TouchedEntities:" + EntitiesTouched.Count);
-        foreach (Collider2D touchedcollider in touchingCollider) //add new entities
+        //Debug.Log("TouchedEntities Start :" + EntitiesTouched.Count);
+        bool[] indicesToRemove = new bool[EntitiesTouched.Count]; //true if needs to be removed, false if not
+
+        for (int i = 0; i < indicesToRemove.Length; i++)//array initialization
+        {
+            indicesToRemove[i] = true;
+        }
+
+        foreach (Collider2D touchedcollider in touchingCollider) //add new entities, mark entities for deletion with indicesToRemove
         {
             if (touchedcollider != null)
             {
                 if (touchedcollider.gameObject.tag == "Friend" || touchedcollider.gameObject.tag == "Enemy")
                 {
+                    PhysicsObject touchedPhysicsObject = touchedcollider.gameObject.GetComponent<PhysicsObject>();
                     //Debug.Log("Touching a thing!!!");
-                    if (!EntitiesTouched.Contains(touchedcollider.gameObject.GetComponent<PhysicsObject>()))
+                    if (!EntitiesTouched.Contains(touchedPhysicsObject)) //handle new objects
                     {
-                        Debug.Log("Entering object: " + touchedcollider.gameObject.GetComponent<PhysicsObject>().GetInstanceID());
-                        EntitiesTouched.Add(touchedcollider.gameObject.GetComponent<PhysicsObject>());
+                        Debug.Log("<color=red>Entering object: </color>" + touchedPhysicsObject.GetInstanceID());
+                        EntitiesTouched.Add(touchedPhysicsObject);
+                    }
+                    else //mark still-touching objects for retention
+                    {
+                        indicesToRemove[EntitiesTouched.IndexOf(touchedPhysicsObject)] = false;
+                        //only sets false those that are still touching
+                        //will always be within array index bounds because new list elements are added to the end
                     }
                 }
             }
         }
-        Debug.Log("NewTouchedEntities:" + EntitiesTouched.Count);
-        bool[] indicesToRemove = new bool[EntitiesTouched.Count]; //true if needs to be removed, false if not
-        ContactFilter2D filter = new ContactFilter2D();
-        Debug.Log("IS IT USING DEPTH:" + filter.useDepth);
-        for(int i = 0; i < EntitiesTouched.Count; i++)
-        {
-            if (!EntitiesTouched[i].gameObject.GetComponent<BoxCollider2D>().size.x)
-            {
-                //if the entitestouched object is no longer touching
-                indicesToRemove[i] = true;
-            }
-            else
-            {
-                indicesToRemove[i] = false;
-            }
-        }
-        for(int j = indicesToRemove.Length-1; j > -1; j--) //regresses back from end, so the changing list size doesnt mess up anything
+        //Debug.Log("TouchedEntities Predelete :" + EntitiesTouched.Count);
+        for (int j = indicesToRemove.Length - 1; j > -1; j--) //regresses back from end, so the changing list size doesnt mess up anything
         {
             if (indicesToRemove[j])
             {
@@ -133,8 +143,7 @@ public class EntityPhysics : PhysicsObject
 
             }
         }
-        
-
+        //Debug.Log("TouchedEntities End :" + EntitiesTouched.Count);
     }
 
     //======================================================| Terrain Collision management

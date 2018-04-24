@@ -80,7 +80,7 @@ public class PunchingBagAI : EntityAI
     private void MoveTowardTarget()
     {
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
-        if (direction.magnitude > 2)
+        if (direction.magnitude > 3)
         {
             handler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
         }

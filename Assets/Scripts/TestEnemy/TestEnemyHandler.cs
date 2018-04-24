@@ -143,7 +143,6 @@ public class TestEnemyHandler : EntityHandler
 
     private void RunState()
     {
-        //Debug.Log("Running!!!");
         Vector2 tempDir = new Vector2(xInput, yInput).normalized;
         if (tempDir.x > Math.Abs(tempDir.y))
         {

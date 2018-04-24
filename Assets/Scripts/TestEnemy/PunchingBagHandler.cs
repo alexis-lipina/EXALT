@@ -78,6 +78,7 @@ public class PunchingBagHandler : EntityHandler
     {
         //===========| State Switching
         //Debug.Log("IDLE!!!");
+        entityPhysics.MoveCharacterPositionPhysics(0, 0);
         if (Mathf.Abs(xInput) > 0.1 || Mathf.Abs(yInput) > 0.1)
         {
             currentState = PunchingBagState.RUN;
@@ -92,6 +93,7 @@ public class PunchingBagHandler : EntityHandler
         {
             entityPhysics.ZVelocity = 0;
             currentState = PunchingBagState.FALL;
+            //Debug.Log("Falling");
         }
         else
         {
@@ -101,8 +103,10 @@ public class PunchingBagHandler : EntityHandler
 
     private void RunState()
     {
-        //Debug.Log("Running!!!");
+        //Debug.Log("Running!!! : " + entityPhysics.GetBottomHeight());
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+
+
 
 
         //===========| State Switching
@@ -112,12 +116,7 @@ public class PunchingBagHandler : EntityHandler
             entityPhysics.SavePosition();
             currentState = PunchingBagState.IDLE;
         }
-        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
-        {
-            entityPhysics.ZVelocity = 0;
-            currentState = PunchingBagState.FALL;
-        }
+        
         if (jumpPressed)
         {
             entityPhysics.ZVelocity = 1;
@@ -128,6 +127,13 @@ public class PunchingBagHandler : EntityHandler
             cooldowntimer = 1;
             //currentState = PunchingBagState.WOUNDED;
         }
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            currentState = PunchingBagState.FALL;
+        }
         else
         {
             entityPhysics.SavePosition();
@@ -136,7 +142,7 @@ public class PunchingBagHandler : EntityHandler
     }
     private void FallState()
     {
-        //Debug.Log("Falling!!!");
+        //Debug.Log("Falling: " + entityPhysics.GetBottomHeight());
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();
 

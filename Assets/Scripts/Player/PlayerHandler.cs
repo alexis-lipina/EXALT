@@ -26,7 +26,7 @@ public class PlayerHandler : EntityHandler
     const string SWING_WEST_Anim = "PlayerSwingWest";
 
 
-    private const float AttackMovementSpeed = 0.1f;
+    private const float AttackMovementSpeed = 0.3f;
 
 
 
@@ -118,7 +118,6 @@ public class PlayerHandler : EntityHandler
                     FlipCharacterSprite();
                     isFlipped = false;
                 }
-                //Debug.Log(hitEnemies.Count);
                 PlayerLightStab();
                 break;
             case (PlayerState.HEAVY_STAB):
@@ -145,6 +144,7 @@ public class PlayerHandler : EntityHandler
     private void PlayerIdle()
     {
         //do nothing, maybe later have them breathing or getting bored, sitting down
+        entityPhysics.MoveCharacterPositionPhysics(0, 0);
         //Debug.Log("Player Idle");
         //------------------------------------------------| STATE CHANGE
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
@@ -186,6 +186,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        //face direction determination
         Vector2 direction = new Vector2(xInput, yInput);
         if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
         {
@@ -264,7 +265,7 @@ public class PlayerHandler : EntityHandler
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         //EntityPhysics.CheckHitHeadOnCeiling();
-        if (entityPhysics.TestFeetCollision())
+        //if (entityPhysics.TestFeetCollision())
 
 
         if (entityPhysics.GetEntityElevation() <= maxheight)
@@ -284,7 +285,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerLightStab()
+    private void PlayerLightStab()//===============================================| ATTACK
     {
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         Vector2 swingboxpos = Vector2.zero;
@@ -316,7 +317,7 @@ public class PlayerHandler : EntityHandler
                 swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y - 2);
                 break;
         }
-        entityPhysics.MoveWithCollision(thrustdirection.x*AttackMovementSpeed, thrustdirection.y*AttackMovementSpeed);
+        entityPhysics.MoveCharacterPositionPhysics(thrustdirection.x*AttackMovementSpeed, thrustdirection.y*AttackMovementSpeed);   
         //-----| Hitbox - the one directly below only flashes for one frame 
         /*
         if (!hasSwung)
@@ -340,7 +341,8 @@ public class PlayerHandler : EntityHandler
             {
                 int temp = hit.GetComponent<EntityPhysics>().GetInstanceID();
 
-                if (!hitEnemies.Contains(temp))
+                if (!hitEnemies.Contains(temp) && 
+                    hit.gameObject.GetComponent<PhysicsObject>().GetBottomHeight() < entityPhysics.GetTopHeight() && hit.gameObject.GetComponent<PhysicsObject>().GetTopHeight() > entityPhysics.GetBottomHeight())
                 {
                     Debug.Log("thrustdirection:" + thrustdirection);
                     hit.GetComponent<EntityPhysics>().Inflict(1.0f, thrustdirection, 2f);
@@ -351,10 +353,15 @@ public class PlayerHandler : EntityHandler
                 }
             }
         }
-        if (StateTimer == 0.25f)
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetEntityElevation() > maxheight)
         {
-            //FollowingCamera.GetComponent<CameraScript>().Jolt(1);
-            //FollowingCamera.GetComponent<CameraScript>().Shake(0.1f, 10, 0.01f);
+            entityPhysics.ZVelocity = 0;
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetEntityElevation(maxheight);
         }
 
         StateTimer -= Time.deltaTime;

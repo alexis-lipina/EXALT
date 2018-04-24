@@ -84,16 +84,9 @@ public class EntityPhysics : PhysicsObject
         }
         UpdateEntityNavigationObject();
         hasBeenHit = false;
-
-
-
-
-
         //Entity collision 
-        if (gameObject.tag == "Friend")
-        {
-            HandleTouchedEntities();
-        }
+        HandleTouchedEntities();
+
     }
 
     /// <summary>
@@ -118,6 +111,11 @@ public class EntityPhysics : PhysicsObject
                 if (touchedcollider.gameObject.tag == "Friend" || touchedcollider.gameObject.tag == "Enemy")
                 {
                     PhysicsObject touchedPhysicsObject = touchedcollider.gameObject.GetComponent<PhysicsObject>();
+                    //DEBUG
+                    if (tag == "Enemy")
+                    {
+                        Debug.Log("ey");
+                    }
                     //Debug.Log("Touching a thing!!!");
                     if (!EntitiesTouched.Contains(touchedPhysicsObject)) //handle new objects
                     {
@@ -182,12 +180,16 @@ public class EntityPhysics : PhysicsObject
 
     //=====================================================================| MOVEMENT 
     /// <summary>
-    /// Calls MoveWithCollision but with Time.deltaTime and "speed" field accounted for 
+    /// Calls MoveWithCollision but with Time.deltaTime and "speed" field accounted for.
+    /// Also uses entity collision
     /// </summary>
     /// <param name="xInput"></param>
     /// <param name="yInput"></param>
     public void MoveCharacterPositionPhysics(float xInput, float yInput)
     {
+        Vector2 temp = MoveAvoidEntities(new Vector2(xInput, yInput));
+        xInput = temp.x;
+        yInput = temp.y;
         this.MoveWithCollision(xInput * speed * Time.deltaTime, yInput * speed * Time.deltaTime);
         //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
     }
@@ -233,6 +235,7 @@ public class EntityPhysics : PhysicsObject
             entry.Value.Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + entry.Value.Key, gameObject.transform.position.y + environmentHandler.GetComponent<BoxCollider2D>().offset.y - environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
         }
     }
+
      /// <summary>
      /// If the entity is about to "hit their head" on the underside of a collider, set the ZVelocity to 0
      /// </summary>
@@ -262,16 +265,22 @@ public class EntityPhysics : PhysicsObject
     /// <returns>New velocity adjusted</returns>
     public Vector2 MoveAvoidEntities(Vector2 velocity)
     {
+        
         if (EntitiesTouched.Count > 0)
         {
             foreach (PhysicsObject entity in EntitiesTouched)
             {
-                //get the location relative to this objects location
-                //negate the x and y values and add them to the velocity
-                velocity = new Vector2(velocity.x - entity.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, velocity.y - entity.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
+                if (entity.GetBottomHeight() < this.GetTopHeight() && entity.GetTopHeight() > this.GetBottomHeight())
+                {
+                    //get the location relative to this objects location
+                    Vector2 amountOfForceToAdd = new Vector2(entity.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, entity.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
+                    amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, might want different force strengths
+                    velocity = new Vector2(velocity.x - amountOfForceToAdd.x , velocity.y - amountOfForceToAdd.y);
+                }
                 
             }
         }
+        
         return velocity;
     }
 

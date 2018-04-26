@@ -27,13 +27,14 @@ public class NavigationManager : MonoBehaviour
         Debug.Log(path);
         return path;        
     }
+
     public Stack<EnvironmentPhysics> FindPath(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
         visited = new List<int>();
         Stack<EnvironmentPhysics> path = AStarSearchExceptItReturnsEnvironmentObjects(start, destination);
         if (path == null || path.Count == 0)
         {
-            //Debug.Log("Valid path not found");
+            Debug.Log("Valid path not found");
         }
         //Debug.Log(path);
         return path;
@@ -126,7 +127,7 @@ public class NavigationManager : MonoBehaviour
         EnvironmentPhysics current = null;
         //Debug.Log("About to die!");
         int iterations = 0;
-        while(frontier.Count != 0 && iterations < 20)
+        while(frontier.Count != 0 && iterations < 30) // TODO : Arbitrary cap on iterations
         {
             //Debug.Log("bloop");
             //get least expensive frontier, set to current
@@ -174,6 +175,13 @@ public class NavigationManager : MonoBehaviour
         return path;
     }
 
+
+    /// <summary>
+    /// This is the good one
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="destination"></param>
+    /// <returns></returns>
     private Stack<EnvironmentPhysics> AStarSearchExceptItReturnsEnvironmentObjects(EnvironmentPhysics start, EnvironmentPhysics destination)
     {
         if (start == null || destination == null)
@@ -191,9 +199,10 @@ public class NavigationManager : MonoBehaviour
         EnvironmentPhysics current = null;
         //Debug.Log("About to die!");
         int iterations = 0;
-        while (frontier.Count != 0 && iterations < 20)
+        while (frontier.Count != 0 && iterations < 30)
         {
-            //Debug.Log("bloop");
+            //Debug.Log("bloop:" + iterations);
+
             //get least expensive frontier, set to current
             float min = float.PositiveInfinity;
             foreach (KeyValuePair<EnvironmentPhysics, float> entry in frontier)
@@ -226,16 +235,16 @@ public class NavigationManager : MonoBehaviour
             iterations++;
         }
         Stack<EnvironmentPhysics> path = new Stack<EnvironmentPhysics>();
-        if (iterations > 18) return null;
+        if (iterations > 30) return null;
         iterations = 0;
-        while (current != start && iterations < 20)//while current thing isnt start
+        while (current != start && iterations < 30)//while current thing isnt start
         {
             //Debug.Log("nooo");
             path.Push(current);
             current = cameFrom[current];
             iterations++;
         }
-        if (iterations > 18) return null;
+        if (iterations > 30) return null;
         return path;
     }
 }

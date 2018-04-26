@@ -44,6 +44,7 @@ public class PunchingBagAI : EntityAI
         {
             //do nothing
             handler.SetXYAnalogInput(0, 0);
+            //Debug.Log("<color=red>Not moving to player");
         }
         else
         {
@@ -58,10 +59,14 @@ public class PunchingBagAI : EntityAI
                 //if overlap, pop and exit
                 //if no overlap, movetowardpoint
                 EnvironmentPhysics dest = path.Peek();
-                if (entityPhysics.GetComponent<BoxCollider2D>().IsTouching(dest.GetComponent<BoxCollider2D>()))
+                //if (entityPhysics.GetComponent<BoxCollider2D>().IsTouching(dest.GetComponent<BoxCollider2D>()))
+                //if (dest.GetComponent<BoxCollider2D>().bounds.Contains(entityPhysics.GetComponent<BoxCollider2D>().bounds.min) && dest.GetComponent<BoxCollider2D>().bounds.Contains(entityPhysics.GetComponent<BoxCollider2D>().bounds.max))
+                if (dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.min) && dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.max))
                 {
+                    //Debug.Log("Eyy");
                     path.Pop();
                 }
+
                 else
                 {
                     //Debug.Log(dest);

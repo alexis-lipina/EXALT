@@ -111,15 +111,11 @@ public class EntityPhysics : PhysicsObject
                 if (touchedcollider.gameObject.tag == "Friend" || touchedcollider.gameObject.tag == "Enemy")
                 {
                     PhysicsObject touchedPhysicsObject = touchedcollider.gameObject.GetComponent<PhysicsObject>();
-                    //DEBUG
-                    if (tag == "Enemy")
-                    {
-                        Debug.Log("ey");
-                    }
+                    
                     //Debug.Log("Touching a thing!!!");
                     if (!EntitiesTouched.Contains(touchedPhysicsObject)) //handle new objects
                     {
-                        Debug.Log("<color=red>Entering object: </color>" + touchedPhysicsObject.GetInstanceID());
+                        //Debug.Log("<color=red>Entering object: </color>" + touchedPhysicsObject.GetInstanceID());
                         EntitiesTouched.Add(touchedPhysicsObject);
                     }
                     else //mark still-touching objects for retention
@@ -137,7 +133,7 @@ public class EntityPhysics : PhysicsObject
             if (indicesToRemove[j])
             {
                 EntitiesTouched.RemoveAt(j);
-                Debug.Log("Leaving Object at " + j);
+                //Debug.Log("Leaving Object at " + j);
 
             }
         }

@@ -96,7 +96,6 @@ public class EntityPhysics : PhysicsObject
     {
         Collider2D[] touchingCollider = new Collider2D[10]; //TODO : arbitrary max number of collisions
         gameObject.GetComponent<Collider2D>().OverlapCollider(new ContactFilter2D(), touchingCollider); //TODO : Use layer masking to only get entities
-        //Debug.Log("TouchedEntities Start :" + EntitiesTouched.Count);
         bool[] indicesToRemove = new bool[EntitiesTouched.Count]; //true if needs to be removed, false if not
 
         for (int i = 0; i < indicesToRemove.Length; i++)//array initialization
@@ -112,7 +111,6 @@ public class EntityPhysics : PhysicsObject
                 {
                     PhysicsObject touchedPhysicsObject = touchedcollider.gameObject.GetComponent<PhysicsObject>();
                     
-                    //Debug.Log("Touching a thing!!!");
                     if (!EntitiesTouched.Contains(touchedPhysicsObject)) //handle new objects
                     {
                         //Debug.Log("<color=red>Entering object: </color>" + touchedPhysicsObject.GetInstanceID());
@@ -127,17 +125,13 @@ public class EntityPhysics : PhysicsObject
                 }
             }
         }
-        //Debug.Log("TouchedEntities Predelete :" + EntitiesTouched.Count);
         for (int j = indicesToRemove.Length - 1; j > -1; j--) //regresses back from end, so the changing list size doesnt mess up anything
         {
             if (indicesToRemove[j])
             {
                 EntitiesTouched.RemoveAt(j);
-                //Debug.Log("Leaving Object at " + j);
-
             }
         }
-        //Debug.Log("TouchedEntities End :" + EntitiesTouched.Count);
     }
 
     //======================================================| Terrain Collision management
@@ -196,9 +190,11 @@ public class EntityPhysics : PhysicsObject
     public void FreeFall()
     {
         //CheckHitHeadOnCeiling();
+        // deltaV = deltaT * a
+        ZVelocity += Time.deltaTime * gravity;
         bottomHeight += ZVelocity;
         topHeight = bottomHeight + entityHeight;
-        ZVelocity -= gravity;
+       // ZVelocity -= gravity;
         CheckHitHeadOnCeiling();
     }
     /// <summary>

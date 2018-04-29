@@ -13,6 +13,12 @@ public class InputHandler : MonoBehaviour
 
     [SerializeField] private GameObject playerHandlerObject;
     private PlayerHandler playerHandler;
+
+    private Vector2 rightAnalog;
+    public Vector2 RightAnalog
+    {
+        get { return rightAnalog; }
+    }
     
 
     void Start()
@@ -25,6 +31,10 @@ public class InputHandler : MonoBehaviour
         //Get Input
         float x = Input.GetAxisRaw("Horizontal"); // GetAxis for smooth, GetAxisRaw for snappy
         float y = Input.GetAxisRaw("Vertical");
+
+        float rightX = Input.GetAxisRaw("XBox One - Right Analog X");
+        float rightY = Input.GetAxisRaw("XBox One - Right Analog Y");
+        rightAnalog = new Vector2(rightX, rightY);
         
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("XBox One - A Button") > 0)
         {

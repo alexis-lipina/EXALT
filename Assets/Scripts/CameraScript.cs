@@ -5,15 +5,31 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
+    private const float OFFSET_MAGNITUDE_X = 16f * 0.75f;
+    private const float OFFSET_MAGNITUDE_Y = 9f * 0.75f;
 
     public Transform player;
     public float smoothTime;
+    [SerializeField] private InputHandler input;
+
     private Vector3 velocity = Vector3.zero;
 
     void Update()
     {
-        Vector3 targetPosition = player.TransformPoint(new Vector3(0, 0, -100));
+        Vector3 targetPosition = UpdateTargetPosition();
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+    }
+
+    /// <summary>
+    /// Updates the position the camera follows.
+    /// </summary>
+    Vector3 UpdateTargetPosition()
+    {
+        Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -100f));
+        Vector2 offset = input.RightAnalog; //moves camera in direction the stick is pointing
+
+        pos.Set(pos.x + offset.x * OFFSET_MAGNITUDE_X, pos.y + offset.y * OFFSET_MAGNITUDE_Y, pos.z);
+        return pos;
     }
 
     //------------| Camera Effects (wrapper methods for coroutines)

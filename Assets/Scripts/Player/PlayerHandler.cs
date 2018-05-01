@@ -22,7 +22,7 @@ public class PlayerHandler : EntityHandler
     const string JUMP_Anim = "Anim_CharacterTest3";
     const string SWING_NORTH_Anim = "PlayerSwingNorth";
     const string SWING_SOUTH_Anim = "PlayerSwingSouth";
-    const string SWING_EAST_Anim = "PlayerFourFrameJab";
+    const string SWING_EAST_Anim = "Anim_PlayerSwingRight";
     const string SWING_WEST_Anim = "PlayerSwingWest";
 
 

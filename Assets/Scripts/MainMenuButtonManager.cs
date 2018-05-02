@@ -11,7 +11,6 @@ public class MainMenuButtonManager : MonoBehaviour
     [SerializeField] private Button QuitButton;
 
     [SerializeField] private GameObject ControlsImage;
-    [SerializeField] private GameObject PosterImage;
 
     private bool controlsVisible;
 
@@ -24,7 +23,7 @@ public class MainMenuButtonManager : MonoBehaviour
 	
 	public void PlayDemoPressed()
     {
-        SceneManager.LoadScene("Demo_02", LoadSceneMode.Single);
+        SceneManager.LoadScene("WaterfallArena", LoadSceneMode.Single);
         //begin game
         
     }
@@ -34,13 +33,11 @@ public class MainMenuButtonManager : MonoBehaviour
         if (!controlsVisible)
         {
             ControlsImage.SetActive(true);
-            PosterImage.SetActive(false);
             controlsVisible = true;
         }
         else
         {
             ControlsImage.SetActive(false);
-            PosterImage.SetActive(true);
             controlsVisible = false;
         }
 

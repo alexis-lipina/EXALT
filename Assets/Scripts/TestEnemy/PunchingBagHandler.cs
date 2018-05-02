@@ -106,9 +106,6 @@ public class PunchingBagHandler : EntityHandler
         //Debug.Log("Running!!! : " + entityPhysics.GetBottomHeight());
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
-
-
-
         //===========| State Switching
 
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)

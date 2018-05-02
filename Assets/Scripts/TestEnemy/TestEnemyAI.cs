@@ -58,9 +58,10 @@ public class TestEnemyAI : EntityAI
                 //if overlap, pop and exit
                 //if no overlap, movetowardpoint
                 EnvironmentPhysics dest = path.Peek();
-                if (entityPhysics.GetComponent<BoxCollider2D>().IsTouching(dest.GetComponent<BoxCollider2D>()))
+                //if (entityPhysics.GetComponent<BoxCollider2D>().IsTouching(dest.GetComponent<BoxCollider2D>()))
+                if (dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.min) && dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.max))
                 {
-                    path.Pop();
+                        path.Pop();
                 }
                 else
                 {
@@ -68,9 +69,9 @@ public class TestEnemyAI : EntityAI
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
                     if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetEntityElevation()) //Needs to jump
                     {
-                        testhandler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
+                        testhandler.gameObject.GetComponent<TestEnemyHandler>().SetJumpPressed(true);
                     }
-                    else { testhandler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(false); }
+                    else { testhandler.gameObject.GetComponent<TestEnemyHandler>().SetJumpPressed(false); }
                 }
             }
         }
@@ -98,6 +99,7 @@ public class TestEnemyAI : EntityAI
 
     private void MoveToAttackTarget()
     {
+
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
         if (direction.magnitude > 4)
         {

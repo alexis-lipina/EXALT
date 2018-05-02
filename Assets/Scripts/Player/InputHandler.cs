@@ -49,7 +49,7 @@ public class InputHandler : MonoBehaviour
         playerHandler.SetXYAnalogInput(x, y);
         if (Input.GetAxisRaw("XBox One - Menu Button") > 0 || Input.GetKeyDown(KeyCode.Escape))
         {
-            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+            SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
        
     }

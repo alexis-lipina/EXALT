@@ -5,20 +5,38 @@ using UnityEngine;
 
 public class TestEnemyHandler : EntityHandler
 {
-    [SerializeField] private SpriteRenderer characterSprite;
+    [SerializeField] private Animator characterAnimator;
 
 
     enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, WOUNDED };
     private TestEnemyState currentState;
     [SerializeField] private bool isCompanion;
-    [SerializeField] private Sprite[] tempAttackSprite;
-    [SerializeField] private Sprite[] tempReadySprite;
-    [SerializeField] private Sprite[] tempSwingSprite;
-    [SerializeField] private Sprite[] tempRunSprite;
-    [SerializeField] private Sprite[] tempIdleSprite;
-    [SerializeField] private Sprite[] tempRecoilSprite;  
 
-    
+    const string IDLE_EAST_Anim = "Anim_EnemyIdleEast";
+    const string IDLE_WEST_Anim = "Anim_EnemyIdleWest";
+    const string RUN_EAST_Anim = "Anim_EnemyRunEast";
+    const string RUN_WEST_Anim = "Anim_EnemyRunWest";
+    const string JUMP_EAST_Anim = "Anim_EnemyJumpEast";
+    const string JUMP_WEST_Anim = "Anim_EnemyJumpWest";
+    const string FALL_EAST_Anim = "Anim_EnemyFallEast";
+    const string FALL_WEST_Anim = "Anim_EnemyFallWest";
+
+    const string READY_NORTH_Anim = "Anim_EnemyReadyNorth";
+    const string READY_SOUTH_Anim = "Anim_EnemyReadySouth";
+    const string READY_EAST_Anim = "Anim_EnemyReadyEast";
+    const string READY_WEST_Anim = "Anim_EnemyReadyWest";
+
+    const string ATTACK_NORTH_Anim = "Anim_EnemyAttackNorth";
+    const string ATTACK_SOUTH_Anim = "Anim_EnemyAttackSouth";
+    const string ATTACK_EAST_Anim = "Anim_EnemyAttackEast";
+    const string ATTACK_WEST_Anim = "Anim_EnemyAttackWest";
+
+    const string SWING_NORTH_Anim = "Anim_EnemySlashNorth";
+    const string SWING_SOUTH_Anim = "Anim_EnemySlashSouth";
+    const string SWING_EAST_Anim = "Anim_EnemySlashEast";
+    const string SWING_WEST_Anim = "Anim_EnemySlashWest";
+
+
 
 
     private enum TempTexDirection
@@ -80,35 +98,27 @@ public class TestEnemyHandler : EntityHandler
         switch (currentState)
         {
             case (TestEnemyState.IDLE):
-                characterSprite.sprite = tempIdleSprite[(int)tempDirection];
                 IdleState();
                 break;
             case (TestEnemyState.RUN):
-                characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 RunState();
                 break;
             case (TestEnemyState.FALL):
-                characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 FallState();
                 break;
             case (TestEnemyState.JUMP):
-                characterSprite.sprite = tempRunSprite[(int)tempDirection];
                 JumpState();
                 break;
             case TestEnemyState.READY:
-                characterSprite.sprite = tempReadySprite[(int)tempDirection];
                 ReadyState();
                 break;
             case TestEnemyState.ATTACK:
-                characterSprite.sprite = tempAttackSprite[(int)tempDirection];
                 AttackState();
                 break;
             case TestEnemyState.SWING:
-                characterSprite.sprite = tempSwingSprite[(int)tempDirection];
                 SwingState();
                 break;
             case TestEnemyState.WOUNDED:
-                characterSprite.sprite = tempRecoilSprite[(int)tempDirection];
                 WoundedState();
                 break;
         }
@@ -118,8 +128,22 @@ public class TestEnemyHandler : EntityHandler
 
     private void IdleState()
     {
+
+        //===========| Draw
+        if (tempDirection == TempTexDirection.EAST)
+        {
+            characterAnimator.Play(IDLE_EAST_Anim);
+        }
+        else
+        {
+            characterAnimator.Play(IDLE_WEST_Anim);
+        }
+
+        //===========| Physics
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         //===========| State Switching
-        //Debug.Log("IDLE!!!");
+
+
         if (Mathf.Abs(xInput) > 0.1 || Mathf.Abs(yInput) > 0.1)
         {
             currentState = TestEnemyState.RUN;
@@ -143,6 +167,7 @@ public class TestEnemyHandler : EntityHandler
 
     private void RunState()
     {
+        /*
         Vector2 tempDir = new Vector2(xInput, yInput).normalized;
         if (tempDir.x > Math.Abs(tempDir.y))
         {
@@ -190,9 +215,95 @@ public class TestEnemyHandler : EntityHandler
             entityPhysics.SavePosition();
             entityPhysics.SetEntityElevation(maxheight);
         }
+        */
+        //Debug.Log("Running!!! : " + entityPhysics.GetBottomHeight());
+
+        Vector2 tempDir = new Vector2(xInput, yInput).normalized;
+        if (tempDir.x > Math.Abs(tempDir.y))
+        {
+            tempDirection = TempTexDirection.EAST;
+        }
+        else if (-tempDir.x > Math.Abs(tempDir.y))
+        {
+            tempDirection = TempTexDirection.WEST;
+        }
+        else if (tempDir.y > 0) { tempDirection = TempTexDirection.NORTH; }
+        else if (tempDir.y < 0) { tempDirection = TempTexDirection.SOUTH; }
+
+        //===========| Draw
+        if (xInput > 0)
+        {
+            characterAnimator.Play(RUN_EAST_Anim);
+        }
+        else
+        {
+            characterAnimator.Play(RUN_WEST_Anim);
+        }
+
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+
+
+
+
+        //===========| State Switching
+
+        if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
+        {
+            entityPhysics.SavePosition();
+            currentState = TestEnemyState.IDLE;
+        }
+
+        if (jumpPressed)
+        {
+            entityPhysics.ZVelocity = 0.7f;
+            currentState = TestEnemyState.JUMP;
+        }
+        
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (attackPressed)
+        {
+            stateTimer = 0;
+            currentState = TestEnemyState.READY;
+        }
+        if (entityPhysics.GetEntityElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            currentState = TestEnemyState.FALL;
+        }
+        
+        else
+        {
+            entityPhysics.SavePosition();
+            entityPhysics.SetEntityElevation(maxheight);
+        }
     }
     private void FallState()
     {
+        //==========| Draw
+        if (entityPhysics.ZVelocity < 0)
+        {
+            if (xInput > 0)
+            {
+                characterAnimator.Play(FALL_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(FALL_WEST_Anim);
+            }
+        }
+        else
+        {
+            if (xInput > 0)
+            {
+                characterAnimator.Play(JUMP_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(JUMP_WEST_Anim);
+            }
+        }
+
         //Debug.Log("Falling!!!");
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();
@@ -221,6 +332,30 @@ public class TestEnemyHandler : EntityHandler
 
     private void JumpState()
     {
+        //==========| Draw
+        if (entityPhysics.ZVelocity < 0)
+        {
+            if (xInput > 0)
+            {
+                characterAnimator.Play(FALL_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(FALL_WEST_Anim);
+            }
+        }
+        else
+        {
+            if (xInput > 0)
+            {
+                characterAnimator.Play(JUMP_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(JUMP_WEST_Anim);
+            }
+        }
+
         //Debug.Log("JUMPING!!!");
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();
@@ -248,26 +383,41 @@ public class TestEnemyHandler : EntityHandler
 
     private void AttackState()
     {
-        
-        Debug.Log("Attacking!");
+        //========| Draw
+        switch (tempDirection)
+        {
+            case TempTexDirection.EAST:
+                characterAnimator.Play(ATTACK_EAST_Anim);
+                break;
+            case TempTexDirection.WEST:
+                characterAnimator.Play(ATTACK_WEST_Anim);
+                break;
+            case TempTexDirection.NORTH:
+                characterAnimator.Play(ATTACK_NORTH_Anim);
+                break;
+            case TempTexDirection.SOUTH:
+                characterAnimator.Play(ATTACK_SOUTH_Anim);
+                break;
+        }
+
         Vector2 swingboxpos = Vector2.zero;
         switch (tempDirection)
         {
             case TempTexDirection.EAST:
                 swingboxpos = new Vector2(entityPhysics.transform.position.x + 2, entityPhysics.transform.position.y);
-                entityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
+                entityPhysics.MoveCharacterPositionPhysics(AttackMovementSpeed, 0);
                 break;
             case TempTexDirection.WEST:
                 swingboxpos = new Vector2(entityPhysics.transform.position.x - 2, entityPhysics.transform.position.y);
-                entityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
+                entityPhysics.MoveCharacterPositionPhysics(-AttackMovementSpeed, 0);
                 break;
             case TempTexDirection.NORTH:
                 swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y + 2);
-                entityPhysics.MoveWithCollision(0, AttackMovementSpeed);
+                entityPhysics.MoveCharacterPositionPhysics(0, AttackMovementSpeed);
                 break;
             case TempTexDirection.SOUTH:
                 swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y - 2);
-                entityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
+                entityPhysics.MoveCharacterPositionPhysics(0, -AttackMovementSpeed);
                 break;
         }
         //todo - test area for collision, if coll
@@ -286,7 +436,7 @@ public class TestEnemyHandler : EntityHandler
             hasSwung = true;
         }
         stateTimer += Time.deltaTime;
-        if (stateTimer > 0.1)
+        if (stateTimer > 0.05)
         {
             stateTimer = 0;
             currentState = TestEnemyState.SWING;
@@ -329,7 +479,25 @@ public class TestEnemyHandler : EntityHandler
     //telegraph about to swing, called in AttackState()
     private void ReadyState()
     {
-        Debug.Log("ReadyState");
+
+        //========| Draw
+        switch (tempDirection)
+        {
+            case TempTexDirection.EAST:
+                characterAnimator.Play(READY_EAST_Anim);
+                break;
+            case TempTexDirection.WEST:
+                characterAnimator.Play(READY_WEST_Anim);
+                break;
+            case TempTexDirection.NORTH:
+                characterAnimator.Play(READY_NORTH_Anim);
+                break;
+            case TempTexDirection.SOUTH:
+                characterAnimator.Play(READY_SOUTH_Anim);
+                break;
+        }
+        //Physics
+        entityPhysics.MoveCharacterPositionPhysics(0,0);
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.5) //if 500 ms have passed
         {
@@ -345,6 +513,25 @@ public class TestEnemyHandler : EntityHandler
     //flash attack
     private void SwingState()
     {
+        //========| Draw
+        switch (tempDirection)
+        {
+            case TempTexDirection.EAST:
+                characterAnimator.Play(SWING_EAST_Anim);
+                break;
+            case TempTexDirection.WEST:
+                characterAnimator.Play(SWING_WEST_Anim);
+                break;
+            case TempTexDirection.NORTH:
+                characterAnimator.Play(SWING_NORTH_Anim);
+                break;
+            case TempTexDirection.SOUTH:
+                characterAnimator.Play(SWING_SOUTH_Anim);
+                break;
+        }
+        //Physics
+        entityPhysics.MoveCharacterPositionPhysics(0, 0);
+
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.5) //if 500 ms have passed
         {
@@ -355,7 +542,6 @@ public class TestEnemyHandler : EntityHandler
             stateTimer = 0;
             currentState = TestEnemyState.RUN;
         }
-        Debug.Log("SwingState");
     }
     
     

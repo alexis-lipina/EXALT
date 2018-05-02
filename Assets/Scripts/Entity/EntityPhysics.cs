@@ -60,6 +60,7 @@ public class EntityPhysics : PhysicsObject
     void Awake()
     {
         EntitiesTouched = new List<PhysicsObject>();
+        currentHP = MaxHP;
     }
 
     void Start()
@@ -71,8 +72,8 @@ public class EntityPhysics : PhysicsObject
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
-        currentHP = MaxHP;
         hasBeenHit = false;
+        characterSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0.0f);
     }
 
     void Update()
@@ -269,10 +270,8 @@ public class EntityPhysics : PhysicsObject
                     amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, might want different force strengths
                     velocity = new Vector2(velocity.x - amountOfForceToAdd.x , velocity.y - amountOfForceToAdd.y);
                 }
-                
             }
         }
-        
         return velocity;
     }
 
@@ -681,9 +680,10 @@ public class EntityPhysics : PhysicsObject
     public void Inflict(float damage, Vector2 direction, float force)
     {
         //Debug.Log(direction);
-        Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
+        //Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
         MoveWithCollision(direction.x * force, direction.y * force);
         Inflict(damage);
+        Debug.Log("Ow:" + direction.x * force);
     }
 
     IEnumerator TakeDamageFlash()

@@ -135,9 +135,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c4dbfc44283e7b4a872cca3a5275906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityPhysics: {fileID: 1234480454}
+  entityPhysics: {fileID: 1234480454}
   characterSprite: {fileID: 739285272}
-  FollowingCamera: {fileID: 0}
+  FollowingCamera: {fileID: 2041898055}
 --- !u!4 &435567839
 Transform:
   m_ObjectHideFlags: 0
@@ -238,9 +238,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  environmentBottomHeight: 0
+  environmentTopHeight: 0
   playerSprite: {fileID: 0}
-  topHeight: 0
-  bottomHeight: -20
   parent: {fileID: 495436333}
   neighbors: []
   isTransparentOnOcclude: 0
@@ -613,7 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83594abb0251495459db26421854a8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityPhysics: {fileID: 1798629019}
+  entityPhysics: {fileID: 0}
   isCompanion: 1
 --- !u!4 &880882930
 Transform:
@@ -1008,13 +1008,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityHeight: 3
+  startElevation: 5
   navManager: {fileID: 957900023}
   playerSpriteZOffset: 1.6
   characterSprite: {fileID: 739285272}
   environmentHandler: {fileID: 1001449527}
   handlerObject: {fileID: 435567837}
   FirstShadow: {fileID: 1693878423}
-  gravity: 0.03
+  gravity: -0.3
   speed: 15
   MaxHP: 5
   ZVelocity: 0
@@ -1090,7 +1092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f8c852b33858e947bc730b5ad78eac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EntityPhysics: {fileID: 1683500583}
+  entityPhysics: {fileID: 1683500583}
   characterSprite: {fileID: 1446746136}
   isCompanion: 0
   tempAttackSprite:
@@ -1283,13 +1285,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityHeight: 3
+  startElevation: 5
   navManager: {fileID: 957900023}
   playerSpriteZOffset: 0.4
   characterSprite: {fileID: 1446746135}
   environmentHandler: {fileID: 1894904265}
   handlerObject: {fileID: 1379702480}
   FirstShadow: {fileID: 902852690}
-  gravity: 0.03
+  gravity: -0.3
   speed: 8
   MaxHP: 10
   ZVelocity: 0
@@ -1603,6 +1607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityHeight: 0
+  startElevation: 0
   navManager: {fileID: 957900023}
   playerSpriteZOffset: 1.4
   characterSprite: {fileID: 1089686475}
@@ -1973,6 +1979,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 739285275}
   smoothTime: 0.3
+  input: {fileID: 616461311}
 --- !u!1 &2091292377
 GameObject:
   m_ObjectHideFlags: 0

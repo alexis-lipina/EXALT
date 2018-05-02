@@ -13,17 +13,22 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private GameObject FollowingCamera;
     private Animator characterAnimator;
 
+    [SerializeField] private UIHealthBar _healthBar;
 
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_STAB, HEAVY_STAB, LIGHT_SWING, HEAVY_SWING};
 
-    const string IDLE_Anim = "Anim_CharacterTest1";
-    const string RUN_Anim = "TempCharacterRun";
-    const string RUN_Anim_flip = "TempCharacterRunFlipped";
-    const string JUMP_Anim = "Anim_CharacterTest3";
-    const string SWING_NORTH_Anim = "PlayerSwingNorth";
-    const string SWING_SOUTH_Anim = "PlayerSwingSouth";
-    const string SWING_EAST_Anim = "Anim_PlayerSwingRight";
-    const string SWING_WEST_Anim = "PlayerSwingWest";
+    const string IDLE_EAST_Anim = "Anim_PlayerIdleEast";
+    const string IDLE_WEST_Anim = "Anim_PlayerIdleWest";
+    const string RUN_EAST_Anim = "Anim_PlayerRunEast";
+    const string RUN_WEST_Anim = "Anim_PlayerRunWest";
+    const string JUMP_EAST_Anim = "Anim_PlayerJumpEast";
+    const string JUMP_WEST_Anim = "Anim_PlayerJumpWest";
+    const string FALL_EAST_Anim = "Anim_PlayerFallEast";
+    const string FALL_WEST_Anim = "Anim_PlayerFallWest";
+    const string SWING_NORTH_Anim = "Anim_PlayerSwingNorth";
+    const string SWING_SOUTH_Anim = "Anim_PlayerSwingSouth";
+    const string SWING_EAST_Anim = "Anim_PlayerSwingEast";
+    const string SWING_WEST_Anim = "Anim_PlayerSwingWest";
 
 
     private const float AttackMovementSpeed = 0.3f;
@@ -91,25 +96,13 @@ public class PlayerHandler : EntityHandler
         switch (CurrentState)
         {
             case (PlayerState.IDLE):
-                characterAnimator.Play(IDLE_Anim);
                 PlayerIdle();
                 break;
             case (PlayerState.RUN):
-                if (xInput > 0 && isFlipped)
-                {
-                    FlipCharacterSprite();
-                    isFlipped = false;
-                }
-                if (xInput < 0 && !isFlipped)
-                {
-                    FlipCharacterSprite();
-                    isFlipped = true;
-                }
-                characterAnimator.Play(RUN_Anim);
                 PlayerRun();
                 break;
             case (PlayerState.JUMP):
-                characterAnimator.Play(JUMP_Anim);
+                //characterAnimator.Play(JUMP_Anim);
                 PlayerJump();
                 break;
             case (PlayerState.LIGHT_STAB):
@@ -131,7 +124,7 @@ public class PlayerHandler : EntityHandler
                 break;
         }
     }
-
+    
     private void FlipCharacterSprite()
     {
         Vector3 theScale = characterSprite.transform.localScale;
@@ -143,6 +136,16 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerIdle()
     {
+        //Draw
+        if (currentFaceDirection == FaceDirection.EAST)
+        {
+            characterAnimator.Play(IDLE_EAST_Anim);
+        }
+        else
+        {
+            characterAnimator.Play(IDLE_WEST_Anim);
+        }
+        
         //do nothing, maybe later have them breathing or getting bored, sitting down
         entityPhysics.MoveCharacterPositionPhysics(0, 0);
         //Debug.Log("Player Idle");
@@ -183,10 +186,7 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerRun()
     {
-        //Debug.Log("Player Running");
-        //------------------------------------------------| MOVE
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        //face direction determination
+        //Face Direction Determination
         Vector2 direction = new Vector2(xInput, yInput);
         if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
         {
@@ -204,6 +204,22 @@ public class PlayerHandler : EntityHandler
         {
             currentFaceDirection = FaceDirection.WEST;
         }
+        //Draw
+        if (xInput > 0)
+        {
+            characterAnimator.Play(RUN_EAST_Anim);
+        }
+        else
+        {
+            characterAnimator.Play(RUN_WEST_Anim);
+        }
+
+
+        //Debug.Log("Player Running");
+        //------------------------------------------------| MOVE
+        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        //face direction determination
+        
         
         //-------| Z Azis Traversal 
         // handles falling if player is above ground
@@ -250,8 +266,47 @@ public class PlayerHandler : EntityHandler
     private void PlayerJump()
     {
         //Debug.Log("Player Jumping");
+        //Facing Determination
+
+        Vector2 direction = new Vector2(xInput, yInput);
+        if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.EAST;
+        }
+        else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.NORTH;
+        }
+        else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.SOUTH;
+        }
+        else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
+        {
+            currentFaceDirection = FaceDirection.WEST;
+        }
+
+
+        //DRAW
+
+        if (entityPhysics.ZVelocity > 0 && currentFaceDirection == FaceDirection.EAST)
+        {
+            characterAnimator.Play(JUMP_EAST_Anim);
+        }
+        else if (entityPhysics.ZVelocity < 0 && currentFaceDirection == FaceDirection.EAST)
+        {
+            characterAnimator.Play(FALL_EAST_Anim);
+        }
+        else if (entityPhysics.ZVelocity > 0 )
+        {
+            characterAnimator.Play(JUMP_WEST_Anim);
+        }
+        else if (entityPhysics.ZVelocity < 0)
+        {
+            characterAnimator.Play(FALL_WEST_Anim);
+        }
         //------------------------------| MOVE
-        
+
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();
         /*
@@ -445,6 +500,8 @@ public class PlayerHandler : EntityHandler
     public override void JustGotHit()
     {
         Debug.Log("Player: Ow!");
+        FollowingCamera.GetComponent<CameraScript>().Shake(1f, 6, 0.01f);
+        _healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
     }
 
 

@@ -6,25 +6,26 @@ using UnityEngine;
 public class PunchingBagHandler : EntityHandler
 {
 
-    enum PunchingBagState { IDLE, RUN, FALL, JUMP, ATTACK, WOUNDED };
+    enum PunchingBagState { IDLE, RUN, FALL, JUMP };
     private PunchingBagState currentState;
     [SerializeField] private bool isCompanion;
+
+
+    [SerializeField] private Animator spriteAnimator;
+    const string IDLE_EAST_Anim = "Anim_GoldieIdleEast";
+    const string IDLE_WEST_Anim = "Anim_GoldieIdleWest";
+    const string RUN_EAST_Anim = "Anim_GoldieJogEast";
+    const string RUN_WEST_Anim = "Anim_GoldieJogWest";
+    
 
     float xInput;
     float yInput;
     bool jumpPressed;
+    bool _tempFacingEast;
     float cooldowntimer;
     bool wasJustHit;
 
-    void Awake()
-    {
-        /*if (isCompanion)
-        {
-            this.EntityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
-        }
-        */
-
-    }
+   
 
     void Start()
     {
@@ -33,6 +34,7 @@ public class PunchingBagHandler : EntityHandler
         currentState = PunchingBagState.IDLE;
         jumpPressed = false;
         wasJustHit = false;
+        _tempFacingEast = true;
     }
 
     void Update()
@@ -63,12 +65,6 @@ public class PunchingBagHandler : EntityHandler
             case (PunchingBagState.JUMP):
                 JumpState();
                 break;
-            case PunchingBagState.ATTACK:
-                AttackState();
-                break;
-            case PunchingBagState.WOUNDED:
-                WoundedState();
-                break;
         }
     }
 
@@ -76,6 +72,16 @@ public class PunchingBagHandler : EntityHandler
 
     private void IdleState()
     {
+        //Draw
+        //Draw
+        if (_tempFacingEast)
+        {
+            spriteAnimator.Play(IDLE_EAST_Anim);
+        }
+        else
+        {
+            spriteAnimator.Play(IDLE_WEST_Anim);
+        }
         //===========| State Switching
         //Debug.Log("IDLE!!!");
         entityPhysics.MoveCharacterPositionPhysics(0, 0);
@@ -103,6 +109,28 @@ public class PunchingBagHandler : EntityHandler
 
     private void RunState()
     {
+        //Draw
+        if (xInput > 0)
+        {
+            spriteAnimator.Play(RUN_EAST_Anim);
+            _tempFacingEast = true;
+        }
+        else if (xInput < 0)
+        {
+            spriteAnimator.Play(RUN_WEST_Anim);
+            _tempFacingEast = false;
+        }
+        else
+        {
+            if (_tempFacingEast)
+            {
+                spriteAnimator.Play(IDLE_EAST_Anim);
+            }
+            else
+            {
+                spriteAnimator.Play(IDLE_WEST_Anim);
+            }
+        }
         //Debug.Log("Running!!! : " + entityPhysics.GetBottomHeight());
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
 
@@ -116,7 +144,7 @@ public class PunchingBagHandler : EntityHandler
         
         if (jumpPressed)
         {
-            entityPhysics.ZVelocity = 1;
+            entityPhysics.ZVelocity = 0.5f;
             currentState = PunchingBagState.JUMP;
         }
         if (wasJustHit)
@@ -192,22 +220,7 @@ public class PunchingBagHandler : EntityHandler
             }
     }
 
-    private void AttackState()
-    {
-
-    }
-
-    private void WoundedState()
-    {
-        entityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
-        cooldowntimer -= Time.deltaTime;
-        if (cooldowntimer < 0)
-        {
-            cooldowntimer = 0;
-            currentState = PunchingBagState.RUN;
-        }
-    }
-
+    
 
     public void SetJumpPressed(bool value)
     {

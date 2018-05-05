@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
+
 /// <summary>
 /// This class controls player state and contains methods for each state. It also receives input from the InputHandler and acts in accordance with said input.
 /// In addition, it handles sprites, shadows, and player height
@@ -505,7 +507,13 @@ public class PlayerHandler : EntityHandler
     }
 
 
+    void OnDestroy()
+    {
+        Debug.Log("Reload");
+        //SceneManager.LoadScene("MainMenu2");
+        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
 
+    }
 
 
 

@@ -14,7 +14,7 @@ public class UIHealthBar : MonoBehaviour
     {
         HealthBar.maxValue = (int)_playerPhysics.GetMaxHealth();
         HealthBar.value = _playerPhysics.GetCurrentHealth();
-        //_barImage.material.SetFloat("_MaskOn", 1f);
+        _barImage.material.SetFloat("_MaskOn", 1f);
     }
 
     public void UpdateBar(int health)

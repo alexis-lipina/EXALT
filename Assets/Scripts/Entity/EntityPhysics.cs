@@ -217,7 +217,7 @@ public class EntityPhysics : PhysicsObject
     private void MoveCharacterPosition()
     {
         //                           X: Horizontal position                    Y: Vertical position - accounts for height and depth               Z: Depth - order of object draw calls
-        Vector3 coords = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + playerSpriteZOffset + bottomHeight, gameObject.transform.position.y + environmentHandler.GetComponent<BoxCollider2D>().offset.y - environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
+        Vector3 coords = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + playerSpriteZOffset + bottomHeight, gameObject.transform.position.y + environmentHandler.GetComponent<BoxCollider2D>().offset.y - environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.39f); //change here
         characterSprite.transform.position = coords;
         //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, physicsobject.transform.position.y + physicsobject.GetComponent<BoxCollider2D>().offset.y + physicsobject.GetComponent<BoxCollider2D>().size.y / 2);
         //Vector2 tempvect = new Vector2(xInput, yInput);

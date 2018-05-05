@@ -27,6 +27,8 @@ public class PunchingBagAI : EntityAI
     private Stack<Vector2> coordpath;
     private Stack<EnvironmentPhysics> path;
     private bool pathfound;
+    private bool tempPaused;
+
 
     void Start()
     {
@@ -85,20 +87,41 @@ public class PunchingBagAI : EntityAI
     private void MoveTowardTarget()
     {
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
-        if (direction.magnitude > 3)
+        if (direction.magnitude > 4 || direction.magnitude > 2.5f && !tempPaused)
         {
             handler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
+            tempPaused = false;
         }
         else
         {
             handler.SetXYAnalogInput(0, 0);
+            tempPaused = true;
+        }
+    }
+
+    private bool IsCloseEnoughToTarget()
+    {
+        Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
+        if (direction.magnitude > 4 || direction.magnitude > 2.5f && !tempPaused)
+        {
+            tempPaused = false;
+            return false;
+        }
+        else
+        {
+            tempPaused = true;
+            return true;
         }
     }
 
     private void MoveTowardPoint(Vector2 destination)
     {
-        Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
-        handler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        if (!IsCloseEnoughToTarget())
+        {
+            Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
+
+            handler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        }
     }
 
     // =================| Update path if target changes touched nav

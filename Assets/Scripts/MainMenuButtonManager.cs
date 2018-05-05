@@ -23,12 +23,13 @@ public class MainMenuButtonManager : MonoBehaviour
 	
 	public void PlayDemoPressed()
     {
-        SceneManager.LoadScene("WaterfallArena", LoadSceneMode.Single);
+        SceneManager.LoadScene("WaterfallArenaNoEnemies", LoadSceneMode.Single);
         //begin game
         
     }
     public void ControlsPressed()
     {
+        /*
         //Show Controls if they arent already visible
         if (!controlsVisible)
         {
@@ -40,12 +41,14 @@ public class MainMenuButtonManager : MonoBehaviour
             ControlsImage.SetActive(false);
             controlsVisible = false;
         }
-
+        */
+        //its not controls anymore...
+        SceneManager.LoadScene("WaterfallArena", LoadSceneMode.Single);
     }
     public void QuitPressed()
     {
         //Application.Quit();
-        SceneManager.LoadScene("TitleScreen");
+        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
     }
 
     void Update()

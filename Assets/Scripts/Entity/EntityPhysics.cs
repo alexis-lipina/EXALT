@@ -22,6 +22,8 @@ using System;
 public class EntityPhysics : PhysicsObject
 {
 
+    [SerializeField] private bool _IsDebug = false;
+
     [SerializeField] private float entityHeight; //height of entity from "head to toe"
     [SerializeField] private float startElevation; //elevation at which entity will be dropped at start of scene
 
@@ -319,12 +321,13 @@ public class EntityPhysics : PhysicsObject
                     //Debug.Log("Player is about to move illegally!");
                     badCollisions.Add(hit);
                     //return;
+                    if (_IsDebug) Debug.Log("COLLISION IMMINENT");
                 }
             }
         }
         if (badCollisions.Count > 0) //any problematic collisions?
         {
-            foreach(KeyValuePair<GameObject, KeyValuePair<float, float>> entry in TerrainTouching)//is player currently colliding with anything
+            foreach(KeyValuePair<GameObject, KeyValuePair<float, float>> entry in TerrainTouching) //is entity currently colliding with anything
             {
                 //Debug.Log("VALUE:" + entry.Value);
 
@@ -358,7 +361,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
                         {
                             NorthCollision = true;
-                            //Debug.Log("NorthCollision");
+                            Debug.Log("NorthCollision");
                         }
                     }
                     else if (playerEnvtHandlerYPos - playerEnvtHandlerYSize / 2.0 > obstacleYPos + obstacleYOffset + obstacleYSize / 2.0) //player moving South (velocityY < 0) / player lower bound above box upper bound
@@ -368,7 +371,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
                         { 
                             SouthCollision = true;
-                            //Debug.Log("SouthCollision");
+                            Debug.Log("SouthCollision");
                         }
                     }
                     if (playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0 < obstacleXPos - obstacleXSize / 2.0) //player moving East (velocityX > 0) / player to left
@@ -377,7 +380,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             EastCollision = true;
-                            //Debug.Log("EastCollision");
+                            Debug.Log("EastCollision");
                         }
                     }
                     else if (playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 > obstacleXPos + obstacleXSize / 2.0) //player moving West (velocityX < 0)
@@ -386,7 +389,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             WestCollision = true;
-                            //Debug.Log("WestCollision");
+                            Debug.Log("WestCollision");
                         }
                     }
                 }
@@ -475,7 +478,7 @@ public class EntityPhysics : PhysicsObject
             }
             else
             {
-                //Debug.Log("No Problematic Collision");
+                Debug.Log("No Problematic Collision");
                 //no current collision, go to shortest distance
 
                 foreach(RaycastHit2D hit in impendingCollisions)
@@ -483,6 +486,7 @@ public class EntityPhysics : PhysicsObject
                     if (hit.transform.gameObject.tag == "Environment" && hit.fraction < tempFract && hit.distance > 0 )
                     {
                         tempFract = hit.fraction;
+                        Debug.Log("Stopping short by " + tempFract);
                     }
                 }
                 //Debug.Log(tempFract);

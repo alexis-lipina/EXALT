@@ -19,7 +19,13 @@ public class InputHandler : MonoBehaviour
     {
         get { return rightAnalog; }
     }
-    
+
+    private Vector2 leftAnalog;
+    public Vector2 LeftAnalog
+    {
+        get { return leftAnalog; }
+    }
+
 
     void Start()
     {
@@ -29,9 +35,13 @@ public class InputHandler : MonoBehaviour
     void Update()
     {
         //Get Input
+
+        //Movement
         float x = Input.GetAxisRaw("Horizontal"); // GetAxis for smooth, GetAxisRaw for snappy
         float y = Input.GetAxisRaw("Vertical");
+        leftAnalog = new Vector2(x, y);
 
+        //Aiming
         float rightX = Input.GetAxisRaw("XBox One - Right Analog X");
         float rightY = Input.GetAxisRaw("XBox One - Right Analog Y");
         rightAnalog = new Vector2(rightX, rightY);
@@ -45,7 +55,7 @@ public class InputHandler : MonoBehaviour
             playerHandler.SetAttackPressed(true);
         }
 
-        //send input data
+        //send input data (TODO - Make this something other classes access rather than this class sends)
         playerHandler.SetXYAnalogInput(x, y);
         if (Input.GetAxisRaw("XBox One - Menu Button") > 0 || Input.GetKeyDown(KeyCode.Escape))
         {

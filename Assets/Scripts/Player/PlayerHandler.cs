@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class PlayerHandler : EntityHandler
 {
-    
+    [SerializeField] private InputHandler _inputHandler;
     [SerializeField] private GameObject characterSprite;
     [SerializeField] private GameObject FollowingCamera;
     private Animator characterAnimator;
@@ -90,6 +90,39 @@ public class PlayerHandler : EntityHandler
         AttackPressed = false;
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
+
+        //TODO : Temporary gun testing
+        if (_inputHandler.RightTrigger > 0.2)
+        {
+            GameObject tempBullet = Instantiate(Resources.Load("Prefabs/TestBulletPrefab")) as GameObject;
+
+            Vector2 _tempRightAnalogDirection = Vector2.zero;
+            if (_inputHandler.RightAnalog.magnitude <= 0.2)
+            {
+                //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
+                if (_inputHandler.LeftAnalog.magnitude >= 0.2)
+                {
+                    _tempRightAnalogDirection = _inputHandler.LeftAnalog;
+                }
+                else
+                {
+                    _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
+                }
+            }
+            else
+            {
+
+                _tempRightAnalogDirection = _inputHandler.RightAnalog;
+            }
+            tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = _tempRightAnalogDirection.normalized;
+
+            tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
+            tempBullet.GetComponentInChildren<EntityPhysics>().SetEntityElevation(entityPhysics.GetEntityElevation());
+            tempBullet.GetComponentInChildren<EntityPhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+            tempBullet.SetActive(true);
+            
+
+        }
         
     }
 
@@ -342,7 +375,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerLightStab()//===============================================| ATTACK
+    private void PlayerLightStab()//====================| ATTACK
     {
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         Vector2 swingboxpos = Vector2.zero;
@@ -456,12 +489,7 @@ public class PlayerHandler : EntityHandler
     }
     */
 
-    /// <summary>
-    /// 
-    /// </summary>
     
-    //================================================================================| ANIMATOR CONTROLLER HANDLING | 
-
 
     //================================================================================| SETTERS FOR INPUT |
     
@@ -516,5 +544,27 @@ public class PlayerHandler : EntityHandler
     }
 
 
+    // I think I changed my mind on having this in the player class, I kinda want it in the Reticle's code to avoid clutter here
+    /*
+    /// <summary>
+    /// Updates the targeting reticle's position based on player input and environment 
+    /// 
+    ///
+    /// </summary>
+    private void UpdateReticle()
+    {
+        Vector2 reticlevector = _inputHandler.RightAnalog;
 
+        if (reticlevector.magnitude == 0)
+        {
+            reticlevector = _inputHandler.LeftAnalog;
+            if (reticlevector.magnitude == 0 )
+            {
+                //idk what to do here, maybe a private field just for the cases where this happens?
+            }
+        }
+        RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, this.GetComponent<BoxCollider2D>().size, 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
+
+    }
+    */
 }

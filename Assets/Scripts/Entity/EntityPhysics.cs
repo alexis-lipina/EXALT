@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 /// <summary>
-/// This class handles player interaction with environment.
+/// This class handles entity interaction with environment.
 /// 
 /// TERRAIN TRAVERSAL
 /// An area of terrain has a 2D Box Collider associated with it, which defines the area, and the terrain object stores the height of the 
@@ -50,7 +50,7 @@ public class EntityPhysics : PhysicsObject
 
 
     Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
-    Dictionary<int, EnvironmentPhysics> TerrainTouched;
+    Dictionary<int, EnvironmentPhysics> TerrainTouched;//for environment handler
     //         ^ instanceID       ^bottom   ^ topheight
     Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
     //          ^ instanceID       ^ height    ^ shadowobject 
@@ -58,6 +58,15 @@ public class EntityPhysics : PhysicsObject
 
     //private float entityElevation; //replaced with bottomHeight
     public float ZVelocity;
+
+
+    public NavigationManager NavManager
+    {
+        set { navManager = value; }
+        get { return navManager; }
+    }
+
+
 
     void Awake()
     {
@@ -171,6 +180,20 @@ public class EntityPhysics : PhysicsObject
         }
     }
 
+    /// <summary>
+    /// Returns true if the entity is touching an environment object
+    /// </summary>
+    /// <returns></returns>
+    public bool IsCollidingWithEnvironment()
+    {
+        foreach (KeyValuePair<GameObject, KeyValuePair<float, float>> entry in TerrainTouching)
+        {
+            // if entry.bottom < this.top and entry.top > this.bottom  (if inside)
+            if (entry.Value.Key < topHeight && entry.Value.Value > bottomHeight) return true;
+        }
+        return false;
+    }
+
     //=====================================================================| MOVEMENT 
     /// <summary>
     /// Calls MoveWithCollision but with Time.deltaTime and "speed" field accounted for.
@@ -243,7 +266,7 @@ public class EntityPhysics : PhysicsObject
         }
     }
 
-    private bool PlayerWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
+    private bool EntityWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
         if (playerTop > terrainBottom && playerBottom < terrainTop)
             return true;
@@ -278,6 +301,8 @@ public class EntityPhysics : PhysicsObject
     }
 
     /// <summary>
+    /// CALL MOVEPOSITIONPHYSICS FOR DELTATIME ACCOUNTABILITY
+    /// 
     /// Moves the entity in a direction, testing for collisions along that direction and acting accordingly to
     /// prevent clipping through objects, and allow the player to move right up against objects.
     /// 
@@ -296,7 +321,8 @@ public class EntityPhysics : PhysicsObject
         //    Deal with both - if one of them goes further than 0.1 without collision, move along that axis until limit or collision
         float boxCastDistance = Mathf.Sqrt(velocityX * velocityX + velocityY * velocityY);
         List<RaycastHit2D> badCollisions = new List<RaycastHit2D>();
-        RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
+        //RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
+        RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, this.GetComponent<BoxCollider2D>().size, 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
         bool NorthCollision = false;
         bool SouthCollision = false;
         bool EastCollision = false;
@@ -311,7 +337,6 @@ public class EntityPhysics : PhysicsObject
         float playerHeight;
 
 
-        
         foreach (RaycastHit2D hit in impendingCollisions) //BoxCast in direction of motion
         {
             if (hit.transform.gameObject.tag == "Environment")
@@ -338,7 +363,7 @@ public class EntityPhysics : PhysicsObject
 
 
 
-                if (PlayerWillCollide(environmentbottomHeight, topHeight, playerElevation, playerElevation + playerHeight)) //if given element is a wall in the way
+                if (EntityWillCollide(environmentbottomHeight, topHeight, playerElevation, playerElevation + playerHeight)) //if given element is a wall in the way
                 {
                     float playerEnvtHandlerYPos = environmentHandler.GetComponent<Transform>().position.y;
                     float playerEnvtHandlerYSize = environmentHandler.GetComponent<BoxCollider2D>().size.y;
@@ -361,7 +386,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
                         {
                             NorthCollision = true;
-                            Debug.Log("NorthCollision");
+                            //Debug.Log("NorthCollision");
                         }
                     }
                     else if (playerEnvtHandlerYPos - playerEnvtHandlerYSize / 2.0 > obstacleYPos + obstacleYOffset + obstacleYSize / 2.0) //player moving South (velocityY < 0) / player lower bound above box upper bound
@@ -371,7 +396,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleXPos - obstacleXSize / 2.0 < playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0)  //if player right bound is to right of terrain left bound
                         { 
                             SouthCollision = true;
-                            Debug.Log("SouthCollision");
+                            //Debug.Log("SouthCollision");
                         }
                     }
                     if (playerEnvtHandlerXPos + playerEnvtHandlerXSize / 2.0 < obstacleXPos - obstacleXSize / 2.0) //player moving East (velocityX > 0) / player to left
@@ -380,7 +405,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             EastCollision = true;
-                            Debug.Log("EastCollision");
+                            //Debug.Log("EastCollision");
                         }
                     }
                     else if (playerEnvtHandlerXPos - playerEnvtHandlerXSize / 2.0 > obstacleXPos + obstacleXSize / 2.0) //player moving West (velocityX < 0)
@@ -389,7 +414,7 @@ public class EntityPhysics : PhysicsObject
                            obstacleYPos + obstacleYOffset - obstacleYSize / 2.0 < playerEnvtHandlerYPos + playerEnvtHandlerYSize / 2.0)  //if player north bound is to north of terrain south bound
                         {
                             WestCollision = true;
-                            Debug.Log("WestCollision");
+                            //Debug.Log("WestCollision");
                         }
                     }
                 }
@@ -415,7 +440,7 @@ public class EntityPhysics : PhysicsObject
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
-                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), bottomHeight, bottomHeight + entityHeight))
+                        if (EntityWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), bottomHeight, bottomHeight + entityHeight))
                         {
                            // Debug.Log("YEET");
                             //Debug.Log("HitDistance:" + hit.distance);
@@ -456,7 +481,7 @@ public class EntityPhysics : PhysicsObject
                         (hit.transform.position.x + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.x - PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2.0 &&
                            (hit.transform.position.x - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.x / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.x + PlayerRigidBody.GetComponent<BoxCollider2D>().size.x / 2)))
                     {
-                        if (PlayerWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), bottomHeight, bottomHeight + entityHeight))
+                        if (EntityWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), bottomHeight, bottomHeight + entityHeight))
                         {//found a problematic collision, go up to the shortest-distanced one
                             if (hit.distance < Mathf.Abs(velocityY))
                             {
@@ -478,7 +503,7 @@ public class EntityPhysics : PhysicsObject
             }
             else
             {
-                Debug.Log("No Problematic Collision");
+                //Debug.Log("No Problematic Collision");
                 //no current collision, go to shortest distance
 
                 foreach(RaycastHit2D hit in impendingCollisions)
@@ -486,7 +511,7 @@ public class EntityPhysics : PhysicsObject
                     if (hit.transform.gameObject.tag == "Environment" && hit.fraction < tempFract && hit.distance > 0 )
                     {
                         tempFract = hit.fraction;
-                        Debug.Log("Stopping short by " + tempFract);
+                        //Debug.Log("Stopping short by " + tempFract);
                     }
                 }
                 //Debug.Log(tempFract);
@@ -627,6 +652,9 @@ public class EntityPhysics : PhysicsObject
         bottomHeight = terrainheight + 0; //maybe have the player fall from a great height to reposition them?
     }
 
+    /// <summary>
+    /// Updates which navigation object (environment object) this entity is on
+    /// </summary>
     private void UpdateEntityNavigationObject()
     {
         List<EnvironmentPhysics> objectsbelow = new List<EnvironmentPhysics>();
@@ -654,6 +682,7 @@ public class EntityPhysics : PhysicsObject
         }
         //Debug.Log("Updating point!!!");
         //Debug.Log(this.handlerObject);
+        
         if (navManager.entityChangePositionDelegate != null)
             navManager.entityChangePositionDelegate(this.gameObject, tempphys);
         currentNavEnvironmentObject = tempphys;
@@ -724,6 +753,7 @@ public class EntityPhysics : PhysicsObject
     }
     public void SetEntityElevation(float e)
     {
+        startElevation = e;
         bottomHeight = e;
     }
     public float GetCurrentHealth()

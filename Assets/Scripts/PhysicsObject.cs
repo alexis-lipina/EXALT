@@ -11,7 +11,7 @@ using UnityEngine;
 /// different objects more accessible.
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
-public abstract class PhysicsObject : MonoBehaviour
+public class PhysicsObject : MonoBehaviour
 {
 
     protected float bottomHeight;

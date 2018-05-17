@@ -25,6 +25,11 @@ public class InputHandler : MonoBehaviour
     {
         get { return leftAnalog; }
     }
+    private float _rightTrigger; //degree to which trigger is pressed
+    public float RightTrigger
+    {
+        get { return _rightTrigger; }
+    }
 
 
     void Start()
@@ -45,7 +50,12 @@ public class InputHandler : MonoBehaviour
         float rightX = Input.GetAxisRaw("XBox One - Right Analog X");
         float rightY = Input.GetAxisRaw("XBox One - Right Analog Y");
         rightAnalog = new Vector2(rightX, rightY);
-        
+
+        //Firing
+        _rightTrigger = Input.GetAxisRaw("XBox One - Right Trigger");
+        //if (_rightTrigger > 0.2) Debug.Log("Trigger press");
+        //Debug.Log(_rightTrigger);
+
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("XBox One - A Button") > 0)
         {
             playerHandler.SetJumpPressed(true);

@@ -19,45 +19,24 @@ using System;
 /// which makes more sense for testing for collision, it makes more sense for these objects to use a height-elevation system, since no matter
 /// how an object moves, *generally* the height (from head to toe) is preserved. 
 /// </summary>
-public class EntityPhysics : PhysicsObject
+public class EntityPhysics : DynamicPhysics
 {
 
-    [SerializeField] private bool _IsDebug = false;
-
-    [SerializeField] private float entityHeight; //height of entity from "head to toe"
-    [SerializeField] private float startElevation; //elevation at which entity will be dropped at start of scene
-
-
     [SerializeField] private NavigationManager navManager;
-    [SerializeField] private float playerSpriteZOffset;
-    [SerializeField] private GameObject characterSprite;
-    [SerializeField] private GameObject environmentHandler;
-    [SerializeField] private GameObject handlerObject;
-    [SerializeField] private GameObject FirstShadow;
-    [SerializeField] private float gravity;
-    [SerializeField] private float speed;
+    [SerializeField] private EntityHandler entityHandler;
+    
     [SerializeField] private float MaxHP;
     private float currentHP;
     private bool hasBeenHit;
 
 
-
-
-    private Rigidbody2D PlayerRigidBody;
-    private EntityHandler entityHandler;
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
     private EnvironmentPhysics currentNavEnvironmentObject;
 
-
-    Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
-    Dictionary<int, EnvironmentPhysics> TerrainTouched;//for environment handler
-    //         ^ instanceID       ^bottom   ^ topheight
-    Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
-    //          ^ instanceID       ^ height    ^ shadowobject 
     List<PhysicsObject> EntitiesTouched;
 
     //private float entityElevation; //replaced with bottomHeight
-    public float ZVelocity;
+
 
 
     public NavigationManager NavManager
@@ -68,23 +47,12 @@ public class EntityPhysics : PhysicsObject
 
 
 
-    void Awake()
+    override protected void Awake()
     {
+        base.Awake();
         EntitiesTouched = new List<PhysicsObject>();
         currentHP = MaxHP;
-    }
-
-    void Start()
-    {
-        bottomHeight = startElevation;
-        topHeight = startElevation + entityHeight;
-        entityHandler = handlerObject.GetComponent<EntityHandler>();
-        PlayerRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
-        TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
-        Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
         hasBeenHit = false;
-        characterSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0.0f);
     }
 
     void Update()
@@ -146,6 +114,8 @@ public class EntityPhysics : PhysicsObject
         }
     }
 
+    /* Moved To DynamicPhysics
+
     //======================================================| Terrain Collision management
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -194,6 +164,10 @@ public class EntityPhysics : PhysicsObject
         return false;
     }
 
+        */
+
+
+        /* Moved To DynamicPhysics
     //=====================================================================| MOVEMENT 
     /// <summary>
     /// Calls MoveWithCollision but with Time.deltaTime and "speed" field accounted for.
@@ -211,7 +185,7 @@ public class EntityPhysics : PhysicsObject
     }
 
     /// <summary>
-    /// Moves entity along a (somewhat) ballistic trajectory, and checks for headbutt collisions
+    /// Moves entity strictly vertically along a (somewhat) ballistic trajectory, and checks for headbutt collisions
     /// </summary>
     public void FreeFall()
     {
@@ -272,6 +246,7 @@ public class EntityPhysics : PhysicsObject
             return true;
         return false;
     }
+    */
 
     /// <summary>
     /// Move in a direction, but get pushed away by entities using extrusion method.
@@ -300,6 +275,8 @@ public class EntityPhysics : PhysicsObject
         return velocity;
     }
 
+
+    /* In DynamicPhysics
     /// <summary>
     /// CALL MOVEPOSITIONPHYSICS FOR DELTATIME ACCOUNTABILITY
     /// 
@@ -346,7 +323,6 @@ public class EntityPhysics : PhysicsObject
                     //Debug.Log("Player is about to move illegally!");
                     badCollisions.Add(hit);
                     //return;
-                    if (_IsDebug) Debug.Log("COLLISION IMMINENT");
                 }
             }
         }
@@ -530,9 +506,10 @@ public class EntityPhysics : PhysicsObject
         PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
 
     }
-
+    */
     //=====================================================================| Terrain Management
 
+    /* In DynamicPhysics
     public void AddTerrainTouched(int terrainInstanceID, EnvironmentPhysics environment)
     {
         if (TerrainTouched.ContainsKey(terrainInstanceID)) //Debug lines
@@ -580,6 +557,7 @@ public class EntityPhysics : PhysicsObject
             Debug.Log("ID: " + entry.Key + "  heights:" + entry.Value.GetBottomHeight() + " " + entry.Value);
         }
     }
+    */
 
     public void SavePosition()
     {
@@ -670,7 +648,7 @@ public class EntityPhysics : PhysicsObject
         EnvironmentPhysics tempphys = null;
         foreach (EnvironmentPhysics physobj in objectsbelow)
         {
-            if (physobj.GetTopHeight() > max && entityHeight + bottomHeight > physobj.GetTopHeight())
+            if (physobj.GetTopHeight() > max && _objectHeight + bottomHeight > physobj.GetTopHeight())
             {
                 max = physobj.GetTopHeight();
                 tempphys = physobj;
@@ -723,18 +701,18 @@ public class EntityPhysics : PhysicsObject
     {
         Debug.Log("TakeDamageFlash entered");
         entityHandler.JustGotHit();
-        characterSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
         for (float i = 0; i < 2; i++)
         {
             //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
             yield return new WaitForSeconds(0.05f);
             //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 0, 0, 1));
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 0, 0, 1));
             yield return new WaitForSeconds(0.05f);
         }
 
-        characterSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
     }
 
     //===============================================================| getters and setters
@@ -743,19 +721,7 @@ public class EntityPhysics : PhysicsObject
         return currentNavEnvironmentObject;
     }
 
-    public float GetEntityHeight()
-    {
-        return entityHeight;
-    }
-    public float GetEntityElevation()
-    {
-        return bottomHeight;
-    }
-    public void SetEntityElevation(float e)
-    {
-        startElevation = e;
-        bottomHeight = e;
-    }
+   
     public float GetCurrentHealth()
     {
         return currentHP;

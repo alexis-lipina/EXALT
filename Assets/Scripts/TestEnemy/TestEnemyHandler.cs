@@ -154,14 +154,14 @@ public class TestEnemyHandler : EntityHandler
             //currentState = TestEnemyState.WOUNDED;
         }
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
         }
         else
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
 
@@ -195,7 +195,7 @@ public class TestEnemyHandler : EntityHandler
             currentState = TestEnemyState.READY;
         }
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
@@ -213,7 +213,7 @@ public class TestEnemyHandler : EntityHandler
         else
         {
             entityPhysics.SavePosition();
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
         */
         //Debug.Log("Running!!! : " + entityPhysics.GetBottomHeight());
@@ -266,7 +266,7 @@ public class TestEnemyHandler : EntityHandler
             stateTimer = 0;
             currentState = TestEnemyState.READY;
         }
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
@@ -275,7 +275,7 @@ public class TestEnemyHandler : EntityHandler
         else
         {
             entityPhysics.SavePosition();
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
     private void FallState()
@@ -312,9 +312,9 @@ public class TestEnemyHandler : EntityHandler
         //===========| State Switching
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() <= maxheight)
+        if (entityPhysics.GetObjectElevation() <= maxheight)
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
                 //entityPhysics.SavePosition();
@@ -364,9 +364,9 @@ public class TestEnemyHandler : EntityHandler
         if (entityPhysics.TestFeetCollision())
 
 
-            if (entityPhysics.GetEntityElevation() <= maxheight)
+            if (entityPhysics.GetObjectElevation() <= maxheight)
             {
-                entityPhysics.SetEntityElevation(maxheight);
+                entityPhysics.SetObjectElevation(maxheight);
                 if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
                 {
                     entityPhysics.SavePosition();
@@ -427,7 +427,7 @@ public class TestEnemyHandler : EntityHandler
             foreach (Collider2D hit in hitobjects)
             {
                 EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
-                if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > entityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < entityPhysics.GetEntityElevation() + entityPhysics.GetEntityHeight())
+                if (hit.tag == "Friend" && hitEntity.GetObjectHeight() + hitEntity.GetObjectElevation() > entityPhysics.GetObjectElevation() && hitEntity.GetObjectElevation() < entityPhysics.GetObjectElevation() + entityPhysics.GetObjectHeight())
                 {
                     hit.gameObject.GetComponent<EntityPhysics>().Inflict(1.0f);
                     Debug.Log("Hit player!");
@@ -467,7 +467,7 @@ public class TestEnemyHandler : EntityHandler
         foreach (Collider2D hit in hitobjects)
         {
             EntityColliderScript hitEntity = hit.gameObject.GetComponent<EntityColliderScript>();
-            if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetEntityElevation() > entityPhysics.GetEntityElevation() && hitEntity.GetEntityElevation() < entityPhysics.GetEntityElevation() + entityPhysics.GetEntityHeight())
+            if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetObjectElevation() > entityPhysics.GetObjectElevation() && hitEntity.GetObjectElevation() < entityPhysics.GetObjectElevation() + entityPhysics.GetEntityHeight())
             {
                 hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
                 Debug.Log("Hit player!");

@@ -73,7 +73,7 @@ public class PunchingBagAI : EntityAI
                 {
                     //Debug.Log(dest);
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
-                    if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetEntityElevation()) //Needs to jump
+                    if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetObjectElevation()) //Needs to jump
                     {
                         handler.gameObject.GetComponent<PunchingBagHandler>().SetJumpPressed(true);
                     }

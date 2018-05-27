@@ -14,6 +14,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private GameObject characterSprite;
     [SerializeField] private GameObject FollowingCamera;
     private Animator characterAnimator;
+    private PlayerInventory inventory;
 
     [SerializeField] private UIHealthBar _healthBar;
 
@@ -35,7 +36,7 @@ public class PlayerHandler : EntityHandler
 
     private const float AttackMovementSpeed = 0.3f;
 
-
+    private Weapon _equippedWeapon;
 
     private PlayerState CurrentState;
     private PlayerState PreviousState;
@@ -62,10 +63,14 @@ public class PlayerHandler : EntityHandler
     void Awake()
     {
         //this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
+        inventory = gameObject.GetComponent<PlayerInventory>();
+        
     }
 
 	void Start ()
     {
+        SwapWeapon("NORTH"); //Debug
+        Debug.Log(_equippedWeapon);
         CurrentState = PlayerState.IDLE;
         StateTimer = 0;
         JumpImpulse = 0.6f;
@@ -91,37 +96,33 @@ public class PlayerHandler : EntityHandler
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
 
+        if (_inputHandler.DPadNorth > 0)
+        {
+            SwapWeapon("NORTH");
+        }
+        else if (_inputHandler.DPadSouth > 0)
+        {
+            SwapWeapon("SOUTH");
+        }
+        else if (_inputHandler.DPadWest > 0)
+        {
+            SwapWeapon("WEST");
+        }
+        else if (_inputHandler.DPadEast > 0)
+        {
+            SwapWeapon("EAST");
+        }
+
         //TODO : Temporary gun testing
         if (_inputHandler.RightTrigger > 0.2)
         {
-            GameObject tempBullet = Instantiate(Resources.Load("Prefabs/TestBulletPrefab")) as GameObject;
+            FireBullet();
 
-            Vector2 _tempRightAnalogDirection = Vector2.zero;
-            if (_inputHandler.RightAnalog.magnitude <= 0.2)
-            {
-                //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
-                if (_inputHandler.LeftAnalog.magnitude >= 0.2)
-                {
-                    _tempRightAnalogDirection = _inputHandler.LeftAnalog;
-                }
-                else
-                {
-                    _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
-                }
-            }
-            else
-            {
+        }
 
-                _tempRightAnalogDirection = _inputHandler.RightAnalog;
-            }
-            tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = _tempRightAnalogDirection.normalized;
-
-            tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
-            tempBullet.GetComponentInChildren<EntityPhysics>().SetEntityElevation(entityPhysics.GetEntityElevation());
-            tempBullet.GetComponentInChildren<EntityPhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
-            tempBullet.SetActive(true);
-            
-
+        if (_inputHandler.RightBumper > 0.2)
+        {
+            ThrowGrenade();
         }
         
     }
@@ -168,7 +169,7 @@ public class PlayerHandler : EntityHandler
     }
 
     //================================================================================| STATE METHODS |
-
+    #region State Methods
     private void PlayerIdle()
     {
         //Draw
@@ -207,14 +208,14 @@ public class PlayerHandler : EntityHandler
         }
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
         
     }
@@ -259,14 +260,14 @@ public class PlayerHandler : EntityHandler
         //-------| Z Azis Traversal 
         // handles falling if player is above ground
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
         //------------------------------------------------| STATE CHANGE
         //Debug.Log("X:" + xInput + "Y:" + yInput);
@@ -345,7 +346,7 @@ public class PlayerHandler : EntityHandler
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();
         /*
-        EntityPhysics.SetEntityElevation(EntityPhysics.GetEntityElevation() + EntityPhysics.ZVelocity);
+        EntityPhysics.SetObjectElevation(EntityPhysics.GetObjectElevation() + EntityPhysics.ZVelocity);
         
         EntityPhysics.ZVelocity -= 0.03f;
         */
@@ -358,9 +359,9 @@ public class PlayerHandler : EntityHandler
         //if (entityPhysics.TestFeetCollision())
 
 
-        if (entityPhysics.GetEntityElevation() <= maxheight)
+        if (entityPhysics.GetObjectElevation() <= maxheight)
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
                 entityPhysics.SavePosition();
@@ -375,7 +376,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerLightStab()//====================| ATTACK
+    private void PlayerLightStab()//====================| ATTACK 
     {
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         Vector2 swingboxpos = Vector2.zero;
@@ -444,14 +445,14 @@ public class PlayerHandler : EntityHandler
             }
         }
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
         }
         else
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
 
         StateTimer -= Time.deltaTime;
@@ -473,23 +474,64 @@ public class PlayerHandler : EntityHandler
     {
         //todo
     }
-    //=============| Update Height Method - legacy method that makes more sense to be a part of each player state
-    /*
-    private void updateHeight()
+    #endregion
+
+    //================================================================================| FIRE BULLETS
+
+    /// <summary>
+    /// Fires a bullet
+    /// </summary>
+    private void FireBullet()
     {
-        float maxTerrainHeight = 0;
-        foreach (KeyValuePair<int, float> entry in TerrainTouched)
+        Vector2 _tempRightAnalogDirection = Vector2.zero;
+        if (_inputHandler.RightAnalog.magnitude <= 0.2)
         {
-            if (entry.Value > maxTerrainHeight)
+            //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
+            if (_inputHandler.LeftAnalog.magnitude >= 0.2)
             {
-                maxTerrainHeight = entry.Value;
+                _tempRightAnalogDirection = _inputHandler.LeftAnalog;
+            }
+            else
+            {
+                _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
             }
         }
-        PlayerElevation = maxTerrainHeight;
-    }
-    */
+        else
+        {
+            _tempRightAnalogDirection = _inputHandler.RightAnalog;
+        }
 
+        GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
+        tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
+        tempBullet.GetComponentInChildren<EntityPhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2.0f);
+        tempBullet.GetComponentInChildren<EntityPhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+    }
     
+    /// <summary>
+    /// Swaps weapon with one from your inventory given a d-pad direction
+    /// </summary>
+    /// <param name="cardinal"></param>
+    private void SwapWeapon(string cardinal)
+    {
+        Weapon temp = inventory.GetWeapon(cardinal);
+        if (temp) //not null
+        {
+            Debug.Log("Equipping " + temp);
+            _equippedWeapon = inventory.GetWeapon(cardinal);
+        }
+    }
+
+    /// <summary>
+    /// Throws a grenade in the direction of aim.
+    /// </summary>
+    private void ThrowGrenade()
+    {
+        GameObject tempBullet = Instantiate(Resources.Load("Prefabs/Bullets/TestGrenade")) as GameObject;
+        tempBullet.GetComponentInChildren<GrenadeHandler>().MoveDirection = Vector2.right;
+        tempBullet.SetActive(true);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation());
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+    }
 
     //================================================================================| SETTERS FOR INPUT |
     

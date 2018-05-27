@@ -37,7 +37,7 @@ public class ReticleHandler : MonoBehaviour
 	void Update ()
     {
         _entityPhysics.ZVelocity = 0;
-        _entityPhysics.SetEntityElevation(_playerPhysics.GetEntityElevation());
+        _entityPhysics.SetObjectElevation(_playerPhysics.GetObjectElevation());
 
         UpdateReticle();
         
@@ -129,8 +129,13 @@ public class ReticleHandler : MonoBehaviour
         }
 
         //_tempRightAnalogDirection.Normalize();
-        
-        //_tempRightAnalogDirection.Normalize();
+        float truncatedMagnitude = _tempRightAnalogDirection.magnitude;
+        if (truncatedMagnitude > 1)
+        {
+            truncatedMagnitude = 1;
+            _tempRightAnalogDirection.Normalize();
+            _tempRightAnalogDirection.Set(_tempRightAnalogDirection.x * truncatedMagnitude, _tempRightAnalogDirection.y * truncatedMagnitude);
+        }
         _tempRightAnalogDirection.Set(_tempRightAnalogDirection.x * shortestDistance, _tempRightAnalogDirection.y * shortestDistance);
         //_entityPhysics.GetComponent<Rigidbody2D>().MovePosition(_playerPhysics.GetComponent<Rigidbody2D>().position + _tempRightAnalogDirection);//TODO : Rigidbody2D.position or Transform.position?
         _entityPhysics.GetComponent<Transform>().SetPositionAndRotation(_playerPhysics.GetComponent<Rigidbody2D>().position + _tempRightAnalogDirection, Quaternion.identity);

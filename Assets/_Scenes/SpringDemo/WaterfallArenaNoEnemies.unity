@@ -268,6 +268,48 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!1001 &42994438
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -4.467966
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -4.204916
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4088987733337006, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+      propertyPath: m_RootOrder
+      value: 22
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 543a45babb6d4664898b19f06e9e4b6b, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &46263986
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,19 +421,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 1465054078}
-  environmentHandler: {fileID: 767324655}
-  handlerObject: {fileID: 13266529}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 1610323199}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &60120814
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1272,19 +1313,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 371444668}
-  environmentHandler: {fileID: 1407765807}
-  handlerObject: {fileID: 938687683}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 1763330801}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &201700625
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1666,19 +1706,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 1044732575}
-  environmentHandler: {fileID: 1894053687}
-  handlerObject: {fileID: 835154196}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 976485180}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &344495630
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2454,6 +2493,7 @@ GameObject:
   m_Component:
   - component: {fileID: 435567839}
   - component: {fileID: 435567838}
+  - component: {fileID: 435567840}
   m_Layer: 0
   m_Name: PlayerHandler
   m_TagString: Untagged
@@ -2490,6 +2530,17 @@ Transform:
   m_Father: {fileID: 1204704181}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &435567840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 435567837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db25c972a7bdd2e48aec91fd978946f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &449620617
 GameObject:
   m_ObjectHideFlags: 0
@@ -3757,7 +3808,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &646251541
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3811,7 +3862,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 36.101}
 --- !u!114 &646251543
 MonoBehaviour:
@@ -3922,19 +3973,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 1
-  entityHeight: 1
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 543403719}
-  environmentHandler: {fileID: 985378681}
-  handlerObject: {fileID: 97479475}
+  _objectHeight: 3
+  _startElevation: 5
+  _spriteZOffset: 1
+  _objectSprite: {fileID: 543403719}
+  _environmentHandler: {fileID: 985378681}
   FirstShadow: {fileID: 102070514}
   gravity: 0
   speed: 13
-  MaxHP: 1000000
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 1000000
 --- !u!61 &682643859
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3958,7 +4008,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.2, y: 0.8}
+  m_Size: {x: 0.9, y: 0.6}
   m_EdgeRadius: 0
 --- !u!50 &682643860
 Rigidbody2D:
@@ -4876,19 +4926,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 426291655}
-  environmentHandler: {fileID: 1251021371}
-  handlerObject: {fileID: 155125696}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 1570564873}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &868311376
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5535,7 +5584,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 0.6}
+  m_Size: {x: 0.8, y: 0.5}
   m_EdgeRadius: 0
 --- !u!50 &985378685
 Rigidbody2D:
@@ -6416,19 +6465,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 1170552499}
-  environmentHandler: {fileID: 312659802}
-  handlerObject: {fileID: 1445036311}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 1875856106}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &1135352102
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6946,6 +6994,48 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1209403772
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -6.20088
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -4.084015
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272710269498848, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+      propertyPath: m_RootOrder
+      value: 21
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 5a6093a328200ee47b642682298f8afa, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1234480452
 GameObject:
   m_ObjectHideFlags: 0
@@ -6989,19 +7079,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 5
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 1.6
-  characterSprite: {fileID: 739285272}
-  environmentHandler: {fileID: 1001449527}
-  handlerObject: {fileID: 435567837}
+  _objectHeight: 3
+  _startElevation: 5
+  _spriteZOffset: 1.8
+  _objectSprite: {fileID: 739285272}
+  _environmentHandler: {fileID: 1001449527}
   FirstShadow: {fileID: 1693878423}
   gravity: -1.5
   speed: 15
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 435567838}
+  MaxHP: 10
 --- !u!61 &1234480455
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7666,6 +7755,48 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!1001 &1339393715
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -4.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -8.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+      propertyPath: m_RootOrder
+      value: 20
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &1348964876
 Prefab:
   m_ObjectHideFlags: 0
@@ -7730,57 +7861,6 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3fd8a1c56889e974cbc6a14d70df51d3, type: 2}
-  m_IsPrefabParent: 0
---- !u!1001 &1349991667
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -4.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: -8.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4738165250980712, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_RootOrder
-      value: 18
-      objectReference: {fileID: 0}
-    - target: {fileID: 114756243052429782, guid: 8fc3c027c8661c64188b08eb9123e2c5,
-        type: 2}
-      propertyPath: navManager
-      value: 
-      objectReference: {fileID: 957900023}
-    - target: {fileID: 1954066557973178, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
-      propertyPath: m_Name
-      value: TestBullet
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 8fc3c027c8661c64188b08eb9123e2c5, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1352325069
 GameObject:
@@ -9862,19 +9942,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 501813129}
-  environmentHandler: {fileID: 406022487}
-  handlerObject: {fileID: 668521783}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 110679571}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &1731245972
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9963,19 +10042,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 110474820}
-  environmentHandler: {fileID: 846495344}
-  handlerObject: {fileID: 1637198941}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 1352325069}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &1740061472
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10369,19 +10447,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 0.9
-  characterSprite: {fileID: 1089686475}
-  environmentHandler: {fileID: 1721204956}
-  handlerObject: {fileID: 880882928}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 534255191}
   gravity: -1.5
   speed: 13
-  MaxHP: 1000000
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 1000000
 --- !u!61 &1798629021
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11340,19 +11417,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 20
-  navManager: {fileID: 957900023}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 138115801}
-  environmentHandler: {fileID: 1689916935}
-  handlerObject: {fileID: 1803860856}
+  _objectHeight: 0
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 0}
+  _environmentHandler: {fileID: 0}
   FirstShadow: {fileID: 1548345290}
   gravity: -1.5
   speed: 12
-  MaxHP: 10
   ZVelocity: 0
+  navManager: {fileID: 957900023}
+  entityHandler: {fileID: 0}
+  MaxHP: 10
 --- !u!61 &2032242256
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11502,6 +11578,48 @@ MonoBehaviour:
   player: {fileID: 739285275}
   smoothTime: 0.3
   input: {fileID: 616461311}
+--- !u!1001 &2077025252
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -7.752444
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -1.706295
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356203869059058, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: bcd3ae9cc2bd9474d8edb2050416bc4e, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &2100550815
 GameObject:
   m_ObjectHideFlags: 0

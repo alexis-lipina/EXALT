@@ -95,7 +95,7 @@ public class PunchingBagHandler : EntityHandler
             //currentState = PunchingBagState.WOUNDED;
         }
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             currentState = PunchingBagState.FALL;
@@ -103,7 +103,7 @@ public class PunchingBagHandler : EntityHandler
         }
         else
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
 
@@ -154,7 +154,7 @@ public class PunchingBagHandler : EntityHandler
         }
         //fall
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
             currentState = PunchingBagState.FALL;
@@ -162,7 +162,7 @@ public class PunchingBagHandler : EntityHandler
         else
         {
             entityPhysics.SavePosition();
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
     private void FallState()
@@ -175,9 +175,9 @@ public class PunchingBagHandler : EntityHandler
         //===========| State Switching
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetEntityElevation() <= maxheight)
+        if (entityPhysics.GetObjectElevation() <= maxheight)
         {
-            entityPhysics.SetEntityElevation(maxheight);
+            entityPhysics.SetObjectElevation(maxheight);
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
                 //entityPhysics.SavePosition();
@@ -203,9 +203,9 @@ public class PunchingBagHandler : EntityHandler
         if (entityPhysics.TestFeetCollision())
 
 
-            if (entityPhysics.GetEntityElevation() <= maxheight)
+            if (entityPhysics.GetObjectElevation() <= maxheight)
             {
-                entityPhysics.SetEntityElevation(maxheight);
+                entityPhysics.SetObjectElevation(maxheight);
                 if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
                 {
                     entityPhysics.SavePosition();

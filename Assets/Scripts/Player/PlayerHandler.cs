@@ -77,7 +77,6 @@ public class PlayerHandler : EntityHandler
         //playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
         
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
-        //Shadows.Add(FirstShadow.GetInstanceID(), new KeyValuePair<float, GameObject>(0.0f, FirstShadow));
         characterAnimator = characterSprite.GetComponent<Animator>();
         hasSwung = false;
         hitEnemies = new List<int>();
@@ -116,7 +115,10 @@ public class PlayerHandler : EntityHandler
         //TODO : Temporary gun testing
         if (_inputHandler.RightTrigger > 0.2)
         {
-            FireBullet();
+            if (_equippedWeapon.CanFireBullet())
+            {
+                FireBullet();
+            }
 
         }
 
@@ -502,9 +504,9 @@ public class PlayerHandler : EntityHandler
         }
 
         GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
-        tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
-        tempBullet.GetComponentInChildren<EntityPhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2.0f);
-        tempBullet.GetComponentInChildren<EntityPhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+        //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2.0f);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
     }
     
     /// <summary>

@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class BulletHandler : ProjectileHandler
 {
-    [SerializeField] private EntityPhysics _entityPhysics;
+    [SerializeField] private ProjectilePhysics _projectilePhysics;
     [SerializeField] private float _bulletSpeed;
     private Vector2 _moveDirection;
     private Weapon _sourceWeapon;
@@ -29,7 +29,8 @@ public class BulletHandler : ProjectileHandler
 	// Use this for initialization
 	void Start ()
     {
-        _entityPhysics.ZVelocity = 0.5f;
+        //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(new Vector2(1000, 1000));
+        _projectilePhysics.ZVelocity = 0.5f;
         //DEBUG
         //_moveDirection = new Vector2(1, 1).normalized;
     }
@@ -37,8 +38,8 @@ public class BulletHandler : ProjectileHandler
 	// Update is called once per frame
 	void Update ()
     {
-        //Debug.Log(_entityPhysics.GetObjectElevation());
-		if (_entityPhysics.IsCollidingWithEnvironment())
+        //Debug.Log(_projectilePhysics.GetObjectElevation());
+		if (_projectilePhysics.IsCollidingWithEnvironment())
         {
             //GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object
             SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
@@ -48,17 +49,18 @@ public class BulletHandler : ProjectileHandler
         temp.Set(temp.x * Time.deltaTime * _bulletSpeed, temp.y * Time.deltaTime * _bulletSpeed);
 
 
-        //_entityPhysics.MoveWithCollision(temp.x, temp.y);
+        //_projectilePhysics.MoveWithCollision(temp.x, temp.y);
         
-        _entityPhysics.FreeFall();
-        _entityPhysics.GetComponent<Rigidbody2D>().MovePosition(_entityPhysics.GetComponent<Rigidbody2D>().position + temp); //TODO : moveposition should be performed in BulletPhysics, or whatever the new physics system for bullets is
-
+        _projectilePhysics.FreeFall();
+        //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(_projectilePhysics.GetComponent<Rigidbody2D>().position + temp); //TODO : moveposition should be performed in BulletPhysics, or whatever the new physics system for bullets is
+        _projectilePhysics.MoveWithCollision(temp.x, temp.y);
 	}
 
 
     //Resets the bullet for reuse
     public void ResetBullet()
     {
+       
         Start();
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class EntityEnvironmentHandler : MonoBehaviour {
 
     [SerializeField] private GameObject entityHandlerObject;
-    [SerializeField] private EntityPhysics entityCollider;
+    [SerializeField] private DynamicPhysics entityCollider;
 
     void OnTriggerEnter2D(Collider2D other)
     {

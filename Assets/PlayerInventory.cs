@@ -30,10 +30,12 @@ public class PlayerInventory : MonoBehaviour
     /// <returns>Weapon in that equip spot, if one exists.</returns>
     public Weapon GetWeapon(string dir)
     {
+        /*
         Debug.Log("East: " + _weaponEast);
         Debug.Log("West: " + _weaponWest);
         Debug.Log("North: " + _weaponNorth);
         Debug.Log("South: " + _weaponSouth);
+        */
         switch (dir)
         {
             case "NORTH": return _weaponNorth;

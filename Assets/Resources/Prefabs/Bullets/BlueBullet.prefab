@@ -71,7 +71,7 @@ GameObject:
   - component: {fileID: 4834584460383674}
   - component: {fileID: 50584707523131266}
   - component: {fileID: 61218798332042760}
-  - component: {fileID: 114299028102266584}
+  - component: {fileID: 114320204638546438}
   m_Layer: 0
   m_Name: TestBulletCollider
   m_TagString: Untagged
@@ -283,7 +283,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &114299028102266584
+--- !u!114 &114320204638546438
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1503952682183524}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 39cb108159b1e5e449874bd1179111d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _objectHeight: 0.5
@@ -303,9 +303,10 @@ MonoBehaviour:
   gravity: -1.5
   speed: 5
   ZVelocity: 0
-  navManager: {fileID: 0}
-  entityHandler: {fileID: 0}
-  MaxHP: 10
+  canDeflect: 0
+  isAffectedByGravity: 0
+  canPenetrate: 0
+  canBeDamaged: 0
 --- !u!114 &114354234816903240
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -317,7 +318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98f62fa953a30544f9e93643a9f3d0d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityPhysics: {fileID: 114299028102266584}
+  _projectilePhysics: {fileID: 114320204638546438}
   _bulletSpeed: 30
 --- !u!114 &114759395887896544
 MonoBehaviour:
@@ -331,7 +332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityHandlerObject: {fileID: 1263482950436156}
-  entityCollider: {fileID: 114299028102266584}
+  entityCollider: {fileID: 114320204638546438}
 --- !u!212 &212401034409600004
 SpriteRenderer:
   m_ObjectHideFlags: 1

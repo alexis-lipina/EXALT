@@ -12,7 +12,7 @@ public abstract class Weapon : ScriptableObject
     protected float _timeBetweenShots;
     protected Dictionary<int, GameObject> _bulletPool;
     protected int _bulletPoolMaxCount;
-
+    protected float _timeOfLastShot;
 
 
     /// <summary>
@@ -24,6 +24,16 @@ public abstract class Weapon : ScriptableObject
 
 
 
+
+    //======================================| FIRE RATE MANAGEMENT
+
+    public bool CanFireBullet()
+    {
+        if (Time.time - _timeOfLastShot > _timeBetweenShots)
+            return true;
+        return false;
+    }
+
     //======================================| BULLET POOL METHODS
 
     /// <summary>
@@ -31,6 +41,8 @@ public abstract class Weapon : ScriptableObject
     /// </summary>
     public void PopulateBulletPool()
     {
+        if (_bulletPool != null) return;
+
         Debug.Log("Pool populating...");
         _bulletPool = new Dictionary<int, GameObject>();
         for (int i = 0; i < _bulletPoolMaxCount; i++)

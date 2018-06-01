@@ -400,6 +400,7 @@ public class DynamicPhysics : PhysicsObject
         }
         else
         {
+            //Debug.Log("Shadow Added");
             TerrainTouched.Add(terrainInstanceID, environment);
             Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(environment.GetTopHeight(), Instantiate(FirstShadow, this.transform.parent)));
             Shadows[terrainInstanceID].Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + environment.GetTopHeight(), environment.GetTopHeight());
@@ -417,6 +418,7 @@ public class DynamicPhysics : PhysicsObject
         TerrainTouched.Remove(terrainInstanceID);
         Destroy(Shadows[terrainInstanceID].Value);
         Shadows.Remove(terrainInstanceID);
+        //Debug.Log("Shadow Removed");
         //PrintTerrain();
     }
 

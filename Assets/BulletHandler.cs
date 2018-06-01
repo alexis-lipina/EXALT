@@ -11,14 +11,19 @@ public class BulletHandler : ProjectileHandler
     [SerializeField] private EntityPhysics _entityPhysics;
     [SerializeField] private float _bulletSpeed;
     private Vector2 _moveDirection;
+    private Weapon _sourceWeapon;
+
 
     public Vector2 MoveDirection
     {
         set { _moveDirection = value; }
         get { return _moveDirection; }
     }
-
-
+    public Weapon SourceWeapon
+    {
+        set { _sourceWeapon = value; }
+        get { return _sourceWeapon;  }
+    }
 
 
 	// Use this for initialization
@@ -35,16 +40,12 @@ public class BulletHandler : ProjectileHandler
         //Debug.Log(_entityPhysics.GetObjectElevation());
 		if (_entityPhysics.IsCollidingWithEnvironment())
         {
-            GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object
+            //GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object
+            SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
         }
         Vector2 temp = _moveDirection;
         temp.Normalize();
         temp.Set(temp.x * Time.deltaTime * _bulletSpeed, temp.y * Time.deltaTime * _bulletSpeed);
-
-
-
-
-
 
 
         //_entityPhysics.MoveWithCollision(temp.x, temp.y);
@@ -53,4 +54,11 @@ public class BulletHandler : ProjectileHandler
         _entityPhysics.GetComponent<Rigidbody2D>().MovePosition(_entityPhysics.GetComponent<Rigidbody2D>().position + temp); //TODO : moveposition should be performed in BulletPhysics, or whatever the new physics system for bullets is
 
 	}
+
+
+    //Resets the bullet for reuse
+    public void ResetBullet()
+    {
+        Start();
+    }
 }

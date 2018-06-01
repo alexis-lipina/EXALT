@@ -518,6 +518,7 @@ public class PlayerHandler : EntityHandler
         {
             Debug.Log("Equipping " + temp);
             _equippedWeapon = inventory.GetWeapon(cardinal);
+            _equippedWeapon.PopulateBulletPool();
         }
     }
 

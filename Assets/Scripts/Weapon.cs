@@ -48,6 +48,7 @@ public abstract class Weapon : ScriptableObject
         for (int i = 0; i < _bulletPoolMaxCount; i++)
         {
             GameObject tempBullet = Instantiate(Resources.Load("Prefabs/Bullets/" + _bulletPrefabName)) as GameObject;
+            //tempBullet.GetComponentInChildren<Rigidbody2D>().position = new Vector2(1000, 1000);
             tempBullet.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
             tempBullet.SetActive(false);
             _bulletPool.Add(tempBullet.GetInstanceID(), tempBullet);
@@ -78,6 +79,8 @@ public abstract class Weapon : ScriptableObject
         {
             if (_bulletPool[instanceID].activeSelf)
             {
+                //_bulletPool[instanceID].GetComponentInChildren<Rigidbody2D>().position = (new Vector2(1000, 1000));
+                //_bulletPool[instanceID].GetComponentInChildren<DynamicPhysics>().MoveCharacterPosition();
                 _bulletPool[instanceID].SetActive(false);
                 _bulletPool[instanceID].GetComponentInChildren<BulletHandler>().ResetBullet();
             }

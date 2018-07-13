@@ -23,7 +23,7 @@ public class UIHealthBar : MonoBehaviour
         
         StartCoroutine(DamageFlash());
         
-        Debug.Log("Bar should go down");
+        //Debug.Log("Bar should go down");
     }
 
     IEnumerator DamageFlash()

@@ -24,7 +24,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         if (other.gameObject.tag == "Environment")
         {
             //Debug.Log("Hurk");
-            entityCollider.RemoveTerrainTouched(other.GetInstanceID());//EntityPhysics
+            entityCollider.RemoveTerrainTouched(other.GetInstanceID()); // EntityPhysics
         }
     }
 }

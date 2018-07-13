@@ -23,6 +23,7 @@ public class DynamicPhysics : PhysicsObject
 
 
     protected Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
+    //                                        bottom-^    ^-top
     protected Dictionary<int, EnvironmentPhysics> TerrainTouched;//each element touching EnvironmentHandler
     //                   ^ instanceID
     protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
@@ -89,7 +90,7 @@ public class DynamicPhysics : PhysicsObject
     /// <summary>
     /// Changes position of character image as player moves. 
     /// </summary>
-    protected void MoveCharacterPosition()
+    public void MoveCharacterPosition()
     {
         //                           X: Horizontal position                    Y: Vertical position - accounts for height and depth               Z: Depth - order of object draw calls
         Vector3 coords = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + _spriteZOffset + bottomHeight, gameObject.transform.position.y + _environmentHandler.GetComponent<BoxCollider2D>().offset.y - _environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.39f); //change here

@@ -8,8 +8,10 @@ public class TestGunYellow : Weapon
 
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
+        _timeOfLastShot = Time.time;
+        _bulletPoolMaxCount = 20;
         _timeBetweenShots = 0.5f;
         _bulletPrefabName = "YellowBullet";
     }
@@ -18,12 +20,10 @@ public class TestGunYellow : Weapon
 
     public override GameObject FireBullet(Vector2 direction)
     {
-        _bulletPrefabName = "YellowBullet";
-        GameObject tempBullet = Instantiate(Resources.Load("Prefabs/Bullets/" + _bulletPrefabName)) as GameObject;
+        GameObject tempBullet = GetFromPool();
         tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = direction.normalized;
-
-
         tempBullet.SetActive(true);
+        _timeOfLastShot = Time.time;
         return tempBullet;
     }
 }

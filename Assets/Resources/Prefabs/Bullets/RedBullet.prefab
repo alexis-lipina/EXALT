@@ -73,7 +73,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1762775852314228
 GameObject:
   m_ObjectHideFlags: 1
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 4737309436600610}
   - component: {fileID: 50070427697068230}
   - component: {fileID: 61946726640450790}
-  - component: {fileID: 114297293668465798}
+  - component: {fileID: 114010374234329992}
   m_Layer: 0
   m_Name: TestBulletCollider
   m_TagString: Untagged
@@ -283,6 +283,30 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.6, y: 0.6}
   m_EdgeRadius: 0
+--- !u!114 &114010374234329992
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1994796078480348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39cb108159b1e5e449874bd1179111d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _objectHeight: 0.5
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 1182596398123686}
+  _environmentHandler: {fileID: 1762775852314228}
+  FirstShadow: {fileID: 1006301800852120}
+  gravity: -1.5
+  speed: 5
+  ZVelocity: 0
+  canBounce: 0
+  isAffectedByGravity: 0
+  canPenetrate: 0
+  canBeDamaged: 0
 --- !u!114 &114286312234812530
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -294,32 +318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98f62fa953a30544f9e93643a9f3d0d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityPhysics: {fileID: 114297293668465798}
+  _projectilePhysics: {fileID: 114010374234329992}
   _bulletSpeed: 50
---- !u!114 &114297293668465798
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1994796078480348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 5
-  navManager: {fileID: 0}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 1182596398123686}
-  environmentHandler: {fileID: 1762775852314228}
-  handlerObject: {fileID: 1389341553294470}
-  FirstShadow: {fileID: 1006301800852120}
-  gravity: -1.5
-  speed: 12
-  MaxHP: 10
-  ZVelocity: 0
 --- !u!114 &114871283977562030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -332,7 +332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityHandlerObject: {fileID: 1389341553294470}
-  entityCollider: {fileID: 114297293668465798}
+  entityCollider: {fileID: 114010374234329992}
 --- !u!212 &212351550097445736
 SpriteRenderer:
   m_ObjectHideFlags: 1

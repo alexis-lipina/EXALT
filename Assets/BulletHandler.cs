@@ -13,6 +13,9 @@ public class BulletHandler : ProjectileHandler
     private Vector2 _moveDirection;
     private Weapon _sourceWeapon;
 
+    private bool _canBounce;
+
+
 
     public Vector2 MoveDirection
     {
@@ -34,20 +37,21 @@ public class BulletHandler : ProjectileHandler
         //DEBUG
         //_moveDirection = new Vector2(1, 1).normalized;
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+
+
+    void Update ()
     {
-        //Debug.Log(_projectilePhysics.GetObjectElevation());
 		if (_projectilePhysics.IsCollidingWithEnvironment())
         {
             //GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object
-            SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
+            //SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
         }
         Vector2 temp = _moveDirection;
         temp.Normalize();
         temp.Set(temp.x * Time.deltaTime * _bulletSpeed, temp.y * Time.deltaTime * _bulletSpeed);
-
+        temp = _projectilePhysics.Bounce(temp); //bounces projectile if need be
+        _moveDirection = temp;
 
         //_projectilePhysics.MoveWithCollision(temp.x, temp.y);
         
@@ -62,5 +66,24 @@ public class BulletHandler : ProjectileHandler
     {
        
         Start();
+    }
+
+
+    //===========================================================| Special Abilities
+
+    /// <summary>
+    /// Bounces a projectile off of a wall
+    /// </summary>
+    protected void Bounce()
+    {
+        BoxCollider2D bulletcollider = _projectilePhysics.GetComponent<BoxCollider2D>();
+
+
+
+        if (!_projectilePhysics.IsCollidingWithEnvironment()) return; //if nothin goin on, exit
+
+
+       
+
     }
 }

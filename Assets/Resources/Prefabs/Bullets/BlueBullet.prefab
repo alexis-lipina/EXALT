@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39cb108159b1e5e449874bd1179111d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _objectHeight: 0.5
+  _objectHeight: 1
   _startElevation: 0
   _spriteZOffset: 0
   _objectSprite: {fileID: 1285873997262686}
@@ -303,10 +303,11 @@ MonoBehaviour:
   gravity: -1.5
   speed: 5
   ZVelocity: 0
-  canDeflect: 0
+  canBounce: 0
   isAffectedByGravity: 0
   canPenetrate: 0
   canBeDamaged: 0
+  _whoToHurt: ENEMY
 --- !u!114 &114354234816903240
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -319,7 +320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectilePhysics: {fileID: 114320204638546438}
-  _bulletSpeed: 30
+  _bulletSpeed: 20
 --- !u!114 &114759395887896544
 MonoBehaviour:
   m_ObjectHideFlags: 1

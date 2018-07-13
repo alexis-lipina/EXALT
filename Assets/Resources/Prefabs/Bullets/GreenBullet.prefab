@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4972099055175002}
   - component: {fileID: 50174984731327348}
   - component: {fileID: 61645604905504406}
-  - component: {fileID: 114756243052429782}
+  - component: {fileID: 114181200199668422}
   m_Layer: 0
   m_Name: TestBulletCollider
   m_TagString: Untagged
@@ -283,6 +283,30 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.6, y: 0.6}
   m_EdgeRadius: 0
+--- !u!114 &114181200199668422
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1162231332097446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39cb108159b1e5e449874bd1179111d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _objectHeight: 0.5
+  _startElevation: 0
+  _spriteZOffset: 0
+  _objectSprite: {fileID: 1224792941673864}
+  _environmentHandler: {fileID: 1808036493697548}
+  FirstShadow: {fileID: 1672187733136212}
+  gravity: -1.5
+  speed: 5
+  ZVelocity: 0
+  canBounce: 0
+  isAffectedByGravity: 0
+  canPenetrate: 0
+  canBeDamaged: 0
 --- !u!114 &114684431120301160
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -295,31 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityHandlerObject: {fileID: 1804726364849942}
-  entityCollider: {fileID: 114756243052429782}
---- !u!114 &114756243052429782
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1162231332097446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _IsDebug: 0
-  entityHeight: 3
-  startElevation: 5
-  navManager: {fileID: 0}
-  playerSpriteZOffset: 2
-  characterSprite: {fileID: 1224792941673864}
-  environmentHandler: {fileID: 1808036493697548}
-  handlerObject: {fileID: 1804726364849942}
-  FirstShadow: {fileID: 1672187733136212}
-  gravity: -1.5
-  speed: 12
-  MaxHP: 10
-  ZVelocity: 0
+  entityCollider: {fileID: 114181200199668422}
 --- !u!114 &114785524054972156
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -331,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98f62fa953a30544f9e93643a9f3d0d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _entityPhysics: {fileID: 114756243052429782}
+  _projectilePhysics: {fileID: 114181200199668422}
   _bulletSpeed: 50
 --- !u!212 &212070473014028574
 SpriteRenderer:

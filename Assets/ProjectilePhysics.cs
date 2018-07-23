@@ -41,7 +41,7 @@ public class ProjectilePhysics : DynamicPhysics
     /// "FRIEND" - damages friends
     /// "ENEMY"  - damages enemies
     /// </summary>
-    [SerializeField] private string _whoToHurt; //who to avoid damaging
+    [SerializeField] private string _whoToHurt; //who to damage
 
     private Rigidbody2D bulletRigidBody;
     private Vector2 _velocity;
@@ -79,7 +79,7 @@ public class ProjectilePhysics : DynamicPhysics
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(other.gameObject.tag);
+        //Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
         {
             TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
@@ -110,6 +110,7 @@ public class ProjectilePhysics : DynamicPhysics
         }
     }
 
+    
 
 
     //==========================================|  SPECIAL PHYSICS
@@ -214,6 +215,7 @@ public class ProjectilePhysics : DynamicPhysics
         return currentvelocity;
     }
     
+    //==========================================| ENTITY COLLISION
 
 
 

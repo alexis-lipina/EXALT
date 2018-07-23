@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 /// <summary>
-/// This class handles entity interaction with environment.
+/// This class handles entity interaction with environment, as well as other entities.
 /// 
 /// TERRAIN TRAVERSAL
 /// An area of terrain has a 2D Box Collider associated with it, which defines the area, and the terrain object stores the height of the 

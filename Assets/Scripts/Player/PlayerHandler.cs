@@ -70,7 +70,7 @@ public class PlayerHandler : EntityHandler
 	void Start ()
     {
         SwapWeapon("NORTH"); //Debug
-        Debug.Log(_equippedWeapon);
+        //Debug.Log(_equippedWeapon);
         CurrentState = PlayerState.IDLE;
         StateTimer = 0;
         JumpImpulse = 0.6f;

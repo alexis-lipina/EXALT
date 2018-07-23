@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class describes all static objects in the environment that may be traversed over. Class also supports AI navigation, with
+/// each EnvironmentPhysics object using an adjacency list to help construct a nav graph.
+/// </summary>
 public class EnvironmentPhysics : PhysicsObject
 {
     [SerializeField] private float environmentBottomHeight; //for initialization only
@@ -63,15 +67,7 @@ public class EnvironmentPhysics : PhysicsObject
             gameObject.GetComponent<SpriteRenderer>().color = temp;
         }
     }
-
-
-
-	void OnCollisionEnter2D(Collision2D coll)
-    {
-        //something might happen?
-    }
-
-
+    
 
    
     /// <summary>

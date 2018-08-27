@@ -8,14 +8,20 @@ using UnityEngine;
 /// </summary>
 public class EnvironmentPhysics : PhysicsObject
 {
-    [SerializeField] private float environmentBottomHeight; //for initialization only
-    [SerializeField] private float environmentTopHeight; //for initialization only
-    [SerializeField] private GameObject playerSprite;
-    [SerializeField] private GameObject parent;
-    [SerializeField] private GameObject[] neighbors;
-    [SerializeField] private bool isTransparentOnOcclude;
+    [SerializeField] protected float environmentBottomHeight; //for initialization only
+    [SerializeField] protected float environmentTopHeight; //for initialization only
+    [SerializeField] protected GameObject playerSprite;
+    [SerializeField] protected GameObject parent;
+    [SerializeField] protected GameObject[] neighbors;
+    [SerializeField] protected bool isTransparentOnOcclude;
+    [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
 
     private List<NavEdge> neighborEdges;
+
+    public bool IsSavePoint
+    {
+        get { return isSavePoint; }
+    }
 
     void Awake()
     {
@@ -43,6 +49,7 @@ public class EnvironmentPhysics : PhysicsObject
 
     void Update()
     {
+        /*
         if (isTransparentOnOcclude) //if object can become transparent when player behind
         {
             if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z) //if player is behind
@@ -66,6 +73,7 @@ public class EnvironmentPhysics : PhysicsObject
             temp = new Color(temp.r, temp.g, temp.b, 1f);
             gameObject.GetComponent<SpriteRenderer>().color = temp;
         }
+        */
     }
     
 

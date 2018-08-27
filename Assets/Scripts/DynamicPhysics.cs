@@ -30,7 +30,10 @@ public class DynamicPhysics : PhysicsObject
     //                    ^ instanceID       ^ height    ^ shadowobject 
     public float ZVelocity;
 
-
+    public GameObject ObjectSprite
+    {
+        get { return _objectSprite; }
+    }
 
     protected virtual void Awake()
     {

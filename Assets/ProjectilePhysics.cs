@@ -12,12 +12,13 @@ using UnityEngine;
 /// </summary>
 public class ProjectilePhysics : DynamicPhysics
 {
-   
 
+    [SerializeField] private BulletHandler bulletHandler;
     [SerializeField] private bool canBounce;
     [SerializeField] private bool isAffectedByGravity;
     [SerializeField] private bool canPenetrate;
     [SerializeField] private bool canBeDamaged;
+    [SerializeField] private bool explodesOnDeath;
 
     public bool CanBounce
     {
@@ -35,6 +36,8 @@ public class ProjectilePhysics : DynamicPhysics
     {
         get { return canBeDamaged; }
     }
+
+    
 
     /// <summary>
     /// "ALL" - Damages all entity types
@@ -68,7 +71,8 @@ public class ProjectilePhysics : DynamicPhysics
         MoveCharacterPosition();
         if (bottomHeight < -18)
         {
-            //TODO : Object Pooling  -  destroy
+            Debug.Log(bulletHandler);
+            bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID()); //"deletes" if out of bounds
         }
     }
 

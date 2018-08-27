@@ -303,10 +303,12 @@ MonoBehaviour:
   gravity: -1.5
   speed: 5
   ZVelocity: 0
+  bulletHandler: {fileID: 114354234816903240}
   canBounce: 0
   isAffectedByGravity: 0
   canPenetrate: 0
   canBeDamaged: 0
+  explodesOnDeath: 0
   _whoToHurt: ENEMY
 --- !u!114 &114354234816903240
 MonoBehaviour:

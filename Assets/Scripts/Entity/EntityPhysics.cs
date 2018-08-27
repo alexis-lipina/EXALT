@@ -569,13 +569,13 @@ public class EntityPhysics : DynamicPhysics
                 temp = entry.Value;
             }
         }
-        if (temp != null)
+        if (temp != null && temp.IsSavePoint)
         {
             lastFootHold = new KeyValuePair<Vector2, EnvironmentPhysics>(gameObject.GetComponent<Rigidbody2D>().position, temp);
         }
         else
         {
-            Debug.Log("ALERT!!!");
+            Debug.Log("ALERT!!! No Save!");
         }
 
     }
@@ -699,7 +699,7 @@ public class EntityPhysics : DynamicPhysics
 
     IEnumerator TakeDamageFlash()
     {
-        Debug.Log("TakeDamageFlash entered");
+        //Debug.Log("TakeDamageFlash entered");
         entityHandler.JustGotHit();
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
         for (float i = 0; i < 2; i++)

@@ -8,10 +8,10 @@ using UnityEngine;
 /// </summary>
 public class BulletHandler : ProjectileHandler
 {
-    [SerializeField] private ProjectilePhysics _projectilePhysics;
-    [SerializeField] private float _bulletSpeed;
-    private Vector2 _moveDirection;
-    private Weapon _sourceWeapon;
+    [SerializeField] protected ProjectilePhysics _projectilePhysics;
+    [SerializeField] protected float _bulletSpeed;
+    protected Vector2 _moveDirection;
+    protected Weapon _sourceWeapon;
 
     private bool _canBounce;
 
@@ -30,7 +30,7 @@ public class BulletHandler : ProjectileHandler
 
 
 	// Use this for initialization
-	void Start ()
+	virtual protected void Start ()
     {
         //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(new Vector2(1000, 1000));
         _projectilePhysics.ZVelocity = 0.5f;
@@ -40,7 +40,7 @@ public class BulletHandler : ProjectileHandler
 
 
 
-    void Update ()
+    protected virtual void Update ()
     {
 		if (_projectilePhysics.IsCollidingWithEnvironment())
         {
@@ -81,9 +81,6 @@ public class BulletHandler : ProjectileHandler
 
 
         if (!_projectilePhysics.IsCollidingWithEnvironment()) return; //if nothin goin on, exit
-
-
-       
 
     }
 }

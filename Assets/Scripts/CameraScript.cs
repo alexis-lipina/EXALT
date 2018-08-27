@@ -27,7 +27,14 @@ public class CameraScript : MonoBehaviour
     {
         Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -100f));
         Vector2 offset = input.RightAnalog; //moves camera in direction the stick is pointing
-
+        if (input.RightAnalog.magnitude > 0)
+        {
+            offset = input.RightAnalog;
+        }
+        else
+        {
+            offset = input.LeftAnalog;
+        }
         pos.Set(pos.x + offset.x * OFFSET_MAGNITUDE_X, pos.y + offset.y * OFFSET_MAGNITUDE_Y, pos.z);
         return pos;
     }

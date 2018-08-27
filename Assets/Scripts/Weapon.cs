@@ -75,6 +75,7 @@ public abstract class Weapon : ScriptableObject
 
     public void ReturnToPool(int instanceID)
     {
+        //Debug.Log("Returning to Pool");
         if (_bulletPool.ContainsKey(instanceID))
         {
             if (_bulletPool[instanceID].activeSelf)

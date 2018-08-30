@@ -584,8 +584,7 @@ public class PlayerHandler : EntityHandler
     {
         Debug.Log("Reload");
         //SceneManager.LoadScene("MainMenu2");
-        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
-
+        //SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
     }
 
 

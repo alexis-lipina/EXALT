@@ -35,6 +35,7 @@ public class RisingPillarTest : MonoBehaviour {
     void Rise()
     {
         _environDynamicPhysics.TopHeight = _environDynamicPhysics.TopHeight + _speed; //change physics parameters
+        _environDynamicPhysics.BottomHeight = _environDynamicPhysics.BottomHeight + _speed; //change physics parameters
         gameObject.GetComponent<Transform>().position = new Vector3(gameObject.GetComponent<Transform>().position.x, gameObject.GetComponent<Transform>().position.y + _speed, gameObject.GetComponent<Transform>().position.z);
         gameObject.GetComponent<BoxCollider2D>().offset = new Vector2(gameObject.GetComponent<BoxCollider2D>().offset.x, gameObject.GetComponent<BoxCollider2D>().offset.y - _speed);
         if (_environDynamicPhysics.TopHeight > _endHeight )

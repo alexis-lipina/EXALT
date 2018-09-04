@@ -34,6 +34,7 @@ public class BulletHandler : ProjectileHandler
     {
         //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(new Vector2(1000, 1000));
         _projectilePhysics.ZVelocity = 0.5f;
+        _projectilePhysics.Reset();
         //DEBUG
         //_moveDirection = new Vector2(1, 1).normalized;
     }
@@ -64,7 +65,7 @@ public class BulletHandler : ProjectileHandler
     //Resets the bullet for reuse
     public void ResetBullet()
     {
-       
+        _projectilePhysics.Reset();
         Start();
     }
 

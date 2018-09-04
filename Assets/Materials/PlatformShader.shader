@@ -61,6 +61,8 @@ Shader "Custom/PlatformShader"
 				float diff = _PlatformElevation - _PlayerElevation;
 				float4 mask_color;
 
+				if (color.a != 1) return color;
+
 				if (diff > 0.0)
 				{
 					mask_color = _LowColor;

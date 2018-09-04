@@ -22,7 +22,7 @@ Shader "Custom/WallShader"
 	{
 		Tags
 		{
-			"Queue" = "Geometry"
+			"Queue" = "Transparent"
 		}
 		Pass
 		{
@@ -76,7 +76,9 @@ Shader "Custom/WallShader"
 
 				ratio = ratio / _MaxElevationOffset;
 
-				if (ratio > 0)
+				if (color.a != 1) return color;
+
+				if (ratio > 0 )
 				{
 					color = (1 - ratio) * color + ratio * _HighColor;
 				}

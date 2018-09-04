@@ -222,6 +222,15 @@ public class ProjectilePhysics : DynamicPhysics
     //==========================================| ENTITY COLLISION
 
 
+    //==========================================| OBJECT POOLING
 
+    /// <summary>
+    /// Should only be called when object is "removed" and returned to pool.
+    /// </summary>
+    public void Reset()
+    {
+        TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
+        EntitiesTouched = new List<PhysicsObject>();
+    }
 
 }

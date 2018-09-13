@@ -18,19 +18,17 @@ using UnityEngine;
 public class TestEnemyAI : EntityAI
 {
     //[SerializeField] EntityHandler handler;
-    [SerializeField] GameObject target;
+    public GameObject target;
     [SerializeField] float detectionRange;
-    [SerializeField] private bool canBeeLine;
     private Stack<Vector2> coordpath;
     private Stack<EnvironmentPhysics> path;
     private TestEnemyHandler testhandler;
 
-    private bool isBeeLine;
     private bool pathfound;
 
     void Start()
     {
-        isBeeLine = false;
+        
         pathfound = false;
         //TestAwfulPathfindingSystem();
         navManager.entityChangePositionDelegate += CheckForPathUpdate;
@@ -40,17 +38,7 @@ public class TestEnemyAI : EntityAI
     // Update is called once per frame
     void Update()
     {
-        if (canBeeLine)
-        {
-            if (!isBeeLine)
-            {
-                if (entityPhysics.GetComponent<ArenaTriggerSensor>().WillBeeLine)
-                {
-                    Debug.Log("BEELINE!");
-                    isBeeLine = true;
-                }
-            }
-        }
+        
 
 
         //----Test of god-awful pathfinding system
@@ -61,7 +49,7 @@ public class TestEnemyAI : EntityAI
         }
         else
         {
-            if (path.Count == 0 || isBeeLine)
+            if (path.Count == 0)
             {
                 //Debug.Log("Moving toward target!");
                 MoveToAttackTarget();
@@ -89,6 +77,13 @@ public class TestEnemyAI : EntityAI
                 }
             }
         }
+    }
+
+    public void SetPath(EnvironmentPhysics source)
+    {
+        Debug.Log(source);
+        Debug.Log(target.GetComponent<EntityPhysics>().GetCurrentNavObject());
+        path = navManager.FindPath(source, target.GetComponent<EntityPhysics>().GetCurrentNavObject());
     }
 
     //=====================| AI Methods

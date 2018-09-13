@@ -66,7 +66,7 @@ public class CameraScript : MonoBehaviour
 
     public void Jolt(float intensity, Vector2 direction)
     {
-        Debug.Log("Camera Jolt!");
+        //Debug.Log("Camera Jolt!");
         if (direction.magnitude == 0)
         {
             Jolt(intensity);
@@ -81,7 +81,7 @@ public class CameraScript : MonoBehaviour
 
     IEnumerator CameraShake(float intensity, int repetitions, float timeBetweenJolts)
     {
-        Debug.Log("Camera shaking!");
+        //Debug.Log("Camera shaking!");
         System.Random rand = new System.Random();
         Vector3 originalpos = gameObject.GetComponent<Transform>().position;
         Vector3 newpos = originalpos;

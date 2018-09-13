@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 50390364083297286}
   - component: {fileID: 61925181198450070}
   - component: {fileID: 114302638073707500}
+  - component: {fileID: 114077261756491296}
   m_Layer: 0
   m_Name: TestEnemyCollider
   m_TagString: Enemy
@@ -200,7 +201,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1821655441854242}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -50.58509, y: 1.374218, z: -5}
+  m_LocalPosition: {x: -56.6, y: 0.4, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4171376046294046}
@@ -332,6 +333,17 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114077261756491296
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1132658808763146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb7370fe1cb51334fac858cd532fda3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114213347638550972
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -357,8 +369,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectHeight: 2
-  _startElevation: 5
-  _spriteZOffset: 1
+  _startElevation: 16
+  _spriteZOffset: 2.5
   _objectSprite: {fileID: 1727732317533918}
   _environmentHandler: {fileID: 1148562347676408}
   FirstShadow: {fileID: 1504078181832622}
@@ -367,7 +379,8 @@ MonoBehaviour:
   ZVelocity: 0
   navManager: {fileID: 0}
   entityHandler: {fileID: 114388937944588230}
-  MaxHP: 10
+  MaxHP: 3
+  _spawner: {fileID: 0}
 --- !u!114 &114342870644348828
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -383,7 +396,7 @@ MonoBehaviour:
   entityPhysics: {fileID: 114302638073707500}
   navManager: {fileID: 0}
   target: {fileID: 0}
-  detectionRange: 100
+  detectionRange: 1000
 --- !u!114 &114388937944588230
 MonoBehaviour:
   m_ObjectHideFlags: 1

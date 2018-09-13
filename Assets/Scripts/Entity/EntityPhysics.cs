@@ -22,7 +22,7 @@ using System;
 public class EntityPhysics : DynamicPhysics
 {
 
-    [SerializeField] private NavigationManager navManager;
+    public NavigationManager navManager;
     [SerializeField] private EntityHandler entityHandler;
     
     [SerializeField] private float MaxHP;
@@ -34,6 +34,8 @@ public class EntityPhysics : DynamicPhysics
     private EnvironmentPhysics currentNavEnvironmentObject;
 
     List<PhysicsObject> EntitiesTouched;
+
+    public EnemySpawner _spawner;
 
     //private float entityElevation; //replaced with bottomHeight
 
@@ -262,12 +264,13 @@ public class EntityPhysics : DynamicPhysics
     {
         hasBeenHit = true;
         currentHP -= damage;
-        StartCoroutine(TakeDamageFlash());
         
         if (currentHP <= 0)
         {
-            GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
+            //GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
+            Reset();
         }
+        StartCoroutine(TakeDamageFlash());
     }
 
     /// <summary>
@@ -301,6 +304,25 @@ public class EntityPhysics : DynamicPhysics
 
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
     }
+
+    //===================================================| Object Pooling
+
+    /// <summary>
+    /// Returns object to its pool, deactivates, returns to starting status
+    /// </summary>
+    public void Reset()
+    {
+        currentHP = MaxHP;
+        lastFootHold = new KeyValuePair<Vector2, EnvironmentPhysics>();
+        currentNavEnvironmentObject = null;
+        hasBeenHit = false;
+        TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
+        TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
+        _spawner.ReturnToPool(gameObject.transform.parent.gameObject.GetInstanceID());
+
+    }
+
+
 
     //===============================================================| getters and setters
     public EnvironmentPhysics GetCurrentNavObject()

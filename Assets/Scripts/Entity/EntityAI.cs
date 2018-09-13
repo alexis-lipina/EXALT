@@ -11,7 +11,7 @@ public abstract class EntityAI : MonoBehaviour
 {
     [SerializeField] protected EntityHandler handler;
     [SerializeField] protected EntityPhysics entityPhysics;
-    [SerializeField] protected NavigationManager navManager;
+    [SerializeField] public NavigationManager navManager;
 
     // Use this for initialization
     void Start () {
@@ -22,4 +22,5 @@ public abstract class EntityAI : MonoBehaviour
 	void Update () {
 		
 	}
+
 }

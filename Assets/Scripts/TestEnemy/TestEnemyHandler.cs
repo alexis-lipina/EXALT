@@ -6,11 +6,11 @@ using UnityEngine;
 public class TestEnemyHandler : EntityHandler
 {
     [SerializeField] private Animator characterAnimator;
+    [SerializeField] private bool isCompanion;
 
 
     enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, WOUNDED };
     private TestEnemyState currentState;
-    [SerializeField] private bool isCompanion;
 
     const string IDLE_EAST_Anim = "Anim_EnemyIdleEast";
     const string IDLE_WEST_Anim = "Anim_EnemyIdleWest";
@@ -58,6 +58,9 @@ public class TestEnemyHandler : EntityHandler
 
     bool wasJustHit;
     float stateTimer;
+
+    private EnemySpawner _spawner;
+
 
     void Awake()
     {
@@ -240,8 +243,9 @@ public class TestEnemyHandler : EntityHandler
             characterAnimator.Play(RUN_WEST_Anim);
         }
 
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-
+        //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        Vector2 movementVector = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        entityPhysics.MoveCharacterPositionPhysics(movementVector.x, movementVector.y);
 
 
 
@@ -584,6 +588,10 @@ public class TestEnemyHandler : EntityHandler
         }
     }
     */
+
+
+
+
 
 
     public void SetAttackPressed(bool value)

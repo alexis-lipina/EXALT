@@ -127,7 +127,7 @@ public class NavigationManager : MonoBehaviour
         EnvironmentPhysics current = null;
         //Debug.Log("About to die!");
         int iterations = 0;
-        while(frontier.Count != 0 && iterations < 30) // TODO : Arbitrary cap on iterations
+        while(frontier.Count != 0 && iterations < 100) // TODO : Arbitrary cap on iterations
         {
             //Debug.Log("bloop");
             //get least expensive frontier, set to current

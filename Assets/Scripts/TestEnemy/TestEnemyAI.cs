@@ -24,7 +24,6 @@ public class TestEnemyAI : EntityAI
     private Stack<EnvironmentPhysics> path;
     private TestEnemyHandler testhandler;
 
-
     private bool pathfound;
 
     void Start()

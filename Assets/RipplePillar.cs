@@ -13,13 +13,20 @@ public class RipplePillar : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
-        _height = _physics.TopHeight - _physics.BottomHeight;
-		
+        _height = _physics.TopHeight - _physics.BottomHeight;	
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        _physics.TopHeight = _controller.grid[_positionX, _positionY] * _height;
-	}
+        
+        float newElevation = _controller.grid[_positionX, _positionY] * _height;
+        float delta = newElevation - _physics.TopHeight;
+
+
+        _physics.TopHeight = newElevation; //change physics parameters
+        _physics.BottomHeight = newElevation - _height; //change physics parameters
+        gameObject.GetComponent<Transform>().position = new Vector3(gameObject.GetComponent<Transform>().position.x, gameObject.GetComponent<Transform>().position.y + delta, gameObject.GetComponent<Transform>().position.z);
+        gameObject.GetComponent<BoxCollider2D>().offset = new Vector2(gameObject.GetComponent<BoxCollider2D>().offset.x, gameObject.GetComponent<BoxCollider2D>().offset.y - delta);
+    }
 }

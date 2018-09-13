@@ -65,9 +65,9 @@ Shader "Custom/PlatformShader"
 
 				if (diff > 0.0)
 				{
-					mask_color = _LowColor;
+					mask_color = _HighColor;
 				}
-				else { mask_color = _HighColor; }
+				else { mask_color = _LowColor; }
 
 				diff = abs(diff);
 				float ratio = diff / _MaxElevationOffset;

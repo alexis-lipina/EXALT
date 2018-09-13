@@ -22,10 +22,12 @@ public class RippleController : MonoBehaviour
     {
         _totalTime += Time.deltaTime;
         if (_totalTime > 360) _totalTime -= 360;
-
-        for (int i = 0; i < dimX; i++)
+        for (int j = 0; j < dimY; j++)
         {
-            grid[i, 0] = Mathf.Sin(_totalTime + i*30)/4.0f;
+            for (int i = 0; i < dimX; i++)
+            {
+                grid[j, i] = Mathf.Sin(_totalTime + i * 0.5f + j * 0.5f) / 3.0f + 1f;
+            }
         }
 
 	}

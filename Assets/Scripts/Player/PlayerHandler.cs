@@ -186,6 +186,7 @@ public class PlayerHandler : EntityHandler
         
         //do nothing, maybe later have them breathing or getting bored, sitting down
         entityPhysics.MoveCharacterPositionPhysics(0, 0);
+        entityPhysics.SnapToFloor();
         //Debug.Log("Player Idle");
         //------------------------------------------------| STATE CHANGE
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
@@ -256,6 +257,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        entityPhysics.SnapToFloor();
         //face direction determination
         
         

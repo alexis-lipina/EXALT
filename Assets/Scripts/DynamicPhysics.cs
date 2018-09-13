@@ -22,9 +22,9 @@ public class DynamicPhysics : PhysicsObject
     protected Rigidbody2D PlayerRigidBody;
 
 
-    protected Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the collider
+    protected Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the ***collider***
     //                                        bottom-^    ^-top
-    protected Dictionary<int, EnvironmentPhysics> TerrainTouched;//each element touching EnvironmentHandler
+    protected Dictionary<int, EnvironmentPhysics> TerrainTouched;//each element touching ***EnvironmentHandler***
     //                   ^ instanceID
     protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
     //                    ^ instanceID       ^ height    ^ shadowobject 
@@ -64,6 +64,8 @@ public class DynamicPhysics : PhysicsObject
         //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
     }
 
+
+
     /// <summary>
     /// Moves entity strictly vertically along a (somewhat) ballistic trajectory, and checks for headbutt collisions
     /// </summary>
@@ -77,6 +79,28 @@ public class DynamicPhysics : PhysicsObject
         // ZVelocity -= gravity;
         CheckHitHeadOnCeiling();
     }
+
+    /// <summary>
+    /// Allows objects which have a small or zero ZVelocity, which are atop an environment object that is moving down from beneath them to "stay glued" to 
+    /// it rather than constantly toggling between falling and standing on it.
+    /// </summary>
+    public void SnapToFloor()
+    {
+        float delta = 0;
+        foreach(KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
+        {
+            delta = bottomHeight - entry.Value.GetTopHeight();
+            if (delta > 0 && delta < 0.5f) 
+            {
+                bottomHeight -= delta;
+                topHeight = bottomHeight + _objectHeight;
+                ZVelocity = 0;
+                return;
+            }
+        }
+    }
+
+
     /// <summary>
     /// Returns true if, during the next frame, the player will fall into an object
     /// </summary>

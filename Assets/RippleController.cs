@@ -26,7 +26,7 @@ public class RippleController : MonoBehaviour
         {
             for (int i = 0; i < dimX; i++)
             {
-                grid[j, i] = Mathf.Sin(_totalTime + i * 0.5f + j * 0.5f) / 3.0f + 1f;
+                grid[j, i] = Mathf.Sin(_totalTime + i * 0.5f + j * 0.25f) / 3.0f + 1f;
             }
         }
 

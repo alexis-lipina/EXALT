@@ -270,7 +270,10 @@ public class EntityPhysics : DynamicPhysics
             //GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
             Reset();
         }
-        StartCoroutine(TakeDamageFlash());
+        else
+        {
+            StartCoroutine(TakeDamageFlash());
+        }
     }
 
     /// <summary>

@@ -448,37 +448,6 @@ public class TestEnemyHandler : EntityHandler
         }
         
 
-
-        /*
-        Debug.Log("Attacking!");
-        Vector2 swingboxpos = Vector2.zero;
-        switch (tempDirection)
-        {
-            case TempTexDirection.EAST:
-                swingboxpos = new Vector2(entityPhysics.transform.position.x + 2, entityPhysics.transform.position.y);
-                break;
-            case TempTexDirection.WEST:
-                swingboxpos = new Vector2(entityPhysics.transform.position.x - 2, entityPhysics.transform.position.y);
-                break;
-            case TempTexDirection.NORTH:
-                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y + 2);
-                break;
-            case TempTexDirection.SOUTH:
-                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y - 2);
-                break;
-        }
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
-        foreach (Collider2D hit in hitobjects)
-        {
-            EntityColliderScript hitEntity = hit.gameObject.GetComponent<EntityColliderScript>();
-            if (hit.tag == "Friend" && hitEntity.GetEntityHeight() + hitEntity.GetObjectElevation() > entityPhysics.GetObjectElevation() && hitEntity.GetObjectElevation() < entityPhysics.GetObjectElevation() + entityPhysics.GetEntityHeight())
-            {
-                hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
-                Debug.Log("Hit player!");
-            }
-        }
-        currentState = TestEnemyState.SWING;
-        */
     }
     //telegraph about to swing, called in AttackState()
     private void ReadyState()
@@ -609,6 +578,9 @@ public class TestEnemyHandler : EntityHandler
         wasJustHit = true;
     }
 
-
+    protected override void OnDeath()
+    {
+        throw new NotImplementedException();
+    }
 
 }

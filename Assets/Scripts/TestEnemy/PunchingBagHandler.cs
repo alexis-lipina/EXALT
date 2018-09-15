@@ -232,6 +232,9 @@ public class PunchingBagHandler : EntityHandler
         wasJustHit = true;
     }
 
-    
+    protected override void OnDeath()
+    {
+        throw new NotImplementedException();
+    }
 
 }

@@ -25,5 +25,5 @@ public abstract class EntityHandler : MonoBehaviour
     }
 
     public abstract void JustGotHit();
-
+    protected abstract void OnDeath();
 }

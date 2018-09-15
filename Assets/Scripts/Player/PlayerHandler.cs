@@ -585,11 +585,9 @@ public class PlayerHandler : EntityHandler
     }
 
 
-    void OnDestroy()
+    override protected void OnDeath()
     {
-        Debug.Log("Reload");
-        //SceneManager.LoadScene("MainMenu2");
-        //SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        SceneManager.LoadScene("");
     }
 
 

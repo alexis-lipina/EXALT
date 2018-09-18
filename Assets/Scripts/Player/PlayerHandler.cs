@@ -85,6 +85,7 @@ public class PlayerHandler : EntityHandler
 
     void Update ()
     {
+        if (entityPhysics.GetCurrentHealth() <= 1) { OnDeath(); }
         //---------------------------| Manage State Machine |
         this.ExecuteState();
         //updateHeight();
@@ -587,7 +588,8 @@ public class PlayerHandler : EntityHandler
 
     override protected void OnDeath()
     {
-        SceneManager.LoadScene("");
+        Debug.Log("<color=pink>HEY!</color>");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 

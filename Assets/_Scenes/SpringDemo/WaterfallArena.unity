@@ -474,6 +474,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 100
+  _spawner: {fileID: 0}
 --- !u!61 &41877251
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -865,7 +866,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &102038720
 Transform:
   m_ObjectHideFlags: 0
@@ -1653,6 +1654,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &201700625
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2142,6 +2144,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &344495630
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2964,7 +2967,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityPhysics: {fileID: 1234480454}
-  _inputHandler: {fileID: 0}
+  _inputHandler: {fileID: 616461311}
   characterSprite: {fileID: 739285272}
   FollowingCamera: {fileID: 2041898055}
   _healthBar: {fileID: 984835370}
@@ -4845,7 +4848,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &767151291
 Transform:
   m_ObjectHideFlags: 0
@@ -5446,6 +5449,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &868311376
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5978,7 +5982,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &970269257
 Transform:
   m_ObjectHideFlags: 0
@@ -6428,6 +6432,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 100
+  _spawner: {fileID: 0}
 --- !u!61 &1000529134
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7268,6 +7273,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1135352102
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7880,18 +7886,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _objectHeight: 0
-  _startElevation: 0
-  _spriteZOffset: 0
-  _objectSprite: {fileID: 0}
-  _environmentHandler: {fileID: 0}
+  _objectHeight: 2
+  _startElevation: 5
+  _spriteZOffset: 2
+  _objectSprite: {fileID: 739285272}
+  _environmentHandler: {fileID: 1001449527}
   FirstShadow: {fileID: 1693878423}
   gravity: -1.5
   speed: 15
   ZVelocity: 0
   navManager: {fileID: 957900023}
-  entityHandler: {fileID: 0}
+  entityHandler: {fileID: 435567838}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1234480455
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8585,6 +8592,10 @@ Prefab:
       propertyPath: target
       value: 
       objectReference: {fileID: 1234480452}
+    - target: {fileID: 1821655441854242, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 2}
   m_IsPrefabAsset: 0
@@ -10829,6 +10840,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1731245972
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10929,6 +10941,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 100
+  _spawner: {fileID: 0}
 --- !u!61 &1731483827
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11029,6 +11042,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1740061472
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11448,6 +11462,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 1000000
+  _spawner: {fileID: 0}
 --- !u!61 &1798629021
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11591,6 +11606,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 100
+  _spawner: {fileID: 0}
 --- !u!61 &1807140307
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12541,6 +12557,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &2032242256
 BoxCollider2D:
   m_ObjectHideFlags: 0

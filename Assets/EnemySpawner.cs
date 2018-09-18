@@ -10,10 +10,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private EnvironmentPhysics _startEnvironment;
     [SerializeField] private GameObject _playerPhysics;
 
-    [SerializeField]
-    private NavigationManager _navManager;
-
-
+    [SerializeField] private NavigationManager _navManager;
+    [SerializeField] private bool canRespawnEnemies; //toggle object pooling
     private Dictionary<int, GameObject> _enemyPool;
     private float _timer;
     private int enemiesAlive;
@@ -120,6 +118,13 @@ public class EnemySpawner : MonoBehaviour
 
     public void ReturnToPool(int instanceID)
     {
+        if (!canRespawnEnemies)
+        {
+            _enemyPool[instanceID].gameObject.SetActive(false);
+            _enemyPool.Remove(instanceID);
+            return;
+        }
+
         //Debug.Log("Returning to Pool");
         if (_enemyPool.ContainsKey(instanceID))
         {

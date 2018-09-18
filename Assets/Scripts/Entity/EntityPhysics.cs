@@ -321,7 +321,8 @@ public class EntityPhysics : DynamicPhysics
         hasBeenHit = false;
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
-        _spawner.ReturnToPool(gameObject.transform.parent.gameObject.GetInstanceID());
+        if (entityHandler.GetType() == typeof(TestEnemyHandler))
+        { _spawner.ReturnToPool(gameObject.transform.parent.gameObject.GetInstanceID()); }
 
     }
 

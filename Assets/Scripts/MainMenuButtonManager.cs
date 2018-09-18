@@ -6,9 +6,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 public class MainMenuButtonManager : MonoBehaviour
 {
-    [SerializeField] private Button PlayDemoButton;
-    [SerializeField] private Button ControlsButton;
-    [SerializeField] private Button QuitButton;
+    [SerializeField] private Button DogButton;
+    [SerializeField] private Button ArenaButton;
+    [SerializeField] private Button PillarButton;
+    [SerializeField] private Button WavyButton;
 
     [SerializeField] private GameObject ControlsImage;
 
@@ -17,17 +18,17 @@ public class MainMenuButtonManager : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        EventSystem.current.SetSelectedGameObject(PlayDemoButton.gameObject);
+        EventSystem.current.SetSelectedGameObject(DogButton.gameObject);
         controlsVisible = false;
 	}
 	
-	public void PlayDemoPressed()
+	public void DogPressed()
     {
         SceneManager.LoadScene("WaterfallArenaNoEnemies", LoadSceneMode.Single);
         //begin game
         
     }
-    public void ControlsPressed()
+    public void ArenaPressed()
     {
         /*
         //Show Controls if they arent already visible
@@ -43,19 +44,26 @@ public class MainMenuButtonManager : MonoBehaviour
         }
         */
         //its not controls anymore...
-        SceneManager.LoadScene("WaterfallArena", LoadSceneMode.Single);
+        SceneManager.LoadScene("ArenaScene", LoadSceneMode.Single);
     }
-    public void QuitPressed()
+    public void PillarPressed()
     {
         //Application.Quit();
-        SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+        SceneManager.LoadScene("ElevatorRoom", LoadSceneMode.Single);
+    }
+
+    public void WavyPressed()
+    {
+        SceneManager.LoadScene("RipplingPillars", LoadSceneMode.Single);
     }
 
     void Update()
     {
+        /*
         if (PlayDemoButton.isActiveAndEnabled && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
         {
             PlayDemoPressed();
         }
+        */
     }
 }

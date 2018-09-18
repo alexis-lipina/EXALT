@@ -640,6 +640,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &60120814
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1184,7 +1185,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &111008263
@@ -1963,6 +1964,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &201700625
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10007,7 +10009,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &538345647
@@ -11298,6 +11300,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 1000000
+  _spawner: {fileID: 0}
 --- !u!61 &682643859
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13531,6 +13534,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 155125697}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &868311376
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17287,6 +17291,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1135352102
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -18011,6 +18016,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 435567838}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1234480455
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -19157,7 +19163,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1358595731
@@ -21392,7 +21398,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1554818968
@@ -21648,7 +21654,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1570648943
@@ -22353,7 +22359,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1612332292
@@ -23333,12 +23339,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d2828daa19623aa4e80d37c09759b6b6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d92c7ce91b2c95e45ba3767174695d5d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 1.16}
+  m_Size: {x: 2, y: 1.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -24029,6 +24035,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1731245972
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24219,6 +24226,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &1740061472
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24426,7 +24434,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1786599872
@@ -24665,6 +24673,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 1000000
+  _spawner: {fileID: 0}
 --- !u!61 &1798629021
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -25460,7 +25469,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 1.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1884966482
@@ -26789,6 +26798,7 @@ MonoBehaviour:
   navManager: {fileID: 957900023}
   entityHandler: {fileID: 0}
   MaxHP: 10
+  _spawner: {fileID: 0}
 --- !u!61 &2032242256
 BoxCollider2D:
   m_ObjectHideFlags: 0

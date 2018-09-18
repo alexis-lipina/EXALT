@@ -73,9 +73,17 @@ public class InputHandler : MonoBehaviour
         //Get Input
 
         //Movement
-        float x = Input.GetAxisRaw("Horizontal"); // GetAxis for smooth, GetAxisRaw for snappy
-        float y = Input.GetAxisRaw("Vertical");
-        leftAnalog = new Vector2(x, y);
+
+
+
+        if (Math.Abs(Input.GetAxisRaw("Horizontal")) > 0.1 || Math.Abs(Input.GetAxisRaw("Vertical")) > 0.1)
+        {
+            leftAnalog = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        }
+        else
+        {
+            leftAnalog = Vector2.zero;
+        }
 
         //DPad
         if (Input.GetAxisRaw("XBox One - DPad Y") > 0.2)
@@ -112,9 +120,14 @@ public class InputHandler : MonoBehaviour
         }
 
         //Aiming
-        float rightX = Input.GetAxisRaw("XBox One - Right Analog X");
-        float rightY = Input.GetAxisRaw("XBox One - Right Analog Y");
-        rightAnalog = new Vector2(rightX, rightY);
+        if (Math.Abs( Input.GetAxisRaw("XBox One - Right Analog X") ) > 0.1 || Math.Abs( Input.GetAxisRaw("XBox One - Right Analog Y") ) > 0.1)
+        {
+            rightAnalog = new Vector2(Input.GetAxisRaw("XBox One - Right Analog X"), Input.GetAxisRaw("XBox One - Right Analog Y"));
+        }
+        else
+        {
+            rightAnalog = Vector2.zero;
+        }
 
         //Firing
         _rightTrigger = Input.GetAxisRaw("XBox One - Right Trigger");
@@ -135,7 +148,7 @@ public class InputHandler : MonoBehaviour
         }
 
         //send input data (TODO - Make this something other classes access rather than this class sends)
-        playerHandler.SetXYAnalogInput(x, y);
+        playerHandler.SetXYAnalogInput(leftAnalog.x, leftAnalog.y);
         if (Input.GetAxisRaw("XBox One - Menu Button") > 0 || Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);

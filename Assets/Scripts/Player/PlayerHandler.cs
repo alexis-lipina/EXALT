@@ -18,7 +18,7 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] private UIHealthBar _healthBar;
 
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_STAB, HEAVY_STAB, LIGHT_SWING, HEAVY_SWING};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, LIGHT_SWING, HEAVY_SWING};
 
     const string IDLE_EAST_Anim = "Anim_PlayerIdleEast";
     const string IDLE_WEST_Anim = "Anim_PlayerIdleWest";
@@ -48,9 +48,12 @@ public class PlayerHandler : EntityHandler
     private bool JumpPressed;
     private bool AttackPressed;
     private bool hasSwung;
-    
 
-
+    //=================| NEW COMBAT STUFF
+    //state times
+    private const float time_lightMelee = 0.25f;
+    private Vector2 lightmelee_hitbox = new Vector2(4, 3);
+    private Vector2 thrustDirection;
     
     private float PlayerRunSpeed;
     private float xInput; 
@@ -144,16 +147,13 @@ public class PlayerHandler : EntityHandler
                 //characterAnimator.Play(JUMP_Anim);
                 PlayerJump();
                 break;
-            case (PlayerState.LIGHT_STAB):
+            case (PlayerState.LIGHT_MELEE):
                 if (isFlipped)
                 {
                     FlipCharacterSprite();
                     isFlipped = false;
                 }
-                PlayerLightStab();
-                break;
-            case (PlayerState.HEAVY_STAB):
-                PlayerHeavyStab();
+                PlayerLightMelee();
                 break;
             case (PlayerState.LIGHT_SWING):
                 PlayerLightSwing();
@@ -208,7 +208,7 @@ public class PlayerHandler : EntityHandler
             hasSwung = false;
             //Debug.Log("IDLE -> ATTACK");
             StateTimer = 0.25f;
-            CurrentState = PlayerState.LIGHT_STAB;
+            CurrentState = PlayerState.LIGHT_MELEE;
         }
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
@@ -296,7 +296,7 @@ public class PlayerHandler : EntityHandler
             //Debug.Log("RUN -> ATTACK");
             hasSwung = false;
             StateTimer = 0.25f;
-            CurrentState = PlayerState.LIGHT_STAB;
+            CurrentState = PlayerState.LIGHT_MELEE;
         }
 
 
@@ -384,7 +384,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerLightStab()//====================| ATTACK 
+    private void PlayerLightStab()//====================| ( LEGACY ) ATTACK 
     {
         entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         Vector2 swingboxpos = Vector2.zero;
@@ -470,14 +470,55 @@ public class PlayerHandler : EntityHandler
             hitEnemies.Clear();
         }
     }
-    private void PlayerHeavyStab()
+
+    /// <summary>
+    /// This is the player's basic close-range attack. Can be chained for a swipe-swipe-jab combo, and supports aiming in any direction
+    /// </summary>
+    private void PlayerLightMelee()
     {
-        //todo
+
+        if (StateTimer == time_lightMelee)
+        {
+            thrustDirection = Vector2.zero;
+
+            thrustDirection = _inputHandler.RightAnalog;
+            if (thrustDirection.Equals(Vector2.zero)) thrustDirection = _inputHandler.LeftAnalog;
+            thrustDirection = thrustDirection.normalized;
+            Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
+
+            Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (lightmelee_hitbox.x / 2.0f);
+            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, lightmelee_hitbox, Vector2.Angle(Vector2.right, thrustDirection));
+            foreach (Collider2D obj in hitobjects)
+            {
+                if (obj.GetComponent<EntityPhysics>())
+                {
+                    //do thing
+                }
+            }
+
+        }
+
+        //Move in direction of swipe
+
+        entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
+
+
+        //State Switching
+
+        StateTimer -= Time.deltaTime;
+        if (StateTimer < 0)
+        {
+            CurrentState = PlayerState.RUN;
+            hitEnemies.Clear();
+        }
+
+
     }
     private void PlayerLightSwing()
     {
         //todo
     }
+
     private void PlayerHeavySwing()
     {
         //todo

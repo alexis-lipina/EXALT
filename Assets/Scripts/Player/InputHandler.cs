@@ -26,6 +26,14 @@ public class InputHandler : MonoBehaviour
     {
         get { return leftAnalog; }
     }
+
+    private bool _attackPressed;
+    public bool AttackPressed
+    {
+        get { return _attackPressed; }
+    }
+    private bool _attackPressedLastFrame;
+
     private float _rightTrigger; //degree to which trigger is pressed
     public float RightTrigger
     {
@@ -142,10 +150,21 @@ public class InputHandler : MonoBehaviour
         {
             playerHandler.SetJumpPressed(true);
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetAxisRaw("XBox One - X Button") > 0)
+        if ((/*Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) ||*/ Input.GetAxisRaw("XBox One - X Button") > 0.5) && !_attackPressedLastFrame)
         {
-            playerHandler.SetAttackPressed(true);
+            _attackPressed = true;
+            _attackPressedLastFrame = true;
+            //Debug.Log(Input.GetAxisRaw("XBox One - X Button"));
         }
+        else
+        {
+            _attackPressed = false;
+        }
+        if (Input.GetAxisRaw("XBox One - X Button") < 0.5)
+        {
+            _attackPressedLastFrame = false;
+        }
+
 
         //send input data (TODO - Make this something other classes access rather than this class sends)
         playerHandler.SetXYAnalogInput(leftAnalog.x, leftAnalog.y);

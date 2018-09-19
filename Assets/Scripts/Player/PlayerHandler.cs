@@ -14,6 +14,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private GameObject characterSprite;
     [SerializeField] private GameObject FollowingCamera;
     [SerializeField] private GameObject LightMeleeSprite;
+    [SerializeField] private GameObject HeavyMeleeSprite;
 
     private Animator characterAnimator;
     private PlayerInventory inventory;
@@ -21,7 +22,7 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] private UIHealthBar _healthBar;
 
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, LIGHT_SWING, HEAVY_SWING};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE};
 
     const string IDLE_EAST_Anim = "Anim_PlayerIdleEast";
     const string IDLE_WEST_Anim = "Anim_PlayerIdleWest";
@@ -44,21 +45,33 @@ public class PlayerHandler : EntityHandler
     private PlayerState CurrentState;
     private PlayerState PreviousState;
     private FaceDirection currentFaceDirection;
+
     private bool UpPressed;
     private bool DownPressed;
     private bool LeftPressed;
     private bool RightPressed;
     private bool JumpPressed;
     private bool AttackPressed;
+    
     private bool hasSwung;
 
     //=================| NEW COMBAT STUFF
     //state times
-    private const float time_lightMelee = 0.2f;
+    private const float time_lightMelee = 0.25f; //duration of state
+    //private const float time_to_combo = 0.2f;
+    private bool _hasHitAttackAgain = false; //used for combo chaining 
+    private bool _readyForThirdHit = false; //true during second attack, if player hits x again changes to heavy attack
+    private float _lengthOfLightMeleeAnimation;
+
     private Vector2 lightmelee_hitbox = new Vector2(4, 4);
     private Vector2 thrustDirection;
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
-    
+
+    private const float time_heavyMelee = 0.3f;
+    private Vector2 heavymelee_hitbox = new Vector2(8, 4);
+    private float _lengthOfHeavyMeleeAnimation;
+
+
     private float PlayerRunSpeed;
     private float xInput; 
     private float yInput;   
@@ -88,6 +101,8 @@ public class PlayerHandler : EntityHandler
         characterAnimator = characterSprite.GetComponent<Animator>();
         hasSwung = false;
         hitEnemies = new List<int>();
+        _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
+        _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
     }
 
 
@@ -100,7 +115,7 @@ public class PlayerHandler : EntityHandler
         //moveCharacterPosition();
         //reset button presses
         JumpPressed = false;
-        AttackPressed = false;
+        AttackPressed = _inputHandler.AttackPressed;
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
 
@@ -160,11 +175,13 @@ public class PlayerHandler : EntityHandler
                 }
                 PlayerLightMelee();
                 break;
-            case (PlayerState.LIGHT_SWING):
-                PlayerLightSwing();
-                break;
-            case (PlayerState.HEAVY_SWING):
-                PlayerHeavySwing();
+            case (PlayerState.HEAVY_MELEE):
+                if (isFlipped)
+                {
+                    FlipCharacterSprite();
+                    isFlipped = false;
+                }
+                PlayerHeavyMelee();
                 break;
         }
     }
@@ -208,6 +225,8 @@ public class PlayerHandler : EntityHandler
 
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x/2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+        HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+        HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
 
         //------------------------------------------------| STATE CHANGE
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
@@ -284,8 +303,14 @@ public class PlayerHandler : EntityHandler
         {
             aimDirection = _inputHandler.LeftAnalog;
         }
+        LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+        LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+        /*
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.x, characterSprite.transform.position.y + aimDirection.y, characterSprite.transform.position.z + aimDirection.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+        */
+        HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+        HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
 
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
@@ -326,7 +351,6 @@ public class PlayerHandler : EntityHandler
         if (AttackPressed)
         {
             //Debug.Log("RUN -> ATTACK");
-            hasSwung = false;
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
@@ -385,11 +409,7 @@ public class PlayerHandler : EntityHandler
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();
-        /*
-        EntityPhysics.SetObjectElevation(EntityPhysics.GetObjectElevation() + EntityPhysics.ZVelocity);
         
-        EntityPhysics.ZVelocity -= 0.03f;
-        */
         //------------------------------| STATE CHANGE
 
         //Check for foot collision
@@ -415,94 +435,9 @@ public class PlayerHandler : EntityHandler
             }
         }
     }
+    
 
-    private void PlayerLightStab()//====================| ( LEGACY ) ATTACK 
-    {
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-        Vector2 swingboxpos = Vector2.zero;
-        Vector2 thrustdirection = Vector2.zero;
-        switch (currentFaceDirection)
-        {
-            case FaceDirection.EAST:
-                characterAnimator.Play(SWING_EAST_Anim);
-                thrustdirection = new Vector2(1, 0);
-                //entityPhysics.MoveWithCollision(AttackMovementSpeed, 0);
-                swingboxpos = new Vector2(entityPhysics.transform.position.x + 2, entityPhysics.transform.position.y);
-                break;
-            case FaceDirection.WEST:
-                characterAnimator.Play(SWING_WEST_Anim);
-                thrustdirection = new Vector2(-1, 0);
-                //entityPhysics.MoveWithCollision(-AttackMovementSpeed, 0);
-                swingboxpos = new Vector2(entityPhysics.transform.position.x - 2, entityPhysics.transform.position.y);
-                break;
-            case FaceDirection.NORTH:
-                characterAnimator.Play(SWING_NORTH_Anim);
-                thrustdirection = new Vector2(0, 1);
-                //entityPhysics.MoveWithCollision(0, AttackMovementSpeed);
-                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y + 2);
-                break;
-            case FaceDirection.SOUTH:
-                characterAnimator.Play(SWING_SOUTH_Anim);
-                thrustdirection = new Vector2(0, -1);
-                //entityPhysics.MoveWithCollision(0, -AttackMovementSpeed);
-                swingboxpos = new Vector2(entityPhysics.transform.position.x, entityPhysics.transform.position.y - 2);
-                break;
-        }
-        entityPhysics.MoveCharacterPositionPhysics(thrustdirection.x*AttackMovementSpeed, thrustdirection.y*AttackMovementSpeed);   
-        //-----| Hitbox - the one directly below only flashes for one frame 
-        /*
-        if (!hasSwung)
-        {
-            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
-            foreach (Collider2D hit in hitobjects)
-            {
-                if (hit.tag == "Enemy")
-                {
-                    hit.gameObject.GetComponent<EntityColliderScript>().Inflict(1.0f);
-                }
-            }
-            hasSwung = true;
-        }
-        */
-        //-----| Hitbox - This one is active for the entire time and only should deal damage to a given enemy once.
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(swingboxpos, new Vector2(4, 3), 0);
-        foreach (Collider2D hit in hitobjects)
-        {
-            if (hit.tag == "Enemy")
-            {
-                int temp = hit.GetComponent<EntityPhysics>().GetInstanceID();
-
-                if (!hitEnemies.Contains(temp) && 
-                    hit.gameObject.GetComponent<PhysicsObject>().GetBottomHeight() < entityPhysics.GetTopHeight() && hit.gameObject.GetComponent<PhysicsObject>().GetTopHeight() > entityPhysics.GetBottomHeight())
-                {
-                    Debug.Log("thrustdirection:" + thrustdirection);
-                    hit.GetComponent<EntityPhysics>().Inflict(1.0f, thrustdirection, 2f);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 6, 0.01f);
-                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.5f, new Vector2(xInput, yInput));
-                    hitEnemies.Add(temp);
-
-                }
-            }
-        }
-        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
-        {
-            entityPhysics.ZVelocity = 0;
-            CurrentState = PlayerState.JUMP;
-        }
-        else
-        {
-            entityPhysics.SetObjectElevation(maxheight);
-        }
-
-        StateTimer -= Time.deltaTime;
-        if (StateTimer < 0)
-        {
-            CurrentState = PlayerState.RUN;
-            hitEnemies.Clear();
-        }
-    }
-
+    
     /// <summary>
     /// This is the player's basic close-range attack. Can be chained for a swipe-swipe-jab combo, and supports aiming in any direction
     /// </summary>
@@ -511,14 +446,8 @@ public class PlayerHandler : EntityHandler
 
         if (StateTimer == time_lightMelee)
         {
-            //thrustDirection = Vector2.zero;
-            /*
-            thrustDirection = _inputHandler.RightAnalog;
-            if (thrustDirection.Equals(Vector2.zero)) thrustDirection = _inputHandler.LeftAnalog;
-            thrustDirection = thrustDirection.normalized;
-            */
-            LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
-            LightMeleeSprite.GetComponent<Animator>().PlayInFixedTime(0);
+            StartCoroutine(PlayLightAttack(_readyForThirdHit));
+
             thrustDirection = aimDirection;
 
             //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
@@ -529,13 +458,13 @@ public class PlayerHandler : EntityHandler
             Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
             foreach (Collider2D obj in hitobjects)
             {
-                if (obj.GetComponent<EntityPhysics>() && obj.tag != "Friend")
+                if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.1f, 10, 0.01f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.3f, 10, 0.01f);
 
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(0.1f);
+                    obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1.0f);
                     
                 }
             }
@@ -546,27 +475,127 @@ public class PlayerHandler : EntityHandler
 
         entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
+        //Check for another attack press for combo chaining
+        if (_inputHandler.AttackPressed)
+        {
+            _hasHitAttackAgain = true;
+            Debug.Log("Woo!");
+        }
 
         //State Switching
 
         StateTimer -= Time.deltaTime;
+
         if (StateTimer < 0)
         {
-            LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
-            CurrentState = PlayerState.RUN;
-            hitEnemies.Clear();
+            LightMeleeSprite.GetComponent<SpriteRenderer>().flipX = false;
+
+            if (_hasHitAttackAgain && _readyForThirdHit)
+            {
+                Debug.Log("Third hit!!!");
+
+                //temporary revert to regular run state
+                /*
+                LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+                CurrentState = PlayerState.RUN;
+                hitEnemies.Clear();
+                _readyForThirdHit = false;
+                */
+
+                CurrentState = PlayerState.HEAVY_MELEE;
+                StateTimer = time_heavyMelee;
+                hitEnemies.Clear();
+                _readyForThirdHit = false;
+
+                //allow adjusting direction of motion/attack
+                if (_inputHandler.RightAnalog != Vector2.zero)
+                {
+                    Debug.Log("Changing aim!");
+                    aimDirection = _inputHandler.RightAnalog;
+                }
+                else if (_inputHandler.LeftAnalog != Vector2.zero)
+                {
+                    aimDirection = _inputHandler.LeftAnalog;
+                    Debug.Log("Changing aim!");
+                }
+                LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+                HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+            }
+            else if (_hasHitAttackAgain)
+            {
+                Debug.Log("Second Hit!");
+                _readyForThirdHit = true;
+                CurrentState = PlayerState.LIGHT_MELEE;
+                StateTimer = time_lightMelee;
+                _hasHitAttackAgain = false;
+                //allow adjusting direction of motion/attack
+                if (_inputHandler.RightAnalog != Vector2.zero)
+                {
+                    aimDirection = _inputHandler.RightAnalog;
+                }
+                else if (_inputHandler.LeftAnalog != Vector2.zero)
+                {
+                    aimDirection = _inputHandler.LeftAnalog;
+                }
+                LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+                HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+            }
+            else
+            {
+                LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+                CurrentState = PlayerState.RUN;
+                hitEnemies.Clear();
+                _readyForThirdHit = false;
+            }
+        }
+    }
+
+    private void PlayerHeavyMelee()
+    {
+        if (StateTimer == time_heavyMelee)
+        {
+            StartCoroutine(PlayHeavyAttack(false));
+
+            thrustDirection = aimDirection;
+
+            //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
+
+
+            Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
+            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+            Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+            foreach (Collider2D obj in hitobjects)
+            {
+                if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
+                {
+                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+
+                    Debug.Log("Owch!");
+                    obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 5.0f);
+
+                }
+            }
+
         }
 
+        //Move in direction of swipe
 
-    }
-    private void PlayerLightSwing()
-    {
-        //todo
-    }
+        entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
-    private void PlayerHeavySwing()
-    {
-        //todo
+        StateTimer -= Time.deltaTime;
+
+        if (StateTimer < 0)
+        {
+            HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+            CurrentState = PlayerState.RUN;
+            hitEnemies.Clear();
+            _readyForThirdHit = false;
+        }
     }
     #endregion
 
@@ -677,6 +706,31 @@ public class PlayerHandler : EntityHandler
         Debug.Log("<color=pink>HEY!</color>");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    //Misc Animations
+    IEnumerator PlayLightAttack(bool flip)
+    {
+        LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
+        LightMeleeSprite.GetComponent<SpriteRenderer>().flipX = flip;
+        LightMeleeSprite.GetComponent<Animator>().PlayInFixedTime(0);
+
+        //LightMeleeSprite.GetComponent<Animator>().Play("LightMeleeSwing");
+        yield return new WaitForSeconds(_lengthOfLightMeleeAnimation);
+        LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    IEnumerator PlayHeavyAttack(bool flip)
+    {
+        Debug.Log("POW!");
+        HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
+        HeavyMeleeSprite.GetComponent<SpriteRenderer>().flipX = flip;
+        HeavyMeleeSprite.GetComponent<Animator>().PlayInFixedTime(0);
+
+        //HeavyMeleeSprite.GetComponent<Animator>().Play("HeavyMeleeSwing!!!!!");
+        yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
+        HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
 
 
     // I think I changed my mind on having this in the player class, I kinda want it in the Reticle's code to avoid clutter here

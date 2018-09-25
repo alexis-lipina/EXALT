@@ -63,9 +63,11 @@ public class PlayerHandler : EntityHandler
     private bool _readyForThirdHit = false; //true during second attack, if player hits x again changes to heavy attack
     private float _lengthOfLightMeleeAnimation;
 
-    private Vector2 lightmelee_hitbox = new Vector2(4, 4);
+    private Vector2 lightmelee_hitbox = new Vector2(5, 4);
     private Vector2 thrustDirection;
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
+    private float _timeToComboReady = 0.1f;
+    private bool _hitComboBeforeReady;
 
     private const float time_heavyMelee = 0.3f;
     private Vector2 heavymelee_hitbox = new Vector2(8, 4);
@@ -443,9 +445,10 @@ public class PlayerHandler : EntityHandler
     /// </summary>
     private void PlayerLightMelee()
     {
-
+        //Functionality to be done at very beginning
         if (StateTimer == time_lightMelee)
         {
+            _hitComboBeforeReady = false;
             StartCoroutine(PlayLightAttack(_readyForThirdHit));
 
             thrustDirection = aimDirection;
@@ -468,18 +471,80 @@ public class PlayerHandler : EntityHandler
                     
                 }
             }
+            //Step movement
+            entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed * 5.0f, thrustDirection.y * AttackMovementSpeed * 5.0f);
 
+
+            //Draw Player
+            if (!_readyForThirdHit)
+            {
+                if (thrustDirection.x <= 0)
+                {
+                    if (thrustDirection.y >= 0)
+                    {
+                        characterAnimator.Play("Anim_Swing_Right_NW");
+                    }
+                    else
+                    {
+                        characterAnimator.Play("Anim_Swing_Right_SW");
+                    }
+                }
+                else
+                {
+                    //Swing East
+                    if (thrustDirection.y >= 0)
+                    {
+                        characterAnimator.Play("Anim_Swing_Right_NE");
+                    }
+                    else
+                    {
+                        characterAnimator.Play("Anim_Swing_Right_SE");
+                    }
+                }
+            }
+            else
+            {
+                if (thrustDirection.x <= 0)
+                {
+                    if (thrustDirection.y >= 0)
+                    {
+                        characterAnimator.Play("Anim_Swing_Left_NW");
+                    }
+                    else
+                    {
+                        characterAnimator.Play("Anim_Swing_Left_SW");
+                    }
+                }
+                else
+                {
+                    //Swing East
+                    if (thrustDirection.y >= 0)
+                    {
+                        characterAnimator.Play("Anim_Swing_Left_NE");
+                    }
+                    else
+                    {
+                        characterAnimator.Play("Anim_Swing_Left_SE");
+                    }
+                }
+            }
         }
 
-        //Move in direction of swipe
+        // Old slidey movement
+        //entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
-        entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
-
-        //Check for another attack press for combo chaining
+        //Button press check for combo chaining
         if (_inputHandler.AttackPressed)
         {
-            _hasHitAttackAgain = true;
-            Debug.Log("Woo!");
+            if (StateTimer > _timeToComboReady) //penalize player for hitting button too fast
+            {
+                _hitComboBeforeReady = true;
+            }
+            else
+            {
+                _hasHitAttackAgain = true;
+                Debug.Log("Woo!");
+            }
         }
 
         //State Switching
@@ -490,9 +555,9 @@ public class PlayerHandler : EntityHandler
         {
             LightMeleeSprite.GetComponent<SpriteRenderer>().flipX = false;
 
-            if (_hasHitAttackAgain && _readyForThirdHit)
+            if (_hasHitAttackAgain && _readyForThirdHit && !_hitComboBeforeReady)
             {
-                Debug.Log("Third hit!!!");
+                //Debug.Log("Third hit!!!");
 
                 //temporary revert to regular run state
                 /*
@@ -506,6 +571,7 @@ public class PlayerHandler : EntityHandler
                 StateTimer = time_heavyMelee;
                 hitEnemies.Clear();
                 _readyForThirdHit = false;
+                _hasHitAttackAgain = false;
 
                 //allow adjusting direction of motion/attack
                 if (_inputHandler.RightAnalog != Vector2.zero)
@@ -523,7 +589,7 @@ public class PlayerHandler : EntityHandler
                 HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
             }
-            else if (_hasHitAttackAgain)
+            else if (_hasHitAttackAgain && !_hitComboBeforeReady)
             {
                 Debug.Log("Second Hit!");
                 _readyForThirdHit = true;
@@ -547,6 +613,7 @@ public class PlayerHandler : EntityHandler
             else
             {
                 LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+                _hasHitAttackAgain = false;
                 CurrentState = PlayerState.RUN;
                 hitEnemies.Clear();
                 _readyForThirdHit = false;
@@ -581,11 +648,38 @@ public class PlayerHandler : EntityHandler
                 }
             }
 
+            //Draw Player
+            if (thrustDirection.x <= 0)
+            {
+                if (thrustDirection.y >= 0)
+                {
+                    characterAnimator.Play("Anim_Swing_Right_NW");
+                }
+                else
+                {
+                    characterAnimator.Play("Anim_Swing_Right_SW");
+                }
+            }
+            else
+            {
+                //Swing East
+                if (thrustDirection.y >= 0)
+                {
+                    characterAnimator.Play("Anim_Swing_Right_NE");
+                }
+                else
+                {
+                    characterAnimator.Play("Anim_Swing_Right_SE");
+                }
+            }
+
+            //Step movement
+            entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed * 10.0f, thrustDirection.y * AttackMovementSpeed * 10.0f);
         }
 
         //Move in direction of swipe
 
-        entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
+        //entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
         StateTimer -= Time.deltaTime;
 

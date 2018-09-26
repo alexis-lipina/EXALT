@@ -22,7 +22,7 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] private UIHealthBar _healthBar;
 
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST};
 
     const string IDLE_EAST_Anim = "Anim_PlayerIdleEast";
     const string IDLE_WEST_Anim = "Anim_PlayerIdleWest";
@@ -72,6 +72,9 @@ public class PlayerHandler : EntityHandler
     private const float time_heavyMelee = 0.3f;
     private Vector2 heavymelee_hitbox = new Vector2(8, 4);
     private float _lengthOfHeavyMeleeAnimation;
+
+    private float _burstDuration = 0.5f;
+    private Vector2 _burstArea = new Vector2(16f, 12f);
 
 
     private float PlayerRunSpeed;
@@ -138,6 +141,7 @@ public class PlayerHandler : EntityHandler
             SwapWeapon("EAST");
         }
 
+
         //TODO : Temporary gun testing
         if (_inputHandler.RightTrigger > 0.2)
         {
@@ -145,7 +149,6 @@ public class PlayerHandler : EntityHandler
             {
                 FireBullet();
             }
-
         }
 
         if (_inputHandler.RightBumper > 0.2)
@@ -185,6 +188,12 @@ public class PlayerHandler : EntityHandler
                 }
                 PlayerHeavyMelee();
                 break;
+            case (PlayerState.CHARGE):
+                PlayerCharge();
+                break;
+            case (PlayerState.BURST):
+                PlayerBurst();
+                break;
         }
     }
     
@@ -195,7 +204,7 @@ public class PlayerHandler : EntityHandler
         characterSprite.transform.localScale = theScale;
     }
 
-    //================================================================================| STATE METHODS |
+    //================================================================================| STATE METHODS 
     #region State Methods
     private void PlayerIdle()
     {
@@ -251,9 +260,13 @@ public class PlayerHandler : EntityHandler
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
+        else if (_inputHandler.LeftTrigger > 0.5f)
+        {
+            CurrentState = PlayerState.CHARGE;
+        }
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
         {
             entityPhysics.ZVelocity = 0;
             CurrentState = PlayerState.JUMP;
@@ -356,7 +369,10 @@ public class PlayerHandler : EntityHandler
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
-
+        if (_inputHandler.LeftTrigger > 0.5f)
+        {
+            CurrentState = PlayerState.CHARGE;
+        }
 
         if (CurrentState == PlayerState.RUN)
         {
@@ -692,7 +708,46 @@ public class PlayerHandler : EntityHandler
         }
     }
     #endregion
+    private void PlayerCharge()
+    {
+        characterAnimator.Play("ChargedMelee_Charge");
 
+        Debug.Log("Charging...!!!");
+
+
+        //State Switching
+        if ( _inputHandler.LeftTrigger < 0.3f )
+        {
+            CurrentState = PlayerState.RUN;
+        }
+        else if ( _inputHandler.AttackPressed)
+        {
+            StateTimer = _burstDuration;
+            CurrentState = PlayerState.BURST;
+        }
+    }
+
+    private void PlayerBurst()
+    {
+        if (StateTimer == _burstDuration)
+        {
+            characterAnimator.Play("ChargedMelee_Unleash");
+            Vector2 cornerSouthWest = entityPhysics.transform.position;
+
+            Collider2D[] hitEntities = Physics2D.OverlapAreaAll((Vector2)entityPhysics.transform.position - _burstArea/2.0f, (Vector2)entityPhysics.transform.position + _burstArea / 2.0f);
+            for (int i = 0; i < hitEntities.Length; i++)
+            {
+
+            }
+        }
+
+        //tick
+        StateTimer -= Time.deltaTime;
+        if (StateTimer <= 0)
+        {
+            CurrentState = PlayerState.RUN;
+        }
+    }
     //================================================================================| FIRE BULLETS
 
     /// <summary>

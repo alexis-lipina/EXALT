@@ -34,11 +34,7 @@ public class InputHandler : MonoBehaviour
     }
     private bool _attackPressedLastFrame;
 
-    private float _rightTrigger; //degree to which trigger is pressed
-    public float RightTrigger
-    {
-        get { return _rightTrigger; }
-    }
+    
     //DPad
     private float _DPadNorth;
     private float _DPadSouth;
@@ -69,6 +65,18 @@ public class InputHandler : MonoBehaviour
         get { return _rightBumper; }
     }
 
+    //Triggers
+    private float _rightTrigger;
+    public float RightTrigger
+    {
+        get { return _rightTrigger; }
+    }
+
+    private float _leftTrigger;
+    public float LeftTrigger
+    {
+        get { return _leftTrigger; }
+    }
 
 
     void Start()
@@ -138,7 +146,6 @@ public class InputHandler : MonoBehaviour
         }
 
         //Firing
-        _rightTrigger = Input.GetAxisRaw("XBox One - Right Trigger");
         //if (_rightTrigger > 0.2) Debug.Log("Trigger press");
         //Debug.Log(_rightTrigger);
 
@@ -160,11 +167,13 @@ public class InputHandler : MonoBehaviour
         {
             _attackPressed = false;
         }
-        if (Input.GetAxisRaw("XBox One - X Button") < 0.5)
+        if (Input.GetAxisRaw("XBox One - X Button") < 0.5f)
         {
             _attackPressedLastFrame = false;
         }
 
+        _rightTrigger = Input.GetAxisRaw("XBox One - Right Trigger");
+        _leftTrigger = Input.GetAxisRaw("XBox One - Left Trigger");
 
         //send input data (TODO - Make this something other classes access rather than this class sends)
         playerHandler.SetXYAnalogInput(leftAnalog.x, leftAnalog.y);

@@ -143,7 +143,9 @@ public class TestEnemyHandler : EntityHandler
         }
 
         //===========| Physics
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2 (xInput, yInput));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         //===========| State Switching
 
 
@@ -170,57 +172,6 @@ public class TestEnemyHandler : EntityHandler
 
     private void RunState()
     {
-        /*
-        Vector2 tempDir = new Vector2(xInput, yInput).normalized;
-        if (tempDir.x > Math.Abs(tempDir.y))
-        {
-            tempDirection = TempTexDirection.EAST;
-        }
-        else if (-tempDir.x > Math.Abs(tempDir.y))
-        {
-            tempDirection = TempTexDirection.WEST;
-        }
-        else if (tempDir.y > 0) { tempDirection = TempTexDirection.NORTH; }
-        else if (tempDir.y < 0) { tempDirection = TempTexDirection.SOUTH; }
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
-
-
-        //===========| State Switching
-
-        if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
-        {
-            entityPhysics.SavePosition();
-            currentState = TestEnemyState.IDLE;
-        }
-        if (attackPressed)
-        {
-            stateTimer = 0;
-            currentState = TestEnemyState.READY;
-        }
-        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
-        {
-            entityPhysics.ZVelocity = 0;
-            currentState = TestEnemyState.FALL;
-        }
-        if (jumpPressed)
-        {
-            entityPhysics.ZVelocity = 1;
-            currentState = TestEnemyState.JUMP;
-        }
-        if (wasJustHit)
-        {
-            //stateTimer = 0.2f;
-            //currentState = TestEnemyState.WOUNDED;
-        }
-        else
-        {
-            entityPhysics.SavePosition();
-            entityPhysics.SetObjectElevation(maxheight);
-        }
-        */
-        //Debug.Log("Running!!! : " + entityPhysics.GetBottomHeight());
-
         Vector2 tempDir = new Vector2(xInput, yInput).normalized;
         if (tempDir.x > Math.Abs(tempDir.y))
         {

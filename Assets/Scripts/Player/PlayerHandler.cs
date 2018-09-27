@@ -15,6 +15,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private GameObject FollowingCamera;
     [SerializeField] private GameObject LightMeleeSprite;
     [SerializeField] private GameObject HeavyMeleeSprite;
+    [SerializeField]
+    private AudioSource _audioSource;
 
     private Animator characterAnimator;
     private PlayerInventory inventory;
@@ -66,7 +68,7 @@ public class PlayerHandler : EntityHandler
     private Vector2 lightmelee_hitbox = new Vector2(5, 4);
     private Vector2 thrustDirection;
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
-    private float _timeToComboReady = 0.1f;
+    private float _timeToComboReady = 0.12f;
     private bool _hitComboBeforeReady;
 
     private const float time_heavyMelee = 0.3f;
@@ -464,6 +466,9 @@ public class PlayerHandler : EntityHandler
         //Functionality to be done at very beginning
         if (StateTimer == time_lightMelee)
         {
+            //Play SFX
+            _audioSource.Play();
+
             _hitComboBeforeReady = false;
             StartCoroutine(PlayLightAttack(_readyForThirdHit));
 
@@ -490,7 +495,7 @@ public class PlayerHandler : EntityHandler
             //Step movement
             entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed * 5.0f, thrustDirection.y * AttackMovementSpeed * 5.0f);
 
-
+            #region Draw Player
             //Draw Player
             if (!_readyForThirdHit)
             {
@@ -543,6 +548,7 @@ public class PlayerHandler : EntityHandler
                         characterAnimator.Play("Anim_Swing_Left_SE");
                     }
                 }
+                #endregion 
             }
         }
 
@@ -641,6 +647,8 @@ public class PlayerHandler : EntityHandler
     {
         if (StateTimer == time_heavyMelee)
         {
+            _audioSource.Play();
+
             StartCoroutine(PlayHeavyAttack(false));
 
             thrustDirection = aimDirection;
@@ -659,7 +667,7 @@ public class PlayerHandler : EntityHandler
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
 
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 5.0f);
+                    obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 3.0f);
 
                 }
             }
@@ -737,7 +745,17 @@ public class PlayerHandler : EntityHandler
             Collider2D[] hitEntities = Physics2D.OverlapAreaAll((Vector2)entityPhysics.transform.position - _burstArea/2.0f, (Vector2)entityPhysics.transform.position + _burstArea / 2.0f);
             for (int i = 0; i < hitEntities.Length; i++)
             {
+                
+                if (hitEntities[i].GetComponent<EntityPhysics>() && hitEntities[i].tag == "Enemy")
+                {
+                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
 
+                    //Debug.Log("Owch!");
+                    Vector2 displacementOfEnemy = hitEntities[i].transform.position - entityPhysics.transform.position;
+                    displacementOfEnemy = (displacementOfEnemy.normalized * 5.0f) / displacementOfEnemy.magnitude;
+                    hitEntities[i].GetComponent<EntityPhysics>().Inflict(1f, displacementOfEnemy, displacementOfEnemy.magnitude);
+                }
             }
         }
 

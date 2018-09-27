@@ -33,6 +33,10 @@ public class EntityPhysics : DynamicPhysics
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
     private EnvironmentPhysics currentNavEnvironmentObject;
 
+    private Vector3 _netForces; // sum of forces on this entity, mostly for attacks that push enemies away. Decreased by a damping value each frame.
+    private float _forceDamping = 0.2f;
+
+
     List<PhysicsObject> EntitiesTouched;
 
     public EnemySpawner _spawner;
@@ -52,6 +56,7 @@ public class EntityPhysics : DynamicPhysics
     override protected void Awake()
     {
         base.Awake();
+        _netForces = Vector3.zero;
         EntitiesTouched = new List<PhysicsObject>();
         currentHP = MaxHP;
         hasBeenHit = false;
@@ -142,6 +147,20 @@ public class EntityPhysics : DynamicPhysics
                 }
             }
         }
+
+        // /*
+
+        velocity += (Vector2)_netForces;
+        if (_netForces.magnitude < _forceDamping) //zero out forces if the current net force is less than the amount it would be damped
+        {
+            _netForces = Vector2.zero;
+        }
+        else
+        {
+            _netForces -= _netForces.normalized * _forceDamping;
+        }
+        // */
+
         return velocity;
     }
 
@@ -169,6 +188,9 @@ public class EntityPhysics : DynamicPhysics
 
     }
 
+    /// <summary>
+    /// "Teleports" the entity to the last terrain object they were standing on (used when someone falls off a cliff and needs to stay alive)
+    /// </summary>
     private void WarpToPlatform()
     {
         //Debug.Log(lastFootHold.Key);
@@ -184,11 +206,7 @@ public class EntityPhysics : DynamicPhysics
         Vector2 warpcoordinates = lastFootHold.Key;
 
 
-        //Debug.Log("Player warping");
-        //if lastfoothold player center is outside bounds of collider
-        //Debug.Log("destination center:" + lastFootHold.Key);
-        //Debug.Log("Terrain position:" + terrainpos);
-        //Debug.Log("Terrain Size:" + terrainsize);
+        
         if (lastFootHold.Key.x < terrainpos.x + terrainoffset.x - terrainsize.x / 2)
         {
             warpcoordinates.x = terrainpos.x + terrainoffset.x - terrainsize.x / 2;
@@ -283,9 +301,11 @@ public class EntityPhysics : DynamicPhysics
     /// <param name="direction"></param>
     public void Inflict(float damage, Vector2 direction, float force)
     {
+        GetComponent<AudioSource>().Play();
         //Debug.Log(direction);
         //Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
         MoveWithCollision(direction.x * force, direction.y * force);
+        _netForces += (Vector3)(direction * force);
         Inflict(damage);
         Debug.Log("Ow:" + direction.x * force);
     }

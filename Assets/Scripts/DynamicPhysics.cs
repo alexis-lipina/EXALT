@@ -22,11 +22,11 @@ public class DynamicPhysics : PhysicsObject
     protected Rigidbody2D PlayerRigidBody;
 
 
-    protected Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the ***collider***
+    public Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the ***collider***
     //                                        bottom-^    ^-top
     protected Dictionary<int, EnvironmentPhysics> TerrainTouched;//each element touching ***EnvironmentHandler***
     //                   ^ instanceID
-    protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
+    //protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
     //                    ^ instanceID       ^ height    ^ shadowobject 
     public float ZVelocity;
 
@@ -42,7 +42,7 @@ public class DynamicPhysics : PhysicsObject
         PlayerRigidBody = gameObject.GetComponent<Rigidbody2D>();
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
-        Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
+        //Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0.0f);
     }
 
@@ -125,11 +125,13 @@ public class DynamicPhysics : PhysicsObject
         //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, physicsobject.transform.position.y + physicsobject.GetComponent<BoxCollider2D>().offset.y + physicsobject.GetComponent<BoxCollider2D>().size.y / 2);
         //Vector2 tempvect = new Vector2(xInput, yInput);
 
+        /*
         //move shadows
         foreach (KeyValuePair<int, KeyValuePair<float, GameObject>> entry in Shadows)
         {
             entry.Value.Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + entry.Value.Key, gameObject.transform.position.y + _environmentHandler.GetComponent<BoxCollider2D>().offset.y - _environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
         }
+        */
     }
 
     /// <summary>
@@ -430,9 +432,11 @@ public class DynamicPhysics : PhysicsObject
         {
             //Debug.Log("Shadow Added");
             TerrainTouched.Add(terrainInstanceID, environment);
+            /*
             Shadows.Add(terrainInstanceID, new KeyValuePair<float, GameObject>(environment.GetTopHeight(), Instantiate(FirstShadow, this.transform.parent)));
             Shadows[terrainInstanceID].Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + environment.GetTopHeight(), environment.GetTopHeight());
             Shadows[terrainInstanceID].Value.SetActive(true);
+            */
         }
         //PrintTerrain();
     }
@@ -444,8 +448,8 @@ public class DynamicPhysics : PhysicsObject
             Debug.Log("TerrainTouched does not contain ID " + terrainInstanceID);
         }
         TerrainTouched.Remove(terrainInstanceID);
-        Destroy(Shadows[terrainInstanceID].Value);
-        Shadows.Remove(terrainInstanceID);
+        //Destroy(Shadows[terrainInstanceID].Value);
+        //Shadows.Remove(terrainInstanceID);
         //Debug.Log("Shadow Removed");
         //PrintTerrain();
     }

@@ -34,7 +34,8 @@ public class ShadowManager : MonoBehaviour
             {
                 Debug.Log("bloop");
                 shadowArray[i].Add(Instantiate(_shadowPrefab, gameObject.transform));
-                shadowArray[i][j].transform.position = new Vector3(transform.position.x + i, transform.position.y + j, transform.position.z);
+                shadowArray[i][j].GetComponent<ShadowHandler>().DebugCoordinateCuzImAwfulAtCoding(new Vector2(i, j));
+                //shadowArray[i][j].transform.position = new Vector3(transform.position.x + i, transform.position.y + j, transform.position.z);
             }
         }
         _physics = GetComponent<DynamicPhysics>();
@@ -120,11 +121,11 @@ public class ShadowManager : MonoBehaviour
             {
                 if (i <= verticalLines.Count && j <= horizontalLines.Count)//enable
                 {
-                    shadowArray[i][j].SetActive(true);
+                    shadowArray[j][i].GetComponent<SpriteRenderer>().enabled = true;
                 }
                 else
                 {
-                    shadowArray[i][j].SetActive(false);
+                    shadowArray[j][i].GetComponent<SpriteRenderer>().enabled = false;
                 }
             }
         }
@@ -136,18 +137,64 @@ public class ShadowManager : MonoBehaviour
         horizontalLines.Sort();
         verticalLines.Sort();
 
-        Debug.Log("new");
+        //Debug.Log("new");
         //send data to each new slice about its rect
-        for (int i = 0; i < horizontalLines.Count-1; i++)//traverses up the rows
+        for (int i = 0; i < horizontalLines.Count - 1; i++)//traverses up the rows
         {
-            for (int j = 0; j < verticalLines.Count-1; j++)//traverses right along the columns
+            for (int j = 0; j < verticalLines.Count - 1; j++)//traverses right along the columns
             {
                 //Get the worldspace rectangle for the given segment
-                KeyValuePair<Vector2, Vector2> rect = new KeyValuePair<Vector2, Vector2>(new Vector2(verticalLines[j], horizontalLines[i]), new Vector2(verticalLines[j+1], horizontalLines[i+1]));
+                Vector4 rect = new Vector4(verticalLines[j], horizontalLines[i], verticalLines[j + 1], horizontalLines[i + 1]);
+                //                                                min x,     min y,     max x,     max y
                 Debug.Log(rect);
-                Debug.DrawLine(rect.Key, rect.Value, Color.cyan, 0.01f, false);
+                //Debug.DrawLine(rect.Key, rect.Value, Color.cyan, 0.01f, false);
                 //use the center of the rect and "cast down" to get the height of the segment
-                Physics2D.OverlapPointAll();
+                Collider2D highestCollider = null;
+                Collider2D[] collidersUnderRect = Physics2D.OverlapPointAll( ( new Vector2(rect.x, rect.y) + new Vector2(rect.z, rect.w) ) / 2.0f);
+
+                Debug.Log( "Hey! Point : " + (new Vector2(rect.x, rect.y) + new Vector2(rect.z, rect.w)) / 2.0f);
+                //Debug.Log("Num Colliders : " + collidersUnderRect.Length);
+                for (int k = 0; k < collidersUnderRect.Length; k++)
+                {
+                    //get collider with greatest height of all colliders that are less than player height
+                    if (collidersUnderRect[k].GetComponent<EnvironmentPhysics>())
+                    {
+                        //Debug.Log("ENVIRONMENT!!!");
+                        if (collidersUnderRect[k].GetComponent<EnvironmentPhysics>().GetTopHeight() < _physics.GetBottomHeight() + 0.25f) //if collider is less than player height
+                        {
+                            if (highestCollider == null)
+                            {
+                                //Debug.Log("W O O O ! ! !");
+                                highestCollider = collidersUnderRect[k];
+                            }
+                            else if (highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight() < collidersUnderRect[k].GetComponent<EnvironmentPhysics>().GetTopHeight())
+                            {
+                                highestCollider = collidersUnderRect[k];
+                            }
+                        }
+                    }
+                }
+                if (highestCollider == null) Debug.LogError("ERROR!!! No valid collider detected!"); //realizing that this will probably happen if there's ever a pit the player jumps over or something of the sort. TODO then!!!
+                else
+                {
+                    Debug.Log("Shadow Height : " + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight());
+                    //make 0-1 values of positions based on their location in the colllider
+
+                    //subtract all by left value so left = 0
+                    //divide value "between" by current right value
+
+                    float minx = (rect.x - entityBounds.min.x) / (entityBounds.max.x - entityBounds.min.x);
+                    float miny = (rect.y - entityBounds.min.y) / (entityBounds.max.y - entityBounds.min.y);
+                    float maxx = (rect.z - entityBounds.min.x) / (entityBounds.max.x - entityBounds.min.x);
+                    float maxy = (rect.w - entityBounds.min.y) / (entityBounds.max.y - entityBounds.min.y);
+                    rect = new Vector4(minx, miny, maxx, maxy);
+
+                    // min x , min y , max x , max y 
+                    //Send shadowArray at index i, j the rectangle to render and the height at which to render.
+                    //Debug.Log("Expected Coord : " + new Vector2(i, j));
+                    //Debug.Log(horizontalLines.Count - 2 - i);
+                    shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(transform.position, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight() , rect);
+                }
             }
         }
 

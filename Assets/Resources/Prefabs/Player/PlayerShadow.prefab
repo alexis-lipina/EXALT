@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4353524990642110}
   - component: {fileID: 212660219252729336}
+  - component: {fileID: 114822387906131248}
   m_Layer: 0
   m_Name: PlayerShadow
   m_TagString: Untagged
@@ -34,12 +35,23 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1621523367577244}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 11.190587, y: 42.171627, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114822387906131248
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1621523367577244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b47b41b2110f640a2dcdb9ebc55113, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &212660219252729336
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -55,7 +67,7 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5b081c4ac30c9444c94903764baf89c5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -1,9 +1,4 @@
-﻿
-
-
-
-
-Shader "Custom/GlowShader"
+﻿Shader "Custom/GlowShader"
 {
 	Properties
 	{

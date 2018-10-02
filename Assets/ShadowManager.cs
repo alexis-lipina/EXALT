@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 [RequireComponent(typeof(DynamicPhysics))]
 
@@ -23,9 +24,22 @@ public class ShadowManager : MonoBehaviour
     Vector2 _currentPlayerPos;
     float _currentPlayerElevation;
 
-	// Use this for initialization
-	void Start ()
+
+
+    //UpdateSlices fields
+    List<float> horizontalLines;
+    List<float> verticalLines; //these are x values that define vertical lines passing through the sprite
+
+
+
+
+
+
+    // Use this for initialization
+    void Start ()
     {
+        horizontalLines = new List<float>();
+        verticalLines = new List<float>();
         shadowArray = new List<List<GameObject>>();
         for (int i = 0; i < 3; i++)
         {
@@ -50,6 +64,8 @@ public class ShadowManager : MonoBehaviour
         //if player has moved, update shadows
 		if (_currentPlayerPos != (Vector2)transform.position || _currentPlayerElevation != _physics.GetBottomHeight())
         {
+            //Debug.Log("Updating");
+            //Profiler.BeginSample();
             UpdateSlices();
             //update members
         }
@@ -66,8 +82,9 @@ public class ShadowManager : MonoBehaviour
     /// </summary>
     void UpdateSlices()
     {
-        List<float> horizontalLines = new List<float>();
-        List<float> verticalLines = new List<float>(); //these are x values that define vertical lines passing through the sprite
+        Profiler.BeginSample("Other Stuff");
+        horizontalLines.Clear();
+        verticalLines.Clear(); 
         Bounds tempBounds;
         Vector3 tempPos;
         Bounds entityBounds = GetComponent<Collider2D>().bounds;
@@ -137,7 +154,9 @@ public class ShadowManager : MonoBehaviour
         horizontalLines.Sort();
         verticalLines.Sort();
 
-        //Debug.Log("new");
+        Profiler.EndSample();
+        Profiler.BeginSample("Big For-Loop");
+        
         //send data to each new slice about its rect
         for (int i = 0; i < horizontalLines.Count - 1; i++)//traverses up the rows
         {
@@ -146,28 +165,32 @@ public class ShadowManager : MonoBehaviour
                 //Get the worldspace rectangle for the given segment
                 Vector4 rect = new Vector4(verticalLines[j], horizontalLines[i], verticalLines[j + 1], horizontalLines[i + 1]);
                 //                                                min x,     min y,     max x,     max y
-                Debug.Log(rect);
+                //Debug.Log(rect);
                 //Debug.DrawLine(rect.Key, rect.Value, Color.cyan, 0.01f, false);
                 //use the center of the rect and "cast down" to get the height of the segment
                 Collider2D highestCollider = null;
-                Collider2D[] collidersUnderRect = Physics2D.OverlapPointAll( ( new Vector2(rect.x, rect.y) + new Vector2(rect.z, rect.w) ) / 2.0f);
+                //_terrainTouched.Count;
+                //Collider2D[] collidersUnderRect;
 
-                Debug.Log( "Hey! Point : " + (new Vector2(rect.x, rect.y) + new Vector2(rect.z, rect.w)) / 2.0f);
+                Collider2D[] collidersUnderRect = Physics2D.OverlapPointAll( ( new Vector2(rect.x, rect.y) + new Vector2(rect.z, rect.w) ) / 2.0f); //TODO : Make this nonalloc, hopefully better performance
+
+                //Debug.Log( "Hey! Point : " + (new Vector2(rect.x, rect.y) + new Vector2(rect.z, rect.w)) / 2.0f);
                 //Debug.Log("Num Colliders : " + collidersUnderRect.Length);
                 for (int k = 0; k < collidersUnderRect.Length; k++)
                 {
+                    EnvironmentPhysics envtPhysics = collidersUnderRect[k].GetComponent<EnvironmentPhysics>();
                     //get collider with greatest height of all colliders that are less than player height
-                    if (collidersUnderRect[k].GetComponent<EnvironmentPhysics>())
+                    if (envtPhysics)
                     {
                         //Debug.Log("ENVIRONMENT!!!");
-                        if (collidersUnderRect[k].GetComponent<EnvironmentPhysics>().GetTopHeight() < _physics.GetBottomHeight() + 0.25f) //if collider is less than player height
+                        if (envtPhysics.GetTopHeight() < _physics.GetBottomHeight() + 0.25f) //if collider is less than player height
                         {
                             if (highestCollider == null)
                             {
                                 //Debug.Log("W O O O ! ! !");
                                 highestCollider = collidersUnderRect[k];
                             }
-                            else if (highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight() < collidersUnderRect[k].GetComponent<EnvironmentPhysics>().GetTopHeight())
+                            else if (highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight() < envtPhysics.GetTopHeight())
                             {
                                 highestCollider = collidersUnderRect[k];
                             }
@@ -177,7 +200,7 @@ public class ShadowManager : MonoBehaviour
                 if (highestCollider == null) Debug.LogError("ERROR!!! No valid collider detected!"); //realizing that this will probably happen if there's ever a pit the player jumps over or something of the sort. TODO then!!!
                 else
                 {
-                    Debug.Log("Shadow Height : " + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight());
+                    //Debug.Log("Shadow Height : " + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight());
                     //make 0-1 values of positions based on their location in the colllider
 
                     //subtract all by left value so left = 0
@@ -197,6 +220,7 @@ public class ShadowManager : MonoBehaviour
                 }
             }
         }
+        Profiler.EndSample();
 
     }
 }

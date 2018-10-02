@@ -60,7 +60,7 @@ public class DynamicPhysics : PhysicsObject
         //Vector2 temp = MoveAvoidEntities(new Vector2(xInput, yInput));
         //xInput = temp.x;
         //yInput = temp.y;
-        this.MoveWithCollision(xInput * speed * Time.deltaTime, yInput * speed * Time.deltaTime);
+        this.MoveWithCollision(xInput * speed * Time.deltaTime , yInput * speed * Time.deltaTime);
         //playerRigidBody.MovePosition(new Vector2(playerRigidBody.position.x + xInput * 0.3f, playerRigidBody.position.y + yInput * 0.3f));
     }
 

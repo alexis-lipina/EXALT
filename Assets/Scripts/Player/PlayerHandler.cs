@@ -16,8 +16,9 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private GameObject FollowingCamera;
     [SerializeField] private GameObject LightMeleeSprite;
     [SerializeField] private GameObject HeavyMeleeSprite;
-    [SerializeField]
-    private AudioSource _audioSource;
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private CursorHandler _cursor;
+    [SerializeField] private bool _isUsingCursor; //TEMPORARY
 
     private Animator characterAnimator;
     private PlayerInventory inventory;
@@ -63,7 +64,7 @@ public class PlayerHandler : EntityHandler
     private Vector2 lightmelee_hitbox = new Vector2(5, 4);
     private Vector2 thrustDirection;
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
-    private float _timeToComboReady = 0.12f;
+    private float _timeToComboReady = 0.17f; //higher means more generous
     private bool _hitComboBeforeReady;
 
     private const float time_heavyMelee = 0.3f;
@@ -73,6 +74,7 @@ public class PlayerHandler : EntityHandler
     private float _burstDuration = 0.5f;
     private Vector2 _burstArea = new Vector2(16f, 12f);
 
+    private Vector2 _cursorWorldPos;
 
     private float PlayerRunSpeed;
     private float xInput; 
@@ -230,14 +232,7 @@ public class PlayerHandler : EntityHandler
 
 
         // track aimDirection vector
-        if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").sqrMagnitude > 0.1f)
-        {
-            aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
-        }
-        else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").sqrMagnitude > 0.1f )
-        {
-            aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
-        }
+        UpdateAimDirection();
         
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x/2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
@@ -316,14 +311,8 @@ public class PlayerHandler : EntityHandler
 
 
         // track aimDirection vector
-        if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude > 0.1f)
-        {
-            aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
-        }
-        else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude > 0.1f)
-        {
-            aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
-        }
+        UpdateAimDirection();
+        
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
         /*
@@ -392,7 +381,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Jumping");
         //Facing Determination
 
-        Vector2 direction = new Vector2(xInput, yInput);
+        Vector2 direction = new Vector2(xInput, yInput).normalized;
         if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
         {
             currentFaceDirection = FaceDirection.EAST;
@@ -601,16 +590,8 @@ public class PlayerHandler : EntityHandler
                 _hasHitAttackAgain = false;
 
                 //allow adjusting direction of motion/attack
-                if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude >= 0.1f)
-                {
-                    //Debug.Log("Changing aim!");
-                    aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
-                }
-                else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.1f)
-                {
-                    aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
-                    //Debug.Log("Changing aim!");
-                }
+                UpdateAimDirection();
+
                 LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
                 HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
@@ -624,16 +605,8 @@ public class PlayerHandler : EntityHandler
                 StateTimer = time_lightMelee;
                 _hasHitAttackAgain = false;
                 //allow adjusting direction of motion/attack
-                if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude >= 0.1f)
-                {
-                    //Debug.Log("Changing aim!");
-                    aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
-                }
-                else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.1f)
-                {
-                    aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
-                    //Debug.Log("Changing aim!");
-                }
+                UpdateAimDirection();
+
                 LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
                 HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
@@ -880,6 +853,40 @@ public class PlayerHandler : EntityHandler
         //HeavyMeleeSprite.GetComponent<Animator>().Play("HeavyMeleeSwing!!!!!");
         yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    /// <summary>
+    /// Handles aim direction, toggles between using mouse & keyboard and gamepad
+    /// </summary>
+    private void UpdateAimDirection()
+    {
+        if (_isUsingCursor)
+        {
+            //do cursor input
+            aimDirection = new Vector2(_cursorWorldPos.x, _cursorWorldPos.y - entityPhysics.GetBottomHeight() - 1f) - (Vector2)entityPhysics.GetComponent<Transform>().position;
+            aimDirection.Normalize();
+        }
+        else
+        {
+            if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude >= 0.1f)
+            {
+                //Debug.Log("Changing aim!");
+                aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
+            }
+            else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.1f)
+            {
+                aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+                //Debug.Log("Changing aim!");
+            }
+        }
+       
+
+    }
+
+    public void UpdateMousePosition(Vector2 mpos)
+    {
+        _isUsingCursor = true;
+        _cursorWorldPos = mpos;
     }
 
 

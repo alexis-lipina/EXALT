@@ -14,14 +14,16 @@ public class ReticleHandler : MonoBehaviour
     //[SerializeField] private InputHandler _inputHandler;
     //[SerializeField] private GameObject _reticleSprite;
     [SerializeField] private EntityPhysics _playerPhysics;
-    [SerializeField] private EntityPhysics _entityPhysics;
+    [SerializeField] private EntityPhysics _entityPhysics; //reticle
     [SerializeField] private Vector2 _maxMoveSpeed;
     [SerializeField] private float _maxReticleDistance;
+    [SerializeField] private bool _isUsingCursor;
+
+
     private Vector2 _reticleDimensions;
-
     private Vector2 _tempRightAnalogDirection;
-
     private Player controller;
+    private Vector2 _cursorWorldPos = Vector2.zero;
 
     void Awake()
     {
@@ -38,15 +40,13 @@ public class ReticleHandler : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate ()
     {
+
         _entityPhysics.ZVelocity = 0;
         _entityPhysics.SetObjectElevation(_playerPhysics.GetObjectElevation());
 
         UpdateReticle();
         
         
-        
-
-
         //LEGACY RETICLE POSITIONING CODE
         /*
         if (_inputHandler.RightAnalog.magnitude > 0.1) // dead zone
@@ -75,6 +75,7 @@ public class ReticleHandler : MonoBehaviour
     }
 
 
+
     /// <summary>
     /// Updates the reticles position - TODO - If player should be able to shoot over low cover, change how this is done
     /// </summary>
@@ -83,23 +84,31 @@ public class ReticleHandler : MonoBehaviour
         //Vector2 reticlevector = _inputHandler.RightAnalog;
         float shortestDistance = _maxReticleDistance; //the distance to the first obstruction
 
-
-        if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude <= 0.2)
+        //Get direction in which to go
+        if (_isUsingCursor)
         {
-            //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
-            if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.2)
-            {
-                _tempRightAnalogDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
-            }
-            else
-            {
-                _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
-            }
+            _tempRightAnalogDirection = new Vector2(_cursorWorldPos.x, _cursorWorldPos.y - _playerPhysics.GetBottomHeight() - 1f) - (Vector2)_playerPhysics.GetComponent<Transform>().position;
+            _tempRightAnalogDirection *= 0.05f;
         }
         else
         {
+            if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude <= 0.2)
+            {
+                //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
+                if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.2)
+                {
+                    _tempRightAnalogDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+                }
+                else
+                {
+                    _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
+                }
+            }
+            else
+            {
 
-            _tempRightAnalogDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
+                _tempRightAnalogDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
+            }
         }
 
 
@@ -157,5 +166,17 @@ public class ReticleHandler : MonoBehaviour
 
 
     }
+
+    /// <summary>
+    /// Sent the position of the mouse in world, needs to factor in height and stuff itself
+    /// </summary>
+    /// <param name="position"></param>
+    public void UpdateMousePosition(Vector2 position)
+    {
+        _isUsingCursor = true;
+        _cursorWorldPos = position;
+
+    }
+
 
 }

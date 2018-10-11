@@ -8,12 +8,14 @@ public class CameraScript : MonoBehaviour
 {
     private const float OFFSET_MAGNITUDE_X = 16f * 0.75f;
     private const float OFFSET_MAGNITUDE_Y = 9f * 0.75f;
-
+    [SerializeField] private EntityPhysics _playerPhysics;
     public Transform player;
     public float smoothTime;
     //[SerializeField] private InputHandler input;
     private Player controller;
     private Vector3 velocity = Vector3.zero;
+    private bool _isUsingCursor;
+    private Vector2 _cursorWorldPos;
 
     private void Awake()
     {
@@ -32,14 +34,28 @@ public class CameraScript : MonoBehaviour
     Vector3 UpdateTargetPosition()
     {
         Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -100f));
-        Vector2 offset = controller.GetAxis2DRaw("LookHorizontal", "LookVertical"); //moves camera in direction the stick is pointing
-        if (offset.magnitude > 0.1f)
+        Vector2 offset;
+        if (_isUsingCursor)
         {
-            offset = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
+            Debug.Log("Here");
+            offset = new Vector2(_cursorWorldPos.x, _cursorWorldPos.y - _playerPhysics.GetBottomHeight() - 1f) - (Vector2)_playerPhysics.GetComponent<Transform>().position;
+            offset *= 0.05f;
+            if (offset.sqrMagnitude > 1f)
+            {
+                offset.Normalize();
+            }
         }
         else
         {
-            offset = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+            offset = controller.GetAxis2DRaw("LookHorizontal", "LookVertical"); //moves camera in direction the stick is pointing
+            if (offset.magnitude > 0.1f)
+            {
+                offset = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
+            }
+            else
+            {
+                offset = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+            }
         }
         pos.Set(pos.x + offset.x * OFFSET_MAGNITUDE_X, pos.y + offset.y * OFFSET_MAGNITUDE_Y, pos.z);
         return pos;
@@ -99,6 +115,12 @@ public class CameraScript : MonoBehaviour
         }
     }
 
-    
+    public void UpdateMousePosition(Vector2 position)
+    {
+        _isUsingCursor = true;
+        _cursorWorldPos = position;
+
+    }
+
 }
 

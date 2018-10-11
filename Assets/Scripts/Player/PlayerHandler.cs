@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using Rewired;
 
 /// <summary>
 /// This class controls player state and contains methods for each state. It also receives input from the InputHandler and acts in accordance with said input.
@@ -10,7 +11,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class PlayerHandler : EntityHandler
 {
-    [SerializeField] private InputHandler _inputHandler;
+    //[SerializeField] private InputHandler _inputHandler;
     [SerializeField] private GameObject characterSprite;
     [SerializeField] private GameObject FollowingCamera;
     [SerializeField] private GameObject LightMeleeSprite;
@@ -48,12 +49,6 @@ public class PlayerHandler : EntityHandler
     private PlayerState PreviousState;
     private FaceDirection currentFaceDirection;
 
-    private bool UpPressed;
-    private bool DownPressed;
-    private bool LeftPressed;
-    private bool RightPressed;
-    private bool JumpPressed;
-    private bool AttackPressed;
     
     private bool hasSwung;
 
@@ -87,8 +82,11 @@ public class PlayerHandler : EntityHandler
     private bool isFlipped;
     private List<int> hitEnemies;
 
+    private Player controller;
+
     void Awake()
     {
+        controller = ReInput.players.GetPlayer(0);
         //this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         inventory = gameObject.GetComponent<PlayerInventory>();
         
@@ -97,11 +95,11 @@ public class PlayerHandler : EntityHandler
 	void Start ()
     {
         aimDirection = Vector2.right;
-        SwapWeapon("NORTH"); //Debug
+        //SwapWeapon("NORTH"); //Debug
         //Debug.Log(_equippedWeapon);
         CurrentState = PlayerState.IDLE;
         StateTimer = 0;
-        JumpImpulse = 0.6f;
+        JumpImpulse = 50f; //CHANGED to account for deltaTime
         //playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
         
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
@@ -113,19 +111,22 @@ public class PlayerHandler : EntityHandler
     }
 
 
-    void Update ()
+    void FixedUpdate ()
     {
+        xInput = controller.GetAxisRaw("MoveHorizontal");
+        yInput = controller.GetAxisRaw("MoveVertical");
         if (entityPhysics.GetCurrentHealth() <= 1) { OnDeath(); }
         //---------------------------| Manage State Machine |
         this.ExecuteState();
         //updateHeight();
         //moveCharacterPosition();
         //reset button presses
-        JumpPressed = false;
-        AttackPressed = _inputHandler.AttackPressed;
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
 
+
+        //Swapping weapons - still unsure if I want to keep ranged combat...?
+        /*
         if (_inputHandler.DPadNorth > 0)
         {
             SwapWeapon("NORTH");
@@ -142,6 +143,7 @@ public class PlayerHandler : EntityHandler
         {
             SwapWeapon("EAST");
         }
+        
 
 
         //TODO : Temporary gun testing
@@ -157,6 +159,7 @@ public class PlayerHandler : EntityHandler
         {
             ThrowGrenade();
         }
+        */
         
     }
 
@@ -191,10 +194,10 @@ public class PlayerHandler : EntityHandler
                 PlayerHeavyMelee();
                 break;
             case (PlayerState.CHARGE):
-                PlayerCharge();
+                //PlayerCharge();
                 break;
             case (PlayerState.BURST):
-                PlayerBurst();
+                //PlayerBurst();
                 break;
         }
     }
@@ -227,15 +230,15 @@ public class PlayerHandler : EntityHandler
 
 
         // track aimDirection vector
-        if (_inputHandler.RightAnalog != Vector2.zero)
+        if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").sqrMagnitude > 0.1f)
         {
-            aimDirection = _inputHandler.RightAnalog;
+            aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
         }
-        else if (_inputHandler.LeftAnalog != Vector2.zero)
+        else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").sqrMagnitude > 0.1f )
         {
-            aimDirection = _inputHandler.LeftAnalog;
+            aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
         }
-
+        
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x/2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
         HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
@@ -247,25 +250,26 @@ public class PlayerHandler : EntityHandler
             //Debug.Log("IDLE -> RUN");
             CurrentState = PlayerState.RUN;
         }
-        if (JumpPressed)
+        if (controller.GetButtonDown("Jump"))
         {
             //Debug.Log("IDLE -> JUMP");
             entityPhysics.ZVelocity = JumpImpulse;
-            JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
 
-        if (AttackPressed)
+        if (controller.GetButtonDown("Melee"))
         {
             hasSwung = false;
             //Debug.Log("IDLE -> ATTACK");
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
+        /*
         else if (_inputHandler.LeftTrigger > 0.5f)
         {
             CurrentState = PlayerState.CHARGE;
         }
+        */
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
@@ -283,7 +287,7 @@ public class PlayerHandler : EntityHandler
     private void PlayerRun()
     {
         //Face Direction Determination
-        Vector2 direction = new Vector2(xInput, yInput);
+        Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").normalized;
         if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
         {
             currentFaceDirection = FaceDirection.EAST;
@@ -312,13 +316,13 @@ public class PlayerHandler : EntityHandler
 
 
         // track aimDirection vector
-        if (_inputHandler.RightAnalog != Vector2.zero)
+        if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude > 0.1f)
         {
-            aimDirection = _inputHandler.RightAnalog;
+            aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
         }
-        else if (_inputHandler.LeftAnalog != Vector2.zero)
+        else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude > 0.1f)
         {
-            aimDirection = _inputHandler.LeftAnalog;
+            aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
         }
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
@@ -332,7 +336,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
 
-        Vector2 vec = entityPhysics.MoveAvoidEntities( new Vector2(xInput, yInput));
+        Vector2 vec = entityPhysics.MoveAvoidEntities(controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical"));
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         entityPhysics.SnapToFloor();
         //face direction determination
@@ -357,24 +361,25 @@ public class PlayerHandler : EntityHandler
             //Debug.Log("RUN -> IDLE");
             CurrentState = PlayerState.IDLE;
         }
-        if (JumpPressed)
+        if (controller.GetButtonDown("Jump"))
         {
             entityPhysics.SavePosition();
             //Debug.Log("RUN -> JUMP");
             entityPhysics.ZVelocity = JumpImpulse;
-            JumpPressed = false;
             CurrentState = PlayerState.JUMP;
         }
-        if (AttackPressed)
+        if (controller.GetButtonDown("Melee"))
         {
             //Debug.Log("RUN -> ATTACK");
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
+        /*
         if (_inputHandler.LeftTrigger > 0.5f)
         {
             CurrentState = PlayerState.CHARGE;
         }
+        */
 
         if (CurrentState == PlayerState.RUN)
         {
@@ -556,7 +561,7 @@ public class PlayerHandler : EntityHandler
         //entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
         //Button press check for combo chaining
-        if (_inputHandler.AttackPressed)
+        if (controller.GetButtonDown("Melee"))
         {
             if (StateTimer > _timeToComboReady) //penalize player for hitting button too fast
             {
@@ -596,15 +601,15 @@ public class PlayerHandler : EntityHandler
                 _hasHitAttackAgain = false;
 
                 //allow adjusting direction of motion/attack
-                if (_inputHandler.RightAnalog != Vector2.zero)
+                if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude >= 0.1f)
                 {
-                    Debug.Log("Changing aim!");
-                    aimDirection = _inputHandler.RightAnalog;
+                    //Debug.Log("Changing aim!");
+                    aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
                 }
-                else if (_inputHandler.LeftAnalog != Vector2.zero)
+                else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.1f)
                 {
-                    aimDirection = _inputHandler.LeftAnalog;
-                    Debug.Log("Changing aim!");
+                    aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+                    //Debug.Log("Changing aim!");
                 }
                 LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
@@ -619,13 +624,15 @@ public class PlayerHandler : EntityHandler
                 StateTimer = time_lightMelee;
                 _hasHitAttackAgain = false;
                 //allow adjusting direction of motion/attack
-                if (_inputHandler.RightAnalog != Vector2.zero)
+                if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude >= 0.1f)
                 {
-                    aimDirection = _inputHandler.RightAnalog;
+                    //Debug.Log("Changing aim!");
+                    aimDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
                 }
-                else if (_inputHandler.LeftAnalog != Vector2.zero)
+                else if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.1f)
                 {
-                    aimDirection = _inputHandler.LeftAnalog;
+                    aimDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+                    //Debug.Log("Changing aim!");
                 }
                 LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
@@ -715,7 +722,9 @@ public class PlayerHandler : EntityHandler
             _readyForThirdHit = false;
         }
     }
+    
     #endregion
+    /*
     private void PlayerCharge()
     {
         characterAnimator.Play("ChargedMelee_Charge");
@@ -735,6 +744,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
+    
     private void PlayerBurst()
     {
         if (StateTimer == _burstDuration)
@@ -824,40 +834,14 @@ public class PlayerHandler : EntityHandler
         tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
     }
 
-    //================================================================================| SETTERS FOR INPUT |
-    
-    public void SetUpPressed(bool isPressed)
-    {
-        UpPressed = isPressed;
-    }
-    public void SetDownPressed(bool isPressed)
-    {
-        DownPressed = isPressed;
-    }
-    public void SetLeftPressed(bool isPressed)
-    {
-        LeftPressed = isPressed;
-    }
-    public void SetRightPressed(bool isPressed)
-    {
-        RightPressed = isPressed;
-    }
-    public void SetJumpPressed(bool isPressed)
-    {
-        JumpPressed = isPressed;
-    }
-    public void SetAttackPressed(bool isPressed)
-    {
-        AttackPressed = isPressed;
-    }
     
 
-
+    */
 
     public override void SetXYAnalogInput(float x, float y)
     {
-        xInput = x;
-        yInput = y;
+        //xInput = x;
+        //yInput = y;
     }
 
     public override void JustGotHit()

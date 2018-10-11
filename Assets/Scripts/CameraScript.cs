@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Rewired;
 
 public class CameraScript : MonoBehaviour
 {
@@ -10,9 +11,14 @@ public class CameraScript : MonoBehaviour
 
     public Transform player;
     public float smoothTime;
-    [SerializeField] private InputHandler input;
-
+    //[SerializeField] private InputHandler input;
+    private Player controller;
     private Vector3 velocity = Vector3.zero;
+
+    private void Awake()
+    {
+        controller = ReInput.players.GetPlayer(0);
+    }
 
     void Update()
     {
@@ -26,14 +32,14 @@ public class CameraScript : MonoBehaviour
     Vector3 UpdateTargetPosition()
     {
         Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -100f));
-        Vector2 offset = input.RightAnalog; //moves camera in direction the stick is pointing
-        if (input.RightAnalog.magnitude > 0)
+        Vector2 offset = controller.GetAxis2DRaw("LookHorizontal", "LookVertical"); //moves camera in direction the stick is pointing
+        if (offset.magnitude > 0.1f)
         {
-            offset = input.RightAnalog;
+            offset = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
         }
         else
         {
-            offset = input.LeftAnalog;
+            offset = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
         }
         pos.Set(pos.x + offset.x * OFFSET_MAGNITUDE_X, pos.y + offset.y * OFFSET_MAGNITUDE_Y, pos.z);
         return pos;

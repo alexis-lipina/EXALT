@@ -35,7 +35,6 @@ public class ShadowManager : MonoBehaviour
 
 
 
-    // Use this for initialization
     void Start ()
     {
         horizontalLines = new List<float>();
@@ -46,7 +45,7 @@ public class ShadowManager : MonoBehaviour
             shadowArray.Add(new List<GameObject>());
             for (int j = 0; j < 3; j++)
             {
-                Debug.Log("bloop");
+                //Debug.Log("bloop");
                 shadowArray[i].Add(Instantiate(_shadowPrefab, gameObject.transform));
                 shadowArray[i][j].GetComponent<ShadowHandler>().DebugCoordinateCuzImAwfulAtCoding(new Vector2(i, j));
                 //shadowArray[i][j].transform.position = new Vector3(transform.position.x + i, transform.position.y + j, transform.position.z);
@@ -216,7 +215,10 @@ public class ShadowManager : MonoBehaviour
                     //Send shadowArray at index i, j the rectangle to render and the height at which to render.
                     //Debug.Log("Expected Coord : " + new Vector2(i, j));
                     //Debug.Log(horizontalLines.Count - 2 - i);
-                    shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(transform.position, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight() , rect);
+
+                    Vector3 newpos =  new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), gameObject.transform.position.y - 0.58f + (miny * 1.2f));
+                    Debug.DrawLine(new Vector3(transform.position.x - 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)), new Vector3(transform.position.x + 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)));                                                                                                                                                                               
+                    shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(newpos, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight() , rect);
                 }
             }
         }

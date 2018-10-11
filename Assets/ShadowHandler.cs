@@ -24,7 +24,8 @@ public class ShadowHandler : MonoBehaviour
     public void UpdateShadow(Vector3 playerPos, float height, Vector4 rect)
     {
         //transform.position = new Vector3(playerPos.x, playerPos.y + height, playerPos.y + height);
-        transform.localPosition = new Vector3(0, height, 0);
+        transform.localPosition = new Vector3(0, height, 0/*playerPos.z*/);
+        transform.position = new Vector3(transform.position.x, transform.position.y, playerPos.z);
         //Debug.Log("Actual coord : " + coord, this);
         //Debug.Log("Shadow Height in shadow : " + height + " = " + transform.localPosition.y, this);
         //Debug.Log(playerPos.y + height);

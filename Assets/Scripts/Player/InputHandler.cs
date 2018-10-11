@@ -155,7 +155,7 @@ public class InputHandler : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("XBox One - A Button") > 0)
         {
-            playerHandler.SetJumpPressed(true);
+
         }
         if ((/*Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) ||*/ Input.GetAxisRaw("XBox One - X Button") > 0.5) && !_attackPressedLastFrame)
         {
@@ -177,10 +177,12 @@ public class InputHandler : MonoBehaviour
 
         //send input data (TODO - Make this something other classes access rather than this class sends)
         playerHandler.SetXYAnalogInput(leftAnalog.x, leftAnalog.y);
+        /*
         if (Input.GetAxisRaw("XBox One - Menu Button") > 0 || Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
         }
+        */
        
     }
 }

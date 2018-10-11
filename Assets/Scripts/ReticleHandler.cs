@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Rewired;
 
 /// <summary>
 /// **Does not extend EntityHandler**
@@ -11,7 +11,7 @@ using UnityEngine;
 /// </summary>
 public class ReticleHandler : MonoBehaviour
 {
-    [SerializeField] private InputHandler _inputHandler;
+    //[SerializeField] private InputHandler _inputHandler;
     //[SerializeField] private GameObject _reticleSprite;
     [SerializeField] private EntityPhysics _playerPhysics;
     [SerializeField] private EntityPhysics _entityPhysics;
@@ -21,10 +21,12 @@ public class ReticleHandler : MonoBehaviour
 
     private Vector2 _tempRightAnalogDirection;
 
+    private Player controller;
 
     void Awake()
     {
         _reticleDimensions = _entityPhysics.GetComponent<BoxCollider2D>().size;
+        controller = ReInput.players.GetPlayer(0);
     }
 
     // Use this for initialization
@@ -34,7 +36,7 @@ public class ReticleHandler : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	void FixedUpdate ()
     {
         _entityPhysics.ZVelocity = 0;
         _entityPhysics.SetObjectElevation(_playerPhysics.GetObjectElevation());
@@ -82,12 +84,12 @@ public class ReticleHandler : MonoBehaviour
         float shortestDistance = _maxReticleDistance; //the distance to the first obstruction
 
 
-        if (_inputHandler.RightAnalog.magnitude <= 0.2)
+        if (controller.GetAxis2DRaw("LookHorizontal", "LookVertical").magnitude <= 0.2)
         {
             //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
-            if (_inputHandler.LeftAnalog.magnitude >= 0.2)
+            if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.2)
             {
-                _tempRightAnalogDirection = _inputHandler.LeftAnalog;
+                _tempRightAnalogDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
             }
             else
             {
@@ -97,7 +99,7 @@ public class ReticleHandler : MonoBehaviour
         else
         {
 
-            _tempRightAnalogDirection = _inputHandler.RightAnalog;
+            _tempRightAnalogDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
         }
 
 

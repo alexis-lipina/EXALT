@@ -74,7 +74,7 @@ public class DynamicPhysics : PhysicsObject
         //CheckHitHeadOnCeiling();
         // deltaV = deltaT * a
         ZVelocity += Time.deltaTime * gravity;
-        bottomHeight += ZVelocity;
+        bottomHeight += ZVelocity * Time.deltaTime; //CHANGE WITH FRAMERATE??
         topHeight = bottomHeight + _objectHeight;
         // ZVelocity -= gravity;
         CheckHitHeadOnCeiling();

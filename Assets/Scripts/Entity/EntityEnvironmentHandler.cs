@@ -6,6 +6,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
 
     [SerializeField] private GameObject entityHandlerObject;
     [SerializeField] private DynamicPhysics entityCollider;
+    public AnimationCurve _something;
 
     void OnTriggerEnter2D(Collider2D other)
     {

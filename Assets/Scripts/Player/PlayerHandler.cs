@@ -325,7 +325,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
 
-        Vector2 vec = entityPhysics.MoveAvoidEntities(controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical"));
+        Vector2 vec = entityPhysics.MoveAvoidEntities(controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical")).normalized;
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         entityPhysics.SnapToFloor();
         //face direction determination
@@ -419,7 +419,7 @@ public class PlayerHandler : EntityHandler
             characterAnimator.Play(FALL_WEST_Anim);
         }
         //------------------------------| MOVE
-        Vector2 vec = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 vec = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput)).normalized;
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();

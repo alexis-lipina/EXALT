@@ -37,7 +37,6 @@ public class CameraScript : MonoBehaviour
         Vector2 offset;
         if (_isUsingCursor)
         {
-            Debug.Log("Here");
             offset = new Vector2(_cursorWorldPos.x, _cursorWorldPos.y - _playerPhysics.GetBottomHeight() - 1f) - (Vector2)_playerPhysics.GetComponent<Transform>().position;
             offset *= 0.05f;
             if (offset.sqrMagnitude > 1f)

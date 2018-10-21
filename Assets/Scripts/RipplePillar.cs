@@ -8,6 +8,9 @@ public class RipplePillar : MonoBehaviour
     [SerializeField] private int _positionY;
     [SerializeField] private RippleController _controller;
     [SerializeField] private EnvironmentDynamicPhysics _physics;
+    [SerializeField] private Transform _top;
+    [SerializeField] private Transform _bottom;
+
     private float _height;
 
 
@@ -26,7 +29,11 @@ public class RipplePillar : MonoBehaviour
 
         _physics.TopHeight = newElevation; //change physics parameters
         _physics.BottomHeight = newElevation - _height; //change physics parameters
+
+        //old code - messes with boxcollider position and shadowcasting
         gameObject.GetComponent<Transform>().position = new Vector3(gameObject.GetComponent<Transform>().position.x, gameObject.GetComponent<Transform>().position.y + delta, gameObject.GetComponent<Transform>().position.z);
+        
+        //_top.GetComponent<>
         gameObject.GetComponent<BoxCollider2D>().offset = new Vector2(gameObject.GetComponent<BoxCollider2D>().offset.x, gameObject.GetComponent<BoxCollider2D>().offset.y - delta);
     }
 }

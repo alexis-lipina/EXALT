@@ -8,6 +8,7 @@ using UnityEngine.Profiling;
 
 public class ShadowManager : MonoBehaviour
 {
+    private const float HEIGHT_TOLERANCE = 0.5f; //in case player is on moving object
     [SerializeField] private GameObject _shadowPrefab;
     private DynamicPhysics _physics;
     Dictionary<GameObject, KeyValuePair<float, float>> _terrainTouched; //current terrain below player, ref to the one in DynamicPhysics
@@ -15,6 +16,7 @@ public class ShadowManager : MonoBehaviour
     protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
 
     protected List<List<GameObject>> shadowArray;
+    //      i references row, j references column
     /*    0   1   2
      * 0 [ ] [ ] [ ]
      * 1 [ ] [ ] [ ]
@@ -54,14 +56,14 @@ public class ShadowManager : MonoBehaviour
         _physics = GetComponent<DynamicPhysics>();
         _terrainTouched = _physics.TerrainTouching;
         _currentPlayerPos = transform.position;
-        _currentPlayerElevation = _physics.GetBottomHeight();
+        _currentPlayerElevation = _physics.GetBottomHeight() + HEIGHT_TOLERANCE;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
         //if player has moved, update shadows
-		if (_currentPlayerPos != (Vector2)transform.position || _currentPlayerElevation != _physics.GetBottomHeight())
+		if (_currentPlayerPos != (Vector2)transform.position || _currentPlayerElevation != _physics.GetBottomHeight() + HEIGHT_TOLERANCE)
         {
             //Debug.Log("Updating");
             //Profiler.BeginSample();
@@ -81,12 +83,14 @@ public class ShadowManager : MonoBehaviour
     /// </summary>
     void UpdateSlices()
     {
-        Profiler.BeginSample("Other Stuff");
+        Profiler.BeginSample("SEG_1");
         horizontalLines.Clear();
         verticalLines.Clear(); 
         Bounds tempBounds;
         Vector3 tempPos;
         Bounds entityBounds = GetComponent<Collider2D>().bounds;
+        Debug.Log("TerrainTouched: " + _terrainTouched.Count);
+
         //Look at terrainTouched, get all lines which are within the sprite/collider, exclude overlaps
         foreach(GameObject obj in _terrainTouched.Keys)
         {
@@ -122,20 +126,42 @@ public class ShadowManager : MonoBehaviour
                 }
             }
         }
+        Profiler.EndSample();
+        Profiler.BeginSample("SEG_2");
         //Debug.Log(_terrainTouched.Count);
-        
         //Debug.Log(horizontalLines.Count);
         //Debug.Log(verticalLines.Count);
+
         
+
+        //Resize shadowarray depending on number of shadows needed
+        if (verticalLines.Count + 1 > shadowArray[0].Count || horizontalLines.Count + 1 > shadowArray.Count)
+        {
+            //Debug.Log("EXPAND");
+            shadowArray.Add(new List<GameObject>());
+            for (int n = 0; n < shadowArray[0].Count; n++)
+            {
+                shadowArray[shadowArray.Count - 1].Add(Instantiate(_shadowPrefab, gameObject.transform));
+            }
+            for (int n = 0; n < shadowArray.Count; n++)
+            {
+                shadowArray[n].Add(Instantiate(_shadowPrefab, gameObject.transform));
+            }
+        } 
+        //TODO : Add functionality to remove excess
+        
+        Profiler.EndSample();
+        Profiler.BeginSample("SEG_3");
 
         //determine the dimensions of the 2D array that would be made with that many divisions (vertlines+1, horizlines+1)
 
-        //resize current array, disable/enable elements, or something else to accommodate the new dimensions if they are different than the current ones
+        //disables/enables sprite objects depending on whether theyre needed or not
         for (int i = 0; i < shadowArray.Count; i++) //i traverses height of array, j traverses width
         {
             for (int j = 0; j < shadowArray[i].Count; j++)
             {
-                if (i <= verticalLines.Count && j <= horizontalLines.Count)//enable
+                //Debug.Log("boop i:" + i + "j:" + j);
+                if (i <= verticalLines.Count && j <= horizontalLines.Count)
                 {
                     shadowArray[j][i].GetComponent<SpriteRenderer>().enabled = true;
                 }
@@ -145,6 +171,8 @@ public class ShadowManager : MonoBehaviour
                 }
             }
         }
+        Profiler.EndSample();
+        Profiler.BeginSample("SEG_4");
         //Add worldspace left and right of entity's bounding box
         horizontalLines.Add(entityBounds.min.y);
         horizontalLines.Add(entityBounds.max.y);
@@ -152,8 +180,9 @@ public class ShadowManager : MonoBehaviour
         verticalLines.Add(entityBounds.max.x);
         horizontalLines.Sort();
         verticalLines.Sort();
-
         Profiler.EndSample();
+
+        //Profiler.EndSample();
         Profiler.BeginSample("Big For-Loop");
         
         //send data to each new slice about its rect
@@ -182,7 +211,7 @@ public class ShadowManager : MonoBehaviour
                     if (envtPhysics)
                     {
                         //Debug.Log("ENVIRONMENT!!!");
-                        if (envtPhysics.GetTopHeight() < _physics.GetBottomHeight() + 0.25f) //if collider is less than player height
+                        if (envtPhysics.GetTopHeight() < _physics.GetBottomHeight() + HEIGHT_TOLERANCE) //if collider is less than player height
                         {
                             if (highestCollider == null)
                             {
@@ -196,6 +225,9 @@ public class ShadowManager : MonoBehaviour
                         }
                     }
                 }
+
+                //Debug.Log("X : " + i + "Y: " + j);
+
                 if (highestCollider == null)
                 {
                     shadowArray[i][j].GetComponent<Renderer>().enabled = false;
@@ -222,6 +254,7 @@ public class ShadowManager : MonoBehaviour
 
                     Vector3 newpos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), gameObject.transform.position.y - 0.58f + (miny * 1.2f));
                     Debug.DrawLine(new Vector3(transform.position.x - 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)), new Vector3(transform.position.x + 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)));
+                    Debug.Log(shadowArray[i][j]);
                     shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(newpos, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), rect);
                 }
             }

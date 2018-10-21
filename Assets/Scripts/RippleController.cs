@@ -22,6 +22,7 @@ public class RippleController : MonoBehaviour
     {
         _totalTime += Time.deltaTime;
         if (_totalTime > 360) _totalTime -= 360;
+
         for (int j = 0; j < dimY; j++)
         {
             for (int i = 0; i < dimX; i++)

@@ -11,6 +11,7 @@ using Rewired;
 /// </summary>
 public class ReticleHandler : MonoBehaviour
 {
+    private const float HEIGHT_TOLERANCE = 0.25f;
     //[SerializeField] private InputHandler _inputHandler;
     //[SerializeField] private GameObject _reticleSprite;
     [SerializeField] private EntityPhysics _playerPhysics;
@@ -129,7 +130,7 @@ public class ReticleHandler : MonoBehaviour
         {
             if (hit.transform.gameObject.tag == "Environment")
             {
-                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > _entityPhysics.GetBottomHeight()) // if the height of the terrain object is greater than the altitude of the player
+                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > _entityPhysics.GetBottomHeight() + HEIGHT_TOLERANCE) // if the height of the terrain object is greater than the altitude of the player
                 {
                     if (hit.distance < shortestDistance) 
                     {

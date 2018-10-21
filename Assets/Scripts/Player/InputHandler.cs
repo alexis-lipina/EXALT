@@ -81,7 +81,7 @@ public class InputHandler : MonoBehaviour
 
     void Start()
     {
-        playerHandler = playerHandlerObject.GetComponent<PlayerHandler>();
+        //playerHandler = playerHandlerObject.GetComponent<PlayerHandler>();
     }
 
     void Update()

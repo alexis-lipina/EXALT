@@ -16,7 +16,18 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected bool isTransparentOnOcclude;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
 
-    private List<NavEdge> neighborEdges;
+    public float TopHeight
+    {
+        set { topHeight = value; }
+        get { return topHeight; }
+    }
+    public float BottomHeight
+    {
+        set { bottomHeight = value; }
+        get { return bottomHeight; }
+    }
+
+    protected List<NavEdge> neighborEdges;
 
     public bool IsSavePoint
     {

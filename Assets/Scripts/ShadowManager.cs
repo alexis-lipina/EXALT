@@ -231,7 +231,7 @@ public class ShadowManager : MonoBehaviour
                 if (highestCollider == null)
                 {
                     shadowArray[i][j].GetComponent<Renderer>().enabled = false;
-                    //Debug.LogError("ERROR!!! No valid collider detected!"); //realizing that this will probably happen if there's ever a pit the player jumps over or something of the sort. TODO then!!!
+                    Debug.Log("NOT DRAWING " + i + " " + j);
                 }
                 else
                 {
@@ -252,7 +252,7 @@ public class ShadowManager : MonoBehaviour
                     //Debug.Log("Expected Coord : " + new Vector2(i, j));
                     //Debug.Log(horizontalLines.Count - 2 - i);
 
-                    Vector3 newpos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), gameObject.transform.position.y - 0.58f + (miny * 1.2f));
+                    Vector3 newpos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), gameObject.transform.position.y - entityBounds.size.y/2 + (miny * entityBounds.size.y) + 0.02f);
                     Debug.DrawLine(new Vector3(transform.position.x - 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)), new Vector3(transform.position.x + 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)));
                     Debug.Log(shadowArray[i][j]);
                     shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(newpos, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), rect);

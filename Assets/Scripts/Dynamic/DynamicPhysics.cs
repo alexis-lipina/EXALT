@@ -13,7 +13,6 @@ public class DynamicPhysics : PhysicsObject
     [SerializeField] protected float _spriteZOffset;
     [SerializeField] protected GameObject _objectSprite;
     [SerializeField] protected GameObject _environmentHandler;
-    [SerializeField] protected GameObject FirstShadow;
     [SerializeField] protected float gravity;
     [SerializeField] protected float speed;
 

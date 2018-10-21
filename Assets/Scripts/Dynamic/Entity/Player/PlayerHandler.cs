@@ -469,20 +469,23 @@ public class PlayerHandler : EntityHandler
             thrustDirection = aimDirection;
 
             //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
-            
+
 
             Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (lightmelee_hitbox.x / 2.0f);
             Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, lightmelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
             Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
             foreach (Collider2D obj in hitobjects)
             {
-                if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
+                if ((obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy"))
                 {
-                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.3f, 10, 0.01f);
+                    if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                    {
+                        //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                        FollowingCamera.GetComponent<CameraScript>().Shake(0.3f, 10, 0.01f);
 
-                    Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1.0f);
+                        Debug.Log("Owch!");
+                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1.0f);
+                    }
                     
                 }
             }

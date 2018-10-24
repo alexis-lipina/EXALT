@@ -20,6 +20,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private CursorHandler _cursor;
     [SerializeField] private bool _isUsingCursor; //TEMPORARY
 
+
+
     private Animator characterAnimator;
     private PlayerInventory inventory;
 
@@ -85,6 +87,13 @@ public class PlayerHandler : EntityHandler
     private List<int> hitEnemies;
 
     private Player controller;
+
+
+    public bool IsUsingMouse
+    {
+        get { return _isUsingCursor; }
+        set { _isUsingCursor = value; }
+    }
 
     void Awake()
     {
@@ -325,7 +334,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
 
-        Vector2 vec = entityPhysics.MoveAvoidEntities(controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical")).normalized;
+        Vector2 vec = entityPhysics.MoveAvoidEntities(controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical"));
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         entityPhysics.SnapToFloor();
         //face direction determination

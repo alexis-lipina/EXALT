@@ -26,6 +26,13 @@ public class ReticleHandler : MonoBehaviour
     private Player controller;
     private Vector2 _cursorWorldPos = Vector2.zero;
 
+    public bool IsUsingMouse
+    {
+        get { return _isUsingCursor; }
+        set { _isUsingCursor = value; }
+    }
+
+
     void Awake()
     {
         _reticleDimensions = _entityPhysics.GetComponent<BoxCollider2D>().size;
@@ -176,8 +183,8 @@ public class ReticleHandler : MonoBehaviour
     {
         _isUsingCursor = true;
         _cursorWorldPos = position;
-
     }
+
 
 
 }

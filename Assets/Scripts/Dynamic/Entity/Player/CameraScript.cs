@@ -17,6 +17,13 @@ public class CameraScript : MonoBehaviour
     private bool _isUsingCursor;
     private Vector2 _cursorWorldPos;
 
+    public bool IsUsingMouse
+    {
+        get { return _isUsingCursor; }
+        set { _isUsingCursor = value; }
+    }
+
+
     private void Awake()
     {
         controller = ReInput.players.GetPlayer(0);

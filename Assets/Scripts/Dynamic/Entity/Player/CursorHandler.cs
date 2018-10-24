@@ -21,58 +21,61 @@ public class CursorHandler : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        //if during joystick mouse moves or clicks, change to mouse. if during mouse, joystick moves, change to joystick
-
-        //if currently using joystickmouse moves, change to mouse controls
-        if (!_usingMouse && _cursorPos != (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition))
-        {
-            _usingMouse = true;
-        }
-        
-
-
         if (_usingMouse)
         {
+            _cursorPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            transform.position = _cursorPos;
 
+            _reticle.UpdateMousePosition(_cursorPos);
+            _player.UpdateMousePosition(_cursorPos);
+            _camera.UpdateMousePosition(_cursorPos);
         }
-        else
-        {
-
-        }
-
-
-        _cursorPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position = _cursorPos;
-
-        _reticle.UpdateMousePosition(_cursorPos);
-        _player.UpdateMousePosition(_cursorPos);
-        _camera.UpdateMousePosition(_cursorPos);
 	}
-    /*
+    
     private void OnEnable()
     {
         ReInput.players.Players[0].AddInputEventDelegate(SwitchToGamepad,
             UpdateLoopType.Update,
-            InputActionEventType.ButtonJustPressed,
-            ReInput.mapping.GetMouseLayout(0).);
+            InputActionEventType.ButtonJustPressed, ReInput.mapping.GetActionId("GamepadSwitch"));
+        ReInput.players.Players[0].AddInputEventDelegate(SwitchToMouse,
+            UpdateLoopType.Update,
+            InputActionEventType.ButtonJustPressed, ReInput.mapping.GetActionId("MouseSwitch"));
+
+        
+
     }
 
     private void OnDisable()
     {
-        ReInput.eve
+        ReInput.players.Players[0].RemoveInputEventDelegate(SwitchToGamepad,
+            UpdateLoopType.Update,
+            InputActionEventType.ButtonJustPressed, ReInput.mapping.GetActionId("GamepadSwitch"));
+        ReInput.players.Players[0].RemoveInputEventDelegate(SwitchToMouse,
+            UpdateLoopType.Update,
+            InputActionEventType.ButtonJustPressed, ReInput.mapping.GetActionId("MouseSwitch"));
     }
 
 
-    private void SwitchToGamepad()
+    private void SwitchToGamepad(InputActionEventData data)
     {
-
+        _usingMouse = false;
+        gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        Debug.Log("GAMEPAD");
+        _player.IsUsingMouse = false;
+        _reticle.IsUsingMouse = false;
+        _camera.IsUsingMouse = false;
     }
 
-    private void SwitchToMouse()
+    private void SwitchToMouse(InputActionEventData data)
     {
-
+        _usingMouse = true;
+        gameObject.GetComponent<SpriteRenderer>().enabled = true;
+        Debug.Log("MOUSE");
+        _player.IsUsingMouse = true;
+        _reticle.IsUsingMouse = true;
+        _camera.IsUsingMouse = true;
     }
-    */
+    
 
 
 }

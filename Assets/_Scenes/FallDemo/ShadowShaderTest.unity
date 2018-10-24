@@ -1229,6 +1229,21 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actionCategoryMap.list.Array.data[0].actionIds.Array.size
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 4779677611064048, guid: 277fe7b4660cf1340aa23285b18b6d65, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1259,6 +1274,151 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4779677611064048, guid: 277fe7b4660cf1340aa23285b18b6d65, type: 2}
       propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[1]._actionId
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[1]._elementType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[1]._elementIdentifierId
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[7]._id
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[7]._name
+      value: MouseSwitch
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[7]._type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[7]._descriptiveName
+      value: Input that makes the player switch to mouse
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[7]._userAssignable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actionCategoryMap.list.Array.data[0].actionIds.Array.data[7]
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actionIdCounter
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[2]._actionId
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[2]._elementType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[2]._elementIdentifierId
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[3]._actionId
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[3]._elementType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[3]._elementIdentifierId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[3]._axisRange
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[2]._axisRange
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[4]._actionId
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[4]._elementType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[4]._elementIdentifierId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[4]._axisRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.mouseMaps.Array.data[0].actionElementMaps.Array.data[4]._axisContribution
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[8]._id
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[8]._name
+      value: GamepadSwitch
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[8]._type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[8]._descriptiveName
+      value: Inputs that cause a switch from gamepad input to mouse input.
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actions.Array.data[8]._userAssignable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
+        type: 2}
+      propertyPath: _userData.actionCategoryMap.list.Array.data[0].actionIds.Array.data[8]
       value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []

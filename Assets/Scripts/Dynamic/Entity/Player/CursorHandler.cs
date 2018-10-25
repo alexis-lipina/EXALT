@@ -16,6 +16,8 @@ public class CursorHandler : MonoBehaviour
 	void Start ()
     {
         _cursorPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _usingMouse = false;
+        SwitchToGamepad(new InputActionEventData());
 	}
 	
 	// Update is called once per frame

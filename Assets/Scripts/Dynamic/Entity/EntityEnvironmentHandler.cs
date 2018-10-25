@@ -14,6 +14,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
             //Debug.Log("Blep");
 
             entityCollider.AddTerrainTouched(other.GetInstanceID(), other.GetComponent<EnvironmentPhysics>());//will be taken care of by EntityPhysics
+            other.GetComponent<EnvironmentPhysics>().AddShadowReceived(gameObject.GetInstanceID(), entityCollider.GetComponent<BoxCollider2D>());
         }
     }
 
@@ -24,6 +25,7 @@ public class EntityEnvironmentHandler : MonoBehaviour {
         {
             //Debug.Log("Hurk");
             entityCollider.RemoveTerrainTouched(other.GetInstanceID()); // EntityPhysics
+            other.GetComponent<EnvironmentPhysics>().RemoveShadowsReceived(gameObject.GetInstanceID());
         }
     }
 }

@@ -46,7 +46,7 @@ Shader "Custom/ShadowShader"
 
 			sampler2D _MainTex;
 			float4 _CullRect;
-			
+
 			//FRAGMENT SHADER
 			float4 frag(vertOutput output) : COLOR
 			{

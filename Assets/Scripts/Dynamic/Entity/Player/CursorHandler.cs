@@ -62,7 +62,7 @@ public class CursorHandler : MonoBehaviour
     {
         _usingMouse = false;
         gameObject.GetComponent<SpriteRenderer>().enabled = false;
-        Debug.Log("GAMEPAD");
+        //Debug.Log("GAMEPAD");
         _player.IsUsingMouse = false;
         _reticle.IsUsingMouse = false;
         _camera.IsUsingMouse = false;
@@ -72,7 +72,7 @@ public class CursorHandler : MonoBehaviour
     {
         _usingMouse = true;
         gameObject.GetComponent<SpriteRenderer>().enabled = true;
-        Debug.Log("MOUSE");
+        //Debug.Log("MOUSE");
         _player.IsUsingMouse = true;
         _reticle.IsUsingMouse = true;
         _camera.IsUsingMouse = true;

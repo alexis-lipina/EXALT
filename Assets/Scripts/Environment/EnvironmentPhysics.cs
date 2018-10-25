@@ -15,9 +15,7 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected GameObject[] neighbors;
     [SerializeField] protected bool isTransparentOnOcclude;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
-
-    private Dictionary<int, BoxCollider2D> shadowsReceived;
-    private Dictionary<int, Transform> frontShadows;
+    
 
     public float TopHeight
     {
@@ -39,11 +37,11 @@ public class EnvironmentPhysics : PhysicsObject
 
     void Awake()
     {
+       
         bottomHeight = environmentBottomHeight;
         topHeight = environmentTopHeight;
         neighborEdges = new List<NavEdge>();
-        shadowsReceived = new Dictionary<int, BoxCollider2D>();
-        frontShadows = new Dictionary<int, Transform>();
+        
     }
 
     void Start()
@@ -92,57 +90,8 @@ public class EnvironmentPhysics : PhysicsObject
         */
     }
 
-    /// <summary>
-    /// Draws shadows on the front face of the object
-    /// </summary>
-    private void UpdateFrontShadows()
-    {
-        float frontY = gameObject.GetComponent<BoxCollider2D>().bounds.min.y;
-        List<int> instanceIDs = new List<int>();
-        //loop through objects touching - are any overlapping front?
-        foreach (KeyValuePair<int, BoxCollider2D> entry in shadowsReceived)
-        {
-            if (entry.Value.bounds.min.y < frontY &&  entry.Value.bounds.max.y > frontY) //do the bounds overlap the front?
-            {
-                if (entry.Value.GetComponent<DynamicPhysics>().GetBottomHeight() < topHeight) //is the entity above the top of the object?
-                {
-                    instanceIDs.Add(entry.Value.gameObject.GetInstanceID());
-                    if (frontShadows.ContainsKey(instanceIDs[instanceIDs.Count-1])) //is this one already being handled?
-                    {
-                        float bound = entry.Value.bounds.min.x - GetComponent<BoxCollider2D>().bounds.min.x;
-                        frontShadows[entry.Value.gameObject.GetInstanceID()].GetComponent<Renderer>().material.SetFloat("_LeftBound", bound);
-                        bound = entry.Value.bounds.max.x - GetComponent<BoxCollider2D>().bounds.max.x;
-                        frontShadows[entry.Value.gameObject.GetInstanceID()].GetComponent<Renderer>().material.SetFloat("_RightBound", bound);
-                    }
-                    else //make a new one
-                    {
-
-                    }
-                }
-            }
-        }
-        //for each overlapping front, get those which are above
-        // determine if the frontShadows needs to be changed at all
-
-    }
     
-    /// <summary>
-    /// This method is called by any entities that cross into this environmentobject's collider
-    /// </summary>
-    public void AddShadowReceived(int instanceID, BoxCollider2D collider)
-    {
-        shadowsReceived.Add(instanceID, collider);
-    }
-
-    /// <summary>
-    /// This method is called by entites as they leave the collider's bounds. Maybe have this be done automatically by envt. if the passed-in collider is outside the collier
-    /// </summary>
-    /// <param name="instanceID"></param>
-    public void RemoveShadowsReceived(int instanceID)
-    {
-        shadowsReceived.Remove(instanceID);
-    }
-
+    
    
     /// <summary>
     /// Returns (bottomHeight, topHeight)

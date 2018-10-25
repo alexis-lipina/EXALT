@@ -89,7 +89,7 @@ public class ShadowManager : MonoBehaviour
         Bounds tempBounds;
         Vector3 tempPos;
         Bounds entityBounds = GetComponent<Collider2D>().bounds;
-        Debug.Log("TerrainTouched: " + _terrainTouched.Count);
+        //Debug.Log("TerrainTouched: " + _terrainTouched.Count);
 
         //Look at terrainTouched, get all lines which are within the sprite/collider, exclude overlaps
         foreach(GameObject obj in _terrainTouched.Keys)
@@ -254,7 +254,7 @@ public class ShadowManager : MonoBehaviour
 
                     Vector3 newpos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), gameObject.transform.position.y - entityBounds.size.y/2 + (miny * entityBounds.size.y) + 0.02f);
                     Debug.DrawLine(new Vector3(transform.position.x - 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)), new Vector3(transform.position.x + 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)));
-                    Debug.Log(shadowArray[i][j]);
+                    //Debug.Log(shadowArray[i][j]);
                     shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(newpos, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), rect);
                 }
             }

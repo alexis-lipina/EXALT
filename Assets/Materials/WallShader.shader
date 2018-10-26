@@ -1,7 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-
-//This shader allows vertical objects / faces of objects to change in color as the player moves
+﻿//This shader allows vertical objects / faces of objects to change in color as the player moves
 
 
 Shader "Custom/WallShader"

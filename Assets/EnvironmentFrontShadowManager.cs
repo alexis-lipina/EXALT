@@ -8,10 +8,10 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
     [SerializeField] protected GameObject _frontSprite;
 
     protected static int numShadows = 2;
+    [SerializeField] protected Transform _frontShadow; //prefab
     protected List<Transform> shadowPool; //stores inactive objects
-    [SerializeField] protected Transform _frontShadow;
-    private Dictionary<int, BoxCollider2D> shadowsReceived;
-    private Dictionary<int, Transform> frontShadows;
+    private Dictionary<int, BoxCollider2D> shadowsReceived; // all colliders overlapping the environmentobject
+    private Dictionary<int, Transform> frontShadows; //active shadow objects
 
 
     void Start ()
@@ -20,6 +20,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
         for (int i = 0; i < numShadows; i++)
         {
             shadowPool.Add(Instantiate(_frontShadow, _frontSprite.transform, false));
+            shadowPool[shadowPool.Count - 1].localScale = new Vector3(_environment.GetComponent<BoxCollider2D>().bounds.size.x, _environment.TopHeight - _environment.BottomHeight, 1);
             shadowPool[shadowPool.Count - 1].gameObject.SetActive(false);
         }
         shadowsReceived = new Dictionary<int, BoxCollider2D>();
@@ -38,7 +39,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
     private void UpdateFrontShadows()
     {
         float frontY = _environment.GetComponent<BoxCollider2D>().bounds.min.y;
-        List<int> instanceIDs = new List<int>();
+        List<int> instanceIDs = new List<int>(); //objects to remove
         //loop through objects touching - are any overlapping front?
         foreach (KeyValuePair<int, BoxCollider2D> entry in shadowsReceived)
         {
@@ -46,41 +47,29 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
             {
                 if (entry.Value.GetComponent<DynamicPhysics>().GetBottomHeight() + 0.05f > _environment.GetTopHeight()) //is the entity above the top of the object?
                 {
-                    if (frontShadows.ContainsKey(entry.Value.gameObject.GetInstanceID())) //is this one already being handled?
+                    float bound;
+                    if (frontShadows.ContainsKey(entry.Key)) //is this one already being handled?
                     {
-                        //Debug.Log("Setting values!");
-                        float bound =  (entry.Value.bounds.min.x - _environment.GetComponent<BoxCollider2D>().bounds.min.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
-                        frontShadows[entry.Value.gameObject.GetInstanceID()].GetComponent<Renderer>().material.SetFloat("_LeftBound", bound);
-                        bound = (entry.Value.bounds.max.x - _environment.GetComponent<BoxCollider2D>().bounds.max.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
-                        frontShadows[entry.Value.gameObject.GetInstanceID()].GetComponent<Renderer>().material.SetFloat("_RightBound", bound);
+                        //do something maybe?
                     }
                     else //make a new one
                     {
-                        if (shadowPool.Count > 0)
-                        {
-                            Debug.Log("Adding...");
-                            shadowPool[shadowPool.Count - 1].gameObject.SetActive(true);
-                            frontShadows.Add(entry.Value.gameObject.GetInstanceID(), shadowPool[shadowPool.Count - 1]);
-                            shadowPool.RemoveAt(shadowPool.Count - 1);
-                            float bound = (entry.Value.bounds.min.x - _environment.GetComponent<BoxCollider2D>().bounds.min.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
-                            frontShadows[entry.Value.gameObject.GetInstanceID()].GetComponent<Renderer>().material.SetFloat("_LeftBound", bound);
-                            bound = (entry.Value.bounds.max.x - _environment.GetComponent<BoxCollider2D>().bounds.max.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
-                            frontShadows[entry.Value.gameObject.GetInstanceID()].GetComponent<Renderer>().material.SetFloat("_RightBound", bound);
-                        }
-                        else
-                        {
-                            frontShadows.Add(entry.Value.gameObject.GetInstanceID(), Instantiate(_frontShadow, _frontSprite.transform, false));
-                        }
+                        frontShadows.Add(entry.Key, GetFromPool());
+                        Debug.Log("InstanceID in Update : " + entry.Key);
                     }
+                    bound = (entry.Value.bounds.min.x - _environment.GetComponent<BoxCollider2D>().bounds.min.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
+                    frontShadows[entry.Key].GetComponent<Renderer>().material.SetFloat("_LeftBound", bound);
+                    bound = (entry.Value.bounds.max.x - _environment.GetComponent<BoxCollider2D>().bounds.min.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
+                    frontShadows[entry.Key].GetComponent<Renderer>().material.SetFloat("_RightBound", bound);
                 }
                 else //if it aint
                 {
-                    instanceIDs.Add(entry.Value.gameObject.GetInstanceID());
+                    instanceIDs.Add(entry.Key);
                 }
             }
             else //if it aint
             {
-                instanceIDs.Add(entry.Value.gameObject.GetInstanceID());
+                instanceIDs.Add(entry.Key);
             }
         }
         //remove unused shadows
@@ -88,20 +77,60 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
         {
             if (frontShadows.ContainsKey(instanceIDs[i]))
             {
-                shadowPool.Add(frontShadows[instanceIDs[i]]);
-                frontShadows[instanceIDs[i]].gameObject.SetActive(false);
+                ReturnToPool(frontShadows[instanceIDs[i]]);
                 frontShadows.Remove(instanceIDs[i]);
+                Debug.Log("executed");
             }
         }
     }
+    
+    /// <summary>
+    /// Gets a shadow object from object pooling (from shadowpool)
+    /// </summary>
+    Transform GetFromPool()
+    {
+        Transform obj;
+        if (shadowPool.Count > 0) //get from pool
+        {
+            Debug.Log("Adding...");
+            shadowPool[shadowPool.Count - 1].gameObject.SetActive(true);
+            obj = shadowPool[shadowPool.Count - 1];
+            shadowPool.RemoveAt(shadowPool.Count - 1);
+        }
+        else //expand pool
+        {
+            obj = Instantiate(_frontShadow, _frontSprite.transform, false);
+            obj.localScale = new Vector3(_environment.GetComponent<BoxCollider2D>().bounds.size.x, _environment.TopHeight - _environment.BottomHeight, 1);
+            Debug.Log("Instantiating!");
+        }
+        return obj;
+    }
 
-
+    /// <summary>
+    /// Returns a shadow to the shadowpool, ***does not remove from source***
+    /// </summary>
+    void ReturnToPool(Transform obj)
+    {
+        if (!shadowPool.Contains(obj))
+        {
+            obj.gameObject.SetActive(false);
+            shadowPool.Add(obj);
+            Debug.Log("Returned");
+        }
+        else
+        {
+            Debug.Log("object already in pool");
+        }
+    }
+    
 
     /// <summary>
     /// This method is called by any entities that cross into this environmentobject's collider
     /// </summary>
     public void AddShadowReceived(int instanceID, BoxCollider2D collider)
     {
+        Debug.Log("InstanceID on entry : " + instanceID);
+
         if (!shadowsReceived.ContainsKey(instanceID))
             shadowsReceived.Add(instanceID, collider);
         else
@@ -109,11 +138,17 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// This method is called by entites as they leave the collider's bounds. Maybe have this be done automatically by envt. if the passed-in collider is outside the collier
+    /// This method is called by entites as they leave the collider's bounds. Maybe have this be done automatically by envt if the passed-in collider is outside the collier
     /// </summary>
     /// <param name="instanceID"></param>
     public void RemoveShadowReceived(int instanceID)
     {
+        Debug.Log("InstanceID on exit : " + instanceID);
+        if (frontShadows.ContainsKey(instanceID))
+        {
+            ReturnToPool(frontShadows[instanceID]);
+            frontShadows.Remove(instanceID);
+        }
         shadowsReceived.Remove(instanceID);
     }
 

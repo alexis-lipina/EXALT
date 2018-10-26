@@ -351,7 +351,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2, y: 1.2}
+  m_Size: {x: 2, y: 1.5}
   m_EdgeRadius: 0
 --- !u!61 &61057305760101990
 BoxCollider2D:
@@ -376,7 +376,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2, y: 1.2}
+  m_Size: {x: 2, y: 1.5}
   m_EdgeRadius: 0
 --- !u!82 &82321395745128718
 AudioSource:
@@ -569,41 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2cf8cd1715d741449e5efce2fa96c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityHandlerObject: {fileID: 1758790477538848}
   entityCollider: {fileID: 114767209249802744}
-  _something:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.3320439
-      value: 0.7556516
-      inSlope: Infinity
-      outSlope: Infinity
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!114 &114767209249802744
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -620,7 +586,6 @@ MonoBehaviour:
   _spriteZOffset: 1.8
   _objectSprite: {fileID: 1618442850258514}
   _environmentHandler: {fileID: 1864799250715314}
-  FirstShadow: {fileID: 1363139249498860}
   gravity: -120
   speed: 16
   ZVelocity: 0

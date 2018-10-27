@@ -498,8 +498,9 @@ public class PlayerHandler : EntityHandler
                     
                 }
             }
-            //Step movement
-            entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed * 5.0f, thrustDirection.y * AttackMovementSpeed * 5.0f);
+            //------------------------| MOVE
+            Vector2 vec = entityPhysics.MoveAvoidEntities(thrustDirection);
+            entityPhysics.MoveCharacterPositionPhysics(vec.x * AttackMovementSpeed * 5.0f, vec.y * AttackMovementSpeed * 5.0f);
 
             #region Draw Player
             //Draw Player
@@ -585,16 +586,7 @@ public class PlayerHandler : EntityHandler
 
             if (_hasHitAttackAgain && _readyForThirdHit && !_hitComboBeforeReady)
             {
-                //Debug.Log("Third hit!!!");
-
-                //temporary revert to regular run state
-                /*
-                LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
-                CurrentState = PlayerState.RUN;
-                hitEnemies.Clear();
-                _readyForThirdHit = false;
-                */
-
+               
                 CurrentState = PlayerState.HEAVY_MELEE;
                 StateTimer = time_heavyMelee;
                 hitEnemies.Clear();
@@ -611,7 +603,6 @@ public class PlayerHandler : EntityHandler
             }
             else if (_hasHitAttackAgain && !_hitComboBeforeReady)
             {
-                Debug.Log("Second Hit!");
                 _readyForThirdHit = true;
                 CurrentState = PlayerState.LIGHT_MELEE;
                 StateTimer = time_lightMelee;
@@ -655,12 +646,14 @@ public class PlayerHandler : EntityHandler
             {
                 if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
                 {
-                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+                    if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                    {
+                        //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                        FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
 
-                    Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 3.0f);
-
+                        Debug.Log("Owch!");
+                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 3.0f);
+                    }
                 }
             }
 

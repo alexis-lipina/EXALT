@@ -36,6 +36,8 @@ public class PlayerHandler : EntityHandler
     const string IDLE_SOUTH_Anim = "New_IdleSouth";
     const string RUN_EAST_Anim = "New_RunEast";
     const string RUN_WEST_Anim = "New_RunWest";
+    const string WALK_EAST_Anim = "New_WalkEast";
+    const string WALK_WEST_Anim = "New_WalkWest";
     const string JUMP_EAST_Anim = "Anim_PlayerJumpEast";
     const string JUMP_WEST_Anim = "Anim_PlayerJumpWest";
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
@@ -325,17 +327,32 @@ public class PlayerHandler : EntityHandler
                 currentFaceDirection = FaceDirection.WEST;
             }
         }
-        direction.Normalize();
+        
 
-        //Draw
-        if (xInput > 0)
+        //===============================================| DRAW
+        if (direction.sqrMagnitude < 0.35)//walk
         {
-            characterAnimator.Play(RUN_EAST_Anim);
+            if (xInput > 0)
+            {
+                characterAnimator.Play(WALK_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(WALK_WEST_Anim);
+            }
         }
         else
         {
-            characterAnimator.Play(RUN_WEST_Anim);
+            if (xInput > 0)
+            {
+                characterAnimator.Play(RUN_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(RUN_WEST_Anim);
+            }
         }
+        direction.Normalize();
 
 
         // track aimDirection vector
@@ -409,7 +426,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Jumping");
         //Facing Determination
 
-        Vector2 direction = new Vector2(xInput, yInput).normalized;
+        Vector2 direction = new Vector2(xInput, yInput);
         if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
         {
             currentFaceDirection = FaceDirection.EAST;
@@ -426,7 +443,6 @@ public class PlayerHandler : EntityHandler
         {
             currentFaceDirection = FaceDirection.WEST;
         }
-
 
         //DRAW
 
@@ -447,7 +463,7 @@ public class PlayerHandler : EntityHandler
             characterAnimator.Play(FALL_WEST_Anim);
         }
         //------------------------------| MOVE
-        Vector2 vec = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput)).normalized;
+        Vector2 vec = entityPhysics.MoveAvoidEntities(direction);
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         entityPhysics.FreeFall();

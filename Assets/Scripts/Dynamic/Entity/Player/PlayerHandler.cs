@@ -30,10 +30,12 @@ public class PlayerHandler : EntityHandler
 
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST};
 
-    const string IDLE_EAST_Anim = "Anim_PlayerIdleEast";
-    const string IDLE_WEST_Anim = "Anim_PlayerIdleWest";
-    const string RUN_EAST_Anim = "Anim_PlayerRunEast";
-    const string RUN_WEST_Anim = "Anim_PlayerRunWest";
+    const string IDLE_EAST_Anim = "New_IdleEast";
+    const string IDLE_WEST_Anim = "New_IdleWest";
+    const string IDLE_NORTH_Anim = "New_IdleNorth";
+    const string IDLE_SOUTH_Anim = "New_IdleSouth";
+    const string RUN_EAST_Anim = "New_RunEast";
+    const string RUN_WEST_Anim = "New_RunWest";
     const string JUMP_EAST_Anim = "Anim_PlayerJumpEast";
     const string JUMP_WEST_Anim = "Anim_PlayerJumpWest";
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
@@ -225,14 +227,26 @@ public class PlayerHandler : EntityHandler
     private void PlayerIdle()
     {
         //Draw
-        if (currentFaceDirection == FaceDirection.EAST)
+        switch (currentFaceDirection)
         {
-            characterAnimator.Play(IDLE_EAST_Anim);
+            case FaceDirection.NORTH:
+                characterAnimator.Play(IDLE_NORTH_Anim);
+                Debug.Log("NORTH");
+                break;
+            case FaceDirection.SOUTH:
+                characterAnimator.Play(IDLE_SOUTH_Anim);
+                Debug.Log("SOUTH");
+                break;
+            case FaceDirection.EAST:
+                characterAnimator.Play(IDLE_EAST_Anim);
+                Debug.Log("EAST");
+                break;
+            case FaceDirection.WEST:
+                characterAnimator.Play(IDLE_WEST_Anim);
+                Debug.Log("WEST");
+                break;
         }
-        else
-        {
-            characterAnimator.Play(IDLE_WEST_Anim);
-        }
+        
         
         //do nothing, maybe later have them breathing or getting bored, sitting down
         entityPhysics.MoveCharacterPositionPhysics(0, 0);
@@ -291,23 +305,28 @@ public class PlayerHandler : EntityHandler
     private void PlayerRun()
     {
         //Face Direction Determination
-        Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").normalized;
-        if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+        Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+        if (direction.sqrMagnitude > 0.01f)
         {
-            currentFaceDirection = FaceDirection.EAST;
+            if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.EAST;
+            }
+            else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.NORTH;
+            }
+            else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.SOUTH;
+            }
+            else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.WEST;
+            }
         }
-        else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
-        {
-            currentFaceDirection = FaceDirection.NORTH;
-        }
-        else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
-        {
-            currentFaceDirection = FaceDirection.SOUTH;
-        }
-        else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
-        {
-            currentFaceDirection = FaceDirection.WEST;
-        }
+        direction.Normalize();
+
         //Draw
         if (xInput > 0)
         {

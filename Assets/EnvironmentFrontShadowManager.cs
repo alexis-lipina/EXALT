@@ -55,7 +55,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
                     else //make a new one
                     {
                         frontShadows.Add(entry.Key, GetFromPool());
-                        Debug.Log("InstanceID in Update : " + entry.Key);
+                        //Debug.Log("InstanceID in Update : " + entry.Key);
                     }
                     bound = (entry.Value.bounds.min.x - _environment.GetComponent<BoxCollider2D>().bounds.min.x) / (_environment.GetComponent<BoxCollider2D>().bounds.extents.x * 2f);
                     frontShadows[entry.Key].GetComponent<Renderer>().material.SetFloat("_LeftBound", bound);
@@ -79,7 +79,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
             {
                 ReturnToPool(frontShadows[instanceIDs[i]]);
                 frontShadows.Remove(instanceIDs[i]);
-                Debug.Log("executed");
+                //Debug.Log("executed");
             }
         }
     }
@@ -92,7 +92,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
         Transform obj;
         if (shadowPool.Count > 0) //get from pool
         {
-            Debug.Log("Adding...");
+            //Debug.Log("Adding...");
             shadowPool[shadowPool.Count - 1].gameObject.SetActive(true);
             obj = shadowPool[shadowPool.Count - 1];
             shadowPool.RemoveAt(shadowPool.Count - 1);
@@ -101,7 +101,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
         {
             obj = Instantiate(_frontShadow, _frontSprite.transform, false);
             obj.localScale = new Vector3(_environment.GetComponent<BoxCollider2D>().bounds.size.x, _environment.TopHeight - _environment.BottomHeight, 1);
-            Debug.Log("Instantiating!");
+            //Debug.Log("Instantiating!");
         }
         return obj;
     }
@@ -115,11 +115,11 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
         {
             obj.gameObject.SetActive(false);
             shadowPool.Add(obj);
-            Debug.Log("Returned");
+            //Debug.Log("Returned");
         }
         else
         {
-            Debug.Log("object already in pool");
+            //Debug.Log("object already in pool");
         }
     }
     
@@ -129,7 +129,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
     /// </summary>
     public void AddShadowReceived(int instanceID, BoxCollider2D collider)
     {
-        Debug.Log("InstanceID on entry : " + instanceID);
+        //Debug.Log("InstanceID on entry : " + instanceID);
 
         if (!shadowsReceived.ContainsKey(instanceID))
             shadowsReceived.Add(instanceID, collider);
@@ -143,7 +143,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
     /// <param name="instanceID"></param>
     public void RemoveShadowReceived(int instanceID)
     {
-        Debug.Log("InstanceID on exit : " + instanceID);
+        //Debug.Log("InstanceID on exit : " + instanceID);
         if (frontShadows.ContainsKey(instanceID))
         {
             ReturnToPool(frontShadows[instanceID]);

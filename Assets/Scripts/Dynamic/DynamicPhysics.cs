@@ -119,7 +119,7 @@ public class DynamicPhysics : PhysicsObject
     public void MoveCharacterPosition()
     {
         //                           X: Horizontal position                    Y: Vertical position - accounts for height and depth               Z: Depth - order of object draw calls
-        Vector3 coords = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + _spriteZOffset + bottomHeight, gameObject.transform.position.y + _environmentHandler.GetComponent<BoxCollider2D>().offset.y - _environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.39f); //change here
+        Vector3 coords = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + _spriteZOffset + bottomHeight, gameObject.transform.position.y + _environmentHandler.GetComponent<BoxCollider2D>().offset.y - _environmentHandler.GetComponent<BoxCollider2D>().size.y / 2); //change here
         _objectSprite.transform.position = coords;
         //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, physicsobject.transform.position.y + physicsobject.GetComponent<BoxCollider2D>().offset.y + physicsobject.GetComponent<BoxCollider2D>().size.y / 2);
         //Vector2 tempvect = new Vector2(xInput, yInput);

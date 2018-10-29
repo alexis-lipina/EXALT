@@ -36,8 +36,12 @@ public class PlayerHandler : EntityHandler
     const string IDLE_SOUTH_Anim = "New_IdleSouth";
     const string RUN_EAST_Anim = "New_RunEast";
     const string RUN_WEST_Anim = "New_RunWest";
+    const string RUN_SOUTH_Anim = "New_RunSouth";
+    const string RUN_NORTH_Anim = "New_RunNorth";
     const string WALK_EAST_Anim = "New_WalkEast";
     const string WALK_WEST_Anim = "New_WalkWest";
+    const string WALK_SOUTH_Anim = "New_WalkSouth";
+    const string WALK_NORTH_Anim = "New_WalkNorth";
     const string JUMP_EAST_Anim = "Anim_PlayerJumpEast";
     const string JUMP_WEST_Anim = "Anim_PlayerJumpWest";
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
@@ -332,24 +336,39 @@ public class PlayerHandler : EntityHandler
         //===============================================| DRAW
         if (direction.sqrMagnitude < 0.35)//walk
         {
-            if (xInput > 0)
+            switch(currentFaceDirection)
             {
-                characterAnimator.Play(WALK_EAST_Anim);
+                case FaceDirection.EAST:
+                    characterAnimator.Play(WALK_EAST_Anim);
+                    break;
+                case FaceDirection.WEST:
+                    characterAnimator.Play(WALK_WEST_Anim);
+                    break;
+                case FaceDirection.NORTH:
+                    characterAnimator.Play(WALK_NORTH_Anim);
+                    break;
+                case FaceDirection.SOUTH:
+                    characterAnimator.Play(WALK_SOUTH_Anim);
+                    break;
             }
-            else
-            {
-                characterAnimator.Play(WALK_WEST_Anim);
-            }
+
         }
         else
         {
-            if (xInput > 0)
+            switch (currentFaceDirection)
             {
-                characterAnimator.Play(RUN_EAST_Anim);
-            }
-            else
-            {
-                characterAnimator.Play(RUN_WEST_Anim);
+                case FaceDirection.EAST:
+                    characterAnimator.Play(RUN_EAST_Anim);
+                    break;
+                case FaceDirection.WEST:
+                    characterAnimator.Play(RUN_WEST_Anim);
+                    break;
+                case FaceDirection.NORTH:
+                    characterAnimator.Play(RUN_NORTH_Anim);
+                    break;
+                case FaceDirection.SOUTH:
+                    characterAnimator.Play(RUN_SOUTH_Anim);
+                    break;
             }
         }
         direction.Normalize();

@@ -1,15 +1,17 @@
 fileFormatVersion: 2
-guid: 7cdb924c26de54b43b6713ff132d5c2c
+guid: 20a591919903c7e4789073772870a92b
 TextureImporter:
   fileIDToRecycleName:
-    21300000: New_WalkSouth_0
-    21300002: New_WalkSouth_1
-    21300004: New_WalkSouth_2
-    21300006: New_WalkSouth_3
-    21300008: New_WalkSouth_4
-    21300010: New_WalkSouth_5
-    21300012: New_WalkSouth_6
-    21300014: New_WalkSouth_7
+    21300000: New_RunSouth_0
+    21300002: New_RunSouth_1
+    21300004: New_RunSouth_2
+    21300006: New_RunSouth_3
+    21300008: New_RunSouth_4
+    21300010: New_RunSouth_5
+    21300012: New_RunSouth_6
+    21300014: New_RunSouth_7
+    21300016: New_RunSouth_8
+    21300018: New_RunSouth_9
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -103,7 +105,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: New_WalkSouth_0
+      name: New_RunSouth_0
       rect:
         serializedVersion: 2
         x: 0
@@ -117,13 +119,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5cc46c03884bc9043bd6a18b7c0337bd
+      spriteID: b4e8f1f03cf3c0745964eb88ba24ec3b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_1
+      name: New_RunSouth_1
       rect:
         serializedVersion: 2
         x: 32
@@ -137,13 +139,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d0f4b95a2d758784fbf479de38d8c91d
+      spriteID: 263deaddc4f83594291b46d6ff200947
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_2
+      name: New_RunSouth_2
       rect:
         serializedVersion: 2
         x: 64
@@ -157,13 +159,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6322424b56f17c14cab01dd6ce18436b
+      spriteID: 0de8ab2512a75c140b62e8db31903396
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_3
+      name: New_RunSouth_3
       rect:
         serializedVersion: 2
         x: 96
@@ -177,13 +179,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9251794eee86b7c469bc6f4b57e77347
+      spriteID: b527d68c3c89de741b55f38d86a9e6b3
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_4
+      name: New_RunSouth_4
       rect:
         serializedVersion: 2
         x: 128
@@ -197,13 +199,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d8f01d3c6940cfa4d92d60a0c1afcb64
+      spriteID: 5a47403d7bee2e84ca8f586004126899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_5
+      name: New_RunSouth_5
       rect:
         serializedVersion: 2
         x: 160
@@ -217,13 +219,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 75cc58372ac717c4d99033f9e99c9df6
+      spriteID: 8d8cde57b67fece45ba928ffe06c1cce
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_6
+      name: New_RunSouth_6
       rect:
         serializedVersion: 2
         x: 192
@@ -237,13 +239,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2f70b48685bdba4b963962185dd1d8b
+      spriteID: ba62406f21548e64ea2825dd224cfe00
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: New_WalkSouth_7
+      name: New_RunSouth_7
       rect:
         serializedVersion: 2
         x: 224
@@ -257,7 +259,47 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5f8893871b0bbe7449d37611e613a71e
+      spriteID: 927611c0944eed142a142a23bfc33d57
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: New_RunSouth_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e469b746ef7be647b9c1476c259d38d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: New_RunSouth_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 32
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9402a11c64896344fbb687aeb56a0928
       vertices: []
       indices: 
       edges: []
@@ -265,7 +307,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 7ab39483b1573d649a18bb2e5d7532de
+    spriteID: 508febd7cfad2184d93792d7659e4136
     vertices: []
     indices: 
     edges: []

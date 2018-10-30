@@ -34,6 +34,12 @@ public class DynamicPhysics : PhysicsObject
         get { return _objectSprite; }
     }
 
+    public float Gravity
+    {
+        get { return gravity; }
+        set { gravity = value; }
+    }
+
     protected virtual void Awake()
     {
         bottomHeight = _startElevation;

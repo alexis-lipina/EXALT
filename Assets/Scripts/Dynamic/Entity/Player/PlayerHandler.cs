@@ -89,12 +89,19 @@ public class PlayerHandler : EntityHandler
     private float PlayerRunSpeed;
     private float xInput; 
     private float yInput;   
-    private float JumpImpulse;
     private float StateTimer;
     private bool isFlipped;
     private List<int> hitEnemies;
 
     private Player controller;
+
+
+    //=====================| JUMP/FALL FIELDS
+    [SerializeField] private float JumpImpulse = 30f;
+    [SerializeField] private float JumpHeldGravity;
+    [SerializeField] private float JumpFallGravity;
+    [SerializeField] private float FallGravity;
+
 
 
     public bool IsUsingMouse
@@ -118,7 +125,6 @@ public class PlayerHandler : EntityHandler
         //Debug.Log(_equippedWeapon);
         CurrentState = PlayerState.IDLE;
         StateTimer = 0;
-        JumpImpulse = 50f; //CHANGED to account for deltaTime
         //playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
         
         //TerrainTouched.Add(666, new KeyValuePair<float, float>(0.0f, -20.0f));
@@ -130,7 +136,7 @@ public class PlayerHandler : EntityHandler
     }
 
 
-    void FixedUpdate ()
+    void Update ()
     {
         xInput = controller.GetAxisRaw("MoveHorizontal");
         yInput = controller.GetAxisRaw("MoveVertical");
@@ -237,19 +243,15 @@ public class PlayerHandler : EntityHandler
         {
             case FaceDirection.NORTH:
                 characterAnimator.Play(IDLE_NORTH_Anim);
-                Debug.Log("NORTH");
                 break;
             case FaceDirection.SOUTH:
                 characterAnimator.Play(IDLE_SOUTH_Anim);
-                Debug.Log("SOUTH");
                 break;
             case FaceDirection.EAST:
                 characterAnimator.Play(IDLE_EAST_Anim);
-                Debug.Log("EAST");
                 break;
             case FaceDirection.WEST:
                 characterAnimator.Play(IDLE_WEST_Anim);
-                Debug.Log("WEST");
                 break;
         }
         
@@ -312,21 +314,22 @@ public class PlayerHandler : EntityHandler
     {
         //Face Direction Determination
         Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+        if (direction.sqrMagnitude > 1) direction.Normalize(); //prevents going too fast on KB
         if (direction.sqrMagnitude > 0.01f)
         {
-            if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+            if (Vector2.Angle(new Vector2(1, 0), direction) < 60)
             {
                 currentFaceDirection = FaceDirection.EAST;
             }
-            else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
+            else if (Vector2.Angle(new Vector2(0, 1), direction) < 30)
             {
                 currentFaceDirection = FaceDirection.NORTH;
             }
-            else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
+            else if (Vector2.Angle(new Vector2(0, -1), direction) < 30)
             {
                 currentFaceDirection = FaceDirection.SOUTH;
             }
-            else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
+            else if (Vector2.Angle(new Vector2(-1, 0), direction) < 60)
             {
                 currentFaceDirection = FaceDirection.WEST;
             }
@@ -371,7 +374,6 @@ public class PlayerHandler : EntityHandler
                     break;
             }
         }
-        direction.Normalize();
 
 
         // track aimDirection vector
@@ -389,7 +391,7 @@ public class PlayerHandler : EntityHandler
         //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
 
-        Vector2 vec = entityPhysics.MoveAvoidEntities(controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical"));
+        Vector2 vec = entityPhysics.MoveAvoidEntities(direction);
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         entityPhysics.SnapToFloor();
         //face direction determination
@@ -446,24 +448,28 @@ public class PlayerHandler : EntityHandler
         //Facing Determination
 
         Vector2 direction = new Vector2(xInput, yInput);
-        if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+        if (direction.sqrMagnitude > 1) direction.Normalize(); //prevents going too fast on KB
+        if (direction.sqrMagnitude > 0.01f)
         {
-            currentFaceDirection = FaceDirection.EAST;
-        }
-        else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
-        {
-            currentFaceDirection = FaceDirection.NORTH;
-        }
-        else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
-        {
-            currentFaceDirection = FaceDirection.SOUTH;
-        }
-        else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
-        {
-            currentFaceDirection = FaceDirection.WEST;
+            if (Vector2.Angle(new Vector2(1, 0), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.EAST;
+            }
+            else if (Vector2.Angle(new Vector2(0, 1), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.NORTH;
+            }
+            else if (Vector2.Angle(new Vector2(0, -1), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.SOUTH;
+            }
+            else if (Vector2.Angle(new Vector2(-1, 0), direction) < 45)
+            {
+                currentFaceDirection = FaceDirection.WEST;
+            }
         }
 
-        //DRAW
+        //=======================| DRAW
 
         if (entityPhysics.ZVelocity > 0 && currentFaceDirection == FaceDirection.EAST)
         {
@@ -473,7 +479,7 @@ public class PlayerHandler : EntityHandler
         {
             characterAnimator.Play(FALL_EAST_Anim);
         }
-        else if (entityPhysics.ZVelocity > 0 )
+        else if (entityPhysics.ZVelocity > 0)
         {
             characterAnimator.Play(JUMP_WEST_Anim);
         }
@@ -485,6 +491,21 @@ public class PlayerHandler : EntityHandler
         Vector2 vec = entityPhysics.MoveAvoidEntities(direction);
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        if (entityPhysics.ZVelocity < 0)
+        {
+            entityPhysics.Gravity = FallGravity;
+        }
+        else
+        {
+            if (controller.GetButton("Jump"))
+            {
+                entityPhysics.Gravity = JumpHeldGravity;
+            }
+            else
+            {
+                entityPhysics.Gravity = JumpFallGravity;
+            }
+        }
         entityPhysics.FreeFall();
         
         //------------------------------| STATE CHANGE

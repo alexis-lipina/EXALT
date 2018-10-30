@@ -81,6 +81,12 @@ public class PlayerHandler : EntityHandler
     private Vector2 heavymelee_hitbox = new Vector2(8, 4);
     private float _lengthOfHeavyMeleeAnimation;
 
+    //Charge Stuff
+    private const float time_Charge = 2.4f; //total time before player is charged up
+    private const float time_ChargeLight = 1f;
+    private const float time_ChargeMedium = 1f;
+    private const float time_ChargeTransition = 0.25f; //how long is the entire transition animation, anyway?
+
     private float _burstDuration = 0.5f;
     private Vector2 _burstArea = new Vector2(16f, 12f);
 
@@ -219,7 +225,7 @@ public class PlayerHandler : EntityHandler
                 PlayerHeavyMelee();
                 break;
             case (PlayerState.CHARGE):
-                //PlayerCharge();
+                PlayerCharge();
                 break;
             case (PlayerState.BURST):
                 //PlayerBurst();
@@ -290,12 +296,13 @@ public class PlayerHandler : EntityHandler
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
-        /*
-        else if (_inputHandler.LeftTrigger > 0.5f)
+        
+        if (controller.GetButton("Charge"))
         {
+            StateTimer = time_Charge;
             CurrentState = PlayerState.CHARGE;
         }
-        */
+        
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
@@ -429,12 +436,13 @@ public class PlayerHandler : EntityHandler
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
-        /*
-        if (_inputHandler.LeftTrigger > 0.5f)
+        
+        if (controller.GetButton("Charge"))
         {
             CurrentState = PlayerState.CHARGE;
+            StateTimer = time_Charge;
         }
-        */
+        
 
         if (CurrentState == PlayerState.RUN)
         {
@@ -777,26 +785,47 @@ public class PlayerHandler : EntityHandler
     }
     
     #endregion
-    /*
+    
     private void PlayerCharge()
     {
-        characterAnimator.Play("ChargedMelee_Charge");
+        StateTimer -= Time.deltaTime;
+        Debug.Log(StateTimer);
+        if (StateTimer < 0)
+        {
+            characterAnimator.Play("New_ChargeFinal");
+        }
+        else if (StateTimer < time_Charge - time_ChargeLight - time_ChargeMedium) //play transition
+        {
+            characterAnimator.Play("New_ChargeTransition");
+        }
+        else if (StateTimer < time_Charge - time_ChargeLight) //play medium
+        {
+            characterAnimator.Play("New_ChargeMedium");
+        }
+        else //play small
+        {
+            characterAnimator.Play("New_ChargeSmall");
+        }
+
+
 
         Debug.Log("Charging...!!!");
 
 
         //State Switching
-        if ( _inputHandler.LeftTrigger < 0.3f )
+        if ( !controller.GetButton("Charge") )
         {
-            CurrentState = PlayerState.RUN;
+            CurrentState = PlayerState.IDLE;
         }
-        else if ( _inputHandler.AttackPressed)
+        /*
+        else if (controller.GetButtonDown("Melee"))
         {
             StateTimer = _burstDuration;
             CurrentState = PlayerState.BURST;
         }
+        */
     }
-
+    /*
     
     private void PlayerBurst()
     {

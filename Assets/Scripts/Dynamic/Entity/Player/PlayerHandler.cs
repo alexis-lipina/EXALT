@@ -82,13 +82,15 @@ public class PlayerHandler : EntityHandler
     private float _lengthOfHeavyMeleeAnimation;
 
     //Charge Stuff
-    private const float time_Charge = 2.4f; //total time before player is charged up
-    private const float time_ChargeLight = 1f;
-    private const float time_ChargeMedium = 1f;
+    private const float time_Charge = 1.45f; //total time before player is charged up
+    private const float time_ChargeLight = .5f;
+    private const float time_ChargeMedium = .5f;
     private const float time_ChargeTransition = 0.25f; //how long is the entire transition animation, anyway?
 
-    private float _burstDuration = 0.5f;
+    private float _burstDuration = .75f;
+    private const float time_burstHit = 0.4f;
     private Vector2 _burstArea = new Vector2(16f, 12f);
+    private bool _hasFlashed = false;
 
     private Vector2 _cursorWorldPos;
 
@@ -228,7 +230,7 @@ public class PlayerHandler : EntityHandler
                 PlayerCharge();
                 break;
             case (PlayerState.BURST):
-                //PlayerBurst();
+                PlayerBurst();
                 break;
         }
     }
@@ -817,21 +819,20 @@ public class PlayerHandler : EntityHandler
         {
             CurrentState = PlayerState.IDLE;
         }
-        /*
-        else if (controller.GetButtonDown("Melee"))
+        else if (StateTimer < 0.1 && controller.GetButtonDown("Melee"))
         {
             StateTimer = _burstDuration;
             CurrentState = PlayerState.BURST;
         }
-        */
     }
-    /*
+    
     
     private void PlayerBurst()
     {
-        if (StateTimer == _burstDuration)
+        characterAnimator.Play("New_Unleash");
+        if (StateTimer < time_burstHit && !_hasFlashed)
         {
-            characterAnimator.Play("ChargedMelee_Unleash");
+            _hasFlashed = true;
             Vector2 cornerSouthWest = entityPhysics.transform.position;
 
             Collider2D[] hitEntities = Physics2D.OverlapAreaAll((Vector2)entityPhysics.transform.position - _burstArea/2.0f, (Vector2)entityPhysics.transform.position + _burstArea / 2.0f);
@@ -841,14 +842,19 @@ public class PlayerHandler : EntityHandler
                 if (hitEntities[i].GetComponent<EntityPhysics>() && hitEntities[i].tag == "Enemy")
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(1.0f, 10, 0.01f);
 
                     //Debug.Log("Owch!");
                     Vector2 displacementOfEnemy = hitEntities[i].transform.position - entityPhysics.transform.position;
-                    displacementOfEnemy = (displacementOfEnemy.normalized * 5.0f) / displacementOfEnemy.magnitude;
+                    displacementOfEnemy = (displacementOfEnemy.normalized * 10.0f) / (displacementOfEnemy.magnitude + 1);
                     hitEntities[i].GetComponent<EntityPhysics>().Inflict(1f, displacementOfEnemy, displacementOfEnemy.magnitude);
                 }
             }
+        }
+
+        if (StateTimer < time_burstHit)
+        {
+
         }
 
         //tick
@@ -856,8 +862,10 @@ public class PlayerHandler : EntityHandler
         if (StateTimer <= 0)
         {
             CurrentState = PlayerState.RUN;
+            _hasFlashed = false;
         }
     }
+    /*
     //================================================================================| FIRE BULLETS
 
     /// <summary>

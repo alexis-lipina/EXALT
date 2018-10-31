@@ -141,6 +141,8 @@ public class PlayerHandler : EntityHandler
         hitEnemies = new List<int>();
         _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
+
+        SwapWeapon("SOUTH");
     }
 
 
@@ -176,24 +178,24 @@ public class PlayerHandler : EntityHandler
         {
             SwapWeapon("EAST");
         }
-        
+        */
 
 
         //TODO : Temporary gun testing
-        if (_inputHandler.RightTrigger > 0.2)
+        if (controller.GetButton("RangedAttack"))
         {
             if (_equippedWeapon.CanFireBullet())
             {
                 FireBullet();
             }
         }
-
+        /*
         if (_inputHandler.RightBumper > 0.2)
         {
             ThrowGrenade();
         }
         */
-        
+       
     }
 
     protected override void ExecuteState()
@@ -865,7 +867,7 @@ public class PlayerHandler : EntityHandler
             _hasFlashed = false;
         }
     }
-    /*
+    
     //================================================================================| FIRE BULLETS
 
     /// <summary>
@@ -873,6 +875,8 @@ public class PlayerHandler : EntityHandler
     /// </summary>
     private void FireBullet()
     {
+        Vector2 _tempRightAnalogDirection = aimDirection;
+        /*
         Vector2 _tempRightAnalogDirection = Vector2.zero;
         if (_inputHandler.RightAnalog.magnitude <= 0.2)
         {
@@ -890,6 +894,7 @@ public class PlayerHandler : EntityHandler
         {
             _tempRightAnalogDirection = _inputHandler.RightAnalog;
         }
+        */
 
         GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
         //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
@@ -911,7 +916,7 @@ public class PlayerHandler : EntityHandler
             _equippedWeapon.PopulateBulletPool();
         }
     }
-
+    /*
     /// <summary>
     /// Throws a grenade in the direction of aim.
     /// </summary>

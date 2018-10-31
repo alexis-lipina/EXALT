@@ -59,6 +59,7 @@ public class BulletHandler : ProjectileHandler
         _projectilePhysics.FreeFall();
         //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(_projectilePhysics.GetComponent<Rigidbody2D>().position + temp); //TODO : moveposition should be performed in BulletPhysics, or whatever the new physics system for bullets is
         _projectilePhysics.MoveWithCollision(temp.x, temp.y);
+        _projectilePhysics.MoveCharacterPositionPhysics(_moveDirection.x, _moveDirection.y);
 	}
 
 

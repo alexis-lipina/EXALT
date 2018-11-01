@@ -301,7 +301,6 @@ MonoBehaviour:
   _spriteZOffset: 1
   _objectSprite: {fileID: 1921452009331322}
   _environmentHandler: {fileID: 1737743494396890}
-  FirstShadow: {fileID: 1307706745323936}
   gravity: 0
   speed: 13
   ZVelocity: 0
@@ -320,14 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2cf8cd1715d741449e5efce2fa96c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityHandlerObject: {fileID: 1859906124296664}
   entityCollider: {fileID: 114063944942426778}
-  _something:
-    serializedVersion: 2
-    m_Curve: []
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!114 &114238232631313010
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -11,9 +11,9 @@ public class TestGunYellow : Weapon
     void Awake()
     {
         _timeOfLastShot = Time.time;
-        _bulletPoolMaxCount = 20;
-        _timeBetweenShots = 0.5f;
-        _bulletPrefabName = "YellowBullet";
+        _bulletPoolMaxCount = 10;
+        _timeBetweenShots = 0.1f;
+        _bulletPrefabName = "DemoBullet";
     }
 
 
@@ -23,6 +23,9 @@ public class TestGunYellow : Weapon
         GameObject tempBullet = GetFromPool();
         tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = direction.normalized;
         tempBullet.SetActive(true);
+        tempBullet.GetComponentInChildren<AudioSource>().Play();
+        //tempBullet.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
+
         _timeOfLastShot = Time.time;
         return tempBullet;
     }

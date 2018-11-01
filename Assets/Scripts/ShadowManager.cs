@@ -231,7 +231,7 @@ public class ShadowManager : MonoBehaviour
                 if (highestCollider == null)
                 {
                     shadowArray[i][j].GetComponent<Renderer>().enabled = false;
-                    Debug.Log("NOT DRAWING " + i + " " + j);
+                    //Debug.Log("NOT DRAWING " + i + " " + j);
                 }
                 else
                 {

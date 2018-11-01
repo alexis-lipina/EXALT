@@ -33,7 +33,7 @@ public class BulletHandler : ProjectileHandler
 	virtual protected void Start ()
     {
         //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(new Vector2(1000, 1000));
-        _projectilePhysics.ZVelocity = 0.5f;
+        //_projectilePhysics.ZVelocity = 0.5f;
         _projectilePhysics.Reset();
         //DEBUG
         //_moveDirection = new Vector2(1, 1).normalized;
@@ -56,10 +56,10 @@ public class BulletHandler : ProjectileHandler
 
         //_projectilePhysics.MoveWithCollision(temp.x, temp.y);
         
-        _projectilePhysics.FreeFall();
+        //_projectilePhysics.FreeFall();
         //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(_projectilePhysics.GetComponent<Rigidbody2D>().position + temp); //TODO : moveposition should be performed in BulletPhysics, or whatever the new physics system for bullets is
         _projectilePhysics.MoveWithCollision(temp.x, temp.y);
-        _projectilePhysics.MoveCharacterPositionPhysics(_moveDirection.x, _moveDirection.y);
+        //_projectilePhysics.MoveCharacterPositionPhysics(_moveDirection.x, _moveDirection.y);
 	}
 
 

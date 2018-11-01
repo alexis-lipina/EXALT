@@ -48,6 +48,8 @@ public class ProjectilePhysics : DynamicPhysics
 
     private Rigidbody2D bulletRigidBody;
     private Vector2 _velocity;
+    private const float _timeToDestroy = 10f;
+    private float _timer;
     public Vector2 Velocity
     {
         set { _velocity = value; }
@@ -61,6 +63,7 @@ public class ProjectilePhysics : DynamicPhysics
     {
         base.Awake();
         EntitiesTouched = new List<PhysicsObject>();
+        _timer = 0f;
         
     }
 
@@ -68,10 +71,12 @@ public class ProjectilePhysics : DynamicPhysics
 
 	void Update ()
     {
+        _timer += Time.deltaTime;
         MoveCharacterPosition();
-        if (bottomHeight < -18)
+        if (bottomHeight < -18 || _timer > _timeToDestroy)
         {
             Debug.Log(bulletHandler);
+            Debug.Log(bulletHandler.SourceWeapon);
             bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID()); //"deletes" if out of bounds
         }
     }
@@ -198,16 +203,16 @@ public class ProjectilePhysics : DynamicPhysics
                 {
                     if (entry.Key.GetComponent<EnvironmentPhysics>().GetTopHeight() > this.GetBottomHeight() + 2.0 * ZVelocity && entry.Key.GetComponent<EnvironmentPhysics>().GetBottomHeight() < this.GetTopHeight() + 2.0 * ZVelocity)
                     {
-                        //Debug.Log("CeilingCollision");
+                        Debug.Log("CeilingCollision");
                         ZVelocity = -ZVelocity;
                         hasZHit = true;
                     }
                 }
                 else if (ZVelocity < 0 && !hasZHit) //bottom hit
                 {
-                    if (entry.Key.GetComponent<EnvironmentPhysics>().GetTopHeight() > this.GetBottomHeight() + 2.0 * ZVelocity && entry.Key.GetComponent<EnvironmentPhysics>().GetBottomHeight() < this.GetTopHeight() + 2.0 * ZVelocity)
+                    if (entry.Key.GetComponent<EnvironmentPhysics>().GetTopHeight() > this.GetBottomHeight() + ZVelocity && entry.Key.GetComponent<EnvironmentPhysics>().GetBottomHeight() < this.GetTopHeight() + ZVelocity)
                     {
-                        //Debug.Log("FloorCollision");
+                        Debug.Log("FloorCollision");
                         ZVelocity = -ZVelocity;
                         hasZHit = true;
                     }
@@ -231,6 +236,7 @@ public class ProjectilePhysics : DynamicPhysics
     {
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         EntitiesTouched = new List<PhysicsObject>();
+        _timer = 0f;
     }
 
 }

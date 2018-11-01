@@ -264,7 +264,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1897630318613530}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 32.8, y: 39.8, z: 2}
+  m_LocalPosition: {x: -0.2, y: -5.2, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4188580789797398}
@@ -388,7 +388,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 4b0fa7a63aaa9bd41a2712b5c00d5a3d, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -558,6 +558,10 @@ MonoBehaviour:
   _cursor: {fileID: 0}
   _isUsingCursor: 1
   _healthBar: {fileID: 0}
+  JumpImpulse: 40
+  JumpHeldGravity: -100
+  JumpFallGravity: -300
+  FallGravity: -140
 --- !u!114 &114530369701037140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -582,7 +586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectHeight: 3
-  _startElevation: 20
+  _startElevation: 50
   _spriteZOffset: 1.8
   _objectSprite: {fileID: 1618442850258514}
   _environmentHandler: {fileID: 1864799250715314}

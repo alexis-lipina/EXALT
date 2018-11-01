@@ -28,7 +28,7 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] private UIHealthBar _healthBar;
 
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED};
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -46,10 +46,7 @@ public class PlayerHandler : EntityHandler
     const string JUMP_WEST_Anim = "Anim_PlayerJumpWest";
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
     const string FALL_WEST_Anim = "Anim_PlayerFallWest";
-    const string SWING_NORTH_Anim = "Anim_PlayerSwingNorth";
-    const string SWING_SOUTH_Anim = "Anim_PlayerSwingSouth";
-    const string SWING_EAST_Anim = "Anim_PlayerSwingEast";
-    const string SWING_WEST_Anim = "Anim_PlayerSwingWest";
+    
 
 
     private const float AttackMovementSpeed = 0.6f;
@@ -87,10 +84,14 @@ public class PlayerHandler : EntityHandler
     private const float time_ChargeMedium = .5f;
     private const float time_ChargeTransition = 0.25f; //how long is the entire transition animation, anyway?
 
+    //Burst Stuff
     private float _burstDuration = .75f;
     private const float time_burstHit = 0.4f;
     private Vector2 _burstArea = new Vector2(16f, 12f);
     private bool _hasFlashed = false;
+
+    //Light Ranged 
+    private const float _lightRangedDuration = 0.25f;
 
     private Vector2 _cursorWorldPos;
 
@@ -179,16 +180,6 @@ public class PlayerHandler : EntityHandler
             SwapWeapon("EAST");
         }
         */
-
-
-        //TODO : Temporary gun testing
-        if (controller.GetButton("RangedAttack"))
-        {
-            if (_equippedWeapon.CanFireBullet())
-            {
-                FireBullet();
-            }
-        }
         /*
         if (_inputHandler.RightBumper > 0.2)
         {
@@ -233,6 +224,9 @@ public class PlayerHandler : EntityHandler
                 break;
             case (PlayerState.BURST):
                 PlayerBurst();
+                break;
+            case (PlayerState.LIGHT_RANGED):
+                PlayerLightRanged();
                 break;
         }
     }
@@ -306,9 +300,15 @@ public class PlayerHandler : EntityHandler
             StateTimer = time_Charge;
             CurrentState = PlayerState.CHARGE;
         }
-        
 
-        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (controller.GetButton("RangedAttack"))
+        {
+            StateTimer = 0f;
+            CurrentState = PlayerState.LIGHT_RANGED;
+        }
+
+
+            float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
         {
             entityPhysics.ZVelocity = 0;
@@ -446,7 +446,12 @@ public class PlayerHandler : EntityHandler
             CurrentState = PlayerState.CHARGE;
             StateTimer = time_Charge;
         }
-        
+        if (controller.GetButton("RangedAttack"))
+        {
+            StateTimer = 0f;
+            CurrentState = PlayerState.LIGHT_RANGED;
+        }
+
 
         if (CurrentState == PlayerState.RUN)
         {
@@ -867,7 +872,32 @@ public class PlayerHandler : EntityHandler
             _hasFlashed = false;
         }
     }
-    
+
+    private void PlayerLightRanged()
+    {
+        //Draw Player
+        characterAnimator.Play("Anim_Swing_Right_NW");
+
+        if (StateTimer == 0) FireBullet();
+        /*
+        if (controller.GetButton("RangedAttack"))
+        {
+            if (_equippedWeapon.CanFireBullet())
+            {
+                FireBullet();
+            }
+        }
+        */
+
+        StateTimer += Time.deltaTime; //tick
+
+        //state switching
+        if (StateTimer >= _lightRangedDuration)
+        {
+            CurrentState = PlayerState.IDLE;
+        }
+    }
+
     //================================================================================| FIRE BULLETS
 
     /// <summary>

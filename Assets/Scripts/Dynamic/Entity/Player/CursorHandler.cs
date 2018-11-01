@@ -49,12 +49,14 @@ public class CursorHandler : MonoBehaviour
 
     private void OnDisable()
     {
+        /*
         ReInput.players.Players[0].RemoveInputEventDelegate(SwitchToGamepad,
             UpdateLoopType.Update,
             InputActionEventType.ButtonJustPressed, ReInput.mapping.GetActionId("GamepadSwitch"));
         ReInput.players.Players[0].RemoveInputEventDelegate(SwitchToMouse,
             UpdateLoopType.Update,
             InputActionEventType.ButtonJustPressed, ReInput.mapping.GetActionId("MouseSwitch"));
+            */
     }
 
 

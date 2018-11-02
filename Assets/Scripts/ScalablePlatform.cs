@@ -39,7 +39,7 @@ public class ScalablePlatform : MonoBehaviour {
         side.drawMode = drawMode;
         top.size = new Vector2(dimensions.x, dimensions.y);
         side.size = new Vector2(dimensions.x, dimensions.z);
-        side.transform.localPosition = Vector3.down * ((dimensions.y / 2) + (dimensions.z / 2) - elevation);
+        side.transform.localPosition = Vector2.down * ((dimensions.y / 2) + (dimensions.z / 2) - elevation);
         top.transform.localPosition = Vector2.up * elevation;
 
         //set collider properties

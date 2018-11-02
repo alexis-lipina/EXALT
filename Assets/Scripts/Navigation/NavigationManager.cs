@@ -197,7 +197,6 @@ public class NavigationManager : MonoBehaviour
         costSoFar.Add(start, 0);
 
         EnvironmentPhysics current = null;
-        //Debug.Log("About to die!");
         int iterations = 0;
         while (frontier.Count != 0 && iterations < 30)
         {

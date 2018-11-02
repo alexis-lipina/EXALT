@@ -77,6 +77,7 @@ Shader "Custom/WallShader"
 
 				if (ratio > 0 )
 				{
+					ratio = abs(ratio);
 					color = (1 - ratio) * color + ratio * _HighColor;
 				}
 				else

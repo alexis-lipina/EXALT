@@ -364,4 +364,10 @@ public class EntityPhysics : DynamicPhysics
     {
         return MaxHP;
     }
+
+    public void SetElevation(float elev) //for initialization
+    {
+        bottomHeight = elev;
+        topHeight = elev + _objectHeight;
+    }
 }

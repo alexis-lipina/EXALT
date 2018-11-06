@@ -20,7 +20,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private CursorHandler _cursor;
     [SerializeField] private bool _isUsingCursor; //TEMPORARY
 
-
+    public static string PREVIOUS_SCENE = "";
 
     private Animator characterAnimator;
     private PlayerInventory inventory;
@@ -121,6 +121,10 @@ public class PlayerHandler : EntityHandler
 
     void Awake()
     {
+        if (PREVIOUS_SCENE == "")
+        {
+            PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
+        }
         controller = ReInput.players.GetPlayer(0);
         //this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         inventory = gameObject.GetComponent<PlayerInventory>();

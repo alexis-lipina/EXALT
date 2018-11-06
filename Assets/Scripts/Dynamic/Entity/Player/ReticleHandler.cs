@@ -95,7 +95,7 @@ public class ReticleHandler : MonoBehaviour
         //Get direction in which to go
         if (_isUsingCursor)
         {
-            _tempRightAnalogDirection = new Vector2(_cursorWorldPos.x, _cursorWorldPos.y - _playerPhysics.GetBottomHeight() - 0.5f) - (Vector2)_playerPhysics.GetComponent<Transform>().position;
+            _tempRightAnalogDirection = new Vector2(_cursorWorldPos.x, _cursorWorldPos.y - _playerPhysics.GetBottomHeight() /* - 0.5f */ ) - (Vector2)_playerPhysics.GetComponent<Transform>().position;
             _tempRightAnalogDirection *= 0.05f;
         }
         else
@@ -137,7 +137,7 @@ public class ReticleHandler : MonoBehaviour
         {
             if (hit.transform.gameObject.tag == "Environment")
             {
-                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > _entityPhysics.GetBottomHeight() + HEIGHT_TOLERANCE) // if the height of the terrain object is greater than the altitude of the player
+                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > _entityPhysics.GetBottomHeight() + HEIGHT_TOLERANCE && hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight() < _entityPhysics.GetBottomHeight() + HEIGHT_TOLERANCE) // if the height of the terrain object is greater than the altitude of the player
                 {
                     if (hit.distance < shortestDistance) 
                     {

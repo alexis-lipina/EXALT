@@ -7,19 +7,20 @@ public class TestPlayerElevationTracker : MonoBehaviour
 
     [SerializeField] private EntityPhysics _playerPhysics;
     [SerializeField] private EnvironmentPhysics _environmentPhysics;
-    [SerializeField]
-    private bool _trueIfPlatformFalseIfWall;
-
+    [SerializeField] private bool _trueIfPlatformFalseIfWall;
+    private float _lerpedPlayerHeight;
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+    {
+        _lerpedPlayerHeight = _playerPhysics.GetObjectElevation();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlayerElevation", _playerPhysics.GetObjectElevation());
+        _lerpedPlayerHeight = Mathf.Lerp( _lerpedPlayerHeight, _playerPhysics.GetObjectElevation(), 0.1f);
+        gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlayerElevation", _lerpedPlayerHeight);
 
         if (_trueIfPlatformFalseIfWall)
         {

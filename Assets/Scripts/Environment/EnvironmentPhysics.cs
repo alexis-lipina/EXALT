@@ -88,6 +88,38 @@ public class EnvironmentPhysics : PhysicsObject
             gameObject.GetComponent<SpriteRenderer>().color = temp;
         }
         */
+        
+        if (isTransparentOnOcclude)
+        {
+
+            float opacity = gameObject.GetComponent<Transform>().position.z - playerSprite.GetComponent<Transform>().position.z + 5f;
+            opacity *= 0.1f;
+
+            opacity = Mathf.Clamp(opacity, 0f, 1.0f);
+            GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", opacity);
+            GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", opacity);
+
+            /*
+            if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z)
+            {
+                //distance
+                float opacity = gameObject.GetComponent<Transform>().position.z - playerSprite.GetComponent<Transform>().position.z + 3f;
+                opacity *= 0.1f;
+                GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", opacity);
+                GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", opacity);
+            }
+            else
+            {
+                GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", 1f);
+                GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", 1f);
+            }*/
+        }
+        else
+        {
+            
+        }
+        
+        
     }
 
     

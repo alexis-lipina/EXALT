@@ -91,11 +91,11 @@ public class DynamicPhysics : PhysicsObject
     /// </summary>
     public void SnapToFloor()
     {
-        float delta = 0;
+        float delta = 0f;
         foreach(KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
             delta = bottomHeight - entry.Value.GetTopHeight();
-            if (delta > 0 && delta < 0.5f) 
+            if (delta > 0 && delta < 1f) 
             {
                 bottomHeight -= delta;
                 topHeight = bottomHeight + _objectHeight;
@@ -153,7 +153,7 @@ public class DynamicPhysics : PhysicsObject
 
     protected bool EntityWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
-        if (playerTop > terrainBottom && playerBottom < terrainTop)
+        if (playerTop > terrainBottom && playerBottom + 1f < terrainTop)
             return true;
         return false;
     }
@@ -278,7 +278,7 @@ public class DynamicPhysics : PhysicsObject
 
             if ((NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0) && (EastCollision && velocityX > 0 || WestCollision && velocityX < 0)) //Wedged into a corner, disallow motion
             {
-                //Debug.Log("Stuck in a corner!");
+                Debug.Log("Stuck in a corner!");
                 return;
             }
             else if (NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0)
@@ -286,17 +286,17 @@ public class DynamicPhysics : PhysicsObject
                 //Debug.Log("North/South Collision");
                 //try to move along x axis
                 velocityY = 0;
-                //first, boxcast along axis
-                impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(1, 0), distance: velocityX);
+                //first, boxcast along axis                                                           USED TO BE new Vector2(2.0, 1.2)
+                impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, GetComponent<BoxCollider2D>().size, 0f, new Vector2(1, 0), distance: velocityX);
                 foreach (RaycastHit2D hit in impendingCollisions)
                 {
                     //check to see if the hit is an east or west wall (aka a problem) 
                     //=====| basically figure out if the entity hit by a box is a potential problem. Maybe if it's not currently being touched, since if it were we'd be in a corner and that'd be handled?
-                    if ((hit.transform.gameObject.tag == "Environment") && //TODO: added in entity collision
+                    if ((hit.transform.gameObject.tag == "Environment") && 
                         ((hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 > PlayerRigidBody.GetComponent<Transform>().position.y - (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2.0 &&
                            (hit.transform.position.y + hit.transform.gameObject.GetComponent<BoxCollider2D>().offset.y - hit.transform.gameObject.GetComponent<BoxCollider2D>().size.y / 2.0 < PlayerRigidBody.GetComponent<Transform>().position.y + (PlayerRigidBody.GetComponent<BoxCollider2D>().size.y * 0.6) / 2))))
                     {
-                        if (EntityWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), bottomHeight, bottomHeight + _objectHeight))
+                        if (EntityWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), bottomHeight, bottomHeight + _objectHeight)) //TODO : Added tolerance for stepping up staircases
                         {
                             // Debug.Log("YEET");
                             //Debug.Log("HitDistance:" + hit.distance);
@@ -325,8 +325,8 @@ public class DynamicPhysics : PhysicsObject
                 //Debug.Log("East/WestCollision");
                 //try to move along y axis
                 velocityX = 0;
-                //first, boxcast along axis
-                impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, new Vector2(2.0f, 1.2f), 0f, new Vector2(0, 1), distance: velocityY);
+                //first, boxcast along axis                                                   USED TO BE new Vector2(2.0, 1.2)
+                impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, GetComponent<BoxCollider2D>().size, 0f, new Vector2(0, 1), distance: velocityY);
                 foreach (RaycastHit2D hit in impendingCollisions)
                 {
                     //check to see if the hit is a North or South wall (aka a problem) 

@@ -12,6 +12,8 @@ Shader "Custom/PlatformShader"
 		_PlatformElevation("Elevation", Float) = 0
 		_PlayerElevation("Player Elevation", Float) = 0
 		_MaxElevationOffset("Max Difference in Height between player and solid color", Float) = 30.0
+
+		_Opacity("Opacity", Float) = 1.0
 	}
 
 	SubShader
@@ -54,6 +56,7 @@ Shader "Custom/PlatformShader"
 			float _PlatformElevation;
 			float _PlayerElevation;
 			float _MaxElevationOffset;
+			float _Opacity;
 
 			float4 frag(vertOutput output) : COLOR
 			{
@@ -71,10 +74,16 @@ Shader "Custom/PlatformShader"
 
 				diff = abs(diff);
 				float ratio = diff / _MaxElevationOffset;
-				if (ratio >= 1.0) return mask_color;
+				if (ratio >= 1.0)
+				{
+					mask_color.a = _Opacity;
+					return mask_color;
+				}
 				else
 				{
-					return (1.0 - ratio) * color + ratio * mask_color;
+					 mask_color = (1.0 - ratio) * color + ratio * mask_color;
+					 mask_color.a = _Opacity;
+					 return mask_color;
 				}
 
 				

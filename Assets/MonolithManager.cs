@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class MonolithManager : MonoBehaviour
 {
+    public static Vector2 playerpos;
     public static float[,] array = new float[8,17];
     private float timer = 0;
-
+    [SerializeField] private EntityPhysics _player;
 
 	// Use this for initialization
 	void Start ()
@@ -17,6 +18,8 @@ public class MonolithManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        //playerpos
+        playerpos = _player.GetComponent<Rigidbody2D>().position;
 
         //Ripple
         timer += Time.deltaTime;

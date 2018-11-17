@@ -121,10 +121,13 @@ public class PlayerHandler : EntityHandler
 
     void Awake()
     {
+        
         if (PREVIOUS_SCENE == "")
         {
             PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         }
+        
+        //PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         controller = ReInput.players.GetPlayer(0);
         //this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         inventory = gameObject.GetComponent<PlayerInventory>();

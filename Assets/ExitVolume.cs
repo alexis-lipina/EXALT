@@ -19,6 +19,7 @@ public class ExitVolume : MonoBehaviour
     {
         if (GetComponent<TriggerVolume>().IsTriggered)
         {
+            
             SceneManager.LoadScene(_destination);
             Debug.Log("Load!");
 

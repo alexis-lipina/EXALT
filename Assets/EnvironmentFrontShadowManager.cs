@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnvironmentFrontShadowManager : MonoBehaviour
 {
-    [SerializeField] protected EnvironmentPhysics _environment;
+    protected EnvironmentPhysics _environment;
     [SerializeField] protected GameObject _frontSprite;
 
     protected static int numShadows = 2;
@@ -16,6 +16,7 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
 
     void Start ()
     {
+        _environment = GetComponent<EnvironmentPhysics>();
         shadowPool = new List<Transform>();
         for (int i = 0; i < numShadows; i++)
         {

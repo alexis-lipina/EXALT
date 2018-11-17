@@ -33,9 +33,18 @@ public class MonolithUpdater : MonoBehaviour
         _physics.BottomHeight += delta;
         _physics.TopHeight += delta;*/
 
+        //waves
+        //float newElevation = MonolithManager.array[position_x, position_y] * _totalheight;
 
-        float newElevation = MonolithManager.array[position_x, position_y] * _totalheight;
+        //player position
+        float newElevation = ( ((Vector2)transform.position + GetComponent<BoxCollider2D>().offset) - MonolithManager.playerpos).sqrMagnitude;
+        newElevation /= 20.0f * 20.0f;
+        newElevation = (Mathf.Clamp(newElevation, 0.1f, 1.1f) - 0.1f) * _totalheight;
+
+        newElevation = Mathf.Lerp(_physics.GetTopHeight(), newElevation, 0.25f);
+
         float delta = newElevation - _physics.TopHeight;
+
 
 
         _physics.TopHeight = newElevation; //change physics parameters

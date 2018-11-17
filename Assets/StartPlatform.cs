@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 [RequireComponent(typeof(EnvironmentPhysics))] 
 
 /// <summary>
@@ -18,10 +19,11 @@ public class StartPlatform : MonoBehaviour
 		if (PlayerHandler.PREVIOUS_SCENE == _sourceScene)
         {
             //move player here
-            _playerPhysics.transform.position = transform.position;
-            _playerPhysics.SetElevation(GetComponent<EnvironmentPhysics>().TopHeight);
+            _playerPhysics.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
+            _playerPhysics.SetElevation(GetComponent<EnvironmentPhysics>().TopHeight + 5);
             Debug.Log("TELEPORT!");
-            Camera.main.transform.position = transform.position;
+            Camera.main.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
+            PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         }
 	}
 	

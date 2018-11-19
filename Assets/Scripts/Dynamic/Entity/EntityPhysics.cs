@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This class handles entity interaction with environment, as well as other entities.
@@ -193,6 +194,10 @@ public class EntityPhysics : DynamicPhysics
     /// </summary>
     private void WarpToPlatform()
     {
+        if (lastFootHold.Value == null)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
         //Debug.Log(lastFootHold.Key);
         /*
         physicsobject.GetComponent<Rigidbody2D>().MovePosition(lasttouched.Key);

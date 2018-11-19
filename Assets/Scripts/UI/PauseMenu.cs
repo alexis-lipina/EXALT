@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Rewired;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -48,6 +49,8 @@ public class PauseMenu : MonoBehaviour
                 _menuPanel.SetActive(false);
             }
         }
+
+
     }
 
 
@@ -66,6 +69,7 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitPressed()
     {
+        MainMenuPressed();
         //quit
     }
 
@@ -76,6 +80,8 @@ public class PauseMenu : MonoBehaviour
 
     public void MainMenuPressed()
     {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("FirstLevel");
         //go to main menu
     }
 }

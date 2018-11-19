@@ -5823,8 +5823,8 @@ MonoBehaviour:
   _resume: {fileID: 1111520622}
   _options: {fileID: 0}
   _screenshot: {fileID: 0}
-  _mainmenu: {fileID: 0}
-  _quit: {fileID: 0}
+  _mainmenu: {fileID: 495520579}
+  _quit: {fileID: 383528562}
   _menuPanel: {fileID: 1696055166}
 --- !u!4 &1439350559 stripped
 Transform:
@@ -5840,11 +5840,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4813796701263274, guid: 9dba7b926b1d30b4da5768e90b5db8d4, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -27
       objectReference: {fileID: 0}
     - target: {fileID: 4813796701263274, guid: 9dba7b926b1d30b4da5768e90b5db8d4, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -5
+      value: -48
       objectReference: {fileID: 0}
     - target: {fileID: 4813796701263274, guid: 9dba7b926b1d30b4da5768e90b5db8d4, type: 2}
       propertyPath: m_LocalPosition.z
@@ -7900,7 +7900,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1857704483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8686,7 +8686,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.16981131, g: 0.13697045, b: 0.13697045, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}

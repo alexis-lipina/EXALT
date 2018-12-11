@@ -35,17 +35,20 @@ public class BulletHandler : ProjectileHandler
         //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(new Vector2(1000, 1000));
         //_projectilePhysics.ZVelocity = 0.5f;
         _projectilePhysics.Reset();
+        _projectilePhysics.Velocity = _moveDirection * _bulletSpeed;
         //DEBUG
         //_moveDirection = new Vector2(1, 1).normalized;
     }
 
-
+    //gonna try and let ProjectilePhysics do all the work
+    /*
 
     protected virtual void Update ()
     {
+
 		if (_projectilePhysics.IsCollidingWithEnvironment())
         {
-            //GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object
+            //GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object pooling
             //SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
         }
         Vector2 temp = _moveDirection;
@@ -61,15 +64,21 @@ public class BulletHandler : ProjectileHandler
         _projectilePhysics.MoveWithCollision(temp.x, temp.y);
         //_projectilePhysics.MoveCharacterPositionPhysics(_moveDirection.x, _moveDirection.y);
 	}
-
+    */
+   
 
     //Resets the bullet for reuse
     public void ResetBullet()
     {
         _projectilePhysics.Reset();
         Start();
+        _projectilePhysics.Velocity = MoveDirection;
     }
 
+    private void OnEnable()
+    {
+        _projectilePhysics.Velocity = MoveDirection;
+    }
 
     //===========================================================| Special Abilities
 

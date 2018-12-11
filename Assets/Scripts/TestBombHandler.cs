@@ -21,6 +21,8 @@ public class TestBombHandler : BulletHandler
         _projectilePhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = _grenadeSprite;
     }
 
+    //this class is probably obsolete, and it was giving me errors.
+    /*
 	protected override void Update()
     {
         base.Update();
@@ -39,6 +41,7 @@ public class TestBombHandler : BulletHandler
             SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
         }
     }
+    */
 
     private void BlowUp()
     {

@@ -29,6 +29,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private UIHealthBar _healthBar;
 
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED};
+    enum CombatStyle { NORMAL, VOID, FIRE, ZAP };
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -46,6 +47,7 @@ public class PlayerHandler : EntityHandler
     const string JUMP_WEST_Anim = "Anim_PlayerJumpWest";
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
     const string FALL_WEST_Anim = "Anim_PlayerFallWest";
+
     
 
 
@@ -55,6 +57,10 @@ public class PlayerHandler : EntityHandler
 
     private PlayerState CurrentState;
     private PlayerState PreviousState;
+
+    private CombatStyle _currentStyle;
+    private CombatStyle _previousStyle;
+
     private FaceDirection currentFaceDirection;
 
     
@@ -103,7 +109,6 @@ public class PlayerHandler : EntityHandler
     private List<int> hitEnemies;
 
     private Player controller;
-
 
     //=====================| JUMP/FALL FIELDS
     [SerializeField] private float JumpImpulse = 30f;
@@ -166,34 +171,11 @@ public class PlayerHandler : EntityHandler
         //reset button presses
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
+        CheckStyleChange();
 
 
-        //Swapping weapons - still unsure if I want to keep ranged combat...?
-        /*
-        if (_inputHandler.DPadNorth > 0)
-        {
-            SwapWeapon("NORTH");
-        }
-        else if (_inputHandler.DPadSouth > 0)
-        {
-            SwapWeapon("SOUTH");
-        }
-        else if (_inputHandler.DPadWest > 0)
-        {
-            SwapWeapon("WEST");
-        }
-        else if (_inputHandler.DPadEast > 0)
-        {
-            SwapWeapon("EAST");
-        }
-        */
-        /*
-        if (_inputHandler.RightBumper > 0.2)
-        {
-            ThrowGrenade();
-        }
-        */
-       
+        //Change fighting style
+        
     }
 
     protected override void ExecuteState()
@@ -235,6 +217,34 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.LIGHT_RANGED):
                 PlayerLightRanged();
                 break;
+        }
+    }
+    
+    /// <summary>
+    /// checks to see if the player's fighting style has changed
+    /// </summary>
+    private void CheckStyleChange()
+    {
+        _previousStyle = _currentStyle;
+        if (controller.GetButton("ChangeStyle_Normal"))
+        {
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
+            _currentStyle = CombatStyle.NORMAL;
+        }
+        else if (controller.GetButton("ChangeStyle_Fire"))
+        {
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+            _currentStyle = CombatStyle.FIRE;
+        }
+        else if (controller.GetButton("ChangeStyle_Void"))
+        {
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
+            _currentStyle = CombatStyle.VOID;
+        }
+        else if (controller.GetButton("ChangeStyle_Electric"))
+        {
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
+            _currentStyle = CombatStyle.ZAP;
         }
     }
     
@@ -935,7 +945,7 @@ public class PlayerHandler : EntityHandler
 
         GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
         //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
-        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2.0f);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 4.0f);
         tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
     }
     

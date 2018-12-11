@@ -18,7 +18,7 @@ public class PlayerInventory : MonoBehaviour
     {
         _weaponEast = ScriptableObject.CreateInstance<TestGunGreen>();
         _weaponNorth = ScriptableObject.CreateInstance<TestGrenadeThrow>();
-        _weaponSouth = ScriptableObject.CreateInstance<TestGunYellow>();
+        _weaponSouth = ScriptableObject.CreateInstance<FireballLauncher>();
         _weaponWest = ScriptableObject.CreateInstance<TestGunRed>();
         //Debug.Log(_weaponNorth);
     }

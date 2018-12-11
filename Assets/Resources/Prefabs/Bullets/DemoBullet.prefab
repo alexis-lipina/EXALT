@@ -103,7 +103,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1822256269776560}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6.6, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4902312746901388}
@@ -117,7 +117,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1406761321984570}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 8, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4810466858708652}
@@ -130,7 +130,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1055189227564256}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23.885378, y: 43.10255, z: -5}
+  m_LocalPosition: {x: 41.9, y: 14.1, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4788750156269890}
@@ -253,7 +253,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
+  m_Size: {x: 0.8, y: 0.8}
   m_EdgeRadius: 0
 --- !u!82 &82183307546905990
 AudioSource:
@@ -362,7 +362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectilePhysics: {fileID: 114755565554650526}
-  _bulletSpeed: 50
+  _bulletSpeed: 30
 --- !u!114 &114459555479228164
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -387,13 +387,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39cb108159b1e5e449874bd1179111d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _objectHeight: 0.5
-  _startElevation: 10
+  _objectHeight: 1
+  _startElevation: 0
   _spriteZOffset: 0
   _objectSprite: {fileID: 1406761321984570}
   _environmentHandler: {fileID: 1114336430900226}
-  gravity: 0
-  speed: 10
+  gravity: -50
+  speed: 20
   ZVelocity: 0
   bulletHandler: {fileID: 114170044544052814}
   canBounce: 1

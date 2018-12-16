@@ -39,34 +39,7 @@ public class BulletHandler : ProjectileHandler
         //DEBUG
         //_moveDirection = new Vector2(1, 1).normalized;
     }
-
-    //gonna try and let ProjectilePhysics do all the work
-    /*
-
-    protected virtual void Update ()
-    {
-
-		if (_projectilePhysics.IsCollidingWithEnvironment())
-        {
-            //GameObject.Destroy(GetComponentInParent<Transform>().parent.gameObject); //TODO : rn it hard destroys bullet, use something like object pooling
-            //SourceWeapon.ReturnToPool(transform.parent.gameObject.GetInstanceID());
-        }
-        Vector2 temp = _moveDirection;
-        temp.Normalize();
-        temp.Set(temp.x * Time.deltaTime * _bulletSpeed, temp.y * Time.deltaTime * _bulletSpeed);
-        temp = _projectilePhysics.Bounce(temp); //bounces projectile if need be
-        _moveDirection = temp;
-
-        //_projectilePhysics.MoveWithCollision(temp.x, temp.y);
-        
-        //_projectilePhysics.FreeFall();
-        //_projectilePhysics.GetComponent<Rigidbody2D>().MovePosition(_projectilePhysics.GetComponent<Rigidbody2D>().position + temp); //TODO : moveposition should be performed in BulletPhysics, or whatever the new physics system for bullets is
-        _projectilePhysics.MoveWithCollision(temp.x, temp.y);
-        //_projectilePhysics.MoveCharacterPositionPhysics(_moveDirection.x, _moveDirection.y);
-	}
-    */
-   
-
+    
     //Resets the bullet for reuse
     public void ResetBullet()
     {

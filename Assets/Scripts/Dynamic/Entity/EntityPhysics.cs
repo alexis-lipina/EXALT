@@ -143,7 +143,7 @@ public class EntityPhysics : DynamicPhysics
                 {
                     //get the location relative to this objects location
                     Vector2 amountOfForceToAdd = new Vector2(entity.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, entity.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
-                    amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, might want different force strengths
+                    amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, m ight want different force strengths
                     velocity = new Vector2(velocity.x - amountOfForceToAdd.x , velocity.y - amountOfForceToAdd.y);
                 }
             }
@@ -161,6 +161,11 @@ public class EntityPhysics : DynamicPhysics
             _netForces -= _netForces.normalized * _forceDamping;
         }
         // */
+
+        //update z if pushed upstairs or something???
+        //SnapToFloor();
+
+
 
         return velocity;
     }

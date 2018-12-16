@@ -153,7 +153,7 @@ public class DynamicPhysics : PhysicsObject
 
     protected bool EntityWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
-        if (playerTop > terrainBottom && playerBottom + 0.6f < terrainTop)
+        if (playerTop > terrainBottom && playerBottom + 0.6f < terrainTop)// +0.6 is a tolerance so entity moves up anyway
             return true;
         return false;
     }

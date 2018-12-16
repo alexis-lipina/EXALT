@@ -14,11 +14,15 @@ public class ProjectilePhysics : DynamicPhysics
 {
 
     [SerializeField] private BulletHandler bulletHandler;
+    [Space(10)]
+    [Header("Projectile Behaviours")]
     [SerializeField] private bool canBounce;
     [SerializeField] private bool isAffectedByGravity;
     [SerializeField] private bool canPenetrate;
     [SerializeField] private bool canBeDamaged;
     [SerializeField] private bool explodesOnDeath;
+    [SerializeField] private bool doesTracking;
+    [SerializeField] private Collider2D trackingArea;
 
     public bool CanBounce
     {
@@ -57,14 +61,14 @@ public class ProjectilePhysics : DynamicPhysics
     }
     
     List<PhysicsObject> EntitiesTouched;
-
+    Dictionary<EntityPhysics, bool> _targetsTouched; // (target, hasBeenTouched)
 
     override protected void Awake()
     {
         base.Awake();
         EntitiesTouched = new List<PhysicsObject>();
+        _targetsTouched = new Dictionary<EntityPhysics, bool>();
         _timer = 0f;
-        
     }
 
 	
@@ -75,6 +79,14 @@ public class ProjectilePhysics : DynamicPhysics
 
         //physics
         _velocity = Bounce(_velocity);
+
+        if (doesTracking)
+        {
+            //Debug.Log("MOVIN");
+            trackingArea.transform.position = this.transform.position;
+            _velocity = Seek(_velocity);
+        }
+
         //MoveWithCollision(_velocity.x, _velocity.y);
         MoveCharacterPositionPhysics(_velocity.x, _velocity.y);
         //Debug.Log("Velocity : " + _velocity);
@@ -102,10 +114,30 @@ public class ProjectilePhysics : DynamicPhysics
         }
         if (other.gameObject.tag == "Enemy" && (_whoToHurt == "ENEMY" || _whoToHurt == "ALL"))
         {
-            //Debug.Log("Damaging Enemy");
-            other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f);
+            Debug.Log("Damaging Enemy");
+            Debug.Log("Enemy: " + other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() + ", " + other.gameObject.GetComponent<EntityPhysics>().GetTopHeight());
+            Debug.Log("Projectile: " + bottomHeight + ", " + topHeight);
+
+            if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
+            {
+                _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f);
+                if (!canPenetrate)
+                {
+                    Reset();
+                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+                    transform.position = new Vector3(-999, -999, transform.position.z);
+                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+                    //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                }
+            }
+            else
+            {
+                _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), false);
+            }
+            
         }
-        if (other.gameObject.tag == "Enemy") Debug.Log("Enemy!");
     }
 
     void OnTriggerStay2D(Collider2D other)
@@ -116,6 +148,23 @@ public class ProjectilePhysics : DynamicPhysics
             Debug.Log("This should never happen. ");
             TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
         }
+        if (other.gameObject.tag == "Enemy" && (_whoToHurt == "ENEMY" || _whoToHurt == "ALL"))
+        {
+            if (!_targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] && other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight) //if has not been hit and is overlapping
+            {
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f);
+                _targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] = true;
+                if (!canPenetrate)
+                {
+                    Reset();
+                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+                    transform.position = new Vector3(-999, -999, transform.position.z);
+                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+
+                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                }
+            }
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -123,6 +172,10 @@ public class ProjectilePhysics : DynamicPhysics
         if (other.gameObject.tag == "Environment")
         {
             TerrainTouching.Remove(other.gameObject);
+        }
+        else if (other.gameObject.tag == "Enemy")
+        {
+            _targetsTouched.Remove(other.GetComponent<EntityPhysics>());
         }
     }
 
@@ -233,6 +286,30 @@ public class ProjectilePhysics : DynamicPhysics
         return currentvelocity;
     }
     
+    /// <summary>
+    /// Pushes projectile in direction of a target entity that passes within its seek radius.
+    /// </summary>
+    private Vector2 Seek(Vector2 currentVelocity)
+    {
+        Vector2 desiredVelocity = Vector2.zero;
+        //searches through objects within range
+        foreach (EntityPhysics other in trackingArea.GetComponent<ProjectileSeeker>().trackedTargets)
+        {
+            if (other.tag == "Enemy")
+            {
+                Debug.Log("ENEMY");
+                desiredVelocity = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
+                //make the force applied inversely proportional to distance
+                desiredVelocity = desiredVelocity.normalized * (1 / (desiredVelocity.magnitude * 2f) );
+            }
+        }
+
+
+        currentVelocity += desiredVelocity;
+        //if none are targets, do nothing
+        //else if targets exist, find nearest and nudge velocity in that direction
+        return currentVelocity.normalized;
+    }
     //==========================================| ENTITY COLLISION
 
 
@@ -243,11 +320,19 @@ public class ProjectilePhysics : DynamicPhysics
     /// </summary>
     public void Reset()
     {
+        _velocity = Vector2.zero;
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         EntitiesTouched = new List<PhysicsObject>();
+        _targetsTouched = new Dictionary<EntityPhysics, bool>();
         _timer = 0f;
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         ZVelocity = 0f;
+        if (trackingArea) trackingArea.GetComponent<ProjectileSeeker>().trackedTargets = new List<EntityPhysics>();
+
+
+        //trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+        //transform.position = new Vector3(-999, -999, transform.position.z);
+
     }
 
 }

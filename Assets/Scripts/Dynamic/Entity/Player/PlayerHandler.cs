@@ -155,7 +155,7 @@ public class PlayerHandler : EntityHandler
         _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
 
-        SwapWeapon("SOUTH");
+        SwapWeapon("NORTH");
     }
 
 
@@ -235,11 +235,13 @@ public class PlayerHandler : EntityHandler
         {
             characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
             _currentStyle = CombatStyle.FIRE;
+            SwapWeapon("WEST");
         }
         else if (controller.GetButton("ChangeStyle_Void"))
         {
             characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
             _currentStyle = CombatStyle.VOID;
+            SwapWeapon("NORTH");
         }
         else if (controller.GetButton("ChangeStyle_Electric"))
         {
@@ -895,7 +897,19 @@ public class PlayerHandler : EntityHandler
         //Draw Player
         characterAnimator.Play("Anim_Swing_Right_NW");
 
-        if (StateTimer == 0) FireBullet();
+        if (StateTimer == 0)
+        {
+            switch (_currentStyle)
+            {
+                case CombatStyle.FIRE:
+                    LightRanged_Fire();
+                    break;
+                case CombatStyle.VOID:
+                    LightRanged_Void();
+                    break;
+                default: break;
+            }
+        }
         /*
         if (controller.GetButton("RangedAttack"))
         {
@@ -945,10 +959,11 @@ public class PlayerHandler : EntityHandler
 
         GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
         //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
-        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 4.0f);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
         tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
     }
     
+
     /// <summary>
     /// Swaps weapon with one from your inventory given a d-pad direction
     /// </summary>
@@ -958,27 +973,31 @@ public class PlayerHandler : EntityHandler
         Weapon temp = inventory.GetWeapon(cardinal);
         if (temp) //not null
         {
-            Debug.Log("Equipping " + temp);
+            //Debug.Log("Equipping " + temp);
             _equippedWeapon = inventory.GetWeapon(cardinal);
             _equippedWeapon.PopulateBulletPool();
         }
     }
-    /*
-    /// <summary>
-    /// Throws a grenade in the direction of aim.
-    /// </summary>
-    private void ThrowGrenade()
+
+    //===================================| NEW METHODS FOR NEW 3-VERSION ATTACK SYSTEM
+
+    private void LightRanged_Void()
     {
-        GameObject tempBullet = Instantiate(Resources.Load("Prefabs/Bullets/TestGrenade")) as GameObject;
-        tempBullet.GetComponentInChildren<GrenadeHandler>().MoveDirection = Vector2.right;
-        tempBullet.SetActive(true);
-        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation());
-        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Transform>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+        //will rework the ranged attack system and remove "weapons" eventually...
+        SwapWeapon("NORTH"); //void is north
+        FireBullet();
     }
 
-    
+    private void LightRanged_Fire()
+    {
+        SwapWeapon("WEST");
+        FireBullet();
+    }
 
-    */
+    private void LightRanged_Electric()
+    {
+
+    }
 
     public override void SetXYAnalogInput(float x, float y)
     {

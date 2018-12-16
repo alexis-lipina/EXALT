@@ -145,6 +145,7 @@ public class TestEnemyHandler : EntityHandler
         //===========| Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2 (xInput, yInput));
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
         //===========| State Switching
 

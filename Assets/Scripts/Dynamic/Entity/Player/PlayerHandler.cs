@@ -19,6 +19,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private CursorHandler _cursor;
     [SerializeField] private bool _isUsingCursor; //TEMPORARY
+    [SerializeField] private float _projectileStartHeight;
+    [SerializeField] private GameObject _lightRangedElectricLine;
 
     public static string PREVIOUS_SCENE = "";
 
@@ -98,6 +100,10 @@ public class PlayerHandler : EntityHandler
 
     //Light Ranged 
     private const float _lightRangedDuration = 0.25f;
+
+    //Light Ranged Electrical Attack
+    private const float _lightRangedElectricMaxDistance = 20f;
+
 
     private Vector2 _cursorWorldPos;
 
@@ -907,6 +913,10 @@ public class PlayerHandler : EntityHandler
                 case CombatStyle.VOID:
                     LightRanged_Void();
                     break;
+                case CombatStyle.ZAP:
+                    LightRanged_Electric();
+                    //Debug.Log("ZAP");
+                    break;
                 default: break;
             }
         }
@@ -996,7 +1006,64 @@ public class PlayerHandler : EntityHandler
 
     private void LightRanged_Electric()
     {
+        //raycast in direction, to max distance (Might want it to be a circlecast or boxcast, to be more generous with enemy hit detection)
+        //if hits an entity or environment object at the height it's cast at, endpoint there
+        //else, endpoint at max distance
+        //draw linerenderer between players position + offset and endpoint
 
+        RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance);
+        float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
+        float shortestDistance = float.MaxValue;
+        Vector2 endPoint = Vector2.zero;
+        bool hasHitEntity = false;
+        EntityPhysics hitEntity = null; 
+        for (int i = 0; i < hits.Length; i++)
+        {
+            //check if is something that can be collided with
+            //check to see if projectile z is within z bounds of physicsobject
+            //check to see if distance to target is shorter than shortestDistance
+
+            if (hits[i].collider.GetComponent<PhysicsObject>()) //can object be collided with
+            {
+                PhysicsObject other = hits[i].collider.GetComponent<PhysicsObject>();
+                if (other.GetBottomHeight() < projectileElevation && other.GetTopHeight() > projectileElevation) //is projectile height within z bounds of object
+                {
+                    if (other.tag != "Environment" && other.tag != "Enemy") continue;
+                    if (hits[i].distance < shortestDistance)
+                    {
+                        Debug.Log("Hit");
+                        //set to current valid collision
+                        shortestDistance = hits[i].distance;
+                        endPoint = hits[i].point;
+                        if (other is EntityPhysics) //checks to see if entity, since entities need to be damaged
+                        {
+                            hasHitEntity = true;
+                            hitEntity = hits[i].collider.GetComponent<EntityPhysics>();
+                        }
+                        else
+                        {
+                            hasHitEntity = false;
+                            hitEntity = null;
+                        }
+                    }
+                }
+            }   
+        }
+        //if hasnt hit anything
+        if (endPoint == Vector2.zero)
+        {
+            Debug.Log("Hit nothing");
+            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _lightRangedElectricMaxDistance;
+        }
+        if (hitEntity)
+        {
+            hitEntity.Inflict(1.0f, aimDirection, 1.0f);
+        }
+        _lightRangedElectricLine.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
+        _lightRangedElectricLine.GetComponent<LineRenderer>().SetPosition(1, new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y));
+        StartCoroutine(FlashZap(_lightRangedDuration * 0.5f));
+        Debug.Log(entityPhysics.transform.position);
+        Debug.Log(endPoint);
     }
 
     public override void SetXYAnalogInput(float x, float y)
@@ -1041,6 +1108,13 @@ public class PlayerHandler : EntityHandler
         //HeavyMeleeSprite.GetComponent<Animator>().Play("HeavyMeleeSwing!!!!!");
         yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    IEnumerator FlashZap(float duration)
+    {
+        _lightRangedElectricLine.GetComponent<LineRenderer>().enabled = true;
+        yield return new WaitForSeconds(duration);
+        _lightRangedElectricLine.GetComponent<LineRenderer>().enabled = false;
     }
 
     /// <summary>

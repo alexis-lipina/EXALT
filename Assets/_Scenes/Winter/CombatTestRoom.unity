@@ -27006,6 +27006,11 @@ Prefab:
       objectReference: {fileID: 2041898055}
     - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
         type: 2}
+      propertyPath: _cursor
+      value: 
+      objectReference: {fileID: 525019728}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 2}
       propertyPath: _healthBar
       value: 
       objectReference: {fileID: 984835370}
@@ -27014,41 +27019,11 @@ Prefab:
       propertyPath: navManager
       value: 
       objectReference: {fileID: 957900023}
-    - target: {fileID: 114767209249802744, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
-        type: 2}
-      propertyPath: _startElevation
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 61014422440406612, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
-        type: 2}
-      propertyPath: m_Size.x
-      value: 1.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 61014422440406612, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
-        type: 2}
-      propertyPath: m_Size.y
-      value: 1.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 61057305760101990, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
-        type: 2}
-      propertyPath: m_Size.x
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 61057305760101990, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
-        type: 2}
-      propertyPath: m_Size.y
-      value: 1.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 212412937493532456, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 14e1d97e6f9c4934987ba46135db3773, type: 2}
     - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
         type: 2}
-      propertyPath: _cursor
-      value: 
-      objectReference: {fileID: 525019728}
+      propertyPath: _projectileStartHeight
+      value: 2.4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9dba7b926b1d30b4da5768e90b5db8d4, type: 2}
   m_IsPrefabAsset: 0
@@ -37840,7 +37815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5156eaa63f018d642997c7e3e3b674e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _objectHeight: 4
+  _objectHeight: 4.25
   _startElevation: 16
   _spriteZOffset: 2.5
   _objectSprite: {fileID: 227466907}

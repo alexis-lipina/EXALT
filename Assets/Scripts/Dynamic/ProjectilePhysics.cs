@@ -301,13 +301,16 @@ public class ProjectilePhysics : DynamicPhysics
                 desiredVelocity = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
                 //make the force applied inversely proportional to distance
                 desiredVelocity = desiredVelocity.normalized * (1 / (desiredVelocity.magnitude * 2f) );
+                //Z tracking
+                float desiredZ = (other.GetBottomHeight() + other.GetTopHeight()) / 2.0f;
+                float currentZ = (GetBottomHeight() + GetTopHeight()) / 2.0f;
+                ZVelocity = ( desiredZ - currentZ );
             }
         }
 
 
         currentVelocity += desiredVelocity;
-        //if none are targets, do nothing
-        //else if targets exist, find nearest and nudge velocity in that direction
+        
         return currentVelocity.normalized;
     }
     //==========================================| ENTITY COLLISION

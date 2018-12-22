@@ -20,7 +20,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private CursorHandler _cursor;
     [SerializeField] private bool _isUsingCursor; //TEMPORARY
     [SerializeField] private float _projectileStartHeight;
-    [SerializeField] private GameObject _lightRangedElectricLine;
+    //[SerializeField] private GameObject _lightRangedElectricLine;
+    [SerializeField] private ZapFXController _lightRangedZap;
 
     public static string PREVIOUS_SCENE = "";
 
@@ -1059,9 +1060,16 @@ public class PlayerHandler : EntityHandler
         {
             hitEntity.Inflict(1.0f, aimDirection, 1.0f);
         }
-        _lightRangedElectricLine.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
-        _lightRangedElectricLine.GetComponent<LineRenderer>().SetPosition(1, new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y));
-        StartCoroutine(FlashZap(_lightRangedDuration * 0.5f));
+        /*
+        _lightRangedZap.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
+        _lightRangedZap.GetComponent<LineRenderer>().SetPosition(1, new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y));
+        //StartCoroutine(FlashZap(_lightRangedDuration * 0.5f));
+        _lightRangedZap.Play(_lightRangedDuration * 0.5f);
+        */
+        
+        _lightRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y));
+        _lightRangedZap.Play(_lightRangedDuration * 0.5f);
+        
         Debug.Log(entityPhysics.transform.position);
         Debug.Log(endPoint);
     }
@@ -1109,13 +1117,13 @@ public class PlayerHandler : EntityHandler
         yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
     }
-
+    /*
     IEnumerator FlashZap(float duration)
     {
         _lightRangedElectricLine.GetComponent<LineRenderer>().enabled = true;
         yield return new WaitForSeconds(duration);
         _lightRangedElectricLine.GetComponent<LineRenderer>().enabled = false;
-    }
+    }*/
 
     /// <summary>
     /// Handles aim direction, toggles between using mouse & keyboard and gamepad

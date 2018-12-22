@@ -87,6 +87,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4761900828441850}
   - component: {fileID: 120826747107930872}
+  - component: {fileID: 114911935035886236}
   m_Layer: 0
   m_Name: Zap
   m_TagString: Untagged
@@ -587,8 +588,8 @@ MonoBehaviour:
   _audioSource: {fileID: 82321395745128718}
   _cursor: {fileID: 0}
   _isUsingCursor: 1
-  _projectileStartHeight: 2.5
-  _lightRangedElectricLine: {fileID: 1623256472486872}
+  _projectileStartHeight: 2.4
+  _lightRangedZap: {fileID: 114911935035886236}
   _healthBar: {fileID: 0}
   JumpImpulse: 40
   JumpHeldGravity: -100
@@ -642,6 +643,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shadowPrefab: {fileID: 1621523367577244, guid: 2c05934ab872dfb4498797ea4e47758d,
     type: 2}
+--- !u!114 &114911935035886236
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1623256472486872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 123ed58dac0ec3c4c8c709d8da650e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _coreBolt: {fileID: 120826747107930872}
 --- !u!120 &120826747107930872
 LineRenderer:
   m_ObjectHideFlags: 1

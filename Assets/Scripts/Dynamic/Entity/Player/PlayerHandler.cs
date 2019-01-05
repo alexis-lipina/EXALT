@@ -103,7 +103,7 @@ public class PlayerHandler : EntityHandler
     private const float _lightRangedDuration = 0.25f;
 
     //Light Ranged Electrical Attack
-    private const float _lightRangedElectricMaxDistance = 20f;
+    private const float _lightRangedElectricMaxDistance = 30f;
 
 
     private Vector2 _cursorWorldPos;

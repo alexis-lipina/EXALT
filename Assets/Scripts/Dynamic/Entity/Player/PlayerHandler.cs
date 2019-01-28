@@ -22,6 +22,9 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private float _projectileStartHeight;
     //[SerializeField] private GameObject _lightRangedElectricLine;
     [SerializeField] private ZapFXController _lightRangedZap;
+    [SerializeField] private ZapFXController _chargedRangedZap;
+    [SerializeField] private Transform _zapNodePrefab;
+    [SerializeField] private PlayerProjection _chargedMeleeProjection;
 
     public static string PREVIOUS_SCENE = "";
 
@@ -31,7 +34,7 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] private UIHealthBar _healthBar;
 
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK};
     enum CombatStyle { NORMAL, VOID, FIRE, ZAP };
 
     const string IDLE_EAST_Anim = "New_IdleEast";
@@ -104,7 +107,7 @@ public class PlayerHandler : EntityHandler
 
     //Light Ranged Electrical Attack
     private const float _lightRangedElectricMaxDistance = 30f;
-
+    private const float _chargedRangedElectricMaxDistance = 50f;
 
     private Vector2 _cursorWorldPos;
 
@@ -224,6 +227,12 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.LIGHT_RANGED):
                 PlayerLightRanged();
                 break;
+            case (PlayerState.CHARGED_RANGE):
+                PlayerChargedRanged();
+                break;
+            case (PlayerState.BLINK):
+                PlayerBlink();
+                break;
         }
     }
     
@@ -235,12 +244,12 @@ public class PlayerHandler : EntityHandler
         _previousStyle = _currentStyle;
         if (controller.GetButton("ChangeStyle_Normal"))
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
             _currentStyle = CombatStyle.NORMAL;
         }
         else if (controller.GetButton("ChangeStyle_Fire"))
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
             _currentStyle = CombatStyle.FIRE;
             SwapWeapon("WEST");
         }
@@ -252,7 +261,7 @@ public class PlayerHandler : EntityHandler
         }
         else if (controller.GetButton("ChangeStyle_Electric"))
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
+            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
             _currentStyle = CombatStyle.ZAP;
         }
     }
@@ -332,9 +341,12 @@ public class PlayerHandler : EntityHandler
             StateTimer = 0f;
             CurrentState = PlayerState.LIGHT_RANGED;
         }
+        if (controller.GetButtonDown("Blink"))
+        {
+            CurrentState = PlayerState.BLINK;
+        }
 
-
-            float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
         {
             entityPhysics.ZVelocity = 0;
@@ -477,12 +489,15 @@ public class PlayerHandler : EntityHandler
             StateTimer = 0f;
             CurrentState = PlayerState.LIGHT_RANGED;
         }
-
-
+        if (controller.GetButtonDown("Blink"))
+        {
+            CurrentState = PlayerState.BLINK;
+        }
         if (CurrentState == PlayerState.RUN)
         {
             entityPhysics.SavePosition();
         }
+
     }
 
     private void PlayerJump()
@@ -576,8 +591,12 @@ public class PlayerHandler : EntityHandler
             }
         }
     }
-    
 
+    private void PlayerBlink()
+    {
+        entityPhysics.MoveWithCollision(aimDirection.x * 7f, aimDirection.y * 7f);
+        CurrentState = PlayerState.RUN;
+    }
     
     /// <summary>
     /// This is the player's basic close-range attack. Can be chained for a swipe-swipe-jab combo, and supports aiming in any direction
@@ -610,8 +629,8 @@ public class PlayerHandler : EntityHandler
                         //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.3f, 10, 0.01f);
 
-                        Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1.0f);
+                        //Debug.Log("Owch!");
+                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1f);
                     }
                     
                 }
@@ -743,7 +762,9 @@ public class PlayerHandler : EntityHandler
             }
         }
     }
-
+    /// <summary>
+    /// Combo attack
+    /// </summary>
     private void PlayerHeavyMelee()
     {
         if (StateTimer == time_heavyMelee)
@@ -755,7 +776,6 @@ public class PlayerHandler : EntityHandler
             thrustDirection = aimDirection;
 
             //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
-
 
             Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
             Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
@@ -769,8 +789,15 @@ public class PlayerHandler : EntityHandler
                         //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
 
+                        //TEST CODE HERE
+                        GameObject node = LightningChainNode.GetNode();
+                        node.GetComponent<LightningChainNode>()._sourcePosition = entityPhysics.GetComponent<Rigidbody2D>().position + entityPhysics.GetBottomHeight() * Vector2.up;
+                        node.GetComponent<Transform>().position = obj.GetComponent<Rigidbody2D>().position;
+                        node.GetComponent<LightningChainNode>()._myEnemy = obj.GetComponent<EntityPhysics>();
+                        node.GetComponent<LightningChainNode>().Run();
+                        
                         Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 3.0f);
+                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1.0f);
                     }
                 }
             }
@@ -824,7 +851,7 @@ public class PlayerHandler : EntityHandler
     private void PlayerCharge()
     {
         StateTimer -= Time.deltaTime;
-        Debug.Log(StateTimer);
+        //Debug.Log(StateTimer);
         if (StateTimer < 0)
         {
             characterAnimator.Play("New_ChargeFinal");
@@ -842,7 +869,10 @@ public class PlayerHandler : EntityHandler
             characterAnimator.Play("New_ChargeSmall");
         }
 
+        //projection
+        _chargedMeleeProjection.SetOpacity((time_Charge - StateTimer) / time_Charge);
 
+        UpdateAimDirection();
 
         Debug.Log("Charging...!!!");
 
@@ -850,16 +880,27 @@ public class PlayerHandler : EntityHandler
         //State Switching
         if ( !controller.GetButton("Charge") )
         {
+            _chargedMeleeProjection.SetOpacity(0);
             CurrentState = PlayerState.IDLE;
         }
         else if (StateTimer < 0.1 && controller.GetButtonDown("Melee"))
         {
+            _chargedMeleeProjection.SetOpacity(0);
             StateTimer = _burstDuration;
             CurrentState = PlayerState.BURST;
+
+        }
+        else if (StateTimer < 0.1 && controller.GetButtonDown("RangedAttack"))
+        {
+            StateTimer = _burstDuration;
+            _chargedMeleeProjection.SetOpacity(0);
+            CurrentState = PlayerState.CHARGED_RANGE;
         }
     }
     
-    
+    /// <summary>
+    /// Charged melee attack
+    /// </summary>
     private void PlayerBurst()
     {
         characterAnimator.Play("New_Unleash");
@@ -899,9 +940,44 @@ public class PlayerHandler : EntityHandler
         }
     }
 
+    /// <summary>
+    /// Charged Ranged Attack
+    /// </summary>
+    private void PlayerChargedRanged()
+    {
+        //TODO : Draw Player
+        characterAnimator.Play("Anim_Swing_Right_NW");
+
+        if (StateTimer == _burstDuration)
+        {
+            switch (_currentStyle)
+            {
+                case CombatStyle.FIRE:
+                    ChargedRanged_Fire();
+                    break;
+                case CombatStyle.VOID:
+                    ChargedRanged_Void();
+                    break;
+                case CombatStyle.ZAP:
+                    ChargedRanged_Electric();
+                    //Debug.Log("ZAP");
+                    break;
+                default: break;
+            }
+        }
+
+        StateTimer -= Time.deltaTime; //tick
+
+        //state switching
+        if (StateTimer <= 0)
+        {
+            CurrentState = PlayerState.IDLE;
+        }
+    }
+
     private void PlayerLightRanged()
     {
-        //Draw Player
+        //TODO : Draw Player
         characterAnimator.Play("Anim_Swing_Right_NW");
 
         if (StateTimer == 0)
@@ -1032,7 +1108,7 @@ public class PlayerHandler : EntityHandler
                     if (other.tag != "Environment" && other.tag != "Enemy") continue;
                     if (hits[i].distance < shortestDistance)
                     {
-                        Debug.Log("Hit");
+                        //Debug.Log("Hit");
                         //set to current valid collision
                         shortestDistance = hits[i].distance;
                         endPoint = hits[i].point;
@@ -1053,7 +1129,7 @@ public class PlayerHandler : EntityHandler
         //if hasnt hit anything
         if (endPoint == Vector2.zero)
         {
-            Debug.Log("Hit nothing");
+            //Debug.Log("Hit nothing");
             endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _lightRangedElectricMaxDistance;
         }
         if (hitEntity)
@@ -1067,12 +1143,82 @@ public class PlayerHandler : EntityHandler
         _lightRangedZap.Play(_lightRangedDuration * 0.5f);
         */
         
-        _lightRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y));
+        _lightRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y - _projectileStartHeight), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y - _projectileStartHeight));
         _lightRangedZap.Play(_lightRangedDuration * 0.5f);
         
-        Debug.Log(entityPhysics.transform.position);
-        Debug.Log(endPoint);
+        //Debug.Log(entityPhysics.transform.position);
+        //Debug.Log(endPoint);
     }
+
+    //TODO
+    private void ChargedRanged_Void()
+    {
+        throw new NotImplementedException();
+    }
+    //TODO
+    private void ChargedRanged_Fire()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void ChargedRanged_Electric()
+    {
+        Debug.Log("Here");
+        //raycast in direction, to max distance (Might want it to be a circlecast or boxcast, to be more generous with enemy hit detection)
+        //if hits an environment object at the height it's cast at, endpoint there
+        //else, endpoint at max distance
+        //draw linerenderer between players position + offset and endpoint
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _chargedRangedElectricMaxDistance);
+        float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
+        float shortestDistance = float.MaxValue;
+        Vector2 endPoint = Vector2.zero;
+        List<EntityPhysics> enemiesHit = new List<EntityPhysics>();
+        for (int i = 0; i < hits.Length; i++)
+        {
+            //check if is something that can be collided with
+            //check to see if projectile z is within z bounds of physicsobject
+            //check to see if distance to target is shorter than shortestDistance
+
+            if (hits[i].collider.GetComponent<PhysicsObject>()) //can object be collided with
+            {
+                PhysicsObject other = hits[i].collider.GetComponent<PhysicsObject>();
+                if (other.GetBottomHeight() < projectileElevation && other.GetTopHeight() > projectileElevation) //is projectile height within z bounds of object
+                {
+                   
+                    if (other.tag == "Environment")
+                    {
+                        if (hits[i].distance < shortestDistance)
+                        {
+                            //set to current valid collision
+                            shortestDistance = hits[i].distance;
+                            endPoint = hits[i].point;
+                        }
+                    }
+                    else if (other.tag == "Enemy" && other.GetComponent<EntityPhysics>())
+                    {
+                        enemiesHit.Add(other.GetComponent<EntityPhysics>());
+                    }
+                }
+            }
+        }
+        //if hasnt hit anything
+        if (endPoint == Vector2.zero)
+        {
+            //Debug.Log("Hit nothing");
+            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _chargedRangedElectricMaxDistance;
+        }
+        
+        foreach(EntityPhysics enemy in enemiesHit)
+        {
+            enemy.Inflict(1.0f, aimDirection, 5.0f);
+        }
+
+        _chargedRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y - _projectileStartHeight), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y - _projectileStartHeight));
+        _chargedRangedZap.Play(_lightRangedDuration * 0.5f);
+    }
+
+
 
     public override void SetXYAnalogInput(float x, float y)
     {
@@ -1108,7 +1254,7 @@ public class PlayerHandler : EntityHandler
 
     IEnumerator PlayHeavyAttack(bool flip)
     {
-        Debug.Log("POW!");
+        //Debug.Log("POW!");
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().flipX = flip;
         HeavyMeleeSprite.GetComponent<Animator>().PlayInFixedTime(0);

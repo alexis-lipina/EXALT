@@ -8,12 +8,11 @@ using UnityEngine.Profiling;
 
 public class ShadowManager : MonoBehaviour
 {
-    private const float HEIGHT_TOLERANCE = 0.5f; //in case player is on moving object
-    [SerializeField] private GameObject _shadowPrefab;
-    private DynamicPhysics _physics;
-    Dictionary<GameObject, KeyValuePair<float, float>> _terrainTouched; //current terrain below player, ref to the one in DynamicPhysics
+    protected const float HEIGHT_TOLERANCE = 0.5f; //in case player is on moving object
+    [SerializeField] protected GameObject _shadowPrefab;
+    protected DynamicPhysics _physics;
+    protected Dictionary<GameObject, KeyValuePair<float, float>> _terrainTouched; //current terrain below player, ref to the one in DynamicPhysics
     //                                  bottom, top
-    protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
 
     protected List<List<GameObject>> shadowArray;
     //      i references row, j references column
@@ -23,14 +22,14 @@ public class ShadowManager : MonoBehaviour
      * 2 [ ] [ ] [ ]
      */
 
-    Vector2 _currentPlayerPos;
-    float _currentPlayerElevation;
+    protected Vector2 _currentPlayerPos;
+    protected float _currentPlayerElevation;
 
 
 
     //UpdateSlices fields
-    List<float> horizontalLines;
-    List<float> verticalLines; //these are x values that define vertical lines passing through the sprite
+    protected List<float> horizontalLines;
+    protected List<float> verticalLines; //these are x values that define vertical lines passing through the sprite
 
 
 
@@ -81,7 +80,7 @@ public class ShadowManager : MonoBehaviour
     /// Handles effects of changes in level geometry and player position, specifically how each shadow sprite behaves : the rectangle it receives, its height, and the
     /// local data structure which references them all
     /// </summary>
-    void UpdateSlices()
+    protected void UpdateSlices()
     {
         Profiler.BeginSample("SEG_1");
         horizontalLines.Clear();
@@ -245,14 +244,17 @@ public class ShadowManager : MonoBehaviour
                     float miny = (rect.y - entityBounds.min.y) / (entityBounds.max.y - entityBounds.min.y);
                     float maxx = (rect.z - entityBounds.min.x) / (entityBounds.max.x - entityBounds.min.x);
                     float maxy = (rect.w - entityBounds.min.y) / (entityBounds.max.y - entityBounds.min.y);
-                    rect = new Vector4(minx, miny, maxx, maxy);
+                    rect = new Vector4(minx, miny, maxx, maxy); //positions between 0 and 1 to denote where inside the sprite the shadow will crop
 
                     // min x , min y , max x , max y 
                     //Send shadowArray at index i, j the rectangle to render and the height at which to render.
                     //Debug.Log("Expected Coord : " + new Vector2(i, j));
                     //Debug.Log(horizontalLines.Count - 2 - i);
 
-                    Vector3 newpos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), gameObject.transform.position.y - entityBounds.size.y/2 + (miny * entityBounds.size.y) + 0.02f);
+                    Vector3 newpos = new Vector3(gameObject.transform.position.x, 
+                        gameObject.transform.position.y + highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), 
+                        //gameObject.transform.position.y - entityBounds.size.y/2 + (miny * entityBounds.size.y) + 0.02f);
+                        gameObject.transform.position.y - entityBounds.size.y/2 + (maxy * entityBounds.size.y ) - 0.001f);
                     Debug.DrawLine(new Vector3(transform.position.x - 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)), new Vector3(transform.position.x + 1f, gameObject.transform.position.y - 0.6f - (-miny * 1.2f)));
                     //Debug.Log(shadowArray[i][j]);
                     shadowArray[i][j].GetComponent<ShadowHandler>().UpdateShadow(newpos, highestCollider.GetComponent<EnvironmentPhysics>().GetTopHeight(), rect);
@@ -260,6 +262,12 @@ public class ShadowManager : MonoBehaviour
             }
         }
         Profiler.EndSample();
+
+    }
+
+
+    protected virtual void OnShadowInstantiated()
+    {
 
     }
 }

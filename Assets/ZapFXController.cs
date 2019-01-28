@@ -4,21 +4,22 @@ using UnityEngine;
 
 public class ZapFXController : MonoBehaviour
 {
-    [SerializeField] private LineRenderer _coreBolt;
-    [SerializeField] private LineRenderer _outlineBolt;
+    //[SerializeField] private LineRenderer _coreBolt;
+    [SerializeField] private OrthoLine _outlineBolt;
+    [SerializeField] private OrthoLine _coreBolt;
     [SerializeField] private float _segmentDensity; //how many vertices per unit length of bolt
-    [SerializeField] private float _zigZagEccentricity; //scalar for point randomization
+    [SerializeField] private AnimationCurve _amplitude;
+    [SerializeField] private AnimationCurve _randomization;
+    [SerializeField] private AnimationCurve _wavelength;
+    [SerializeField] private AudioSource _soundEffect;
 
-    private float _timer;
+    private float _timer = 0f;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update ()
     {
+        /*
         if (_timer > 0)
         {
             _timer -= Time.deltaTime;
@@ -26,9 +27,11 @@ public class ZapFXController : MonoBehaviour
         else
         {
             _timer = 0f;
-            _coreBolt.enabled = false;
-            _outlineBolt.enabled = false;
+            
+            _coreBolt.GetComponent<MeshRenderer>().enabled = false;
+            _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
         }
+        */
 	}
 
     /// <summary>
@@ -38,40 +41,6 @@ public class ZapFXController : MonoBehaviour
     /// <param name="end"></param>
     public void SetupLine(Vector3 start, Vector3 end)
     {
-        float length = Vector3.Distance(start, end);
-        int numVertices = (int)(_segmentDensity * length); //would use Mathf.FloorToInt but this seems like the faster way, since casting truncates anyway
-        //Debug.Log(numVertices);
-        _coreBolt.positionCount = numVertices;
-        _outlineBolt.positionCount = numVertices;
-
-        Vector3 outlineOffset = new Vector3(0f, 0f, 0.01f);
-        Vector3 tempZeroer = new Vector3(1, 1, 0);
-        Vector3 currentPoint;
-        Vector2 randomVector;
-
-        //Old, basic, random-offset zigzag
-         // /*
-        for (int i = 0; i < numVertices; i++)
-        {
-            //get next point along line (subdivide with lerp?)
-            //randomize position somehow, pass to _coreBolt
-
-            currentPoint = Vector3.Lerp(start, end, i/((float)numVertices));
-            randomVector = Random.insideUnitCircle * _zigZagEccentricity;
-            currentPoint += new Vector3(randomVector.x, randomVector.y, 0f);
-            _coreBolt.SetPosition(i, currentPoint);
-            _outlineBolt.SetPosition(i, currentPoint + outlineOffset);
-        }
-        
-        //hardwire first and last points, rather than changing for-loop boundaries to avoid invalid ranges at short ranges
-        _coreBolt.SetPosition(0, start);
-        _coreBolt.SetPosition(numVertices-1, end);
-        _outlineBolt.SetPosition(0, start + outlineOffset);
-        _outlineBolt.SetPosition(numVertices - 1,end + outlineOffset);
-
-        // */
-
-
 
         //New right-angle algorithm
         /*  So the way this works is a bit funky:
@@ -126,74 +95,123 @@ public class ZapFXController : MonoBehaviour
          *  Will need to implement ability to toggle between horizontally and vertically oriented vertices.
          * */
 
-        
+        float length = Vector3.Distance(start, end);
+        int numVertices = (int)(_segmentDensity * length); //would use Mathf.FloorToInt but this seems like the faster way, since casting truncates anyway
+
+        float sumOfIncrements = 0f;
+        float runningTotalIncrements = 0f;
+        for (int i = 0; i < numVertices; i++)
+        {
+            sumOfIncrements += _wavelength.Evaluate(i / ((float)numVertices));
+        }
+
+        Vector3 outlineOffset = new Vector3(0f, 0f, 0.1f);
+        Vector3 tempZeroer = new Vector3(1, 1, 0);
+        Vector3 currentPoint;
+        Vector2 randomVector;
+
 
         //determine direction of first line
-        //bool isHorizontal = (start - end).x > (start - end).y;
-        int currentIndex = 0; //keeps track of index of list of vertices in linerenderer
+        bool isHorizontal = Mathf.Abs((start - end).x) > Mathf.Abs((start - end).y);
         float randomOffset = Random.Range(0.1f, 1f);
         Vector3 v1, v2;
         Vector3 previousPoint;
-
-        _coreBolt.positionCount = numVertices * 2;
-        _outlineBolt.positionCount = numVertices * 2;
+        List<Vector3> corePoints = new List<Vector3>(numVertices * 2);
+        List<Vector3> outlinePoints = new List<Vector3>(numVertices * 2);
 
         //setup start
-        _coreBolt.SetPosition(0, start);
-        _outlineBolt.SetPosition(0, start + outlineOffset);
-        _coreBolt.SetPosition(1, start + new Vector3(0, randomOffset, 0));
-        _outlineBolt.SetPosition(1, start + new Vector3(0, randomOffset, 0) + outlineOffset);
-        currentIndex = 2;
-
+        corePoints.Add(start);
+        outlinePoints.Add(start + outlineOffset);
+        if (isHorizontal)
+        {
+            corePoints.Add(start + new Vector3(0, randomOffset, 0));
+            outlinePoints.Add(start + new Vector3(0, randomOffset, 0) + outlineOffset);
+        }
+        else
+        {
+            corePoints.Add(start + new Vector3(randomOffset, 0, 0));
+            outlinePoints.Add(start + new Vector3(randomOffset, 0, 0) + outlineOffset);
+        }
+        runningTotalIncrements += _wavelength.Evaluate(0f);
         previousPoint = start;
         //for each node, from first to penultimate
         for (int i = 1; i < numVertices - 1; i++)
         {
-            currentPoint = Vector3.Lerp(start, end, i / ((float)numVertices)); // Get (P)
-            randomVector = Random.insideUnitCircle * _zigZagEccentricity;
+            runningTotalIncrements += _wavelength.Evaluate((i)/((float)numVertices));
+            //currentPoint = Vector3.Lerp(start, end, i / ((float)numVertices)); // Get (P)
+            currentPoint = Vector3.Lerp(start, end, runningTotalIncrements / sumOfIncrements);
+            randomVector = Random.insideUnitCircle * _randomization.Evaluate(i/((float)numVertices));
             currentPoint += new Vector3(randomVector.x, randomVector.y, 0f);
             v1 = currentPoint; //v1.x = P.x
-            v1.y = previousPoint.y + randomOffset;
-
-            if (randomOffset > 0)
+            if (isHorizontal)
             {
-                randomOffset = Random.Range(0.1f, 1f) * -1;
+                v1.y = previousPoint.y + randomOffset;
             }
             else
             {
-                randomOffset = Random.Range(0.1f, 1.0f);
+                v1.x = previousPoint.x + randomOffset;
+            }
+
+            if (randomOffset > 0)
+            {
+                randomOffset = Random.Range(0.1f, 1f) * -1 * _amplitude.Evaluate(i/ ((float)numVertices));
+            }
+            else
+            {
+                randomOffset = Random.Range(0.1f, 1.0f) * _amplitude.Evaluate(i / ((float)numVertices));
             }
 
 
             v2 = currentPoint;
-            v2.y += randomOffset;
+            if (isHorizontal)
+            {
+                v2.y += randomOffset;
+            }
+            else
+            {
+                v2.x += randomOffset;
+            }
 
-            _coreBolt.SetPosition(currentIndex, v1);
-            _outlineBolt.SetPosition(currentIndex, v1 + outlineOffset);
-            ++currentIndex;
-            _coreBolt.SetPosition(currentIndex, v2);
-            _outlineBolt.SetPosition(currentIndex, v2 + outlineOffset);
-            ++currentIndex;
+            corePoints.Add(v1);
+            outlinePoints.Add(v1 + outlineOffset);
+            corePoints.Add(v2);
+            outlinePoints.Add(v2 + outlineOffset);
+
 
             previousPoint = currentPoint;
         }
+        runningTotalIncrements += _wavelength.Evaluate(1);
 
         //add end nodes
-        currentPoint = end;
+        currentPoint = Vector3.Lerp(start, end, 0.95f); //prevents overpenetration, since mesh draws a bit deeper than the actual end node
         v1 = currentPoint;
-        v1.y = previousPoint.y + randomOffset;
-
+        if (isHorizontal)
+        {
+            corePoints[corePoints.Count - 1] += new Vector3(0, -corePoints[corePoints.Count - 1].y + v1.y, 0);
+            outlinePoints[corePoints.Count - 1] += new Vector3(0, -outlinePoints[corePoints.Count - 1].y + v1.y, 0);
+            v1.x = previousPoint.x;// + randomOffset;
+        }
+        else
+        {
+            corePoints[corePoints.Count - 1] += new Vector3(-corePoints[corePoints.Count - 1].x + v1.x, 0, 0);
+            outlinePoints[corePoints.Count - 1] += new Vector3(-outlinePoints[corePoints.Count - 1].x + v1.x, 0, 0);
+            v1.y = previousPoint.y;// + randomOffset;
+        }
         v2 = currentPoint;
 
-        _coreBolt.SetPosition(currentIndex, v1);
-        _outlineBolt.SetPosition(currentIndex, v1 + outlineOffset);
-        ++currentIndex;
-        _coreBolt.SetPosition(currentIndex, v2);
-        _outlineBolt.SetPosition(currentIndex, v2 + outlineOffset);
-        ++currentIndex;
+        corePoints.Add(v1);
+        outlinePoints.Add(v1 + outlineOffset);
+        corePoints.Add(v2);
+        outlinePoints.Add(v2 + outlineOffset);
+        //Debug.Log("Running total : " + runningTotalIncrements);
+        //Debug.Log("Actual Total : " + sumOfIncrements);
 
-        
 
+        //pass to vfx renderers
+        _coreBolt.SetPoints(corePoints);
+        _outlineBolt.SetPoints(outlinePoints);
+        //_coreBolt.UpdateLineMesh();
+        //_outlineBolt.UpdateLineMesh();
     }
 
     /// <summary>
@@ -202,8 +220,58 @@ public class ZapFXController : MonoBehaviour
     /// <param name="duration"></param>
     public void Play(float duration)
     {
-        _timer = duration;
-        _coreBolt.enabled = true;
-        _outlineBolt.enabled = true;
+        StopCoroutine(PlayLightningBolt(duration));
+        StartCoroutine(PlayLightningBolt(duration));
+        
+        /*
+        _coreBolt.GetComponent<MeshRenderer>().enabled = true;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
+        */
+    }
+
+    IEnumerator PlayLightningBolt(float duration)
+    {
+        //the commented out block below would be better for the bigger attack
+        /*
+        _coreBolt.GetComponent<MeshRenderer>().enabled = true;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
+        yield return new WaitForSeconds(duration * 0.25f);
+        _coreBolt.GetComponent<MeshRenderer>().enabled = false;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
+        yield return new WaitForSeconds(duration * 0.25f);
+        _coreBolt.GetComponent<MeshRenderer>().enabled = true;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
+        yield return new WaitForSeconds(duration * 0.5f);
+        _coreBolt.GetComponent<MeshRenderer>().enabled = false;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
+        */
+
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.3f, 0.1f);
+        _soundEffect.Play();
+
+        _coreBolt.GetComponent<MeshRenderer>().enabled = true;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
+
+        _coreBolt.LineThickness = _coreBolt.LineThickness * 8f;
+        _outlineBolt.LineThickness = _outlineBolt.LineThickness * 4f;
+        _coreBolt.UpdateLineMesh();
+        _outlineBolt.UpdateLineMesh();
+        yield return new WaitForSeconds(duration * 0.25f);
+
+        _coreBolt.LineThickness = _coreBolt.LineThickness * .25f;
+        _outlineBolt.LineThickness = _outlineBolt.LineThickness * .5f;
+        _coreBolt.UpdateLineMesh();
+        _outlineBolt.UpdateLineMesh();
+        yield return new WaitForSeconds(duration * 0.25f);
+
+        _coreBolt.LineThickness = _coreBolt.LineThickness * 0.5f;
+        _outlineBolt.LineThickness = _outlineBolt.LineThickness * 0.5f;
+        _coreBolt.UpdateLineMesh();
+        _outlineBolt.UpdateLineMesh();
+
+        yield return new WaitForSeconds(duration * 0.5f);
+
+        _coreBolt.GetComponent<MeshRenderer>().enabled = false;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
     }
 }

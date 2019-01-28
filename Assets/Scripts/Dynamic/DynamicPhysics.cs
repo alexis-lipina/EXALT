@@ -47,7 +47,6 @@ public class DynamicPhysics : PhysicsObject
         PlayerRigidBody = gameObject.GetComponent<Rigidbody2D>();
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
-        //Shadows = new Dictionary<int, KeyValuePair<float, GameObject>>();
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0.0f);
     }
 
@@ -127,16 +126,6 @@ public class DynamicPhysics : PhysicsObject
         //                           X: Horizontal position                    Y: Vertical position - accounts for height and depth               Z: Depth - order of object draw calls
         Vector3 coords = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + _spriteZOffset + bottomHeight, gameObject.transform.position.y + _environmentHandler.GetComponent<BoxCollider2D>().offset.y - _environmentHandler.GetComponent<BoxCollider2D>().size.y / 2); //change here
         _objectSprite.transform.position = coords;
-        //playerCharacterSprite.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, physicsobject.transform.position.y + physicsobject.GetComponent<BoxCollider2D>().offset.y + physicsobject.GetComponent<BoxCollider2D>().size.y / 2);
-        //Vector2 tempvect = new Vector2(xInput, yInput);
-
-        /*
-        //move shadows
-        foreach (KeyValuePair<int, KeyValuePair<float, GameObject>> entry in Shadows)
-        {
-            entry.Value.Value.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + entry.Value.Key, gameObject.transform.position.y + _environmentHandler.GetComponent<BoxCollider2D>().offset.y - _environmentHandler.GetComponent<BoxCollider2D>().size.y / 2 + 0.4f);
-        }
-        */
     }
 
     /// <summary>

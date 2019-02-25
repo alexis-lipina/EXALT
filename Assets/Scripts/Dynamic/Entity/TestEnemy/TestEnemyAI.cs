@@ -23,12 +23,13 @@ public class TestEnemyAI : EntityAI
     private Stack<Vector2> coordpath;
     private Stack<EnvironmentPhysics> path;
     private TestEnemyHandler testhandler;
+    private Vector2 _moveDirection;
 
     private bool pathfound;
 
     void Start()
     {
-        
+        _moveDirection = Vector2.zero;
         pathfound = false;
         //TestAwfulPathfindingSystem();
         navManager.entityChangePositionDelegate += CheckForPathUpdate;
@@ -38,9 +39,6 @@ public class TestEnemyAI : EntityAI
     // Update is called once per frame
     void Update()
     {
-        
-
-
         //----Test of god-awful pathfinding system
         if (path == null || !TargetInDetectionRange())
         {
@@ -61,15 +59,18 @@ public class TestEnemyAI : EntityAI
                 //if no overlap, movetowardpoint
                 EnvironmentPhysics dest = path.Peek();
                 //if (entityPhysics.GetComponent<BoxCollider2D>().IsTouching(dest.GetComponent<BoxCollider2D>()))
-                if (dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.min) && dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.max))
-                {
+
+                // below checks if contains both bottom-left and top-right - doesnt work for objects which are smaller than the size of the entity
+                //if (dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.min) && dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.max))
+                if (dest.GetComponent<BoxCollider2D>().OverlapPoint(entityPhysics.GetComponent<BoxCollider2D>().bounds.center))
+                { 
                         path.Pop();
                 }
                 else
                 {
                     //Debug.Log(dest);
                     MoveTowardPoint(new Vector2(dest.transform.position.x, dest.transform.position.y + dest.GetComponent<BoxCollider2D>().offset.y));
-                    if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetObjectElevation()) //Needs to jump
+                    if (path.Peek().GetTopHeight() > handler.GetEntityPhysics().GetObjectElevation() + 1) //Needs to jump
                     {
                         testhandler.gameObject.GetComponent<TestEnemyHandler>().SetJumpPressed(true);
                     }
@@ -103,7 +104,9 @@ public class TestEnemyAI : EntityAI
     private void MoveTowardPoint(Vector2 destination)
     {
         Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
-        testhandler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
+        _moveDirection = Vector2.Lerp(_moveDirection, direction.normalized, 0.2f);
+        Debug.Log("<color=blue>HERE</color>");
+        testhandler.SetXYAnalogInput(_moveDirection.x, _moveDirection.y);
     }
 
     private void MoveToAttackTarget()

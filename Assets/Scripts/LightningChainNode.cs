@@ -93,7 +93,7 @@ public class LightningChainNode : MonoBehaviour
                 //new up a boi
                 GameObject newNode = GetNode();
                 newNode.GetComponent<LightningChainNode>()._myEnemy = enemies[i];
-                newNode.transform.position = enemies[i].GetComponent<Rigidbody2D>().position;
+                newNode.transform.position = new Vector3(enemies[i].GetComponent<Rigidbody2D>().position.x, enemies[i].GetComponent<Rigidbody2D>().position.y, enemies[i].GetComponent<Rigidbody2D>().position.y);
                 newNode.GetComponent<LightningChainNode>()._sourcePosition = _myEnemy.transform.position + _myEnemy.GetBottomHeight() * Vector3.up;
                 newNode.GetComponent<LightningChainNode>().Run();
             }

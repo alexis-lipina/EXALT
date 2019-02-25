@@ -792,7 +792,7 @@ public class PlayerHandler : EntityHandler
                         //TEST CODE HERE
                         GameObject node = LightningChainNode.GetNode();
                         node.GetComponent<LightningChainNode>()._sourcePosition = entityPhysics.GetComponent<Rigidbody2D>().position + entityPhysics.GetBottomHeight() * Vector2.up;
-                        node.GetComponent<Transform>().position = obj.GetComponent<Rigidbody2D>().position;
+                        node.GetComponent<Transform>().position = new Vector3(obj.GetComponent<Rigidbody2D>().position.x, obj.GetComponent<Rigidbody2D>().position.y, obj.GetComponent<Rigidbody2D>().position.y);
                         node.GetComponent<LightningChainNode>()._myEnemy = obj.GetComponent<EntityPhysics>();
                         node.GetComponent<LightningChainNode>().Run();
                         

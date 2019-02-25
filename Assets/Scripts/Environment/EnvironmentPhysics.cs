@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 /// <summary>
 /// This class describes all static objects in the environment that may be traversed over. Class also supports AI navigation, with
@@ -92,6 +93,11 @@ public class EnvironmentPhysics : PhysicsObject
         {
 
             float opacity = gameObject.GetComponent<Transform>().position.z - playerSprite.GetComponent<Transform>().position.z + 5f;
+
+            //less than 0 if player is within x-bounds, greater than 0 otherwise
+            float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((GetComponent<BoxCollider2D>().bounds.center - playerSprite.GetComponent<Transform>().position).x) - GetComponent<BoxCollider2D>().bounds.extents.x;
+            opacity = Mathf.Max(opacity, distanceFromPlayerToLeftOrRightBound);
+
             opacity *= 0.1f;
 
             opacity = Mathf.Clamp(opacity, 0f, 1.0f);

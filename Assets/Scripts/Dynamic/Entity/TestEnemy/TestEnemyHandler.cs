@@ -48,6 +48,8 @@ public class TestEnemyHandler : EntityHandler
     }
     private TempTexDirection tempDirection;
     private const float AttackMovementSpeed = 0.2f;
+    private const float JumpImpulse = 30f;
+
     private float attackCoolDown;
     float xInput;
     float yInput;
@@ -211,7 +213,7 @@ public class TestEnemyHandler : EntityHandler
 
         if (jumpPressed)
         {
-            entityPhysics.ZVelocity = 0.7f;
+            entityPhysics.ZVelocity = JumpImpulse;
             currentState = TestEnemyState.JUMP;
         }
         

@@ -10,7 +10,7 @@ Shader "Custom/PlatformShader"
 		_LowColor("Low Color", Color) = (1.0, 1.0, 1.0, 1.0)
 
 		_PlatformElevation("Elevation", Float) = 0
-		_PlayerElevation("Player Elevation", Float) = 0
+		//_PlayerElevation("Player Elevation", Float) = 0
 		_MaxElevationOffset("Max Difference in Height between player and solid color", Float) = 30.0
 
 		_Opacity("Opacity", Float) = 1.0

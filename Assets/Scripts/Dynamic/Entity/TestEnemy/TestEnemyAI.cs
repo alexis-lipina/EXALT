@@ -105,7 +105,7 @@ public class TestEnemyAI : EntityAI
     {
         Vector2 direction = new Vector2(destination.x - entityPhysics.transform.position.x, destination.y - entityPhysics.transform.position.y);
         _moveDirection = Vector2.Lerp(_moveDirection, direction.normalized, 0.2f);
-        Debug.Log("<color=blue>HERE</color>");
+        //Debug.Log("<color=blue>HERE</color>");
         testhandler.SetXYAnalogInput(_moveDirection.x, _moveDirection.y);
     }
 

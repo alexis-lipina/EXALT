@@ -34,6 +34,9 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] private UIHealthBar _healthBar;
 
+    [SerializeField] private Shader _environmentTopShader;
+    [SerializeField] private Shader _environmentFrontShader;
+
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK};
     enum CombatStyle { NORMAL, VOID, FIRE, ZAP };
 
@@ -118,6 +121,8 @@ public class PlayerHandler : EntityHandler
     private bool isFlipped;
     private List<int> hitEnemies;
 
+    private float _lerpedPlayerHeight;
+
     private Player controller;
 
     //=====================| JUMP/FALL FIELDS
@@ -176,16 +181,20 @@ public class PlayerHandler : EntityHandler
         if (entityPhysics.GetCurrentHealth() <= 1) { OnDeath(); }
         //---------------------------| Manage State Machine |
         this.ExecuteState();
-        //updateHeight();
-        //moveCharacterPosition();
+
         //reset button presses
         PreviousState = CurrentState;
         //FollowingCamera.transform.position = new Vector3(playerCharacterSprite.transform.position.x, playerCharacterSprite.transform.position.y, -100);
         CheckStyleChange();
 
+        _lerpedPlayerHeight = Mathf.Lerp(_lerpedPlayerHeight, entityPhysics.GetObjectElevation(), 0.1f);
 
+        //_environmentFrontShader.SetGlobalFloat("_PlayerElevation", _lerpedPlayerHeight);
+
+        //_environmentTopShader.SetFloat("_PlayerElevation", _lerpedPlayerHeight);
+        Shader.SetGlobalFloat("_PlayerElevation", _lerpedPlayerHeight);
         //Change fighting style
-        
+
     }
 
     protected override void ExecuteState()

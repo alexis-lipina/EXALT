@@ -6,7 +6,7 @@ Shader "Custom/WallShader"
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
-		_PlayerElevation("Player Elevation", Float) = 0
+		//_PlayerElevation("Player Elevation", Float) = 0
 		_TopElevation("Top Elevation", Float) = 0
 		_BottomElevation("Bottom Elevation", Float) = 0
 		_MaxElevationOffset("Max Difference in Height between player and solid color", Float) = 30.0

@@ -9,8 +9,8 @@ using UnityEditor;
 /// </summary>
 public class EnvironmentPhysics : PhysicsObject
 {
-    [SerializeField] protected float environmentBottomHeight; //for initialization only
-    [SerializeField] protected float environmentTopHeight; //for initialization only
+    [SerializeField] public float environmentBottomHeight; //for initialization only
+    [SerializeField] public float environmentTopHeight; //for initialization only
     [SerializeField] protected GameObject playerSprite;
     [SerializeField] protected GameObject[] neighbors;
     [SerializeField] protected bool isTransparentOnOcclude;

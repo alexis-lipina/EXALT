@@ -15,6 +15,7 @@ using UnityEngine.Assertions;
 /// 
 /// </summary>
 [RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(EnvironmentPhysics))]
 public class ScalablePlatform : MonoBehaviour {
 
     [Header("X:width   Y:depth   Z:height")]
@@ -46,5 +47,10 @@ public class ScalablePlatform : MonoBehaviour {
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
         boxCollider.size = new Vector2(dimensions.x, dimensions.y);
         if (autoCollider) { boxCollider.offset = Vector2.down * (dimensions.z); }
+
+        //GetComponent<EnvironmentPhysics>().environmentBottomHeight = elevation;
+        //GetComponent<EnvironmentPhysics>().environmentTopHeight = dimensions.z + elevation;
+
+
     }
 }

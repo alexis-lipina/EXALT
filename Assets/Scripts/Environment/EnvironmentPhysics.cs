@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 /// <summary>
 /// This class describes all static objects in the environment that may be traversed over. Class also supports AI navigation, with
@@ -11,11 +10,14 @@ public class EnvironmentPhysics : PhysicsObject
 {
     [SerializeField] public float environmentBottomHeight; //for initialization only
     [SerializeField] public float environmentTopHeight; //for initialization only
-    [SerializeField] protected GameObject playerSprite;
     [SerializeField] protected GameObject[] neighbors;
     [SerializeField] protected bool isTransparentOnOcclude;
+    [SerializeField] protected float _opacityHeightTolerance = 1f;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
-    
+    private float _opacity = 1;
+
+    public static EntityPhysics _playerPhysics;
+    public static GameObject _playerSprite;
 
     public float TopHeight
     {
@@ -63,46 +65,23 @@ public class EnvironmentPhysics : PhysicsObject
 
     void Update()
     {
-        /*
-        if (isTransparentOnOcclude) //if object can become transparent when player behind
-        {
-            if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z) //if player is behind
-            {
-                Debug.Log("Clear!");
-                Color temp = gameObject.GetComponent<SpriteRenderer>().color;
-                temp = new Color(temp.r, temp.g, temp.b, 0.5f);
-                gameObject.GetComponent<SpriteRenderer>().color = temp;
-            }
-            else
-            {
-                Color temp = gameObject.GetComponent<SpriteRenderer>().color;
-                temp = new Color(temp.r, temp.g, temp.b, 1f);
-                gameObject.GetComponent<SpriteRenderer>().color = temp;
-            }
-            
-        }
-        else
-        {
-            Color temp = gameObject.GetComponent<SpriteRenderer>().color;
-            temp = new Color(temp.r, temp.g, temp.b, 1f);
-            gameObject.GetComponent<SpriteRenderer>().color = temp;
-        }
-        */
-        
         if (isTransparentOnOcclude)
         {
 
-            float opacity = gameObject.GetComponent<Transform>().position.z - playerSprite.GetComponent<Transform>().position.z + 5f;
+            float desiredOpacity = gameObject.GetComponent<Transform>().position.z - _playerSprite.GetComponent<Transform>().position.z + 5f;
 
             //less than 0 if player is within x-bounds, greater than 0 otherwise
-            float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((GetComponent<BoxCollider2D>().bounds.center - playerSprite.GetComponent<Transform>().position).x) - GetComponent<BoxCollider2D>().bounds.extents.x;
-            opacity = Mathf.Max(opacity, distanceFromPlayerToLeftOrRightBound);
+            float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((GetComponent<BoxCollider2D>().bounds.center - _playerSprite.GetComponent<Transform>().position).x) - GetComponent<BoxCollider2D>().bounds.extents.x;
+            desiredOpacity = Mathf.Max(desiredOpacity, distanceFromPlayerToLeftOrRightBound);
 
-            opacity *= 0.1f;
+            desiredOpacity *= 0.1f;
 
-            opacity = Mathf.Clamp(opacity, 0f, 1.0f);
-            GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", opacity);
-            GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", opacity);
+            desiredOpacity = Mathf.Clamp(desiredOpacity, 0f, 1.0f);
+            if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > TopHeight) desiredOpacity = 1f;
+            _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
+
+            GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", _opacity);
+            GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", _opacity);
 
             /*
             if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z)

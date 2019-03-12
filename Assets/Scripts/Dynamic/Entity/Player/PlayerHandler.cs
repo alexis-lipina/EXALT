@@ -156,6 +156,8 @@ public class PlayerHandler : EntityHandler
 
 	void Start ()
     {
+        EnvironmentPhysics._playerPhysics = entityPhysics;
+        EnvironmentPhysics._playerSprite = characterSprite;
         aimDirection = Vector2.right;
         //SwapWeapon("NORTH"); //Debug
         //Debug.Log(_equippedWeapon);

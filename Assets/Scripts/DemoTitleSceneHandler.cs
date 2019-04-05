@@ -22,7 +22,7 @@ public class DemoTitleSceneHandler : MonoBehaviour
     public void ContinuePressed()
     {
         Debug.Log("Press!!!");
-        SceneManager.LoadScene("MainMenu2");
+        SceneManager.LoadScene("FirstLevel");
     }
 
     IEnumerator FlashStartButton()

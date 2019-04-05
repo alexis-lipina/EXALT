@@ -107,7 +107,6 @@ public class EnvironmentPhysics : PhysicsObject
     }
 
     
-    
    
     /// <summary>
     /// Returns (bottomHeight, topHeight)

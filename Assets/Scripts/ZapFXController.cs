@@ -246,7 +246,6 @@ public class ZapFXController : MonoBehaviour
         _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
         */
 
-        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.3f, 0.1f);
         _soundEffect.Play();
 
         _coreBolt.GetComponent<MeshRenderer>().enabled = true;

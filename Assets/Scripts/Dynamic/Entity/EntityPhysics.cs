@@ -25,9 +25,12 @@ public class EntityPhysics : DynamicPhysics
 
     public NavigationManager navManager;
     [SerializeField] private EntityHandler entityHandler;
-    
-    [SerializeField] private float MaxHP;
-    private float currentHP;
+    public EntityHandler Handler { get { return entityHandler; } }
+    [SerializeField] protected float MaxHP;
+    [SerializeField] private float _pushForceMultiplier = 1.0f;
+
+
+    protected float currentHP;
     private bool hasBeenHit;
 
 
@@ -63,7 +66,7 @@ public class EntityPhysics : DynamicPhysics
         hasBeenHit = false;
     }
 
-    void Update()
+    protected virtual void Update()
     {
         MoveCharacterPosition();
         if (bottomHeight < -18)
@@ -150,8 +153,8 @@ public class EntityPhysics : DynamicPhysics
         }
 
         // /*
-
-        velocity += (Vector2)_netForces;
+        
+        velocity += (Vector2)_netForces * _pushForceMultiplier;
         if (_netForces.magnitude < _forceDamping) //zero out forces if the current net force is less than the amount it would be damped
         {
             _netForces = Vector2.zero;
@@ -288,15 +291,15 @@ public class EntityPhysics : DynamicPhysics
     /// Deal this entity damage, causing them to flash and lose health
     /// </summary>
     /// <param name="damage">Quantity of health to subtract from the entity</param>
-    public void Inflict(float damage)
+    public virtual void Inflict(float damage)
     {
         hasBeenHit = true;
         currentHP -= damage;
         
         if (currentHP <= 0)
         {
-            //GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
-            Reset();
+            GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
+            //Reset();
         }
         else
         {
@@ -309,15 +312,15 @@ public class EntityPhysics : DynamicPhysics
     /// </summary>
     /// <param name="damage"></param>
     /// <param name="direction"></param>
-    public void Inflict(float damage, Vector2 direction, float force)
+    public virtual void Inflict(float damage, Vector2 direction, float force)
     {
         GetComponent<AudioSource>().Play();
         //Debug.Log(direction);
         //Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
-        MoveWithCollision(direction.x * force, direction.y * force);
+        MoveWithCollision(direction.x * force * _pushForceMultiplier, direction.y * force * _pushForceMultiplier);
         _netForces += (Vector3)(direction * force);
         Inflict(damage);
-        Debug.Log("Ow:" + direction.x * force);
+        //Debug.Log("Ow:" + direction.x * force);
     }
 
     IEnumerator TakeDamageFlash()

@@ -172,12 +172,15 @@ public class PlayerHandler : EntityHandler
         _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
 
-        SwapWeapon("NORTH");
+        //SwapWeapon("NORTH");
+        _currentStyle = CombatStyle.ZAP;
+        characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
     }
 
 
     void Update ()
     {
+        if (Time.timeScale == 0) return;
         xInput = controller.GetAxisRaw("MoveHorizontal");
         yInput = controller.GetAxisRaw("MoveVertical");
         if (entityPhysics.GetCurrentHealth() <= 1) { OnDeath(); }
@@ -605,7 +608,26 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerBlink()
     {
+        TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
+        FollowingCamera.GetComponent<CameraScript>().Jolt(1f, aimDirection);
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
+
+        //apply effect to any entities caught within player's path
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.GetComponent<BoxCollider2D>().size, 0.0f, aimDirection, aimDirection.magnitude * 7f);
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider.tag == "Enemy")
+            {
+                ((TestEnemyHandler)hit.collider.GetComponent<EntityPhysics>().Handler).PrimeEnemy_Zap();
+            }
+        }
+
+
         entityPhysics.MoveWithCollision(aimDirection.x * 7f, aimDirection.y * 7f);
+
+        
+
+        //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         CurrentState = PlayerState.RUN;
     }
     
@@ -720,7 +742,7 @@ public class PlayerHandler : EntityHandler
             else
             {
                 _hasHitAttackAgain = true;
-                Debug.Log("Woo!");
+                //Debug.Log("Woo!");
             }
         }
 
@@ -808,7 +830,7 @@ public class PlayerHandler : EntityHandler
                         node.GetComponent<LightningChainNode>().Run();
                         
                         Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1.0f);
+                        obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f);
                     }
                 }
             }
@@ -919,7 +941,7 @@ public class PlayerHandler : EntityHandler
         {
             _hasFlashed = true;
             Vector2 cornerSouthWest = entityPhysics.transform.position;
-
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.5f, 0.1f);
             Collider2D[] hitEntities = Physics2D.OverlapAreaAll((Vector2)entityPhysics.transform.position - _burstArea/2.0f, (Vector2)entityPhysics.transform.position + _burstArea / 2.0f);
             for (int i = 0; i < hitEntities.Length; i++)
             {
@@ -1098,7 +1120,7 @@ public class PlayerHandler : EntityHandler
         //if hits an entity or environment object at the height it's cast at, endpoint there
         //else, endpoint at max distance
         //draw linerenderer between players position + offset and endpoint
-
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(.4f, .1f);
         RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance);
         float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
         float shortestDistance = float.MaxValue;
@@ -1179,7 +1201,7 @@ public class PlayerHandler : EntityHandler
         //if hits an environment object at the height it's cast at, endpoint there
         //else, endpoint at max distance
         //draw linerenderer between players position + offset and endpoint
-
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(1f, .1f);
         RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _chargedRangedElectricMaxDistance);
         float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
         float shortestDistance = float.MaxValue;

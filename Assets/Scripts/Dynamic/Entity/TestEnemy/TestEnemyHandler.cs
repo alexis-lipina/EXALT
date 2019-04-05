@@ -36,8 +36,30 @@ public class TestEnemyHandler : EntityHandler
     const string SWING_EAST_Anim = "Anim_EnemySlashEast";
     const string SWING_WEST_Anim = "Anim_EnemySlashWest";
 
-
-
+    private bool _isPrimed_Void = false;
+    public void PrimeEnemy_Void()
+    {
+        if (_isPrimed_Void) return;
+        _isPrimed_Void = true;
+        _voidPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Void", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+    }
+    private GameObject _voidPrimeVfx;
+    private bool _isPrimed_Zap = false;
+    public void PrimeEnemy_Zap()
+    {
+        if (_isPrimed_Zap) return;
+        _isPrimed_Zap = true;
+        _zapPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Zap", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+    }
+    private GameObject _zapPrimeVfx;
+    private bool _isPrimed_Fire = false;
+    public void PrimeEnemy_Fire()
+    {
+        if (_isPrimed_Fire) return;
+        _isPrimed_Fire = true;
+        _firePrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Fire", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+    }
+    private GameObject _firePrimeVfx;
 
     private enum TempTexDirection
     {
@@ -263,7 +285,8 @@ public class TestEnemyHandler : EntityHandler
         }
 
         //Debug.Log("Falling!!!");
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         entityPhysics.FreeFall();
 
 
@@ -315,7 +338,8 @@ public class TestEnemyHandler : EntityHandler
         }
 
         //Debug.Log("JUMPING!!!");
-        entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         entityPhysics.FreeFall();
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         //entityPhysics.CheckHitHeadOnCeiling();
@@ -341,6 +365,9 @@ public class TestEnemyHandler : EntityHandler
 
     private void AttackState()
     {
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+
         //========| Draw
         switch (tempDirection)
         {
@@ -424,7 +451,8 @@ public class TestEnemyHandler : EntityHandler
                 break;
         }
         //Physics
-        entityPhysics.MoveCharacterPositionPhysics(0,0);
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.5) //if 500 ms have passed
         {
@@ -457,7 +485,8 @@ public class TestEnemyHandler : EntityHandler
                 break;
         }
         //Physics
-        entityPhysics.MoveCharacterPositionPhysics(0, 0);
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
 
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.5) //if 500 ms have passed
@@ -483,40 +512,6 @@ public class TestEnemyHandler : EntityHandler
         }
     }
 
-    /*
-    private void DrawSprite()
-    {
-        switch (currentState)
-        {
-            case (TestEnemyState.IDLE):
-                characterSprite.sprite = tempIdleSprite[(int)tempDirection];
-                break;
-            case (TestEnemyState.RUN):
-                characterSprite.sprite = tempRunSprite[(int)tempDirection];
-                RunState();
-                break;
-            case (TestEnemyState.FALL):
-                characterSprite.sprite = tempIdleSprite[(int)tempDirection];
-                FallState();
-                break;
-            case (TestEnemyState.JUMP):
-                JumpState();
-                break;
-            case TestEnemyState.ATTACK:
-                AttackState();
-                break;
-            case TestEnemyState.WOUNDED:
-                WoundedState();
-                break;
-        }
-    }
-    */
-
-
-
-
-
-
     public void SetAttackPressed(bool value)
     {
         attackPressed = value;
@@ -534,7 +529,7 @@ public class TestEnemyHandler : EntityHandler
 
     protected override void OnDeath()
     {
-        throw new NotImplementedException();
+        Destroy(gameObject.transform.parent.gameObject);
     }
 
 }

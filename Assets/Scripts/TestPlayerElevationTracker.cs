@@ -7,6 +7,7 @@ public class TestPlayerElevationTracker : MonoBehaviour
     [SerializeField] private EntityPhysics _playerPhysics;
     [SerializeField] private EnvironmentPhysics _environmentPhysics;
     [SerializeField] private bool _trueIfPlatformFalseIfWall;
+    [SerializeField] private bool _canChangeElevation = false;
     private float _lerpedPlayerHeight;
 
 	// Use this for initialization
@@ -32,6 +33,35 @@ public class TestPlayerElevationTracker : MonoBehaviour
             //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
         }
     }
+
+    public void UpdateShader()
+    {
+        if (_trueIfPlatformFalseIfWall)
+        {
+            //platform
+
+            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
+
+            //changes field for all instances
+            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
+        }
+        else
+        {
+            //wall
+            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
+            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
+
+            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
+            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
+        }
+    }
+
+    private void Update()
+    {
+        if (_canChangeElevation) UpdateShader();
+    }
+
+
     /*
     // Update is called once per frame
     void Update ()

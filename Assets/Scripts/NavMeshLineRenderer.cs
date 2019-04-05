@@ -4,9 +4,9 @@
 
 using UnityEditor;
 using UnityEngine;
-
+#if UNITY_EDITOR
 [CustomEditor(typeof(EnvironmentPhysics))]
-class NavMeshLineRenderer : Editor
+class NavMeshLineRenderer  : Editor
 {
     void OnSceneGUI()
     {
@@ -40,3 +40,4 @@ class NavMeshLineRenderer : Editor
         }
     }
 }
+#endif

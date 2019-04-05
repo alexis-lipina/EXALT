@@ -64,7 +64,9 @@ public class PauseMenu : MonoBehaviour
 
     public void OptionsPressed()
     {
+        Time.timeScale = 1;
         //do something
+        SceneManager.LoadScene("FirstLevel");
     }
 
     public void QuitPressed()
@@ -75,13 +77,15 @@ public class PauseMenu : MonoBehaviour
 
     public void ScreenshotPressed()
     {
-        //take screenshot
+        //take screenshot, but for now its combat demo
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Demo_Arena");
     }
 
     public void MainMenuPressed()
     {
         Time.timeScale = 1;
-        SceneManager.LoadScene("FirstLevel");
+        SceneManager.LoadScene("SwitchBlocks");
         //go to main menu
     }
 }

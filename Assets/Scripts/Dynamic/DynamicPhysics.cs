@@ -143,7 +143,10 @@ public class DynamicPhysics : PhysicsObject
     protected bool EntityWillCollide(float terrainBottom, float terrainTop, float playerBottom, float playerTop)
     {
         if (playerTop > terrainBottom && playerBottom + 0.6f < terrainTop)// +0.6 is a tolerance so entity moves up anyway
+        {
+            //Debug.Log("Collision");
             return true;
+        }
         return false;
     }
 
@@ -187,7 +190,8 @@ public class DynamicPhysics : PhysicsObject
         {
             if (hit.transform.gameObject.tag == "Environment")
             {
-                if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > bottomHeight) // if the height of the terrain object is greater than the altitude of the player
+                //if (hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight() > bottomHeight) // if the height of the terrain object is greater than the altitude of the player
+                if (EntityWillCollide(hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetBottomHeight(), hit.transform.gameObject.GetComponent<EnvironmentPhysics>().GetTopHeight(), GetBottomHeight(), GetTopHeight()))
                 {
                     //Debug.Log("Player is about to move illegally!");
                     badCollisions.Add(hit);
@@ -267,7 +271,7 @@ public class DynamicPhysics : PhysicsObject
 
             if ((NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0) && (EastCollision && velocityX > 0 || WestCollision && velocityX < 0)) //Wedged into a corner, disallow motion
             {
-                Debug.Log("Stuck in a corner!");
+                //Debug.Log("Stuck in a corner!");
                 return;
             }
             else if (NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0)
@@ -371,7 +375,7 @@ public class DynamicPhysics : PhysicsObject
             //PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
         }
 
-
+        //Debug.Log(new Vector2(velocityX, velocityY).magnitude);
         PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
 
     }

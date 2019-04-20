@@ -44,6 +44,11 @@ public class EnvironmentFrontShadowManager : MonoBehaviour
         //loop through objects touching - are any overlapping front?
         foreach (KeyValuePair<int, BoxCollider2D> entry in shadowsReceived)
         {
+            if (entry.Value == null)
+            {
+                instanceIDs.Add(entry.Key);
+                continue;
+            }
             if (entry.Value.bounds.min.y < frontY && entry.Value.bounds.max.y > frontY) //do the bounds overlap the front?
             {
                 if (entry.Value.GetComponent<DynamicPhysics>().GetBottomHeight() + 0.05f > _environment.GetTopHeight()) //is the entity above the top of the object?

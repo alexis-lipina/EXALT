@@ -287,6 +287,8 @@ public class EntityPhysics : DynamicPhysics
     }
 
 
+    //TODO : Just make these all one method with optional parameters, please, you idiot, you absolute moron
+
     /// <summary>
     /// Deal this entity damage, causing them to flash and lose health
     /// </summary>
@@ -295,7 +297,6 @@ public class EntityPhysics : DynamicPhysics
     {
         hasBeenHit = true;
         currentHP -= damage;
-        
         if (currentHP <= 0)
         {
             GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
@@ -304,7 +305,17 @@ public class EntityPhysics : DynamicPhysics
         else
         {
             StartCoroutine(TakeDamageFlash());
+            ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.03f);
         }
+    }
+
+    public virtual void Inflict(float damage, ElementType type)
+    {
+        if (entityHandler is TestEnemyHandler)
+        {
+            ((TestEnemyHandler)entityHandler).PerformDetonations(type);
+        }
+        Inflict(damage);
     }
 
     /// <summary>
@@ -322,6 +333,17 @@ public class EntityPhysics : DynamicPhysics
         Inflict(damage);
         //Debug.Log("Ow:" + direction.x * force);
     }
+
+    public virtual void Inflict(float damage, Vector2 direction, float force, ElementType type)
+    {
+        if (entityHandler is TestEnemyHandler)
+        {
+            ((TestEnemyHandler)entityHandler).PerformDetonations(type);
+        }
+        Inflict(damage, direction, force);
+    }
+    
+
 
     IEnumerator TakeDamageFlash()
     {

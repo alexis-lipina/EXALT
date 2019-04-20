@@ -5,6 +5,12 @@ using System;
 using UnityEngine.SceneManagement;
 using Rewired;
 
+public enum ElementType
+{
+    ZAP, FIRE, VOID, NONE
+}
+
+
 /// <summary>
 /// This class controls player state and contains methods for each state. It also receives input from the InputHandler and acts in accordance with said input.
 /// In addition, it handles sprites, shadows, and player height
@@ -33,12 +39,8 @@ public class PlayerHandler : EntityHandler
 
 
     [SerializeField] private UIHealthBar _healthBar;
-
-    [SerializeField] private Shader _environmentTopShader;
-    [SerializeField] private Shader _environmentFrontShader;
-
+    
     enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK};
-    enum CombatStyle { NORMAL, VOID, FIRE, ZAP };
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -67,8 +69,8 @@ public class PlayerHandler : EntityHandler
     private PlayerState CurrentState;
     private PlayerState PreviousState;
 
-    private CombatStyle _currentStyle;
-    private CombatStyle _previousStyle;
+    private ElementType _currentStyle;
+    private ElementType _previousStyle;
 
     private FaceDirection currentFaceDirection;
 
@@ -125,6 +127,15 @@ public class PlayerHandler : EntityHandler
 
     private Player controller;
 
+    //=====================| BLINK
+    private const float BLINK_TIME_PUNISH = 0.4f;
+    private const float BLINK_TIME_PRO = 0.2f;
+    private float _blinkTimer = 0f; //time since last blink
+    private bool _blink_hasButtonMashed = false;
+    private bool _hasAlreadyBlinkedInMidAir = false;
+
+
+
     //=====================| JUMP/FALL FIELDS
     [SerializeField] private float JumpImpulse = 30f;
     [SerializeField] private float JumpHeldGravity;
@@ -141,7 +152,8 @@ public class PlayerHandler : EntityHandler
 
     void Awake()
     {
-        
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
         if (PREVIOUS_SCENE == "")
         {
             PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
@@ -173,14 +185,20 @@ public class PlayerHandler : EntityHandler
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
 
         //SwapWeapon("NORTH");
-        _currentStyle = CombatStyle.ZAP;
-        characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
+        _currentStyle = ElementType.ZAP;
+        //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
+        Shader.SetGlobalColor("_MagicColor",  new Color(0.3f, 1f, 0.7f, 1f));
+
     }
 
 
     void Update ()
     {
         if (Time.timeScale == 0) return;
+
+        //increment timers
+        _blinkTimer += Time.deltaTime;
+        
         xInput = controller.GetAxisRaw("MoveHorizontal");
         yInput = controller.GetAxisRaw("MoveVertical");
         if (entityPhysics.GetCurrentHealth() <= 1) { OnDeath(); }
@@ -195,10 +213,12 @@ public class PlayerHandler : EntityHandler
         _lerpedPlayerHeight = Mathf.Lerp(_lerpedPlayerHeight, entityPhysics.GetObjectElevation(), 0.1f);
 
         //_environmentFrontShader.SetGlobalFloat("_PlayerElevation", _lerpedPlayerHeight);
-
         //_environmentTopShader.SetFloat("_PlayerElevation", _lerpedPlayerHeight);
         Shader.SetGlobalFloat("_PlayerElevation", _lerpedPlayerHeight);
         //Change fighting style
+
+        UpdateAimDirection();
+
 
     }
 
@@ -256,27 +276,35 @@ public class PlayerHandler : EntityHandler
     private void CheckStyleChange()
     {
         _previousStyle = _currentStyle;
-        if (controller.GetButton("ChangeStyle_Normal"))
+        if (controller.GetButton("ChangeStyle_Normal") && _currentStyle != ElementType.NONE)
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
-            _currentStyle = CombatStyle.NORMAL;
+            Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
+            //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+            _currentStyle = ElementType.NONE;
         }
-        else if (controller.GetButton("ChangeStyle_Fire"))
+        else if (controller.GetButton("ChangeStyle_Fire") && _currentStyle != ElementType.FIRE)
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
-            _currentStyle = CombatStyle.FIRE;
+            Shader.SetGlobalColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 1f, 0f));
+            //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
+            _currentStyle = ElementType.FIRE;
             SwapWeapon("WEST");
         }
-        else if (controller.GetButton("ChangeStyle_Void"))
+        else if (controller.GetButton("ChangeStyle_Void") && _currentStyle != ElementType.VOID)
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
-            _currentStyle = CombatStyle.VOID;
+            Shader.SetGlobalColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.3f, 0.1f, 1f));
+            //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
+            _currentStyle = ElementType.VOID;
             SwapWeapon("NORTH");
         }
-        else if (controller.GetButton("ChangeStyle_Electric"))
+        else if (controller.GetButton("ChangeStyle_Electric") && _currentStyle != ElementType.ZAP)
         {
-            characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
-            _currentStyle = CombatStyle.ZAP;
+            Shader.SetGlobalColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.3f, 1f, 0.7f));
+            //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
+            _currentStyle = ElementType.ZAP;
         }
     }
     
@@ -357,7 +385,7 @@ public class PlayerHandler : EntityHandler
         }
         if (controller.GetButtonDown("Blink"))
         {
-            CurrentState = PlayerState.BLINK;
+            PlayerBlinkTransitionAttempt();
         }
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
@@ -375,6 +403,7 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerRun()
     {
+
         //Face Direction Determination
         Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
         if (direction.sqrMagnitude > 1) direction.Normalize(); //prevents going too fast on KB
@@ -505,7 +534,7 @@ public class PlayerHandler : EntityHandler
         }
         if (controller.GetButtonDown("Blink"))
         {
-            CurrentState = PlayerState.BLINK;
+            PlayerBlinkTransitionAttempt();
         }
         if (CurrentState == PlayerState.RUN)
         {
@@ -588,10 +617,15 @@ public class PlayerHandler : EntityHandler
         //EntityPhysics.CheckHitHeadOnCeiling();
         //if (entityPhysics.TestFeetCollision())
 
+        if (controller.GetButtonDown("Blink") && !_hasAlreadyBlinkedInMidAir)
+        {
+            PlayerBlinkTransitionAttempt();
+        }
 
         if (entityPhysics.GetObjectElevation() <= maxheight)
         {
             entityPhysics.SetObjectElevation(maxheight);
+            _hasAlreadyBlinkedInMidAir = false;
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
                 entityPhysics.SavePosition();
@@ -618,17 +652,21 @@ public class PlayerHandler : EntityHandler
         {
             if (hit.collider.tag == "Enemy")
             {
-                ((TestEnemyHandler)hit.collider.GetComponent<EntityPhysics>().Handler).PrimeEnemy_Zap();
+                ((TestEnemyHandler)hit.collider.GetComponent<EntityPhysics>().Handler).PrimeEnemy(_currentStyle);
             }
         }
 
 
         entityPhysics.MoveWithCollision(aimDirection.x * 7f, aimDirection.y * 7f);
 
+        //setup timer
+        _blinkTimer = 0f;
+        _blink_hasButtonMashed = false;
+
         
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
-        CurrentState = PlayerState.RUN;
+        CurrentState = PlayerState.JUMP;
     }
     
     /// <summary>
@@ -750,7 +788,14 @@ public class PlayerHandler : EntityHandler
 
         StateTimer -= Time.deltaTime;
 
-        if (StateTimer < 0)
+        //allow "animation-cancel" teleport after a certain time
+        if (StateTimer < 0.1 && controller.GetButtonDown("Blink"))
+        {
+            PlayerBlinkTransitionAttempt();
+        }
+
+
+        if (StateTimer < 0) //regular transitions at end of animation
         {
             LightMeleeSprite.GetComponent<SpriteRenderer>().flipX = false;
 
@@ -830,7 +875,7 @@ public class PlayerHandler : EntityHandler
                         node.GetComponent<LightningChainNode>().Run();
                         
                         Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f);
+                        obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f, ElementType.ZAP); //this is not a goddamn fire attack, but whatever
                     }
                 }
             }
@@ -869,6 +914,12 @@ public class PlayerHandler : EntityHandler
         //entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
         StateTimer -= Time.deltaTime;
+
+        //allow "animation-cancel" teleport after a certain time
+        if (StateTimer < 0.1 && controller.GetButtonDown("Blink"))
+        {
+            PlayerBlinkTransitionAttempt();
+        }
 
         if (StateTimer < 0)
         {
@@ -954,7 +1005,7 @@ public class PlayerHandler : EntityHandler
                     //Debug.Log("Owch!");
                     Vector2 displacementOfEnemy = hitEntities[i].transform.position - entityPhysics.transform.position;
                     displacementOfEnemy = (displacementOfEnemy.normalized * 10.0f) / (displacementOfEnemy.magnitude + 1);
-                    hitEntities[i].GetComponent<EntityPhysics>().Inflict(1f, displacementOfEnemy, displacementOfEnemy.magnitude);
+                    hitEntities[i].GetComponent<EntityPhysics>().Inflict(1f, displacementOfEnemy, displacementOfEnemy.magnitude, _currentStyle);
                 }
             }
         }
@@ -985,13 +1036,13 @@ public class PlayerHandler : EntityHandler
         {
             switch (_currentStyle)
             {
-                case CombatStyle.FIRE:
+                case ElementType.FIRE:
                     ChargedRanged_Fire();
                     break;
-                case CombatStyle.VOID:
+                case ElementType.VOID:
                     ChargedRanged_Void();
                     break;
-                case CombatStyle.ZAP:
+                case ElementType.ZAP:
                     ChargedRanged_Electric();
                     //Debug.Log("ZAP");
                     break;
@@ -1017,13 +1068,13 @@ public class PlayerHandler : EntityHandler
         {
             switch (_currentStyle)
             {
-                case CombatStyle.FIRE:
+                case ElementType.FIRE:
                     LightRanged_Fire();
                     break;
-                case CombatStyle.VOID:
+                case ElementType.VOID:
                     LightRanged_Void();
                     break;
-                case CombatStyle.ZAP:
+                case ElementType.ZAP:
                     LightRanged_Electric();
                     //Debug.Log("ZAP");
                     break;
@@ -1048,6 +1099,33 @@ public class PlayerHandler : EntityHandler
             CurrentState = PlayerState.IDLE;
         }
     }
+
+    //================================================================================| TRANSITIONS
+    private void PlayerBlinkTransitionAttempt()
+    {
+        if (_blink_hasButtonMashed) //use punishment timer
+        {
+            if (_blinkTimer > BLINK_TIME_PUNISH)
+            {
+                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
+                CurrentState = PlayerState.BLINK;
+            }
+        }
+        else
+        {
+            if (_blinkTimer > BLINK_TIME_PRO)
+            {
+                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
+                CurrentState = PlayerState.BLINK;
+            }
+            else
+            {
+                _blink_hasButtonMashed = true; //fool, you clicked too fast
+            }
+        }
+    }
+
+
 
     //================================================================================| FIRE BULLETS
 
@@ -1167,7 +1245,7 @@ public class PlayerHandler : EntityHandler
         }
         if (hitEntity)
         {
-            hitEntity.Inflict(1.0f, aimDirection, 1.0f);
+            hitEntity.Inflict(1.0f, aimDirection, 1.0f, ElementType.ZAP);
         }
         /*
         _lightRangedZap.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
@@ -1244,19 +1322,11 @@ public class PlayerHandler : EntityHandler
         
         foreach(EntityPhysics enemy in enemiesHit)
         {
-            enemy.Inflict(1.0f, aimDirection, 5.0f);
+            enemy.Inflict(1.0f, aimDirection, 5.0f, ElementType.ZAP);
         }
 
         _chargedRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y - _projectileStartHeight), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y - _projectileStartHeight));
         _chargedRangedZap.Play(_lightRangedDuration * 0.5f);
-    }
-
-
-
-    public override void SetXYAnalogInput(float x, float y)
-    {
-        //xInput = x;
-        //yInput = y;
     }
 
     public override void JustGotHit()
@@ -1336,6 +1406,11 @@ public class PlayerHandler : EntityHandler
     {
         _isUsingCursor = true;
         _cursorWorldPos = mpos;
+    }
+
+    public override void SetXYAnalogInput(float x, float y)
+    {
+        throw new NotImplementedException();
     }
 
 

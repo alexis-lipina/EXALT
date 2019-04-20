@@ -32,8 +32,6 @@ public class PlayerProjection : ShadowManager
     // Update is called once per frame
     void Update()
     {
-        
-
         //if player has moved, update shadows
         if (_currentPlayerPos != (Vector2)transform.position || _currentPlayerElevation != _physics.GetBottomHeight() + HEIGHT_TOLERANCE)
         {
@@ -50,6 +48,10 @@ public class PlayerProjection : ShadowManager
 
     public void SetOpacity(float value)
     {
+        if (shadowArray == null)
+        {
+            Start();
+        }
         for (int i = 0; i < shadowArray.Count; i++)
         {
             for (int j = 0; j < shadowArray[i].Count; j++)

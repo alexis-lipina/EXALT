@@ -8,7 +8,10 @@ public class ScreenFlash : MonoBehaviour
     public static ScreenFlash InstanceOfScreenFlash;
 
 
-    private Coroutine _coroutine = null;
+    private Coroutine _flashCoroutine = null;
+    private Coroutine _hitPauseCoroutine = null;
+    private float _hitPauseTimer;
+
 
     private void Awake()
     {
@@ -29,18 +32,50 @@ public class ScreenFlash : MonoBehaviour
     /// <param name="decayRate">Amount to deprecate opacity by every 10 milliseconds.</param>
     public void PlayFlash(float opacity, float decayRate)
     {
-        if (_coroutine != null)
-        {
-            StopCoroutine(_coroutine);
-        }
-        _coroutine = StartCoroutine(Flash(opacity, decayRate));
+        PlayFlash(opacity, decayRate, Color.white);
     }
 
-    IEnumerator Flash(float opacity, float decayRate)
+    public void PlayFlash(float opacity, float decayRate, Color color)
+    {
+        if (_flashCoroutine != null)
+        {
+            StopCoroutine(_flashCoroutine);
+        }
+        _flashCoroutine = StartCoroutine(Flash(opacity, decayRate, color));
+    }
+
+    public void PlayHitPause(float duration)
+    {
+        if (_hitPauseCoroutine != null)
+        {
+            if (_hitPauseTimer < duration)
+            {
+                _hitPauseTimer = duration;
+            }
+            return;
+        }
+        _hitPauseTimer = duration;
+        _hitPauseCoroutine = StartCoroutine(HitPause());
+    }
+
+    IEnumerator HitPause()
+    {
+        Time.timeScale = 0f;
+        while (_hitPauseTimer > 0)
+        {
+            yield return new WaitForSecondsRealtime(0.01f);
+            _hitPauseTimer -= 0.01f;
+        }
+        Time.timeScale = 1f;
+        _hitPauseCoroutine = null;
+    }
+
+    IEnumerator Flash(float opacity, float decayRate, Color color)
     {
         while (opacity > 0)
         {
-            GetComponent<Image>().color = new Color(1, 1, 1, opacity);
+            color.a = opacity;
+            GetComponent<Image>().color = color;
             opacity -= decayRate;
             yield return new WaitForSeconds(0.01f);
         }

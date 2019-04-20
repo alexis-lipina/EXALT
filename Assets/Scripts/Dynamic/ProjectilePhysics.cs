@@ -12,7 +12,7 @@ using UnityEngine;
 /// </summary>
 public class ProjectilePhysics : DynamicPhysics
 {
-
+    
     [SerializeField] private BulletHandler bulletHandler;
     [Space(10)]
     [Header("Projectile Behaviours")]
@@ -23,6 +23,8 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool explodesOnDeath;
     [SerializeField] private bool doesTracking;
     [SerializeField] private Collider2D trackingArea;
+    [SerializeField] private ElementType _damageType = ElementType.NONE;
+
 
     public bool CanBounce
     {
@@ -121,7 +123,7 @@ public class ProjectilePhysics : DynamicPhysics
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f, _damageType);
                 if (!canPenetrate)
                 {
                     Reset();
@@ -152,7 +154,7 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (!_targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] && other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight) //if has not been hit and is overlapping
             {
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(1f, Velocity, 0.5f, _damageType);
                 _targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] = true;
                 if (!canPenetrate)
                 {

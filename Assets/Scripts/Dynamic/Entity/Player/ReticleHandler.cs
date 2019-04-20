@@ -11,7 +11,7 @@ using Rewired;
 /// </summary>
 public class ReticleHandler : MonoBehaviour
 {
-    private const float HEIGHT_TOLERANCE = 0.25f;
+    private const float HEIGHT_TOLERANCE = 0.6f;
     //[SerializeField] private InputHandler _inputHandler;
     //[SerializeField] private GameObject _reticleSprite;
     [SerializeField] private EntityPhysics _playerPhysics;

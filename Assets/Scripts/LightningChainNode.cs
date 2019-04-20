@@ -32,7 +32,7 @@ public class LightningChainNode : MonoBehaviour
         if (_pooledNodes == null) _pooledNodes = new List<GameObject>();
 
         //deal damage to enemy
-        _myEnemy.Inflict(1f);
+        _myEnemy.Inflict(1f, ElementType.ZAP);
 
         //start to run VFX Plume and Projection
         StartCoroutine(PlayVFX());

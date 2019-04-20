@@ -6,6 +6,7 @@ public class TeleportVFX : MonoBehaviour
 {
     private static List<GameObject> _objectPool;
 
+
     public static void InitializePool()
     {
         _objectPool = new List<GameObject>();
@@ -17,6 +18,7 @@ public class TeleportVFX : MonoBehaviour
             o.SetActive(false);
         }
     }
+
 
     public static void DeployEffectFromPool(Vector3 position)
     {
@@ -51,9 +53,7 @@ public class TeleportVFX : MonoBehaviour
     {
         for (float f = 1f; f >= 0; f -= 0.1f)
         {
-            Color c = GetComponent<SpriteRenderer>().material.color;
-            c.a = f;
-            GetComponent<SpriteRenderer>().material.color = c;
+            GetComponent<SpriteRenderer>().material.SetFloat("_Transparency", f);
             yield return null;
         }
         gameObject.SetActive(false);

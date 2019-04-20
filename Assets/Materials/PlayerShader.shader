@@ -6,7 +6,7 @@
 		_MaskOn("Mask On (0 = no, else = yes)", Float) = 0
 		_MaskColor("Mask Color", Color) = (1, 1, 1, 1)
 
-		_MagicColor("Magic Color", Color) = (1, 0, 0, 1)
+		//_MagicColor("Magic Color", Color) = (1, 0, 0, 1)
 		_SourceColor("Source Color", Color) = (1, 1, 1, 1)
 	}
 

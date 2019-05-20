@@ -316,7 +316,10 @@ public class PlayerHandler : EntityHandler
     }
 
     //================================================================================| STATE METHODS 
-    #region State Methods
+
+    //----------------------------------------------| Movement
+    #region Movement State Methods
+
     private void PlayerIdle()
     {
         //Draw
@@ -668,7 +671,11 @@ public class PlayerHandler : EntityHandler
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         CurrentState = PlayerState.JUMP;
     }
-    
+
+    #endregion
+
+    //---------------------------------------------| Melee
+    #region Melee Attack State Methods
     /// <summary>
     /// This is the player's basic close-range attack. Can be chained for a swipe-swipe-jab combo, and supports aiming in any direction
     /// </summary>
@@ -703,7 +710,7 @@ public class PlayerHandler : EntityHandler
                         //Debug.Log("Owch!");
                         obj.GetComponent<EntityPhysics>().Inflict(0.1f, aimDirection.normalized, 1f);
                     }
-                    
+
                 }
             }
             //------------------------| MOVE
@@ -801,7 +808,7 @@ public class PlayerHandler : EntityHandler
 
             if (_hasHitAttackAgain && _readyForThirdHit && !_hitComboBeforeReady)
             {
-               
+
                 CurrentState = PlayerState.HEAVY_MELEE;
                 StateTimer = time_heavyMelee;
                 hitEnemies.Clear();
@@ -851,33 +858,19 @@ public class PlayerHandler : EntityHandler
 
             StartCoroutine(PlayHeavyAttack(false));
 
-            thrustDirection = aimDirection;
-
             //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
 
-            Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
-            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
-            Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
-            foreach (Collider2D obj in hitobjects)
+            switch (_currentStyle)
             {
-                if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
-                {
-                    if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
-                    {
-                        //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
-                        FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
-
-                        //TEST CODE HERE
-                        GameObject node = LightningChainNode.GetNode();
-                        node.GetComponent<LightningChainNode>()._sourcePosition = entityPhysics.GetComponent<Rigidbody2D>().position + entityPhysics.GetBottomHeight() * Vector2.up;
-                        node.GetComponent<Transform>().position = new Vector3(obj.GetComponent<Rigidbody2D>().position.x, obj.GetComponent<Rigidbody2D>().position.y, obj.GetComponent<Rigidbody2D>().position.y);
-                        node.GetComponent<LightningChainNode>()._myEnemy = obj.GetComponent<EntityPhysics>();
-                        node.GetComponent<LightningChainNode>().Run();
-                        
-                        Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f, ElementType.ZAP); //this is not a goddamn fire attack, but whatever
-                    }
-                }
+                case ElementType.FIRE:
+                    PlayerHeavyMelee_Fire();
+                    break;
+                case ElementType.VOID:
+                    PlayerHeavyMelee_Void();
+                    break;
+                case ElementType.ZAP:
+                    PlayerHeavyMelee_Electric();
+                    break;
             }
 
             //Draw Player
@@ -929,9 +922,78 @@ public class PlayerHandler : EntityHandler
             _readyForThirdHit = false;
         }
     }
-    
-    #endregion
-    
+
+    private void PlayerHeavyMelee_Electric()
+    {
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        foreach (Collider2D obj in hitobjects)
+        {
+            if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
+            {
+                if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+
+                    //TEST CODE HERE
+                    GameObject node = LightningChainNode.GetNode();
+                    node.GetComponent<LightningChainNode>()._sourcePosition = entityPhysics.GetComponent<Rigidbody2D>().position + entityPhysics.GetBottomHeight() * Vector2.up;
+                    node.GetComponent<Transform>().position = new Vector3(obj.GetComponent<Rigidbody2D>().position.x, obj.GetComponent<Rigidbody2D>().position.y, obj.GetComponent<Rigidbody2D>().position.y);
+                    node.GetComponent<LightningChainNode>()._myEnemy = obj.GetComponent<EntityPhysics>();
+                    node.GetComponent<LightningChainNode>().Run();
+
+                    Debug.Log("Owch!");
+                    obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f, ElementType.ZAP); 
+                }
+            }
+        }
+    }
+
+    private void PlayerHeavyMelee_Fire()
+    {
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        foreach (Collider2D obj in hitobjects)
+        {
+            if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
+            {
+                if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+
+                    Debug.Log("Owch!");
+                    obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f, ElementType.FIRE);
+                }
+            }
+        }
+    }
+
+    private void PlayerHeavyMelee_Void()
+    {
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        foreach (Collider2D obj in hitobjects)
+        {
+            if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
+            {
+                if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+
+                    Debug.Log("Owch!");
+                    obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 5.0f, ElementType.VOID);
+                }
+            }
+        }
+    }
+
+
     private void PlayerCharge()
     {
         StateTimer -= Time.deltaTime;
@@ -1023,6 +1085,10 @@ public class PlayerHandler : EntityHandler
             _hasFlashed = false;
         }
     }
+    #endregion
+
+    //---------------------------------------------| Ranged
+    #region Ranged Attack State Methods
 
     /// <summary>
     /// Charged Ranged Attack
@@ -1100,67 +1166,6 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    //================================================================================| TRANSITIONS
-    private void PlayerBlinkTransitionAttempt()
-    {
-        if (_blink_hasButtonMashed) //use punishment timer
-        {
-            if (_blinkTimer > BLINK_TIME_PUNISH)
-            {
-                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
-                CurrentState = PlayerState.BLINK;
-            }
-        }
-        else
-        {
-            if (_blinkTimer > BLINK_TIME_PRO)
-            {
-                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
-                CurrentState = PlayerState.BLINK;
-            }
-            else
-            {
-                _blink_hasButtonMashed = true; //fool, you clicked too fast
-            }
-        }
-    }
-
-
-
-    //================================================================================| FIRE BULLETS
-
-    /// <summary>
-    /// Fires a bullet
-    /// </summary>
-    private void FireBullet()
-    {
-        Vector2 _tempRightAnalogDirection = aimDirection;
-        /*
-        Vector2 _tempRightAnalogDirection = Vector2.zero;
-        if (_inputHandler.RightAnalog.magnitude <= 0.2)
-        {
-            //_tempRightAnalogDirection = _tempRightAnalogDirection.normalized;
-            if (_inputHandler.LeftAnalog.magnitude >= 0.2)
-            {
-                _tempRightAnalogDirection = _inputHandler.LeftAnalog;
-            }
-            else
-            {
-                _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
-            }
-        }
-        else
-        {
-            _tempRightAnalogDirection = _inputHandler.RightAnalog;
-        }
-        */
-
-        GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
-        //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
-        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
-        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
-    }
-    
 
     /// <summary>
     /// Swaps weapon with one from your inventory given a d-pad direction
@@ -1177,7 +1182,6 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    //===================================| NEW METHODS FOR NEW 3-VERSION ATTACK SYSTEM
 
     private void LightRanged_Void()
     {
@@ -1329,6 +1333,22 @@ public class PlayerHandler : EntityHandler
         _chargedRangedZap.Play(_lightRangedDuration * 0.5f);
     }
 
+
+    /// <summary>
+    /// Fires a bullet
+    /// </summary>
+    private void FireBullet()
+    {
+        Vector2 _tempRightAnalogDirection = aimDirection;
+
+        GameObject tempBullet = _equippedWeapon.FireBullet(_tempRightAnalogDirection);
+        //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+    }
+
+    #endregion
+
     public override void JustGotHit()
     {
         Debug.Log("Player: Ow!");
@@ -1336,6 +1356,30 @@ public class PlayerHandler : EntityHandler
         _healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
     }
 
+    //================================================================================| TRANSITIONS
+    private void PlayerBlinkTransitionAttempt()
+    {
+        if (_blink_hasButtonMashed) //use punishment timer
+        {
+            if (_blinkTimer > BLINK_TIME_PUNISH)
+            {
+                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
+                CurrentState = PlayerState.BLINK;
+            }
+        }
+        else
+        {
+            if (_blinkTimer > BLINK_TIME_PRO)
+            {
+                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
+                CurrentState = PlayerState.BLINK;
+            }
+            else
+            {
+                _blink_hasButtonMashed = true; //fool, you clicked too fast
+            }
+        }
+    }
 
     override protected void OnDeath()
     {
@@ -1366,13 +1410,7 @@ public class PlayerHandler : EntityHandler
         yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
     }
-    /*
-    IEnumerator FlashZap(float duration)
-    {
-        _lightRangedElectricLine.GetComponent<LineRenderer>().enabled = true;
-        yield return new WaitForSeconds(duration);
-        _lightRangedElectricLine.GetComponent<LineRenderer>().enabled = false;
-    }*/
+
 
     /// <summary>
     /// Handles aim direction, toggles between using mouse & keyboard and gamepad

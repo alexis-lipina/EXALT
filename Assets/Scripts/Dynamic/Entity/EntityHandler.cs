@@ -25,5 +25,8 @@ public abstract class EntityHandler : MonoBehaviour
     }
 
     public abstract void JustGotHit();
-    protected abstract void OnDeath();
+    public virtual void OnDeath()
+    {
+        GameObject.Destroy(transform.parent);
+    }
 }

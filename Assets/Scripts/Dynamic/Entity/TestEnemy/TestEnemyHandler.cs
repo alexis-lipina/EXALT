@@ -9,7 +9,7 @@ public class TestEnemyHandler : EntityHandler
     [SerializeField] private bool isCompanion;
 
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, WOUNDED };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "Anim_EnemyIdleEast";
@@ -35,6 +35,8 @@ public class TestEnemyHandler : EntityHandler
     const string SWING_SOUTH_Anim = "Anim_EnemySlashSouth";
     const string SWING_EAST_Anim = "Anim_EnemySlashEast";
     const string SWING_WEST_Anim = "Anim_EnemySlashWest";
+
+    const string FLINCH_Anim = "Anim_Flinch";
 
     private bool _isPrimed_Void = false;
     private GameObject _voidPrimeVfx;
@@ -153,8 +155,8 @@ public class TestEnemyHandler : EntityHandler
             case TestEnemyState.SWING:
                 SwingState();
                 break;
-            case TestEnemyState.WOUNDED:
-                WoundedState();
+            case TestEnemyState.FLINCH:
+                FlinchState();
                 break;
         }
     }
@@ -509,15 +511,11 @@ public class TestEnemyHandler : EntityHandler
     }
     
     
-    private void WoundedState()
+    private void FlinchState()
     {
-        entityPhysics.MoveCharacterPositionPhysics(xInput * 0.3f, yInput * 0.3f);
-        stateTimer -= Time.deltaTime;
-        if (stateTimer < 0)
-        {
-            stateTimer = 0;
-            currentState = TestEnemyState.RUN;
-        }
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        characterAnimator.Play(FLINCH_Anim);
     }
 
     public void SetAttackPressed(bool value)
@@ -569,10 +567,21 @@ public class TestEnemyHandler : EntityHandler
             }
         }
         currentPrimes = new List<ElementType>();
+
+        StartCoroutine(ExecuteDetonations(detonations));
+
+
+        Debug.Log("Blam!");
+        //ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.15f);
         
-        foreach(ElementType element in detonations)
+    }
+
+    IEnumerator ExecuteDetonations(List<ElementType> detonations)
+    {
+        currentState = TestEnemyState.FLINCH;
+        foreach (ElementType element in detonations)
         {
-            switch(element)
+            switch (element)
             {
                 case ElementType.FIRE:
                     FireDetonationHandler.DeployFromPool(entityPhysics);
@@ -584,17 +593,15 @@ public class TestEnemyHandler : EntityHandler
                     ZapDetonationHandler.DeployFromPool(entityPhysics);
                     break;
             }
+            yield return new WaitForSeconds(0.15f);
         }
-
-
-        Debug.Log("Blam!");
-        ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.15f);
-        
+        currentState = TestEnemyState.RUN;
+        if (entityPhysics.GetCurrentHealth() <= 0) OnDeath();
     }
 
-
-    protected override void OnDeath()
+    public override void OnDeath()
     {
+        if (currentState == TestEnemyState.FLINCH) return;
         Destroy(gameObject.transform.parent.gameObject);
     }
 

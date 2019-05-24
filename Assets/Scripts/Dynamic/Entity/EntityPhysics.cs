@@ -299,8 +299,9 @@ public class EntityPhysics : DynamicPhysics
         currentHP -= damage;
         if (currentHP <= 0)
         {
-            GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
+            //GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
             //Reset();
+            Handler.OnDeath();
         }
         else
         {

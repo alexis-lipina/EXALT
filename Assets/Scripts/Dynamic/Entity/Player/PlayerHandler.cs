@@ -966,7 +966,7 @@ public class PlayerHandler : EntityHandler
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
 
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1f, aimDirection.normalized, 2.0f, ElementType.FIRE);
+                    obj.GetComponent<EntityPhysics>().Inflict(2f, aimDirection.normalized, 2.0f, ElementType.FIRE);
                 }
             }
         }
@@ -1381,7 +1381,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    override protected void OnDeath()
+    public override void OnDeath()
     {
         Debug.Log("<color=pink>HEY!</color>");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FireDetonationHandler : MonoBehaviour
+public class FireDetonationHandler : ProjectionHandler
 {
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -60,6 +60,20 @@ public class FireDetonationHandler : MonoBehaviour
     {
         Debug.Log("Deployed!");
         MoveTo(DesiredPosition);
+        
+        //StartCoroutine(PlayAnimation());
+    }
+
+    protected void Update()
+    {
+        MoveTo(_sourceEnemy.transform.position);
+    }
+
+    /// <summary>
+    /// Activate
+    /// </summary>
+    public void Detonate()
+    {
         Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size, 0.0f);
         foreach (Collider2D collider in collidersHit)
         {
@@ -72,7 +86,6 @@ public class FireDetonationHandler : MonoBehaviour
                 else collider.GetComponent<EntityPhysics>().Inflict(1f, ElementType.FIRE);
             }
         }
-        StartCoroutine(PlayAnimation());
     }
 
     IEnumerator PlayAnimation()

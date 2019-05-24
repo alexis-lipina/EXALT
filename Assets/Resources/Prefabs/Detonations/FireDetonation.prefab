@@ -80,7 +80,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8, y: 6}
+  m_Size: {x: 4, y: 3}
   m_EdgeRadius: 0
 --- !u!114 &3757735750904539195
 MonoBehaviour:
@@ -194,7 +194,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8, y: 6}
+  m_Size: {x: 4, y: 3}
   m_EdgeRadius: 0
 --- !u!114 &3757735751385889479
 MonoBehaviour:
@@ -257,6 +257,7 @@ MonoBehaviour:
   _projection: {fileID: 3757735750904539193}
   _physics: {fileID: 3757735750904539195}
   _damageVolume: {fileID: 3757735751385889476}
+  _sourceEnemy: {fileID: 0}
 --- !u!1 &3757735752421778727
 GameObject:
   m_ObjectHideFlags: 0

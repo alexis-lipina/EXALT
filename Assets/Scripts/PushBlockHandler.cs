@@ -40,8 +40,8 @@ public class PushBlockHandler : EntityHandler
         throw new NotImplementedException();
     }
 
-    protected override void OnDeath()
+    public override void OnDeath()
     {
-        throw new NotImplementedException();
+        return;
     }
 }

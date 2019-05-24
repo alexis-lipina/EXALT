@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoidDetonationHandler : MonoBehaviour
+public class VoidDetonationHandler : ProjectionHandler
 {
     //global/static stuff
     private static List<GameObject> _objectPool;

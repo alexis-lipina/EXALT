@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: 04855120f63a6f4439e01bd2e9438e66
+guid: 0e0b8f09b68127948827e1b993be04b9
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Flinch_0
-    21300002: Flinch_1
+    21300000: corpse_0
+    21300002: corpse_1
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -86,13 +86,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Flinch_0
+      name: corpse_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 102
-        width: 135
-        height: 102
+        y: 0
+        width: 64
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -100,19 +100,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 790b0cd212601534d951de95a4bc3aa3
+      spriteID: 6a177a5b78cabcd43be955c30c2ff083
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Flinch_1
+      name: corpse_1
       rect:
         serializedVersion: 2
-        x: 0
+        x: 64
         y: 0
-        width: 135
-        height: 102
+        width: 64
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -120,7 +120,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 77e84a0187bec1e40978e9b138c61077
+      spriteID: 413d985b81a335a4eb7b9392042015f0
       vertices: []
       indices: 
       edges: []
@@ -128,7 +128,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: e13675ab3817c6f4fb0ee069b6c0f17b
+    spriteID: 27d8d4ad33773f7439cbeb522e3d832f
     vertices: []
     indices: 
     edges: []

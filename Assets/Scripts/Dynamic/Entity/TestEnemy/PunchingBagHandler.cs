@@ -231,10 +231,6 @@ public class PunchingBagHandler : EntityHandler
         cooldowntimer = 1.0f;
         wasJustHit = true;
     }
-
-    protected override void OnDeath()
-    {
-        throw new NotImplementedException();
-    }
+    
 
 }

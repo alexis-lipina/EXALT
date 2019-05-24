@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ZapDetonationHandler : MonoBehaviour
+public class ZapDetonationHandler : ProjectionHandler
 {
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -89,6 +89,7 @@ public class ZapDetonationHandler : MonoBehaviour
             opacity -= 0.1f;
             yield return new WaitForSeconds(0.01f);
         }
+
         gameObject.SetActive(false);
     }
 }

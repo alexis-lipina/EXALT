@@ -6,6 +6,11 @@ public class FireDetonationHandler : ProjectionHandler
 {
     //global/static stuff
     private static List<GameObject> _objectPool;
+    protected override ElementType Element
+    {
+        get { return ElementType.FIRE; }
+    }
+
 
     public static void InitializePool()
     {
@@ -18,8 +23,7 @@ public class FireDetonationHandler : ProjectionHandler
         }
     }
 
-
-    public static void DeployFromPool(EntityPhysics enemyPhysics)
+    public static GameObject DeployFromPool(EntityPhysics enemyPhysics)
     {
         if (_objectPool == null) InitializePool();
         for (int i = 0; i < _objectPool.Count; i++)
@@ -29,16 +33,17 @@ public class FireDetonationHandler : ProjectionHandler
                 //_objectPool[i].GetComponentInChildren<FireDetonationHandler>().MoveTo(position);
                 _objectPool[i].GetComponent<FireDetonationHandler>().DesiredPosition = enemyPhysics.transform.position;
                 _objectPool[i].GetComponent<FireDetonationHandler>()._sourceEnemy = enemyPhysics;
+                _objectPool[i].GetComponent<FireDetonationHandler>()._projection.SetOpacity(1.0f);
                 _objectPool[i].SetActive(true);
                 //_objectPool[i].transform.position = position;
-                return;
+                return _objectPool[i];
             }
         }
         //if no inactive objects exist, make a new one and deploy it
         _objectPool.Add(Instantiate(Resources.Load("Prefabs/Detonations/FireDetonation", typeof(GameObject)) as GameObject));
         _objectPool[_objectPool.Count - 1].SetActive(false);
-        DeployFromPool(enemyPhysics);
-        return;
+        var deployedObj = DeployFromPool(enemyPhysics);
+        return deployedObj;
     }
 
 
@@ -47,26 +52,36 @@ public class FireDetonationHandler : ProjectionHandler
     [SerializeField] private PlayerProjection _projection;
     [SerializeField] private DynamicPhysics _physics;
     [SerializeField] private BoxCollider2D _damageVolume;
+    private bool hasDetonated = false;
     public Vector2 DesiredPosition { get; set; }
+
+
     public EntityPhysics _sourceEnemy;
 
 
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
+        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y);
     }
 
     private void OnEnable()
     {
+        hasDetonated = false;
         Debug.Log("Deployed!");
         MoveTo(DesiredPosition);
-        
-        //StartCoroutine(PlayAnimation());
+        _projection.SetOpacity(1.0f);
     }
+    
 
     protected void Update()
     {
-        MoveTo(_sourceEnemy.transform.position);
+        if (!hasDetonated)
+        {
+            _projection.SetOpacity(1f);
+            MoveTo(_sourceEnemy.transform.position);
+        }
+
     }
 
     /// <summary>
@@ -74,6 +89,8 @@ public class FireDetonationHandler : ProjectionHandler
     /// </summary>
     public void Detonate()
     {
+        GetComponent<AudioSource>().Play();
+        hasDetonated = true;
         Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size, 0.0f);
         foreach (Collider2D collider in collidersHit)
         {
@@ -81,29 +98,33 @@ public class FireDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1f, ElementType.FIRE);
+                    collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1f, ElementType.FIRE);
+                else collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
             }
         }
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);
+        StartCoroutine(PlayAnimation());
     }
 
     IEnumerator PlayAnimation()
     {
-        _projection.SetOpacity(0f);
-        yield return null;
-        _projection.SetOpacity(1f);
+        GetComponentInChildren<SpriteRenderer>().enabled = true;
+        _projection.SetColor(Color.black);
         yield return new WaitForSeconds(0.02f);
-        _projection.SetOpacity(0f);
-        yield return new WaitForSeconds(0.04f);
+        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        _projection.SetColor(Color.white);
+        yield return new WaitForSeconds(0.02f);
+        
 
         float opacity = 1f;
         while (opacity > 0)
         {
             _projection.SetOpacity(opacity);
-            opacity -= 0.1f;
+            opacity -= 0.2f;
             yield return new WaitForSeconds(0.01f);
         }
+        
         gameObject.SetActive(false);
     }
 }

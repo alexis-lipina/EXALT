@@ -61,6 +61,22 @@ public class PlayerProjection : ShadowManager
         }
     }
 
+    public void SetColor(Color value)
+    {
+        if (shadowArray == null)
+        {
+            Start();
+        }
+        for (int i = 0; i < shadowArray.Count; i++)
+        {
+            for (int j = 0; j < shadowArray[i].Count; j++)
+            {
+                shadowArray[i][j].GetComponent<Renderer>().material.SetColor("_ColorOverride", value);
+            }
+        }
+    }
+
+
     protected override void OnShadowInstantiated()
     {
 

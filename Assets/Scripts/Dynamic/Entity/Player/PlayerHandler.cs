@@ -285,24 +285,24 @@ public class PlayerHandler : EntityHandler
         }
         else if (controller.GetButton("ChangeStyle_Fire") && _currentStyle != ElementType.FIRE)
         {
-            Shader.SetGlobalColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
-            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 1f, 0f));
+            Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0f));
             //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(1f, 1f, 0f, 1f));
             _currentStyle = ElementType.FIRE;
             SwapWeapon("WEST");
         }
         else if (controller.GetButton("ChangeStyle_Void") && _currentStyle != ElementType.VOID)
         {
-            Shader.SetGlobalColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
-            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.3f, 0.1f, 1f));
+            Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0f, 1f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0f, 1f));
             //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 0.1f, 1f, 1f));
             _currentStyle = ElementType.VOID;
             SwapWeapon("NORTH");
         }
         else if (controller.GetButton("ChangeStyle_Electric") && _currentStyle != ElementType.ZAP)
         {
-            Shader.SetGlobalColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
-            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.3f, 1f, 0.7f));
+            Shader.SetGlobalColor("_MagicColor", new Color(0f, 1f, 0.5f, 1f));
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0f, 1f, 0.5f));
             //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
             _currentStyle = ElementType.ZAP;
         }

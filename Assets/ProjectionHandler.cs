@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ProjectionHandler : MonoBehaviour
+public abstract class ProjectionHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    //Non-instance based stuff
+
+    abstract protected ElementType Element
     {
-        
+        get;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+    //instance base
+    
 }

@@ -45,6 +45,7 @@ public class TestEnemyHandler : EntityHandler
     private bool _isPrimed_Fire = false;
     private GameObject _firePrimeVfx;
     private List<ElementType> currentPrimes;
+
     public void PrimeEnemy(ElementType type)
     {
         if (_isPrimed_Void && type == ElementType.VOID || _isPrimed_Fire && type == ElementType.FIRE || _isPrimed_Zap && type == ElementType.ZAP) return;
@@ -53,17 +54,20 @@ public class TestEnemyHandler : EntityHandler
         {
             case ElementType.FIRE:
                 _isPrimed_Fire = true;
-                _firePrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Fire", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                //_firePrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Fire", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _firePrimeVfx = FireDetonationHandler.DeployFromPool(entityPhysics);
                 currentPrimes.Add(type);
                 return;
             case ElementType.VOID:
                 _isPrimed_Void = true;
-                _voidPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Void", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                //_voidPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Void", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _voidPrimeVfx = VoidDetonationHandler.DeployFromPool(entityPhysics);
                 currentPrimes.Add(type);
                 return;
             case ElementType.ZAP:
                 _isPrimed_Zap = true;
-                _zapPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Zap", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                //_zapPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Zap", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _zapPrimeVfx = ZapDetonationHandler.DeployFromPool(entityPhysics);
                 currentPrimes.Add(type);
                 return;
         }
@@ -549,19 +553,19 @@ public class TestEnemyHandler : EntityHandler
                 case ElementType.FIRE:
                     Debug.Log("Fire Detonation");
                     _isPrimed_Fire = false;
-                    Destroy(_firePrimeVfx);
+                    //Destroy(_firePrimeVfx);
                     detonations.Add(ElementType.FIRE);
                     break;
                 case ElementType.ZAP:
                     Debug.Log("Zap Detonation");
                     _isPrimed_Zap = false;
-                    Destroy(_zapPrimeVfx);
+                    //Destroy(_zapPrimeVfx);
                     detonations.Add(ElementType.ZAP);
                     break;
                 case ElementType.VOID:
                     Debug.Log("Void Detonation");
                     _isPrimed_Void = false;
-                    Destroy(_voidPrimeVfx);
+                    //Destroy(_voidPrimeVfx);
                     detonations.Add(ElementType.VOID);
                     break;
             }
@@ -579,18 +583,24 @@ public class TestEnemyHandler : EntityHandler
     IEnumerator ExecuteDetonations(List<ElementType> detonations)
     {
         currentState = TestEnemyState.FLINCH;
+        yield return new WaitForSeconds(0.1f);
         foreach (ElementType element in detonations)
         {
             switch (element)
             {
                 case ElementType.FIRE:
-                    FireDetonationHandler.DeployFromPool(entityPhysics);
+                    //FireDetonationHandler.DeployFromPool(entityPhysics);
+                    _firePrimeVfx.GetComponent<FireDetonationHandler>().Detonate();
+                    _firePrimeVfx = null;
                     break;
                 case ElementType.VOID:
-                    VoidDetonationHandler.DeployFromPool(entityPhysics);
+                    //VoidDetonationHandler.DeployFromPool(entityPhysics);
+                    _voidPrimeVfx.GetComponent<VoidDetonationHandler>().Detonate();
+                    _voidPrimeVfx = null;
                     break;
                 case ElementType.ZAP:
-                    ZapDetonationHandler.DeployFromPool(entityPhysics);
+                    _zapPrimeVfx.GetComponent<ZapDetonationHandler>().Detonate();
+                    _zapPrimeVfx = null;
                     break;
             }
             yield return new WaitForSeconds(0.15f);

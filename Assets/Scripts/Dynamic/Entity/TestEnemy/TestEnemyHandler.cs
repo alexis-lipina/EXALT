@@ -6,6 +6,7 @@ using UnityEngine;
 public class TestEnemyHandler : EntityHandler
 {
     [SerializeField] private Animator characterAnimator;
+    [SerializeField] private AudioSource _primeAudioSource;
     [SerializeField] private bool isCompanion;
 
 
@@ -49,7 +50,7 @@ public class TestEnemyHandler : EntityHandler
     public void PrimeEnemy(ElementType type)
     {
         if (_isPrimed_Void && type == ElementType.VOID || _isPrimed_Fire && type == ElementType.FIRE || _isPrimed_Zap && type == ElementType.ZAP) return;
-        
+        _primeAudioSource.Play();
         switch (type)
         {
             case ElementType.FIRE:
@@ -428,7 +429,7 @@ public class TestEnemyHandler : EntityHandler
                 EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
                 if (hit.tag == "Friend" && hitEntity.GetObjectHeight() + hitEntity.GetObjectElevation() > entityPhysics.GetObjectElevation() && hitEntity.GetObjectElevation() < entityPhysics.GetObjectElevation() + entityPhysics.GetObjectHeight())
                 {
-                    hit.gameObject.GetComponent<EntityPhysics>().Inflict(1.0f);
+                    hit.gameObject.GetComponent<EntityPhysics>().Inflict(1);
                     Debug.Log("Hit player!");
                 }
             }
@@ -542,7 +543,10 @@ public class TestEnemyHandler : EntityHandler
         
         if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap ) || elementOfAttack == ElementType.NONE) return;
 
-        if (!currentPrimes.Contains(elementOfAttack)) currentPrimes.Add(elementOfAttack);
+        if (!currentPrimes.Contains(elementOfAttack))
+        {
+            PrimeEnemy(elementOfAttack);
+        }
 
         List<ElementType> detonations = new List<ElementType>();
 
@@ -612,7 +616,18 @@ public class TestEnemyHandler : EntityHandler
     public override void OnDeath()
     {
         if (currentState == TestEnemyState.FLINCH) return;
-        Destroy(gameObject.transform.parent.gameObject);
+        //Destroy(gameObject.transform.parent.gameObject);
+        StartCoroutine(PlayDeathAnim());
     }
-
+    
+    private IEnumerator PlayDeathAnim()
+    {
+        currentState = TestEnemyState.FLINCH;
+        yield return new WaitForSeconds(0.25f);
+        //destroy VFX
+        if (_zapPrimeVfx != null) Destroy(_zapPrimeVfx);
+        if (_voidPrimeVfx != null) Destroy(_voidPrimeVfx);
+        if (_firePrimeVfx != null) Destroy(_firePrimeVfx);
+        Destroy(transform.parent.gameObject);
+    }
 }

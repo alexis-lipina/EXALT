@@ -26,11 +26,11 @@ public class EntityPhysics : DynamicPhysics
     public NavigationManager navManager;
     [SerializeField] private EntityHandler entityHandler;
     public EntityHandler Handler { get { return entityHandler; } }
-    [SerializeField] protected float MaxHP;
+    [SerializeField] protected int MaxHP;
     [SerializeField] private float _pushForceMultiplier = 1.0f;
 
 
-    protected float currentHP;
+    protected int currentHP;
     private bool hasBeenHit;
 
 
@@ -293,7 +293,7 @@ public class EntityPhysics : DynamicPhysics
     /// Deal this entity damage, causing them to flash and lose health
     /// </summary>
     /// <param name="damage">Quantity of health to subtract from the entity</param>
-    public virtual void Inflict(float damage)
+    public virtual void Inflict(int damage)
     {
         hasBeenHit = true;
         currentHP -= damage;
@@ -310,7 +310,7 @@ public class EntityPhysics : DynamicPhysics
         }
     }
 
-    public virtual void Inflict(float damage, ElementType type)
+    public virtual void Inflict(int damage, ElementType type)
     {
         if (entityHandler is TestEnemyHandler)
         {
@@ -324,7 +324,7 @@ public class EntityPhysics : DynamicPhysics
     /// </summary>
     /// <param name="damage"></param>
     /// <param name="direction"></param>
-    public virtual void Inflict(float damage, Vector2 direction, float force)
+    public virtual void Inflict(int damage, Vector2 direction, float force)
     {
         GetComponent<AudioSource>().Play();
         //Debug.Log(direction);
@@ -335,7 +335,7 @@ public class EntityPhysics : DynamicPhysics
         //Debug.Log("Ow:" + direction.x * force);
     }
 
-    public virtual void Inflict(float damage, Vector2 direction, float force, ElementType type)
+    public virtual void Inflict(int damage, Vector2 direction, float force, ElementType type)
     {
         if (entityHandler is TestEnemyHandler)
         {
@@ -392,11 +392,11 @@ public class EntityPhysics : DynamicPhysics
     }
 
    
-    public float GetCurrentHealth()
+    public int GetCurrentHealth()
     {
         return currentHP;
     }
-    public float GetMaxHealth()
+    public int GetMaxHealth()
     {
         return MaxHP;
     }

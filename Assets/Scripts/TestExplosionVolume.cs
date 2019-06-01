@@ -66,7 +66,7 @@ public class TestExplosionVolume : MonoBehaviour
 
         for (int i = 0; i < hitObjects.Length; i++)
         {
-            hitObjects[i].GetComponent<EntityPhysics>().Inflict(5.0f);
+            hitObjects[i].GetComponent<EntityPhysics>().Inflict(5);
         }
     }
 

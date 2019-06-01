@@ -10,7 +10,7 @@ public class SwitchPhysics : EntityPhysics
     public bool IsOn { get; private set; }
     private bool _hasBeenHitAlreadyThisFrame = false;
 
-    public override void Inflict(float damage)
+    public override void Inflict(int damage)
     {
         Debug.Log("hit!");
         if (_hasBeenHitAlreadyThisFrame) return;

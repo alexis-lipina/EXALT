@@ -32,7 +32,7 @@ public class LightningChainNode : MonoBehaviour
         if (_pooledNodes == null) _pooledNodes = new List<GameObject>();
 
         //deal damage to enemy
-        _myEnemy.Inflict(1f, ElementType.ZAP);
+        _myEnemy.Inflict(1, ElementType.ZAP);
 
         //start to run VFX Plume and Projection
         StartCoroutine(PlayVFX());
@@ -62,6 +62,7 @@ public class LightningChainNode : MonoBehaviour
     IEnumerator Spread()
     {
         yield return new WaitForSeconds(_timeToArc);
+        yield return new WaitForEndOfFrame();
         //Later, check all enemies in radius 
         Collider2D[] nearbyEnemies = Physics2D.OverlapAreaAll((Vector2)transform.position - new Vector2(_chainRadius, _chainRadius), (Vector2)transform.position + new Vector2(_chainRadius, _chainRadius));
         Debug.DrawLine((Vector2)transform.position - new Vector2(_chainRadius, _chainRadius), (Vector2)transform.position + new Vector2(_chainRadius, _chainRadius), Color.cyan, 1f, false);
@@ -94,7 +95,8 @@ public class LightningChainNode : MonoBehaviour
                 GameObject newNode = GetNode();
                 newNode.GetComponent<LightningChainNode>()._myEnemy = enemies[i];
                 newNode.transform.position = new Vector3(enemies[i].GetComponent<Rigidbody2D>().position.x, enemies[i].GetComponent<Rigidbody2D>().position.y, enemies[i].GetComponent<Rigidbody2D>().position.y);
-                newNode.GetComponent<LightningChainNode>()._sourcePosition = _myEnemy.transform.position + _myEnemy.GetBottomHeight() * Vector3.up;
+                newNode.GetComponent<LightningChainNode>()._sourcePosition = transform.position;
+                //newNode.GetComponent<LightningChainNode>()._sourcePosition = _myEnemy.transform.position + _myEnemy.GetBottomHeight() * Vector3.up;
                 newNode.GetComponent<LightningChainNode>().Run();
             }
         }

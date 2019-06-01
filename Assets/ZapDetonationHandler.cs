@@ -28,6 +28,11 @@ public class ZapDetonationHandler : ProjectionHandler
         if (_objectPool == null) InitializePool();
         for (int i = 0; i < _objectPool.Count; i++)
         {
+            if (_objectPool[i] == null)
+            {
+                _objectPool[i] = Instantiate(Resources.Load("Prefabs/Detonations/ZapDetonation", typeof(GameObject)) as GameObject);
+                _objectPool[i].SetActive(false);
+            }
             if (!_objectPool[i].activeSelf)
             {
                 _objectPool[i].GetComponent<ZapDetonationHandler>().DesiredPosition = enemyPhysics.transform.position;
@@ -57,7 +62,7 @@ public class ZapDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y);
+        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 4, pos.y);
     }
 
     private void OnEnable()
@@ -92,9 +97,9 @@ public class ZapDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
+                else collider.GetComponent<EntityPhysics>().Inflict(1, Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

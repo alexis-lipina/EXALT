@@ -15,7 +15,7 @@ public class FireDetonationHandler : ProjectionHandler
     public static void InitializePool()
     {
         _objectPool = new List<GameObject>();
-        _objectPool.Add(Instantiate(Resources.Load("Prefabs/Detonations/FireDetonation", typeof(GameObject)) as GameObject));
+        
 
         foreach (GameObject o in _objectPool)
         {
@@ -26,8 +26,14 @@ public class FireDetonationHandler : ProjectionHandler
     public static GameObject DeployFromPool(EntityPhysics enemyPhysics)
     {
         if (_objectPool == null) InitializePool();
+    
         for (int i = 0; i < _objectPool.Count; i++)
         {
+            if (_objectPool[i] == null)
+            {
+                _objectPool[i] = Instantiate(Resources.Load("Prefabs/Detonations/FireDetonation", typeof(GameObject)) as GameObject);
+                _objectPool[i].SetActive(false);
+            }
             if (!_objectPool[i].activeSelf)
             {
                 //_objectPool[i].GetComponentInChildren<FireDetonationHandler>().MoveTo(position);
@@ -62,7 +68,7 @@ public class FireDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y);
+        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y, pos.y);
     }
 
     private void OnEnable()
@@ -91,16 +97,17 @@ public class FireDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size, 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(16f, 12f), 0.0f);
+        Debug.DrawLine(_damageVolume.bounds.center + new Vector3(4f, 3f, 0f), _damageVolume.bounds.center + new Vector3(-4f, -3f, 0f), Color.cyan, 1f, false);
         foreach (Collider2D collider in collidersHit)
         {
             if (collider.gameObject.tag == "Enemy")
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
+                else collider.GetComponent<EntityPhysics>().Inflict(1, Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

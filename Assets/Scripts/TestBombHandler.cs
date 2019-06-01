@@ -57,7 +57,7 @@ public class TestBombHandler : BulletHandler
             GameObject[] damagedEnemies = _explosionVolume.TouchingObjects.ToArray();
             for (int i = 0; i < damagedEnemies.Length; i++)
             {
-                damagedEnemies[i].GetComponent<EntityPhysics>().Inflict(1.0f);
+                damagedEnemies[i].GetComponent<EntityPhysics>().Inflict(1);
             }
         }
     }

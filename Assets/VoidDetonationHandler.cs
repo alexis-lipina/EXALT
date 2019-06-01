@@ -27,14 +27,17 @@ public class VoidDetonationHandler : ProjectionHandler
         if (_objectPool == null) InitializePool();
         for (int i = 0; i < _objectPool.Count; i++)
         {
+            if (_objectPool[i] == null) //should take care of reloading scenes - its hacky, should probably do on scene load or something
+            {
+                _objectPool[i] = Instantiate(Resources.Load("Prefabs/Detonations/VoidDetonation", typeof(GameObject)) as GameObject);
+                _objectPool[i].SetActive(false);
+            }
             if (!_objectPool[i].activeSelf)
             {
-                //_objectPool[i].GetComponentInChildren<FireDetonationHandler>().MoveTo(position);
                 _objectPool[i].GetComponent<VoidDetonationHandler>().DesiredPosition = enemyPhysics.transform.position;
                 _objectPool[i].GetComponent<VoidDetonationHandler>()._sourceEnemy = enemyPhysics;
                 _objectPool[i].GetComponent<VoidDetonationHandler>()._projection.SetOpacity(1.0f);
                 _objectPool[i].SetActive(true);
-                //_objectPool[i].transform.position = position;
                 return _objectPool[i];
             }
         }
@@ -97,9 +100,9 @@ public class VoidDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1f, Element);
+                else collider.GetComponent<EntityPhysics>().Inflict(1, Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

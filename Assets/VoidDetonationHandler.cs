@@ -93,7 +93,7 @@ public class VoidDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size, 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size * 4.0f, 0.0f);
         foreach (Collider2D collider in collidersHit)
         {
             if (collider.gameObject.tag == "Enemy")
@@ -102,7 +102,11 @@ public class VoidDetonationHandler : ProjectionHandler
                 {
                     collider.GetComponent<EntityPhysics>().Inflict(1, Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1, Element);
+                else
+                {
+                    Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
+                    collider.GetComponent<EntityPhysics>().Inflict(1, enemyToCenter, Mathf.Sqrt(enemyToCenter.magnitude) / 5f, ElementType.VOID);
+                }
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

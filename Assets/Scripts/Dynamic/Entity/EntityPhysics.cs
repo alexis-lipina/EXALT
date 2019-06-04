@@ -28,6 +28,7 @@ public class EntityPhysics : DynamicPhysics
     public EntityHandler Handler { get { return entityHandler; } }
     [SerializeField] protected int MaxHP;
     [SerializeField] private float _pushForceMultiplier = 1.0f;
+    [SerializeField] private float _maxVelocity = 8f;
 
 
     protected int currentHP;
@@ -168,7 +169,11 @@ public class EntityPhysics : DynamicPhysics
         //update z if pushed upstairs or something???
         //SnapToFloor();
 
-
+        //clamp
+        if (velocity.magnitude > _maxVelocity)
+        {
+            velocity = velocity.normalized * _maxVelocity;
+        }
 
         return velocity;
     }

@@ -90,16 +90,16 @@ public class ZapDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size, 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size * 0.5f, 0.0f);
         foreach (Collider2D collider in collidersHit)
         {
             if (collider.gameObject.tag == "Enemy")
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(2, Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1, Element);
+                else collider.GetComponent<EntityPhysics>().Inflict(2, Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

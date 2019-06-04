@@ -1035,6 +1035,7 @@ public class PlayerHandler : EntityHandler
 
                     Debug.Log("Owch!");
                     obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 2.0f, ElementType.FIRE);
+                    obj.GetComponent<EntityPhysics>().Burn();
                 }
             }
         }

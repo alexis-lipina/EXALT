@@ -41,9 +41,18 @@ public class EntityPhysics : DynamicPhysics
     private float _forceDamping = 0.2f;
 
 
+
     List<PhysicsObject> EntitiesTouched;
 
     public EnemySpawner _spawner;
+
+    //burn stuff
+    [SerializeField] private Transform _burnParticlesPrefab;
+    private GameObject _burnParticles;
+    private float _burnTimer = 0f;
+    private float _burnTimeBetweenInflicts = 1.0f;
+    private float _burnTimer_Inflicts = 0f;
+    private float _burnDuration = 2.5f;
 
     //private float entityElevation; //replaced with bottomHeight
 
@@ -78,6 +87,23 @@ public class EntityPhysics : DynamicPhysics
         //Entity collision 
         HandleTouchedEntities();
 
+        //burn
+        if (_burnTimer > 0)
+        {
+            _burnTimer -= Time.deltaTime;
+            _burnTimer_Inflicts -= Time.deltaTime;
+            if (_burnTimer_Inflicts < 0) //if times up, damage and reset
+            {
+                Inflict(1, ElementType.FIRE);
+                _burnTimer_Inflicts = _burnTimeBetweenInflicts;
+            }
+            if (_burnTimer <= 0) // can only happen one time
+            {
+                _burnTimer = 0f;
+                _burnTimer_Inflicts = 0f;
+                Destroy(_burnParticles.gameObject);
+            }
+        }
     }
 
     /// <summary>
@@ -295,6 +321,7 @@ public class EntityPhysics : DynamicPhysics
     /// <param name="damage">Quantity of health to subtract from the entity</param>
     public virtual void Inflict(int damage)
     {
+        GetComponent<AudioSource>().Play();
         hasBeenHit = true;
         currentHP -= damage;
         if (currentHP <= 0)
@@ -326,7 +353,6 @@ public class EntityPhysics : DynamicPhysics
     /// <param name="direction"></param>
     public virtual void Inflict(int damage, Vector2 direction, float force)
     {
-        GetComponent<AudioSource>().Play();
         //Debug.Log(direction);
         //Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
         MoveWithCollision(direction.x * force * _pushForceMultiplier, direction.y * force * _pushForceMultiplier);
@@ -344,6 +370,20 @@ public class EntityPhysics : DynamicPhysics
         Inflict(damage, direction, force);
     }
     
+
+    public virtual void Burn()
+    {
+        if (_burnTimer > 0) //refresh timer if still ticking
+        {
+            _burnTimer = _burnDuration;
+            return;
+        }
+
+        _burnParticles = Instantiate(_burnParticlesPrefab, ObjectSprite.transform).gameObject;
+        _burnTimer = _burnDuration;
+        _burnTimer_Inflicts = _burnTimeBetweenInflicts;
+    }
+
 
 
     IEnumerator TakeDamageFlash()

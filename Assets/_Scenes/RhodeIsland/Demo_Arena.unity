@@ -7357,10 +7357,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestEnemy (256)
       objectReference: {fileID: 0}
-    - target: {fileID: 1821655441854242, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -46.8
@@ -7420,16 +7416,6 @@ PrefabInstance:
       propertyPath: navManager
       value: 
       objectReference: {fileID: 957900023}
-    - target: {fileID: 3886254814439908036, guid: 66a611ff00050a44ea4c5594b9cc8df9,
-        type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 82265346965739284, guid: 66a611ff00050a44ea4c5594b9cc8df9,
-        type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
 --- !u!1001 &390648950
@@ -31535,6 +31521,7 @@ MonoBehaviour:
   MaxHP: 0
   _pushForceMultiplier: 1
   _spawner: {fileID: 0}
+  _burnParticlesPrefab: {fileID: 0}
 --- !u!61 &1798629021
 BoxCollider2D:
   m_ObjectHideFlags: 0

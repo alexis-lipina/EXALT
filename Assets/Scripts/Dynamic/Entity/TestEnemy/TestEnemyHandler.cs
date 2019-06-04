@@ -39,6 +39,8 @@ public class TestEnemyHandler : EntityHandler
 
     const string FLINCH_Anim = "Anim_Flinch";
 
+    
+
     private bool _isPrimed_Void = false;
     private GameObject _voidPrimeVfx;
     private bool _isPrimed_Zap = false;
@@ -540,7 +542,6 @@ public class TestEnemyHandler : EntityHandler
 
     public void PerformDetonations(ElementType elementOfAttack)
     {
-        
         if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap ) || elementOfAttack == ElementType.NONE) return;
 
         if (!currentPrimes.Contains(elementOfAttack))

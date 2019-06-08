@@ -23,8 +23,10 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool explodesOnDeath;
     [SerializeField] private bool doesTracking;
     [SerializeField] private Collider2D trackingArea;
+    [SerializeField] private int _damageAmount = 1;
     [SerializeField] private ElementType _damageType = ElementType.NONE;
-
+    [SerializeField] private float _zVelocityDamping = 1f;
+    [SerializeField] private float _zMinimumVelocity = 20f;
 
     public bool CanBounce
     {
@@ -54,7 +56,7 @@ public class ProjectilePhysics : DynamicPhysics
 
     private Rigidbody2D bulletRigidBody;
     private Vector2 _velocity; //purely direction
-    private const float _timeToDestroy = 10f;
+    [SerializeField] private float _timeToDestroy = 10f;
     private float _timer;
     public Vector2 Velocity
     {
@@ -92,7 +94,8 @@ public class ProjectilePhysics : DynamicPhysics
         //MoveWithCollision(_velocity.x, _velocity.y);
         MoveCharacterPositionPhysics(_velocity.x, _velocity.y);
         //Debug.Log("Velocity : " + _velocity);
-        FreeFall();
+        if (isAffectedByGravity) FreeFall();
+        else _velocity *= 0.9f;
         //Debug.Log("Elevation : " + bottomHeight);
 
         MoveCharacterPosition();
@@ -100,7 +103,9 @@ public class ProjectilePhysics : DynamicPhysics
         {
             Debug.Log(bulletHandler);
             Debug.Log(bulletHandler.SourceWeapon);
-            bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID()); //"deletes" if out of bounds
+            //bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID()); //"deletes" if out of bounds
+            transform.parent.gameObject.SetActive(false);
+            Reset();
         }
     }
 
@@ -116,14 +121,12 @@ public class ProjectilePhysics : DynamicPhysics
         }
         if (other.gameObject.tag == "Enemy" && (_whoToHurt == "ENEMY" || _whoToHurt == "ALL"))
         {
-            Debug.Log("Damaging Enemy");
-            Debug.Log("Enemy: " + other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() + ", " + other.gameObject.GetComponent<EntityPhysics>().GetTopHeight());
-            Debug.Log("Projectile: " + bottomHeight + ", " + topHeight);
 
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(1, Velocity, 0.5f, _damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, Velocity, 0.5f, _damageType);
+                if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 if (!canPenetrate)
                 {
                     Reset();
@@ -154,7 +157,8 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (!_targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] && other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight) //if has not been hit and is overlapping
             {
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(1, Velocity, 0.5f, _damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, Velocity, 0.5f, _damageType);
+                if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 _targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] = true;
                 if (!canPenetrate)
                 {
@@ -275,8 +279,13 @@ public class ProjectilePhysics : DynamicPhysics
                     if (entry.Key.GetComponent<EnvironmentPhysics>().GetTopHeight() > this.GetBottomHeight() + ZVelocity * Time.deltaTime * 2f && entry.Key.GetComponent<EnvironmentPhysics>().GetBottomHeight() < this.GetTopHeight() + +ZVelocity * Time.deltaTime * 2f)
                     {
                         //Debug.Log("FloorCollision");
-                        ZVelocity = -ZVelocity;
-                        if (ZVelocity < 20f) ZVelocity = 20f;
+                        ZVelocity = -ZVelocity * _zVelocityDamping;
+                        currentvelocity.Set(currentvelocity.x * _zVelocityDamping, currentvelocity.y * _zVelocityDamping);
+                        if (ZVelocity < _zMinimumVelocity)
+                        {
+                            ZVelocity = _zMinimumVelocity;
+                            isAffectedByGravity = false;
+                        }
                         //Debug.Log("CURRENTZVEL : " + ZVelocity);
                         hasZHit = true;
                     }

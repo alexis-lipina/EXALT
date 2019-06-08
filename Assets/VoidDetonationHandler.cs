@@ -72,8 +72,7 @@ public class VoidDetonationHandler : ProjectionHandler
         hasDetonated = false;
         Debug.Log("Deployed!");
         MoveTo(DesiredPosition);
-        _projection.SetOpacity(1.0f);
-    }
+        _projection.SetOpacity(1.0f);    }
 
 
     protected void Update()
@@ -82,6 +81,7 @@ public class VoidDetonationHandler : ProjectionHandler
         {
             _projection.SetOpacity(1f);
             MoveTo(_sourceEnemy.transform.position);
+            _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         }
 
     }

@@ -171,6 +171,10 @@ public class EntityPhysics : DynamicPhysics
             {
                 if (entity.GetBottomHeight() < this.GetTopHeight() && entity.GetTopHeight() > this.GetBottomHeight())
                 {
+                    if (entity == null)
+                    {
+                        continue;
+                    }
                     //get the location relative to this objects location
                     Vector2 amountOfForceToAdd = new Vector2(entity.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, entity.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
                     amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, m ight want different force strengths

@@ -12,6 +12,7 @@ public class FireDetonationHandler : ProjectionHandler
     }
 
 
+
     public static void InitializePool()
     {
         _objectPool = new List<GameObject>();
@@ -61,6 +62,7 @@ public class FireDetonationHandler : ProjectionHandler
     private bool hasDetonated = false;
     public Vector2 DesiredPosition { get; set; }
 
+    private List<GameObject> _sparks;
 
     public EntityPhysics _sourceEnemy;
 
@@ -76,7 +78,22 @@ public class FireDetonationHandler : ProjectionHandler
         hasDetonated = false;
         Debug.Log("Deployed!");
         MoveTo(DesiredPosition);
+        _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         _projection.SetOpacity(1.0f);
+
+        if (_sparks == null)
+        {
+            _sparks = new List<GameObject>();
+            GameObject tempBullet;
+            for (int i = 0; i < 6; i++)
+            {
+                tempBullet = Instantiate(Resources.Load("Prefabs/Bullets/Spark")) as GameObject;
+                //tempBullet.GetComponentInChildren<Rigidbody2D>().position = new Vector2(1000, 1000);
+                tempBullet.SetActive(false);
+                _sparks.Add(tempBullet);
+            }
+            
+        }
     }
     
 
@@ -86,6 +103,7 @@ public class FireDetonationHandler : ProjectionHandler
         {
             _projection.SetOpacity(1f);
             MoveTo(_sourceEnemy.transform.position);
+            _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         }
 
     }
@@ -97,7 +115,7 @@ public class FireDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(16f, 12f), 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(4f, 3f), 0.0f);
         Debug.DrawLine(_damageVolume.bounds.center + new Vector3(4f, 3f, 0f), _damageVolume.bounds.center + new Vector3(-4f, -3f, 0f), Color.cyan, 1f, false);
         foreach (Collider2D collider in collidersHit)
         {
@@ -112,6 +130,19 @@ public class FireDetonationHandler : ProjectionHandler
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);
         StartCoroutine(PlayAnimation());
+
+        //spawn projectiles
+
+        for (int i = 0; i < _sparks.Count; i++)
+        {
+            _sparks[i].SetActive(true);
+            _sparks[i].GetComponentInChildren<BulletHandler>().MoveDirection = Random.insideUnitCircle;
+            _sparks[i].GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(_physics.GetObjectElevation() + 2.5f);
+            //_sparks[i].GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(10f);
+            _sparks[i].GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (_physics.GetComponent<Rigidbody2D>().position);
+            Debug.Log("SPARK HEIGHT : " + _sparks[i].GetComponentInChildren<ProjectilePhysics>().GetObjectElevation());
+            //_sparks[i].GetComponentInChildren<ProjectilePhysics>().ZVelocity = 100f;
+        }
     }
 
     IEnumerator PlayAnimation()

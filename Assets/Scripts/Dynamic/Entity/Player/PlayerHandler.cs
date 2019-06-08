@@ -47,7 +47,7 @@ public class PlayerHandler : EntityHandler
     //[SerializeField] private UIHealthBar _healthBar;
     [SerializeField] private PlayerHealthBarHandler _healthBar;
     
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL};
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -148,6 +148,9 @@ public class PlayerHandler : EntityHandler
     private bool _blink_hasButtonMashed = false;
     private bool _hasAlreadyBlinkedInMidAir = false;
 
+    //=====================| HEAL
+    private const float heal_duration = 0.95f;
+    private const int heal_cost = 4;
 
 
     //=====================| JUMP/FALL FIELDS
@@ -293,15 +296,7 @@ public class PlayerHandler : EntityHandler
     private void CheckStyleChange()
     {
         _previousStyle = _currentStyle;
-        if (controller.GetButton("ChangeStyle_Normal") && _currentStyle != ElementType.NONE)
-        {
-            //Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
-            //ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
-            _currentStyle = ElementType.NONE;
-            CurrentState = PlayerState.CHANGE_STYLE;
-            StateTimer = _changeStyleDuration;
-        }
-        else if (controller.GetButton("ChangeStyle_Fire") && _currentStyle != ElementType.FIRE)
+        if (controller.GetButton("ChangeStyle_Fire") && _currentStyle != ElementType.FIRE)
         {
             //Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
             //ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0f));
@@ -1464,7 +1459,14 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-
+    private void PlayerHealTransitionAttempt()
+    {
+        if (entityPhysics.GetCurrentHealth() < entityPhysics.GetMaxHealth() && CurrentEnergy >= heal_cost)
+        {
+            ChangeEnergy(-4);
+            CurrentState = PlayerState.HEAL;
+        }
+    }
 
     //==================================================================================| MISC
 

@@ -79,6 +79,7 @@ public class ZapDetonationHandler : ProjectionHandler
         {
             _projection.SetOpacity(1f);
             MoveTo(_sourceEnemy.transform.position);
+            _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         }
 
     }

@@ -107,6 +107,7 @@ MonoBehaviour:
   entityHandler: {fileID: 114388937944588230}
   MaxHP: 5
   _pushForceMultiplier: 1
+  _maxVelocity: 8
   _spawner: {fileID: 0}
   _burnParticlesPrefab: {fileID: 228049819559016160, guid: d2116290bdbe50848aef54609c025159,
     type: 3}
@@ -676,7 +677,7 @@ Animator:
   m_GameObject: {fileID: 1727732317533918}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b6074dbe8cec07348b2bcc345cadfb4f, type: 2}
+  m_Controller: {fileID: 9100000, guid: fa2733b24807f2044a01825ea1a8e3ba, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

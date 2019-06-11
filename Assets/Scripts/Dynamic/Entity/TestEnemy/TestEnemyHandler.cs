@@ -13,29 +13,29 @@ public class TestEnemyHandler : EntityHandler
     enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH };
     private TestEnemyState currentState;
 
-    const string IDLE_EAST_Anim = "Anim_EnemyIdleEast";
-    const string IDLE_WEST_Anim = "Anim_EnemyIdleWest";
-    const string RUN_EAST_Anim = "Anim_EnemyRunEast";
-    const string RUN_WEST_Anim = "Anim_EnemyRunWest";
+    const string IDLE_EAST_Anim = "SwordEnemy_IdleEast";
+    const string IDLE_WEST_Anim = "SwordEnemy_IdleWest";
+    const string RUN_EAST_Anim = "SwordEnemy_RunEast";
+    const string RUN_WEST_Anim = "SwordEnemy_RunWest";
     const string JUMP_EAST_Anim = "Anim_EnemyJumpEast";
     const string JUMP_WEST_Anim = "Anim_EnemyJumpWest";
     const string FALL_EAST_Anim = "Anim_EnemyFallEast";
     const string FALL_WEST_Anim = "Anim_EnemyFallWest";
 
-    const string READY_NORTH_Anim = "Anim_EnemyReadyNorth";
-    const string READY_SOUTH_Anim = "Anim_EnemyReadySouth";
-    const string READY_EAST_Anim = "Anim_EnemyReadyEast";
-    const string READY_WEST_Anim = "Anim_EnemyReadyWest";
+    const string READY_NORTH_Anim = "SwordEnemy_ReadyNorth";
+    const string READY_SOUTH_Anim = "SwordEnemy_ReadySouth";
+    const string READY_EAST_Anim = "SwordEnemy_ReadyEast";
+    const string READY_WEST_Anim = "SwordEnemy_ReadyWest";
 
-    const string ATTACK_NORTH_Anim = "Anim_EnemyAttackNorth";
-    const string ATTACK_SOUTH_Anim = "Anim_EnemyAttackSouth";
-    const string ATTACK_EAST_Anim = "Anim_EnemyAttackEast";
-    const string ATTACK_WEST_Anim = "Anim_EnemyAttackWest";
+    const string ATTACK_NORTH_Anim = "SwordEnemy_AttackNorth";
+    const string ATTACK_SOUTH_Anim = "SwordEnemy_AttackSouth";
+    const string ATTACK_EAST_Anim = "SwordEnemy_AttackEast";
+    const string ATTACK_WEST_Anim = "SwordEnemy_AttackWest";
 
-    const string SWING_NORTH_Anim = "Anim_EnemySlashNorth";
-    const string SWING_SOUTH_Anim = "Anim_EnemySlashSouth";
-    const string SWING_EAST_Anim = "Anim_EnemySlashEast";
-    const string SWING_WEST_Anim = "Anim_EnemySlashWest";
+    const string SWING_NORTH_Anim = "SwordEnemy_SlashNorth";
+    const string SWING_SOUTH_Anim = "SwordEnemy_SlashSouth";
+    const string SWING_EAST_Anim = "SwordEnemy_SlashEast";
+    const string SWING_WEST_Anim = "SwordEnemy_SlashWest";
 
     const string FLINCH_Anim = "Anim_Flinch";
 

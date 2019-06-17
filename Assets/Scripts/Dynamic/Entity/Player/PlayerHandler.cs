@@ -66,6 +66,7 @@ public class PlayerHandler : EntityHandler
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
     const string FALL_WEST_Anim = "Anim_PlayerFallWest";
     const string STYLE_CHANGE_Anim = "Change_Attunement";
+    const string HEAL_ANIM = "Change_Attunement"; //TODO : have a different animation for this my dude
 
     
 
@@ -151,6 +152,7 @@ public class PlayerHandler : EntityHandler
     //=====================| HEAL
     private const float heal_duration = 0.95f;
     private const int heal_cost = 4;
+    private bool hasHealed = false;
 
 
     //=====================| JUMP/FALL FIELDS
@@ -287,6 +289,11 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.CHANGE_STYLE):
                 PlayerChangeStyle();
                 break;
+            case (PlayerState.HEAL):
+                PlayerHeal();
+                break;
+            default:
+                throw new Exception("Unhandled player state");
         }
     }
     
@@ -407,6 +414,10 @@ public class PlayerHandler : EntityHandler
             PlayerBlinkTransitionAttempt();
         }
         CheckStyleChange();
+        if (controller.GetButtonDown("Heal"))
+        {
+            PlayerHealTransitionAttempt();
+        }
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
@@ -555,6 +566,10 @@ public class PlayerHandler : EntityHandler
         {
             PlayerBlinkTransitionAttempt();
         }
+        if (controller.GetButtonDown("Heal"))
+        {
+            PlayerHealTransitionAttempt();
+        }
         CheckStyleChange();
 
         if (CurrentState == PlayerState.RUN)
@@ -690,44 +705,7 @@ public class PlayerHandler : EntityHandler
         CurrentState = PlayerState.JUMP;
     }
 
-    private void PlayerChangeStyle()
-    {
-        characterAnimator.Play(STYLE_CHANGE_Anim);
-        UpdateAimDirection();
-        StateTimer -= Time.deltaTime;
-
-        if (StateTimer < _changeStyleColorChangeTime && !_changeStyle_HasChanged)
-        {
-            _changeStyle_HasChanged = true;
-            switch (_currentStyle)
-            {
-                case ElementType.FIRE:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0.0f));
-                    break;
-                case ElementType.VOID:
-                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0.0f, 1.0f));
-                    break;
-                case ElementType.ZAP:
-                    Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
-                    break;
-                default:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
-                    break;
-            }
-        }
-
-
-        if (StateTimer < 0)
-        {
-            CurrentState = PlayerState.RUN;
-            _changeStyle_HasChanged = false;
-        }
-
-    }
+    
 
     #endregion
 
@@ -1413,13 +1391,81 @@ public class PlayerHandler : EntityHandler
 
     #endregion
 
-    public override void JustGotHit()
+    //---------------------------------------------| Misc
+    public void PlayerHeal()
     {
-        Debug.Log("Player: Ow!");
-        FollowingCamera.GetComponent<CameraScript>().Shake(1f, 6, 0.01f);
-        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.7f, 0.1f, Color.red);
-        //_healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
+        if (StateTimer == heal_duration)
+        {
+            characterAnimator.Play(HEAL_ANIM);
+            Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.0f, 0.5f, 1f));
+        }
+        else if (StateTimer < _changeStyleColorChangeTime && !hasHealed)
+        {
+            switch (_currentStyle)
+            {
+                case ElementType.FIRE:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+                    break;
+                case ElementType.VOID:
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                    break;
+                case ElementType.ZAP:
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                    break;
+                default:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+                    break;
+            }
+            entityPhysics.Heal(1);
+            hasHealed = true;
+        }
+        else if (StateTimer < 0)
+        {
+            CurrentState = PlayerState.IDLE;
+            hasHealed = false;
+        }
+        StateTimer -= Time.deltaTime;
     }
+
+    private void PlayerChangeStyle()
+    {
+        characterAnimator.Play(STYLE_CHANGE_Anim);
+        UpdateAimDirection();
+        StateTimer -= Time.deltaTime;
+
+        if (StateTimer < _changeStyleColorChangeTime && !_changeStyle_HasChanged)
+        {
+            _changeStyle_HasChanged = true;
+            switch (_currentStyle)
+            {
+                case ElementType.FIRE:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0.0f));
+                    break;
+                case ElementType.VOID:
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0.0f, 1.0f));
+                    break;
+                case ElementType.ZAP:
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
+                    break;
+                default:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
+                    break;
+            }
+        }
+
+
+        if (StateTimer < 0)
+        {
+            CurrentState = PlayerState.RUN;
+            _changeStyle_HasChanged = false;
+        }
+
+    }
+
 
     //================================================================================| TRANSITIONS
 
@@ -1465,10 +1511,19 @@ public class PlayerHandler : EntityHandler
         {
             ChangeEnergy(-4);
             CurrentState = PlayerState.HEAL;
+            StateTimer = heal_duration;
         }
     }
 
     //==================================================================================| MISC
+
+    public override void JustGotHit()
+    {
+        Debug.Log("Player: Ow!");
+        FollowingCamera.GetComponent<CameraScript>().Shake(1f, 6, 0.01f);
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.7f, 0.1f, Color.red);
+        //_healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
+    }
 
     public override void OnDeath()
     {

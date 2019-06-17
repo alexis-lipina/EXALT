@@ -393,7 +393,10 @@ public class EntityPhysics : DynamicPhysics
         _burnTimer_Inflicts = _burnTimeBetweenInflicts;
     }
 
-
+    public virtual void Heal(int amount)
+    {
+        currentHP += amount;
+    }
 
     IEnumerator TakeDamageFlash()
     {

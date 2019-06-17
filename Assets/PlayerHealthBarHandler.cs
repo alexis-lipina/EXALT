@@ -24,15 +24,15 @@ public class PlayerHealthBarHandler : MonoBehaviour
     void Update()
     {
         if (_currentPlayerHealth == _playerPhysics.GetCurrentHealth()) return; //short circuit if no changes
-
+        int _previousPlayerHealth = _currentPlayerHealth;
         _currentPlayerHealth = _playerPhysics.GetCurrentHealth();
         for (int i = 0; i < _healthBarSegments.Count; i++)
         {
-            if (i < _currentPlayerHealth)
+            if (i < _currentPlayerHealth && i >= _previousPlayerHealth)
             {
-                _healthBarSegments[i].sprite = _onSprite;
+                StartCoroutine(TurnOn(_healthBarSegments[i]));
             }
-            else if (i == _currentPlayerHealth)
+            else if (i >= _currentPlayerHealth && i < _previousPlayerHealth)
             {
                 StartCoroutine(TurnOff(_healthBarSegments[i]));
             }
@@ -62,5 +62,24 @@ public class PlayerHealthBarHandler : MonoBehaviour
 
         yield return new WaitForSeconds(0.02f);
         segment.sprite = _offSprite;
+    }
+
+    IEnumerator TurnOn(Image segment)
+    {
+        segment.sprite = _flashSprite;
+        float originalHeight = segment.GetComponent<RectTransform>().rect.height;
+
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight * 100f);
+        segment.sprite = _flashSprite;
+
+        yield return new WaitForSeconds(0.04f);
+
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight * 2f);
+        segment.sprite = _flashSprite;
+
+        yield return new WaitForSeconds(0.04f);
+
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight );
+        segment.sprite = _onSprite;
     }
 }

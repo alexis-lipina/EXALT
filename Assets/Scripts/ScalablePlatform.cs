@@ -23,6 +23,7 @@ public class ScalablePlatform : MonoBehaviour {
     [SerializeField] private float elevation; //height of bottom of object from world-plane zero
     [SerializeField] private SpriteDrawMode drawMode = SpriteDrawMode.Sliced;
     [SerializeField] private bool autoCollider = false; //automatically set collider offset
+    [SerializeField] private bool forceDrawMode = true; 
 
     private void OnDrawGizmosSelected()
     {
@@ -33,11 +34,21 @@ public class ScalablePlatform : MonoBehaviour {
         //human error checking
         Assert.IsNotNull(top, gameObject.name + " requires top section child object");
         Assert.IsNotNull(side, gameObject.name + " requires side section child object");
-        Assert.IsFalse(drawMode == SpriteDrawMode.Simple, gameObject.name + "'s Draw mode can't be simple");
+        //Assert.IsFalse(drawMode == SpriteDrawMode.Simple, gameObject.name + "'s Draw mode can't be simple");
 
         //set renderer properties
-        top.drawMode = drawMode;
-        side.drawMode = drawMode;
+        if (forceDrawMode)
+        {
+            top.drawMode = drawMode;
+            side.drawMode = drawMode;
+        }
+        else
+        {
+            top.drawMode = SpriteDrawMode.Simple;
+            side.drawMode = SpriteDrawMode.Simple;
+            top.transform.localScale = new Vector3(1, 1, 1);
+            side.transform.localScale = new Vector3(1, 1, 1);
+        }
         top.size = new Vector2(dimensions.x, dimensions.y);
         side.size = new Vector2(dimensions.x, dimensions.z);
         side.transform.localPosition = Vector2.down * ((dimensions.y / 2) + (dimensions.z / 2) - elevation);

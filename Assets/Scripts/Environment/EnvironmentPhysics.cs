@@ -81,7 +81,7 @@ public class EnvironmentPhysics : PhysicsObject
             _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
 
             GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", _opacity);
-            GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", _opacity);
+            if (GetComponentsInChildren<SpriteRenderer>().Length > 1) GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", _opacity);
 
             /*
             if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z)

@@ -22,7 +22,7 @@ TextureImporter:
     21300034: North_19
     21300036: North_18
     21300038: North_16
-    21300040: FrontSnowSpritesheet_0
+    21300040: North_17
     21300042: North_14
     21300044: North_9
     21300046: North_8
@@ -68,7 +68,13 @@ TextureImporter:
     21300126: SW_3
     21300128: SW_4
     21300130: SW_5
-    21300132: FrontSnowSpritesheet_1
+    21300132: West_13
+    21300134: West_12
+    21300136: West_11
+    21300138: West_8
+    21300140: West_5
+    21300142: West_3
+    21300144: NE_21
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -87,7 +93,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -551,7 +557,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FrontSnowSpritesheet_0
+      name: North_17
       rect:
         serializedVersion: 2
         x: 1376
@@ -1459,7 +1465,7 @@ TextureImporter:
         width: 8
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1471,7 +1477,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FrontSnowSpritesheet_1
+      name: West_13
       rect:
         serializedVersion: 2
         x: 768
@@ -1479,13 +1485,133 @@ TextureImporter:
         width: 32
         height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: 0938a6d2bcab8a84fbba0ff271d29370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: West_12
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 1044
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a647d1516f1c79f4ba4daacd07251432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: West_11
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 1016
+        width: 64
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 633c19b9e5106094799543d019b8337c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: West_8
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 1000
+        width: 96
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6f90c38146243d43a08343a35e21b47
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: West_5
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 1032
+        width: 64
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6128fc49810a812408baa4d158801e16
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: West_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 1024
+        width: 96
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a89ccada806e1f444a7680543eb3dd2a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NE_21
+      rect:
+        serializedVersion: 2
+        x: 1966
+        y: 1284
+        width: 80
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf9ca2bc812e52547948203d1586a16f
       vertices: []
       indices: 
       edges: []

@@ -75,6 +75,16 @@ TextureImporter:
     21300140: West_5
     21300142: West_3
     21300144: NE_21
+    21300146: SW_2
+    21300148: SE_6
+    21300150: SE_7
+    21300152: NE_19
+    21300154: South_1
+    21300156: South_2
+    21300158: South_4
+    21300160: South_3
+    21300162: South_5
+    21300164: South_9
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -1262,7 +1272,7 @@ TextureImporter:
         serializedVersion: 2
         x: 2048
         y: 684
-        width: 32
+        width: 64
         height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -1600,7 +1610,7 @@ TextureImporter:
       name: NE_21
       rect:
         serializedVersion: 2
-        x: 1966
+        x: 1968
         y: 1284
         width: 80
         height: 16
@@ -1612,6 +1622,206 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: bf9ca2bc812e52547948203d1586a16f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SW_2
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 732
+        width: 112
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 570b6ea9b7717804db707c5237fcaba5
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SE_6
+      rect:
+        serializedVersion: 2
+        x: 1712
+        y: 732
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96e8abebaa1ce4c4aaab5e3cd4f084f7
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SE_7
+      rect:
+        serializedVersion: 2
+        x: 1872
+        y: 724
+        width: 240
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5eb7c08cedf9f1347bd8feb3d96f7a67
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NE_19
+      rect:
+        serializedVersion: 2
+        x: 1872
+        y: 1308
+        width: 240
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a362ca17b249f643b09b5507bf8c2e2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: South_1
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 496
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 882ca80a1d585d8428ff25618b09ab4d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: South_2
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 480
+        width: 48
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6dcf4dbbdf38f1479a8c4449c206773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: South_4
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 416
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62501e48d8d8f084592d3986085244e2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: South_3
+      rect:
+        serializedVersion: 2
+        x: 1480
+        y: 480
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 148f04f6809039b4e85f3a1de069bacb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: South_5
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 416
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1362d5ae1115814a8b0b0c07d5dd9ba
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: South_9
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 288
+        width: 104
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cd14d698e9313a41beb9f7b71772185
       vertices: []
       indices: 
       edges: []

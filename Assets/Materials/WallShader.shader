@@ -68,7 +68,7 @@ Shader "Custom/WallShader"
 			{
 
 				float4 color = tex2D(_MainTex, output.uv);
-				
+				float src_opacity = color.a;
 				//get diff for top and bottom
 				float top_diff = _TopElevation - _PlayerElevation;
 				float bottom_diff = _BottomElevation - _PlayerElevation;
@@ -89,7 +89,8 @@ Shader "Custom/WallShader"
 					ratio = abs(ratio);
 					color = (1 - ratio) * color + ratio * _LowColor;
 				}
-				color.a = _Opacity; //change this in the future so that half-transparent pixels dont get screwed up
+				//color.a = _Opacity; //change this in the future so that half-transparent pixels dont get screwed up
+				color.a = src_opacity * _Opacity;
 				return color;
 			}
 

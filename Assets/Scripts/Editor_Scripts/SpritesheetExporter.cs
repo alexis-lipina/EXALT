@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 
+#if UNITY_EDITOR
 public class SpritesheetSlicer// : MonoBehaviour
 {
     [MenuItem("Assets/Slice_And_Export_Spritesheet")]
@@ -38,3 +39,4 @@ public class SpritesheetSlicer// : MonoBehaviour
         return Selection.activeObject is Texture;
     }
 }
+#endif

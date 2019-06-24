@@ -893,7 +893,7 @@ public class PlayerHandler : EntityHandler
         if (StateTimer == time_heavyMelee)
         {
             _audioSource.Play();
-            ChangeEnergy(1);
+            //ChangeEnergy(1);
             StartCoroutine(PlayHeavyAttack(false));
 
             //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
@@ -984,7 +984,7 @@ public class PlayerHandler : EntityHandler
                     node.GetComponent<Transform>().position = new Vector3(obj.GetComponent<Rigidbody2D>().position.x, obj.GetComponent<Rigidbody2D>().position.y, obj.GetComponent<Rigidbody2D>().position.y);
                     node.GetComponent<LightningChainNode>()._myEnemy = obj.GetComponent<EntityPhysics>();
                     node.GetComponent<LightningChainNode>().Run();
-
+                    ChangeEnergy(1);
                     Debug.Log("Owch!");
                     obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 2.0f, ElementType.ZAP); 
                 }
@@ -1005,7 +1005,7 @@ public class PlayerHandler : EntityHandler
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
-
+                    ChangeEnergy(1);
                     Debug.Log("Owch!");
                     obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 2.0f, ElementType.FIRE);
                     obj.GetComponent<EntityPhysics>().Burn();
@@ -1027,7 +1027,7 @@ public class PlayerHandler : EntityHandler
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
-
+                    ChangeEnergy(1);
                     Debug.Log("Owch!");
                     obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 5.0f, ElementType.VOID);
                 }

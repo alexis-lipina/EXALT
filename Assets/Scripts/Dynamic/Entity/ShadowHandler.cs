@@ -32,6 +32,7 @@ public class ShadowHandler : MonoBehaviour
 
         //send rect to shader
         gameObject.GetComponent<SpriteRenderer>().material.SetColor("_CullRect", new Color(rect.x, rect.y, rect.z, rect.w));
+        gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_Elevation", height);
     }
 
     public void DebugCoordinateCuzImAwfulAtCoding(Vector2 coord)

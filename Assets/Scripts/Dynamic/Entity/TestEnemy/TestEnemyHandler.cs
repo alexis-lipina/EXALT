@@ -17,10 +17,10 @@ public class TestEnemyHandler : EntityHandler
     const string IDLE_WEST_Anim = "SwordEnemy_IdleWest";
     const string RUN_EAST_Anim = "SwordEnemy_RunEast";
     const string RUN_WEST_Anim = "SwordEnemy_RunWest";
-    const string JUMP_EAST_Anim = "Anim_EnemyJumpEast";
-    const string JUMP_WEST_Anim = "Anim_EnemyJumpWest";
-    const string FALL_EAST_Anim = "Anim_EnemyFallEast";
-    const string FALL_WEST_Anim = "Anim_EnemyFallWest";
+    const string JUMP_EAST_Anim = "SwordEnemy_JumpEast";
+    const string JUMP_WEST_Anim = "SwordEnemy_JumpWest";
+    const string FALL_EAST_Anim = "SwordEnemy_FallEast";
+    const string FALL_WEST_Anim = "SwordEnemy_FallWest";
 
     const string READY_NORTH_Anim = "SwordEnemy_ReadyNorth";
     const string READY_SOUTH_Anim = "SwordEnemy_ReadySouth";
@@ -39,7 +39,8 @@ public class TestEnemyHandler : EntityHandler
 
     const string FLINCH_Anim = "Anim_Flinch";
 
-    
+    const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
+    const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
 
     private bool _isPrimed_Void = false;
     private GameObject _voidPrimeVfx;
@@ -86,7 +87,7 @@ public class TestEnemyHandler : EntityHandler
     }
     private TempTexDirection tempDirection;
     private const float AttackMovementSpeed = 0.2f;
-    private const float JumpImpulse = 30f;
+    private const float JumpImpulse = 40f;
 
     private float attackCoolDown;
     float xInput;
@@ -471,7 +472,7 @@ public class TestEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         stateTimer += Time.deltaTime;
-        if (stateTimer < 0.5) //if 500 ms have passed
+        if (stateTimer < 0.4) //if 500 ms have passed
         {
             //do nothing
         }

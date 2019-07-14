@@ -8,11 +8,19 @@ using UnityEngine;
 /// </summary>
 public abstract class EntityHandler : MonoBehaviour
 {
+    [SerializeField] protected AudioSource _primeAudioSource;
     [SerializeField] protected EntityPhysics entityPhysics;
     protected enum FaceDirection {NORTH, WEST, SOUTH, EAST }
-    //[SerializeField] protected GameObject EntitySprite;
 
-
+    // prime / detonation fields
+    protected bool _isPrimed_Void = false;
+    protected GameObject _voidPrimeVfx;
+    protected bool _isPrimed_Zap = false;
+    protected GameObject _zapPrimeVfx;
+    protected bool _isPrimed_Fire = false;
+    protected GameObject _firePrimeVfx;
+    protected List<ElementType> currentPrimes;
+    protected bool _isDetonating = false;
 
     /// <summary>
     /// Contains the state machine switch statement and calls state methods
@@ -28,5 +36,104 @@ public abstract class EntityHandler : MonoBehaviour
     public virtual void OnDeath()
     {
         GameObject.Destroy(transform.parent);
+    }
+
+    public void PerformDetonations(ElementType elementOfAttack)
+    {
+        if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap) || elementOfAttack == ElementType.NONE) return;
+
+        if (!currentPrimes.Contains(elementOfAttack))
+        {
+            PrimeEnemy(elementOfAttack);
+        }
+
+        List<ElementType> detonations = new List<ElementType>();
+
+        foreach (ElementType element in currentPrimes)
+        {
+            switch (element)
+            {
+                case ElementType.FIRE:
+                    Debug.Log("Fire Detonation");
+                    _isPrimed_Fire = false;
+                    //Destroy(_firePrimeVfx);
+                    detonations.Add(ElementType.FIRE);
+                    break;
+                case ElementType.ZAP:
+                    Debug.Log("Zap Detonation");
+                    _isPrimed_Zap = false;
+                    //Destroy(_zapPrimeVfx);
+                    detonations.Add(ElementType.ZAP);
+                    break;
+                case ElementType.VOID:
+                    Debug.Log("Void Detonation");
+                    _isPrimed_Void = false;
+                    //Destroy(_voidPrimeVfx);
+                    detonations.Add(ElementType.VOID);
+                    break;
+            }
+        }
+        currentPrimes = new List<ElementType>();
+
+        StartCoroutine(ExecuteDetonations(detonations));
+
+
+        Debug.Log("Blam!");
+    }
+
+    public void PrimeEnemy(ElementType type)
+    {
+        if (_isPrimed_Void && type == ElementType.VOID || _isPrimed_Fire && type == ElementType.FIRE || _isPrimed_Zap && type == ElementType.ZAP) return;
+        _primeAudioSource.Play();
+        switch (type)
+        {
+            case ElementType.FIRE:
+                _isPrimed_Fire = true;
+                //_firePrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Fire", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _firePrimeVfx = FireDetonationHandler.DeployFromPool(entityPhysics);
+                currentPrimes.Add(type);
+                return;
+            case ElementType.VOID:
+                _isPrimed_Void = true;
+                //_voidPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Void", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _voidPrimeVfx = VoidDetonationHandler.DeployFromPool(entityPhysics);
+                currentPrimes.Add(type);
+                return;
+            case ElementType.ZAP:
+                _isPrimed_Zap = true;
+                //_zapPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Zap", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _zapPrimeVfx = ZapDetonationHandler.DeployFromPool(entityPhysics);
+                currentPrimes.Add(type);
+                return;
+        }
+    }
+
+    IEnumerator ExecuteDetonations(List<ElementType> detonations)
+    {
+        _isDetonating = true;
+        yield return new WaitForSeconds(0.1f);
+        foreach (ElementType element in detonations)
+        {
+            switch (element)
+            {
+                case ElementType.FIRE:
+                    //FireDetonationHandler.DeployFromPool(entityPhysics);
+                    _firePrimeVfx.GetComponent<FireDetonationHandler>().Detonate();
+                    _firePrimeVfx = null;
+                    break;
+                case ElementType.VOID:
+                    //VoidDetonationHandler.DeployFromPool(entityPhysics);
+                    _voidPrimeVfx.GetComponent<VoidDetonationHandler>().Detonate();
+                    _voidPrimeVfx = null;
+                    break;
+                case ElementType.ZAP:
+                    _zapPrimeVfx.GetComponent<ZapDetonationHandler>().Detonate();
+                    _zapPrimeVfx = null;
+                    break;
+            }
+            yield return new WaitForSeconds(0.15f);
+        }
+        _isDetonating = false;
+        if (entityPhysics.GetCurrentHealth() <= 0) OnDeath();
     }
 }

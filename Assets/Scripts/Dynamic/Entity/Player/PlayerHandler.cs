@@ -99,10 +99,15 @@ public class PlayerHandler : EntityHandler
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
     private float _timeToComboReady = 0.17f; //higher means more generous
     private bool _hitComboBeforeReady;
+    private const float LIGHTMELEE_FORCE = 1.0f;
 
+    // heavy melee
     private const float time_heavyMelee = 0.3f;
     private Vector2 heavymelee_hitbox = new Vector2(8, 4);
     private float _lengthOfHeavyMeleeAnimation;
+    private const float HEAVYMELEE_VOID_FORCE = 5.0f;
+    private const float HEAVYMELEE_ZAP_FORCE = 2.0f;
+    private const float HEAVYMELEE_FIRE_FORCE = 2.0f;
 
     //Charge Stuff
     private const float time_Charge = 1.45f; //total time before player is charged up
@@ -688,7 +693,7 @@ public class PlayerHandler : EntityHandler
         {
             if (hit.collider.tag == "Enemy")
             {
-                ((TestEnemyHandler)hit.collider.GetComponent<EntityPhysics>().Handler).PrimeEnemy(_currentStyle);
+                hit.transform.GetComponent<EntityPhysics>().Handler.PrimeEnemy(_currentStyle);
             }
         }
 
@@ -745,7 +750,7 @@ public class PlayerHandler : EntityHandler
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.3f, 10, 0.01f);
 
                         //Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 1f);
+                        obj.GetComponent<EntityPhysics>().Inflict(1, force: aimDirection.normalized * 1f);
                         ChangeEnergy(1);
                     }
 
@@ -983,10 +988,14 @@ public class PlayerHandler : EntityHandler
                     node.GetComponent<LightningChainNode>()._sourcePosition = entityPhysics.GetComponent<Rigidbody2D>().position + entityPhysics.GetBottomHeight() * Vector2.up;
                     node.GetComponent<Transform>().position = new Vector3(obj.GetComponent<Rigidbody2D>().position.x, obj.GetComponent<Rigidbody2D>().position.y, obj.GetComponent<Rigidbody2D>().position.y);
                     node.GetComponent<LightningChainNode>()._myEnemy = obj.GetComponent<EntityPhysics>();
+                    var wavefront = new ChainZapWavefront();
+                    wavefront.AlreadyHit = new List<int>();
+                    wavefront.AlreadyHit.Add(obj.GetInstanceID());
+                    node.GetComponent<LightningChainNode>()._wavefront = wavefront;
                     node.GetComponent<LightningChainNode>().Run();
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 2.0f, ElementType.ZAP); 
+                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized*2.0f, type:ElementType.ZAP); 
                 }
             }
         }
@@ -1007,7 +1016,7 @@ public class PlayerHandler : EntityHandler
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 2.0f, ElementType.FIRE);
+                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized*2.0f, type:ElementType.FIRE);
                     obj.GetComponent<EntityPhysics>().Burn();
                 }
             }
@@ -1029,7 +1038,7 @@ public class PlayerHandler : EntityHandler
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, aimDirection.normalized, 5.0f, ElementType.VOID);
+                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized * 5.0f, type:ElementType.VOID);
                 }
             }
         }
@@ -1109,7 +1118,7 @@ public class PlayerHandler : EntityHandler
                     //Debug.Log("Owch!");
                     Vector2 displacementOfEnemy = hitEntities[i].transform.position - entityPhysics.transform.position;
                     displacementOfEnemy = (displacementOfEnemy.normalized * 10.0f) / (displacementOfEnemy.magnitude + 1);
-                    hitEntities[i].GetComponent<EntityPhysics>().Inflict(1, displacementOfEnemy, displacementOfEnemy.magnitude, _currentStyle);
+                    hitEntities[i].GetComponent<EntityPhysics>().Inflict(1, force: displacementOfEnemy, type:_currentStyle);
                 }
             }
         }
@@ -1291,7 +1300,7 @@ public class PlayerHandler : EntityHandler
         }
         if (hitEntity)
         {
-            hitEntity.Inflict(1, aimDirection, 1.0f, ElementType.ZAP);
+            hitEntity.Inflict(1, force:aimDirection * 2.0f, type:ElementType.ZAP);
         }
         /*
         _lightRangedZap.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
@@ -1368,7 +1377,7 @@ public class PlayerHandler : EntityHandler
         
         foreach(EntityPhysics enemy in enemiesHit)
         {
-            enemy.Inflict(1, aimDirection, 5.0f, ElementType.ZAP);
+            enemy.Inflict(1, force:aimDirection * 5.0f, type:ElementType.ZAP);
         }
 
         _chargedRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y - _projectileStartHeight), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y - _projectileStartHeight));

@@ -100,12 +100,12 @@ public class VoidDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, type:Element);
                 }
                 else
                 {
                     Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
-                    collider.GetComponent<EntityPhysics>().Inflict(1, enemyToCenter, Mathf.Sqrt(enemyToCenter.magnitude) / 5f, ElementType.VOID);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, force:enemyToCenter * Mathf.Sqrt(enemyToCenter.magnitude) / 5f, type:ElementType.VOID);
                 }
             }
         }

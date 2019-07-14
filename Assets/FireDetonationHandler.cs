@@ -123,9 +123,9 @@ public class FireDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, type:Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1, Element);
+                else collider.GetComponent<EntityPhysics>().Inflict(1, type:Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

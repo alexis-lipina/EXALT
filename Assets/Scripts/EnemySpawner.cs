@@ -31,7 +31,7 @@ public class EnemySpawner : MonoBehaviour
             //tempBullet.GetComponentInChildren<Rigidbody2D>().position = new Vector2(1000, 1000);
             tempEnemy.GetComponentInChildren<EntityAI>().navManager = _navManager;
             tempEnemy.GetComponentInChildren<EntityPhysics>().navManager = _navManager;
-            tempEnemy.GetComponentInChildren<TestEnemyAI>().target = _playerPhysics;
+            tempEnemy.GetComponentInChildren<PathfindingAI>().target = _playerPhysics;
             tempEnemy.GetComponentInChildren<EntityPhysics>()._spawner = this;
             tempEnemy.SetActive(false);
             _enemyPool.Add(tempEnemy.GetInstanceID(), tempEnemy);
@@ -73,7 +73,7 @@ public class EnemySpawner : MonoBehaviour
                 Debug.Log("<color=red>" + _startEnvironment + "</color>");
                 Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
                 tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f));
-                tempEnemy.GetComponentInChildren<TestEnemyAI>().SetPath(_startEnvironment);
+                tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
 
                 //move enemy into position
 

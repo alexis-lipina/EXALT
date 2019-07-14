@@ -95,7 +95,7 @@ public class EntityPhysics : DynamicPhysics
             _burnTimer_Inflicts -= Time.deltaTime;
             if (_burnTimer_Inflicts < 0) //if times up, damage and reset
             {
-                Inflict(1, ElementType.FIRE);
+                Inflict(1, type: ElementType.FIRE);
                 _burnTimer_Inflicts = _burnTimeBetweenInflicts;
             }
             if (_burnTimer <= 0) // can only happen one time
@@ -328,8 +328,13 @@ public class EntityPhysics : DynamicPhysics
     /// Deal this entity damage, causing them to flash and lose health
     /// </summary>
     /// <param name="damage">Quantity of health to subtract from the entity</param>
-    public virtual void Inflict(int damage)
+    public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
+        entityHandler.PerformDetonations(type);
+
+        MoveWithCollision(force.x * _pushForceMultiplier, force.y * _pushForceMultiplier); //TODO : HEY UHHHH THIS DOESNT DO ANYTHING IF THEYRE MOVING ALREADY I DONT THINK
+        _netForces += (Vector3)(force);
+
         GetComponent<AudioSource>().Play();
         hasBeenHit = true;
         currentHP -= damage;
@@ -342,41 +347,8 @@ public class EntityPhysics : DynamicPhysics
         else
         {
             StartCoroutine(TakeDamageFlash());
-            ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.03f);
+            ScreenFlash.InstanceOfScreenFlash.PlayHitPause(hitPauseDuration);
         }
-    }
-
-    public virtual void Inflict(int damage, ElementType type)
-    {
-        if (entityHandler is TestEnemyHandler)
-        {
-            ((TestEnemyHandler)entityHandler).PerformDetonations(type);
-        }
-        Inflict(damage);
-    }
-
-    /// <summary>
-    /// Deal this entity damage, as well as push them in a direction
-    /// </summary>
-    /// <param name="damage"></param>
-    /// <param name="direction"></param>
-    public virtual void Inflict(int damage, Vector2 direction, float force)
-    {
-        //Debug.Log(direction);
-        //Debug.Log(gameObject.GetComponent<Rigidbody2D>().position);
-        MoveWithCollision(direction.x * force * _pushForceMultiplier, direction.y * force * _pushForceMultiplier);
-        _netForces += (Vector3)(direction * force);
-        Inflict(damage);
-        //Debug.Log("Ow:" + direction.x * force);
-    }
-
-    public virtual void Inflict(int damage, Vector2 direction, float force, ElementType type)
-    {
-        if (entityHandler is TestEnemyHandler)
-        {
-            ((TestEnemyHandler)entityHandler).PerformDetonations(type);
-        }
-        Inflict(damage, direction, force);
     }
     
 
@@ -430,7 +402,7 @@ public class EntityPhysics : DynamicPhysics
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         /*
-        if (entityHandler.GetType() == typeof(TestEnemyHandler))
+        if (entityHandler.GetType() == typeof(SwordEnemyHandler))
         { _spawner.ReturnToPool(gameObject.transform.parent.gameObject.GetInstanceID()); }
         */
     }

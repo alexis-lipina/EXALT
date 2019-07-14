@@ -125,7 +125,7 @@ public class ProjectilePhysics : DynamicPhysics
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, Velocity, 0.5f, _damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:Velocity * 0.5f, type:_damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 if (!canPenetrate)
                 {
@@ -143,6 +143,21 @@ public class ProjectilePhysics : DynamicPhysics
             }
             
         }
+        else if (other.gameObject.tag == "Friend" && (_whoToHurt == "FRIEND" || _whoToHurt == "ALL"))
+        {
+            _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
+            other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: Velocity * 0.5f, type: _damageType);
+            if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
+            if (!canPenetrate)
+            {
+                Reset();
+                if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+                transform.position = new Vector3(-999, -999, transform.position.z);
+                ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+                //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+                bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+            }
+        }
     }
 
     void OnTriggerStay2D(Collider2D other)
@@ -157,7 +172,7 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (!_targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] && other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight) //if has not been hit and is overlapping
             {
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, Velocity, 0.5f, _damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:Velocity * 0.5f, type:_damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 _targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] = true;
                 if (!canPenetrate)
@@ -169,6 +184,21 @@ public class ProjectilePhysics : DynamicPhysics
 
                     bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
                 }
+            }
+        }
+        else if (other.gameObject.tag == "Friend" && (_whoToHurt == "FRIEND" || _whoToHurt == "ALL"))
+        {
+            _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
+            other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: Velocity * 0.5f, type: _damageType);
+            if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
+            if (!canPenetrate)
+            {
+                Reset();
+                if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+                transform.position = new Vector3(-999, -999, transform.position.z);
+                ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+                //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+                bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
             }
         }
     }
@@ -209,6 +239,16 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (topHeight > entry.Value.Key && bottomHeight < entry.Value.Value) //if this top is above their bottom and if this bottom is below their top
             {
+                if (!canBounce) //if unable to bounce, d e l e t
+                {
+                    Reset();
+                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+                    transform.position = new Vector3(-999, -999, transform.position.z);
+                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+                    //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                }
+
 
                 float playerEnvtHandlerYPos = _environmentHandler.GetComponent<Transform>().position.y;
                 float playerEnvtHandlerYSize = _environmentHandler.GetComponent<BoxCollider2D>().size.y;

@@ -16,7 +16,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private Button _mainmenu;
     [SerializeField] private Button _quit;
     [SerializeField] private GameObject _menuPanel;
-
+    [SerializeField] private GameObject _healthBar;
+    [SerializeField] private GameObject _energyBar;
 
 
     private bool _isPaused = false;
@@ -39,6 +40,8 @@ public class PauseMenu : MonoBehaviour
             {
                 Time.timeScale = 0;
                 _menuPanel.SetActive(true);
+                _healthBar.SetActive(false);
+                _energyBar.SetActive(false);
                 EventSystem.current.SetSelectedGameObject(_resume.gameObject, new BaseEventData(EventSystem.current));
                 _resume.Select();
                 
@@ -47,6 +50,8 @@ public class PauseMenu : MonoBehaviour
             {
                 Time.timeScale = 1;
                 _menuPanel.SetActive(false);
+                _healthBar.SetActive(true);
+                _energyBar.SetActive(true);
             }
         }
 
@@ -71,8 +76,9 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitPressed()
     {
-        MainMenuPressed();
+        //MainMenuPressed();
         //quit
+        Application.Quit();
     }
 
     public void ScreenshotPressed()

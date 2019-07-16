@@ -17,7 +17,7 @@ public class DynamicPhysics : PhysicsObject
     [SerializeField] protected float speed;
 
 
-
+    public const float MAX_Z_VELOCITY_MAGNITUDE = 80f;
     protected Rigidbody2D PlayerRigidBody;
 
 
@@ -78,6 +78,7 @@ public class DynamicPhysics : PhysicsObject
         //CheckHitHeadOnCeiling();
         // deltaV = deltaT * a
         ZVelocity += Time.deltaTime * gravity;
+        Mathf.Clamp(ZVelocity, MAX_Z_VELOCITY_MAGNITUDE * -1, MAX_Z_VELOCITY_MAGNITUDE);
         bottomHeight += ZVelocity * Time.deltaTime; //CHANGE WITH FRAMERATE??
         topHeight = bottomHeight + _objectHeight;
         // ZVelocity -= gravity;
@@ -144,7 +145,7 @@ public class DynamicPhysics : PhysicsObject
     {
         if (playerTop > terrainBottom && playerBottom + 0.6f < terrainTop)// +0.6 is a tolerance so entity moves up anyway
         {
-            //Debug.Log("Collision");
+            Debug.Log("Collision");
             return true;
         }
         return false;
@@ -374,9 +375,9 @@ public class DynamicPhysics : PhysicsObject
         {
             //PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
         }
-
-        //Debug.Log(new Vector2(velocityX, velocityY).magnitude);
+        
         PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
+        //PlayerRigidBody.position = PlayerRigidBody.position + new Vector2(velocityX, velocityY);
 
     }
 

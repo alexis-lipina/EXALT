@@ -7,7 +7,7 @@ public class RangedEnemyHandler : EntityHandler
 {
     [SerializeField] private Animator characterAnimator;
     [SerializeField] private bool isCompanion;
-
+    [SerializeField] private PathfindingAI _pathfindingAi;
 
     enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH };
     private TestEnemyState currentState;
@@ -401,7 +401,7 @@ public class RangedEnemyHandler : EntityHandler
         {
             
             //fire bullet
-            GameObject bullet = _enemyProjectileLauncher.FireBullet(new Vector2(xInput, yInput));
+            GameObject bullet = _enemyProjectileLauncher.FireBullet( _pathfindingAi.target.transform.position - entityPhysics.transform.position );
             bullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
             bullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
             hasSwung = true;

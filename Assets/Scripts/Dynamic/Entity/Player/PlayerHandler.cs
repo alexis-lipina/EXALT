@@ -392,6 +392,7 @@ public class PlayerHandler : EntityHandler
         if (controller.GetButtonDown("Jump"))
         {
             //Debug.Log("IDLE -> JUMP");
+            Vibrate( .5f, 0.05f);
             entityPhysics.ZVelocity = JumpImpulse;
             CurrentState = PlayerState.JUMP;
         }
@@ -546,6 +547,7 @@ public class PlayerHandler : EntityHandler
         }
         if (controller.GetButtonDown("Jump"))
         {
+            Vibrate( .5f, 0.05f);
             entityPhysics.SavePosition();
             //Debug.Log("RUN -> JUMP");
             entityPhysics.ZVelocity = JumpImpulse;
@@ -665,6 +667,8 @@ public class PlayerHandler : EntityHandler
 
         if (entityPhysics.GetObjectElevation() <= maxheight)
         {
+            float vibrationMagnitude = Mathf.Abs(entityPhysics.ZVelocity) / DynamicPhysics.MAX_Z_VELOCITY_MAGNITUDE;
+            Vibrate(vibrationMagnitude, 0.1f * vibrationMagnitude);
             entityPhysics.SetObjectElevation(maxheight);
             _hasAlreadyBlinkedInMidAir = false;
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
@@ -686,19 +690,26 @@ public class PlayerHandler : EntityHandler
         TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         FollowingCamera.GetComponent<CameraScript>().Jolt(1f, aimDirection);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
+        //Vibrate( .5f, 0.05f);
+        Vibrate(.5f, 0.05f);
 
         //apply effect to any entities caught within player's path
         RaycastHit2D[] hits = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.GetComponent<BoxCollider2D>().size, 0.0f, aimDirection, aimDirection.magnitude * 7f);
         foreach (RaycastHit2D hit in hits)
         {
-            if (hit.collider.tag == "Enemy")
+            if (hit.collider.tag == "Enemy" && hit.collider.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && hit.collider.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
             {
                 hit.transform.GetComponent<EntityPhysics>().Handler.PrimeEnemy(_currentStyle);
+                Vibrate( 1f, 0.1f);
             }
         }
 
         _blinkAudioSource.Play();
-        entityPhysics.MoveWithCollision(aimDirection.x * 7f, aimDirection.y * 7f);
+        //Debug.Log(aimDirection);
+
+        entityPhysics.MoveWithCollision(aimDirection.x * 7f, aimDirection.y * 7f); //buggy, occasionally player teleports a much shorter distance than they should
+        //entityPhysics.GetComponent<Rigidbody2D>().position = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection * 7f;
+
 
         //setup timer
         _blinkTimer = 0f;
@@ -707,7 +718,7 @@ public class PlayerHandler : EntityHandler
         
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
-        CurrentState = PlayerState.JUMP;
+        CurrentState = PlayerState.IDLE;
     }
 
     
@@ -728,6 +739,7 @@ public class PlayerHandler : EntityHandler
         {
             //Play SFX
             _audioSource.Play();
+            Vibrate( 0.5f, 0.1f);
 
             _hitComboBeforeReady = false;
             StartCoroutine(PlayLightAttack(_readyForThirdHit));
@@ -742,12 +754,13 @@ public class PlayerHandler : EntityHandler
             Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
             foreach (Collider2D obj in hitobjects)
             {
-                if ((obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy"))
+                if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
                 {
                     if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                     {
                         //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.3f, 10, 0.01f);
+                        Vibrate( 1.0f, 0.15f);
 
                         //Debug.Log("Owch!");
                         obj.GetComponent<EntityPhysics>().Inflict(1, force: aimDirection.normalized * 1f);
@@ -898,6 +911,7 @@ public class PlayerHandler : EntityHandler
         if (StateTimer == time_heavyMelee)
         {
             _audioSource.Play();
+            Vibrate( 0.8f, 0.1f);
             //ChangeEnergy(1);
             StartCoroutine(PlayHeavyAttack(false));
 
@@ -982,6 +996,7 @@ public class PlayerHandler : EntityHandler
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+                    Vibrate( 1.0f, 0.3f);
 
                     //TEST CODE HERE
                     GameObject node = LightningChainNode.GetNode();
@@ -1014,6 +1029,8 @@ public class PlayerHandler : EntityHandler
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+                    Vibrate( 1.0f, 0.3f);
+
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
                     obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized*2.0f, type:ElementType.FIRE);
@@ -1036,6 +1053,8 @@ public class PlayerHandler : EntityHandler
                 {
                     //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+                    Vibrate( 1.0f, 0.3f);
+
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
                     obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized * 5.0f, type:ElementType.VOID);
@@ -1179,10 +1198,33 @@ public class PlayerHandler : EntityHandler
     private void PlayerLightRanged()
     {
         //TODO : Draw Player
-        characterAnimator.Play("Anim_Swing_Right_NW");
+        if (aimDirection.x <= 0)
+        {
+            if (aimDirection.y >= 0)
+            {
+                characterAnimator.Play("Anim_Swing_Right_NW");
+            }
+            else
+            {
+                characterAnimator.Play("Anim_Swing_Right_SW");
+            }
+        }
+        else
+        {
+            //Swing East
+            if (aimDirection.y >= 0)
+            {
+                characterAnimator.Play("Anim_Swing_Right_NE");
+            }
+            else
+            {
+                characterAnimator.Play("Anim_Swing_Right_SE");
+            }
+        }
 
         if (StateTimer == 0)
         {
+            Vibrate(1f, .1f);
             switch (_currentStyle)
             {
                 case ElementType.FIRE:
@@ -1254,7 +1296,8 @@ public class PlayerHandler : EntityHandler
         //else, endpoint at max distance
         //draw linerenderer between players position + offset and endpoint
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(.4f, .1f);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance);
+        //RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance); //old linear raycast 
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(entityPhysics.GetComponent<Rigidbody2D>().position, radius:3f, aimDirection, _lightRangedElectricMaxDistance);
         float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
         float shortestDistance = float.MaxValue;
         Vector2 endPoint = Vector2.zero;
@@ -1271,7 +1314,7 @@ public class PlayerHandler : EntityHandler
                 PhysicsObject other = hits[i].collider.GetComponent<PhysicsObject>();
                 if (other.GetBottomHeight() < projectileElevation && other.GetTopHeight() > projectileElevation) //is projectile height within z bounds of object
                 {
-                    if (other.tag != "Environment" && other.tag != "Enemy") continue;
+                    if (/*other.tag != "Environment" && */ other.tag != "Enemy") continue; //changed to reflect new circlecast
                     if (hits[i].distance < shortestDistance)
                     {
                         //Debug.Log("Hit");
@@ -1280,6 +1323,23 @@ public class PlayerHandler : EntityHandler
                         endPoint = hits[i].point;
                         if (other is EntityPhysics) //checks to see if entity, since entities need to be damaged
                         {
+                            //check for collisions with environment along path
+                            Vector2 playerPosition = entityPhysics.GetComponent<Rigidbody2D>().position;
+                            RaycastHit2D[] environmentHits = Physics2D.RaycastAll( playerPosition, endPoint - playerPosition, (endPoint - playerPosition).magnitude );
+                            bool interruptionExists = false;
+                            foreach (RaycastHit2D env in environmentHits)
+                            {
+                                // if environment collision along path
+                                if (env.collider.GetComponent<EnvironmentPhysics>() && env.collider.GetComponent<EnvironmentPhysics>().GetBottomHeight() < projectileElevation && env.collider.GetComponent<EnvironmentPhysics>().GetTopHeight() > projectileElevation) 
+                                {
+                                    interruptionExists = true;
+                                }
+                            }
+                            if (interruptionExists)
+                            {
+                                continue;
+                            }
+                            
                             hasHitEntity = true;
                             hitEntity = hits[i].collider.GetComponent<EntityPhysics>();
                         }
@@ -1292,11 +1352,22 @@ public class PlayerHandler : EntityHandler
                 }
             }   
         }
+
         //if hasnt hit anything
         if (endPoint == Vector2.zero)
         {
+            shortestDistance = _lightRangedElectricMaxDistance;
+            RaycastHit2D[] environmentHits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance);
+            foreach (RaycastHit2D hit in environmentHits)
+            {
+                if (hit.collider.tag == "Environment" && hit.collider.GetComponent<EnvironmentPhysics>().GetBottomHeight() < projectileElevation && hit.collider.GetComponent<EnvironmentPhysics>().GetTopHeight() > projectileElevation)
+                {
+                    shortestDistance = hit.distance;
+                }
+            }
+
             //Debug.Log("Hit nothing");
-            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _lightRangedElectricMaxDistance;
+            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * shortestDistance;
         }
         if (hitEntity)
         {
@@ -1426,6 +1497,7 @@ public class PlayerHandler : EntityHandler
                     break;
             }
             entityPhysics.Heal(1);
+            Vibrate(1f, 0.1f);
             hasHealed = true;
         }
         else if (StateTimer < 0)
@@ -1450,18 +1522,22 @@ public class PlayerHandler : EntityHandler
                 case ElementType.FIRE:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0.0f));
+                    Vibrate(1f, 0.1f);
                     break;
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0.0f, 1.0f));
+                    Vibrate(1f, 0.1f);
                     break;
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
+                    Vibrate(1f, 0.1f);
                     break;
                 default:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
+                    Vibrate(1f, 0.1f);
                     break;
             }
         }
@@ -1531,6 +1607,7 @@ public class PlayerHandler : EntityHandler
         Debug.Log("Player: Ow!");
         FollowingCamera.GetComponent<CameraScript>().Shake(1f, 6, 0.01f);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.7f, 0.1f, Color.red);
+        StartCoroutine(VibrateDecay(1f, 0.025f));
         //_healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
     }
 
@@ -1564,6 +1641,36 @@ public class PlayerHandler : EntityHandler
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
     }
 
+    public void Vibrate(float magnitude, float duration)
+    {
+        Debug.Log("Vibrating : " + magnitude + ", " + duration);
+        foreach (Joystick j in controller.controllers.Joysticks)
+        {
+            if (!j.supportsVibration) continue;
+            for (int i = 0; i < j.vibrationMotorCount; i++)
+            {
+                j.SetVibration(i, magnitude, duration);
+            }
+        }
+    }
+    IEnumerator VibrateDecay(float magnitude, float decayRate)
+    {
+        /*
+        while (magnitude > 0)
+        {
+            Vibrate(magnitude, 0.01f);
+            magnitude -= decayRate;
+            yield return new WaitForSeconds(0.01f);
+        }*/
+        while (magnitude > 0.01)
+        {
+            Vibrate(magnitude, 0.01f);
+            magnitude *= 0.75f;
+            yield return new WaitForSecondsRealtime(0.01f);
+        }
+        
+
+    }
 
     /// <summary>
     /// Handles aim direction, toggles between using mouse & keyboard and gamepad

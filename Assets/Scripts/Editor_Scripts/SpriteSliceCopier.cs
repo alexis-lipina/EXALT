@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 // Credit to angelsolares and Rampe for this script
 // Source : https://forum.unity.com/threads/copy-spritesheet-slices-and-pivots-solved.301340/
-
+#if UNITY_EDITOR
 public class SpriteSliceCopier : EditorWindow
 {
 
@@ -78,3 +78,4 @@ public class SpriteSliceCopier : EditorWindow
 
     }
 }
+#endif

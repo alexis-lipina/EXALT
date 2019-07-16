@@ -92,18 +92,21 @@ public abstract class EntityHandler : MonoBehaviour
                 //_firePrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Fire", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
                 _firePrimeVfx = FireDetonationHandler.DeployFromPool(entityPhysics);
                 currentPrimes.Add(type);
+                StartCoroutine(PrimeFlash(type));
                 return;
             case ElementType.VOID:
                 _isPrimed_Void = true;
                 //_voidPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Void", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
                 _voidPrimeVfx = VoidDetonationHandler.DeployFromPool(entityPhysics);
                 currentPrimes.Add(type);
+                StartCoroutine(PrimeFlash(type));
                 return;
             case ElementType.ZAP:
                 _isPrimed_Zap = true;
                 //_zapPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Zap", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
                 _zapPrimeVfx = ZapDetonationHandler.DeployFromPool(entityPhysics);
                 currentPrimes.Add(type);
+                StartCoroutine(PrimeFlash(type));
                 return;
         }
     }
@@ -135,5 +138,37 @@ public abstract class EntityHandler : MonoBehaviour
         }
         _isDetonating = false;
         if (entityPhysics.GetCurrentHealth() <= 0) OnDeath();
+    }
+
+    IEnumerator PrimeFlash(ElementType type)
+    {
+        //Debug.Log("TakeDamageFlash entered");
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
+        for (float i = 0; i < 1; i++)
+        {
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+            entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0, 0, 0, 1));
+            yield return new WaitForSeconds(0.08f);
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+            switch (type)
+            {
+                case ElementType.FIRE:
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1f, 0.5f, 0f, 1f));
+                    break;
+                case ElementType.VOID:
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                    break;
+                case ElementType.ZAP:
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                    break;
+                default:
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1f, 0.2f, 0.1f, 1f));
+                    break;
+            }
+            yield return new WaitForSeconds(0.08f);
+            
+        }
+
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
     }
 }

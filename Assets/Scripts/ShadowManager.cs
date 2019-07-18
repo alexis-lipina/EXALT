@@ -88,10 +88,12 @@ public class ShadowManager : MonoBehaviour
         Bounds tempBounds;
         Vector3 tempPos;
         Bounds entityBounds = GetComponent<Collider2D>().bounds;
+        _terrainTouched = _physics.TerrainTouching; //if implement reset, maybe do this there instead?
+
         //Debug.Log("TerrainTouched: " + _terrainTouched.Count);
 
         //Look at terrainTouched, get all lines which are within the sprite/collider, exclude overlaps
-        foreach(GameObject obj in _terrainTouched.Keys)
+        foreach (GameObject obj in _terrainTouched.Keys)
         {
             tempBounds = obj.GetComponent<Collider2D>().bounds;
             tempPos = tempBounds.min;
@@ -125,6 +127,10 @@ public class ShadowManager : MonoBehaviour
                 }
             }
         }
+        //Debug.Log(transform.parent.name);
+        //Debug.Log("Horizontal lines : " + horizontalLines.Count);
+        //Debug.Log("Vertical lines : " + verticalLines.Count);
+        //Debug.Log("Keys : " + _terrainTouched.Keys.Count);
         Profiler.EndSample();
         Profiler.BeginSample("SEG_2");
         //Debug.Log(_terrainTouched.Count);

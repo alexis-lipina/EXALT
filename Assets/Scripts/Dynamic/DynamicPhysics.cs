@@ -50,6 +50,22 @@ public class DynamicPhysics : PhysicsObject
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0.0f);
     }
 
+    //TODO : Delete this once the shadowcasting issue has been resolved
+    /*
+    private void FixedUpdate()
+    {
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(GetComponent<Rigidbody2D>().position, GetComponent<BoxCollider2D>().size, 0f);
+        foreach (Collider2D other in colliders)
+        {
+            if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
+            {
+                //Debug.Log("Adding " + other.gameObject);
+                //Debug.Log("N U T: " + other.gameObject.GetInstanceID());
+                TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
+            }
+        }
+    }
+    */
 
 
     //===========================================================================| MOVEMENT
@@ -418,7 +434,6 @@ public class DynamicPhysics : PhysicsObject
     }
 
 
-
     //===========================================================================| TERRAIN MANAGEMENT
 
     public void AddTerrainTouched(int terrainInstanceID, EnvironmentPhysics environment)
@@ -502,6 +517,16 @@ public class DynamicPhysics : PhysicsObject
     {
         _startElevation = e;
         bottomHeight = e;
+    }
+
+    /// <summary>
+    /// For object pooling - returns to its base state
+    /// </summary>
+    public virtual void Reset()
+    {
+        TerrainTouched.Clear();
+        TerrainTouching.Clear();
+        ZVelocity = 0;
     }
 
 }

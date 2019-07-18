@@ -330,7 +330,7 @@ public class RangedEnemyHandler : EntityHandler
         //Debug.Log("JUMPING!!!");
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
-        Debug.Log("FORCES : " + velocityAfterForces);
+        //Debug.Log("FORCES : " + velocityAfterForces);
         entityPhysics.FreeFall();
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         //entityPhysics.CheckHitHeadOnCeiling();

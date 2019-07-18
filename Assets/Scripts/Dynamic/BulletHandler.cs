@@ -44,8 +44,8 @@ public class BulletHandler : ProjectileHandler
     public void ResetBullet()
     {
         _projectilePhysics.Reset();
-        Start();
-        _projectilePhysics.Velocity = MoveDirection;
+        /*Start();
+        _projectilePhysics.Velocity = MoveDirection;*/
     }
 
     private void OnEnable()

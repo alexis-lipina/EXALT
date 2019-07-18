@@ -1643,7 +1643,7 @@ public class PlayerHandler : EntityHandler
 
     public void Vibrate(float magnitude, float duration)
     {
-        Debug.Log("Vibrating : " + magnitude + ", " + duration);
+        //Debug.Log("Vibrating : " + magnitude + ", " + duration);
         foreach (Joystick j in controller.controllers.Joysticks)
         {
             if (!j.supportsVibration) continue;

@@ -386,10 +386,11 @@ public class ProjectilePhysics : DynamicPhysics
     /// <summary>
     /// Should only be called when object is "removed" and returned to pool.
     /// </summary>
-    public void Reset()
+    public override void Reset()
     {
         _velocity = Vector2.zero;
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
+        TerrainTouched.Clear();
         EntitiesTouched = new List<PhysicsObject>();
         _targetsTouched = new Dictionary<EntityPhysics, bool>();
         _timer = 0f;

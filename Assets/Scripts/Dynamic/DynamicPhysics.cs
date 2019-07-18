@@ -392,8 +392,8 @@ public class DynamicPhysics : PhysicsObject
             //PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
         }
         
-        PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
-        //PlayerRigidBody.position = PlayerRigidBody.position + new Vector2(velocityX, velocityY);
+        //PlayerRigidBody.MovePosition(new Vector2(PlayerRigidBody.position.x + velocityX, PlayerRigidBody.position.y + velocityY));
+        PlayerRigidBody.position = PlayerRigidBody.position + new Vector2(velocityX, velocityY);
 
     }
 

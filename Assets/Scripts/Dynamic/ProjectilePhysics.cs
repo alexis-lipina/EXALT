@@ -380,6 +380,15 @@ public class ProjectilePhysics : DynamicPhysics
     }
     //==========================================| ENTITY COLLISION
 
+    /// <summary>
+    /// If player smacks this bullet
+    /// </summary>
+    public void PlayerRedirect(Vector2 redirection_vector, string newWhoToHurt, float newSpeed)
+    {
+        _velocity = redirection_vector;
+        speed = newSpeed;
+        _whoToHurt = newWhoToHurt;
+    }
 
     //==========================================| OBJECT POOLING
 
@@ -403,5 +412,4 @@ public class ProjectilePhysics : DynamicPhysics
         //transform.position = new Vector3(-999, -999, transform.position.z);
 
     }
-
 }

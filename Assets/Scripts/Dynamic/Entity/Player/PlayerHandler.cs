@@ -766,7 +766,10 @@ public class PlayerHandler : EntityHandler
                         obj.GetComponent<EntityPhysics>().Inflict(1, force: aimDirection.normalized * 1f);
                         ChangeEnergy(1);
                     }
-
+                }
+                else if (obj.GetComponent<ProjectilePhysics>())
+                {
+                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "Enemy", 40f);
                 }
             }
             //------------------------| MOVE

@@ -87,7 +87,9 @@ public class ShadowManager : MonoBehaviour
         verticalLines.Clear(); 
         Bounds tempBounds;
         Vector3 tempPos;
-        Bounds entityBounds = GetComponent<Collider2D>().bounds;
+        //Bounds entityBounds = new Bounds( GetComponent<Rigidbody2D>().position, GetComponent<BoxCollider2D>().size); //FORCE REFERENCE RIGIDBODY
+        Bounds entityBounds = new Bounds( transform.position, GetComponent<BoxCollider2D>().size); //FORCE REFERENCE TRANSFORM
+        //Bounds entityBounds = GetComponent<BoxCollider2D>().bounds;
         _terrainTouched = _physics.TerrainTouching; //if implement reset, maybe do this there instead?
 
         //Debug.Log("TerrainTouched: " + _terrainTouched.Count);
@@ -97,6 +99,7 @@ public class ShadowManager : MonoBehaviour
         {
             tempBounds = obj.GetComponent<Collider2D>().bounds;
             tempPos = tempBounds.min;
+
             if (entityBounds.min.x < tempPos.x && entityBounds.max.x > tempPos.x)
             {
                 if (!verticalLines.Contains(tempPos.x))
@@ -127,15 +130,14 @@ public class ShadowManager : MonoBehaviour
                 }
             }
         }
-        //Debug.Log(transform.parent.name);
-        //Debug.Log("Horizontal lines : " + horizontalLines.Count);
-        //Debug.Log("Vertical lines : " + verticalLines.Count);
-        //Debug.Log("Keys : " + _terrainTouched.Keys.Count);
+        // Debug.Log(transform.parent.name);
+        // Debug.Log("Horizontal lines : " + horizontalLines.Count);
+        // Debug.Log("Vertical lines : " + verticalLines.Count);
+        // Debug.Log("Keys : " + _terrainTouched.Keys.Count);
+        // Debug.Log(transform.position);
+        // Debug.Log(GetComponent<Rigidbody2D>().position);
         Profiler.EndSample();
         Profiler.BeginSample("SEG_2");
-        //Debug.Log(_terrainTouched.Count);
-        //Debug.Log(horizontalLines.Count);
-        //Debug.Log(verticalLines.Count);
 
         
 

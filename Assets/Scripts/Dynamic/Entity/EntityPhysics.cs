@@ -33,7 +33,7 @@ public class EntityPhysics : DynamicPhysics
 
     protected int currentHP;
     private bool hasBeenHit;
-
+    private bool isInvincible = false;
 
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
     private EnvironmentPhysics currentNavEnvironmentObject;
@@ -330,6 +330,7 @@ public class EntityPhysics : DynamicPhysics
     /// <param name="damage">Quantity of health to subtract from the entity</param>
     public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
+        if (isInvincible) return;
         entityHandler.PerformDetonations(type);
 
         MoveWithCollision(force.x * _pushForceMultiplier, force.y * _pushForceMultiplier); //TODO : HEY UHHHH THIS DOESNT DO ANYTHING IF THEYRE MOVING ALREADY I DONT THINK
@@ -347,7 +348,7 @@ public class EntityPhysics : DynamicPhysics
         else
         {
             StartCoroutine(TakeDamageFlash());
-            ScreenFlash.InstanceOfScreenFlash.PlayHitPause(hitPauseDuration);
+            //ScreenFlash.InstanceOfScreenFlash.PlayHitPause(hitPauseDuration);
         }
     }
     
@@ -410,6 +411,32 @@ public class EntityPhysics : DynamicPhysics
 
 
     //===============================================================| getters and setters
+
+    public void PlayInvincibilityFrames(float duration)
+    {
+        StartCoroutine(PlayIFrames(duration));
+    }
+
+    private IEnumerator PlayIFrames(float duration)
+    {
+        isInvincible = true;
+        float time = 0f;
+        while (time < duration)
+        {
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
+            yield return new WaitForSeconds(0.05f);
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+            yield return new WaitForSeconds(0.05f);
+            time += 0.1f;
+        }
+        isInvincible = false;
+    }
+
+
+
+
     public EnvironmentPhysics GetCurrentNavObject()
     {
         return currentNavEnvironmentObject;

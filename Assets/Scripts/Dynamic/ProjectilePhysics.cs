@@ -27,6 +27,9 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private ElementType _damageType = ElementType.NONE;
     [SerializeField] private float _zVelocityDamping = 1f;
     [SerializeField] private float _zMinimumVelocity = 20f;
+    [SerializeField] private AudioSource _deflectSFX;
+
+
 
     public bool CanBounce
     {
@@ -67,12 +70,22 @@ public class ProjectilePhysics : DynamicPhysics
     List<PhysicsObject> EntitiesTouched;
     Dictionary<EntityPhysics, bool> _targetsTouched; // (target, hasBeenTouched)
 
+    // Original FIELDS - for any field modified when bullet is deflected that needs to be reset when object is returned to pool
+    private string _whoToHurt_original;
+    private float _speed_original;
+
+
+
     override protected void Awake()
     {
         base.Awake();
         EntitiesTouched = new List<PhysicsObject>();
         _targetsTouched = new Dictionary<EntityPhysics, bool>();
         _timer = 0f;
+
+        // Set original Fields
+        _speed_original = speed;
+        _whoToHurt_original = _whoToHurt;
     }
 
 	
@@ -388,6 +401,13 @@ public class ProjectilePhysics : DynamicPhysics
         _velocity = redirection_vector;
         speed = newSpeed;
         _whoToHurt = newWhoToHurt;
+        _timer = 0f;
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
+        
+        _deflectSFX.Play();
+        SlashDeflectVFX.DeployFromPool(ObjectSprite.transform.position, redirection_vector);
+        DeflectFlareVFX.DeployFromPool(ObjectSprite.transform.position);
+
     }
 
     //==========================================| OBJECT POOLING
@@ -406,10 +426,14 @@ public class ProjectilePhysics : DynamicPhysics
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         ZVelocity = 0f;
         if (trackingArea) trackingArea.GetComponent<ProjectileSeeker>().trackedTargets = new List<EntityPhysics>();
-
+        _whoToHurt = _whoToHurt_original;
+        speed = _speed_original;
 
         //trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
         //transform.position = new Vector3(-999, -999, transform.position.z);
 
     }
+    
+    
+
 }

@@ -421,21 +421,29 @@ public class SwordEnemyHandler : EntityHandler
     {
 
         //========| Draw
-        switch (tempDirection)
+        if (stateTimer == 0f)
         {
-            case TempTexDirection.EAST:
-                characterAnimator.Play(READY_EAST_Anim);
-                break;
-            case TempTexDirection.WEST:
-                characterAnimator.Play(READY_WEST_Anim);
-                break;
-            case TempTexDirection.NORTH:
-                characterAnimator.Play(READY_NORTH_Anim);
-                break;
-            case TempTexDirection.SOUTH:
-                characterAnimator.Play(READY_SOUTH_Anim);
-                break;
+            switch (tempDirection)
+            {
+                case TempTexDirection.EAST:
+                    characterAnimator.Play(READY_EAST_Anim);
+                    BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(-0.75f, -1.0625f, -1f));
+                    break;
+                case TempTexDirection.WEST:
+                    characterAnimator.Play(READY_WEST_Anim);
+                    BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(1.125f, -1.0625f, -1f));
+                    break;
+                case TempTexDirection.NORTH:
+                    characterAnimator.Play(READY_NORTH_Anim);
+                    BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(2.25f, -0.5f, -1f));
+                    break;
+                case TempTexDirection.SOUTH:
+                    characterAnimator.Play(READY_SOUTH_Anim);
+                    BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(-1.75f, -0.75f, -1f));
+                    break;
+            }
         }
+        
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);

@@ -61,7 +61,7 @@ public class ScreenFlash : MonoBehaviour
     IEnumerator HitPause() //TODO : DEPRECATED - hit pausing messes with combo timing which is hella bad, and honestly the game feels smoother without it
     {
         
-        //Time.timeScale = 0f;
+        Time.timeScale = 0f;
         while (_hitPauseTimer > 0)
         {
             yield return new WaitForSecondsRealtime(0.01f);

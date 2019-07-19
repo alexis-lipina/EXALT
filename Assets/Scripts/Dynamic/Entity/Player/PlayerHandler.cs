@@ -769,7 +769,10 @@ public class PlayerHandler : EntityHandler
                 }
                 else if (obj.GetComponent<ProjectilePhysics>())
                 {
-                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "Enemy", 40f);
+                    Vibrate(1.0f, 0.15f);
+                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
                 }
             }
             //------------------------| MOVE
@@ -1610,7 +1613,9 @@ public class PlayerHandler : EntityHandler
         Debug.Log("Player: Ow!");
         FollowingCamera.GetComponent<CameraScript>().Shake(1f, 6, 0.01f);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.7f, 0.1f, Color.red);
+        ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.15f);
         StartCoroutine(VibrateDecay(1f, 0.025f));
+        entityPhysics.PlayInvincibilityFrames(0.5f);
         //_healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
     }
 

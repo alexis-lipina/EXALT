@@ -19,7 +19,7 @@ public class RangedBotLauncher : Weapon
         GameObject tempBullet = GetFromPool();
         tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = direction.normalized;
         tempBullet.SetActive(true);
-        tempBullet.GetComponentInChildren<AudioSource>().Play();
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<AudioSource>().Play();
         _timeOfLastShot = Time.time;
         return tempBullet;
     }

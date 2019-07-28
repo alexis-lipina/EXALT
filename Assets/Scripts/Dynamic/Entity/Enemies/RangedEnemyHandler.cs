@@ -360,20 +360,16 @@ public class RangedEnemyHandler : EntityHandler
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
 
         //========| Draw
-        switch (tempDirection)
+        if (stateTimer == 0)
         {
-            case TempTexDirection.EAST:
+            if ((_pathfindingAi.target.transform.position - entityPhysics.transform.position).x > 0)
+            {
                 characterAnimator.Play(ATTACK_EAST_Anim);
-                break;
-            case TempTexDirection.WEST:
+            }
+            else
+            {
                 characterAnimator.Play(ATTACK_WEST_Anim);
-                break;
-            case TempTexDirection.NORTH:
-                characterAnimator.Play(ATTACK_NORTH_Anim);
-                break;
-            case TempTexDirection.SOUTH:
-                characterAnimator.Play(ATTACK_SOUTH_Anim);
-                break;
+            }
         }
 
         Vector2 swingboxpos = Vector2.zero;
@@ -421,21 +417,20 @@ public class RangedEnemyHandler : EntityHandler
     {
 
         //========| Draw
-        switch (tempDirection)
+        if (stateTimer == 0)
         {
-            case TempTexDirection.EAST:
+            if ((_pathfindingAi.target.transform.position - entityPhysics.transform.position).x > 0)
+            {
                 characterAnimator.Play(READY_EAST_Anim);
-                break;
-            case TempTexDirection.WEST:
+                BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(-1.375f, -0.5f, -1));
+            }
+            else
+            {
                 characterAnimator.Play(READY_WEST_Anim);
-                break;
-            case TempTexDirection.NORTH:
-                characterAnimator.Play(READY_NORTH_Anim);
-                break;
-            case TempTexDirection.SOUTH:
-                characterAnimator.Play(READY_SOUTH_Anim);
-                break;
+                BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(1.5f, -0.5f, -1));
+            }
         }
+        
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
@@ -455,20 +450,16 @@ public class RangedEnemyHandler : EntityHandler
     private void SwingState()
     {
         //========| Draw
-        switch (tempDirection)
+        if (stateTimer == 0)
         {
-            case TempTexDirection.EAST:
+            if ((_pathfindingAi.target.transform.position - entityPhysics.transform.position).x > 0)
+            {
                 characterAnimator.Play(SWING_EAST_Anim);
-                break;
-            case TempTexDirection.WEST:
+            }
+            else
+            {
                 characterAnimator.Play(SWING_WEST_Anim);
-                break;
-            case TempTexDirection.NORTH:
-                characterAnimator.Play(SWING_NORTH_Anim);
-                break;
-            case TempTexDirection.SOUTH:
-                characterAnimator.Play(SWING_SOUTH_Anim);
-                break;
+            }
         }
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);

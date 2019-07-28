@@ -420,18 +420,22 @@ public class EntityPhysics : DynamicPhysics
     private IEnumerator PlayIFrames(float duration)
     {
         isInvincible = true;
-        float time = 0f;
-        while (time < duration)
+        float iFrameTime = 0f;
+        while (iFrameTime < duration)
         {
-            _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
             _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.025f);
             //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
             _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
-            yield return new WaitForSeconds(0.05f);
-            time += 0.1f;
+            yield return new WaitForSeconds(0.075f);
+            iFrameTime += 0.1f;
         }
+        //_objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
+        //_objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
+        //yield return new WaitForSeconds(0.1f);
         isInvincible = false;
+        //_objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
     }
 
 

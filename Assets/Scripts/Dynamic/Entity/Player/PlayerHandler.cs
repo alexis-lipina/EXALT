@@ -27,7 +27,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private CursorHandler _cursor;
     [SerializeField] private bool _isUsingCursor; //TEMPORARY
     [SerializeField] private float _projectileStartHeight;
-    //[SerializeField] private GameObject _lightRangedElectricLine;
+    //[SerializeField] private GameObject _lightRangedZapLine;
     [SerializeField] private ZapFXController _lightRangedZap;
     [SerializeField] private ZapFXController _chargedRangedZap;
     [SerializeField] private Transform _zapNodePrefab;
@@ -79,7 +79,7 @@ public class PlayerHandler : EntityHandler
     private PlayerState PreviousState;
 
     private ElementType _currentStyle;
-    private ElementType _previousStyle;
+    private ElementType _newStyle;
 
     private FaceDirection currentFaceDirection;
 
@@ -125,9 +125,9 @@ public class PlayerHandler : EntityHandler
     private const float _lightRangedDuration = 0.25f;
     private const int _lightRangedEnergyCost = 2;
 
-    //Light Ranged Electrical Attack
-    private const float _lightRangedElectricMaxDistance = 30f;
-    private const float _chargedRangedElectricMaxDistance = 50f;
+    //Light Ranged Zapal Attack
+    private const float _lightRangedZapMaxDistance = 30f;
+    private const float _chargedRangedZapMaxDistance = 50f;
 
     // Change Style 
     private const float _changeStyleDuration = 0.95f;
@@ -307,32 +307,29 @@ public class PlayerHandler : EntityHandler
     /// </summary>
     private void CheckStyleChange()
     {
-        _previousStyle = _currentStyle;
         if (controller.GetButton("ChangeStyle_Fire") && _currentStyle != ElementType.FIRE)
         {
             //Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
             //ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0f));
-            _currentStyle = ElementType.FIRE;
             CurrentState = PlayerState.CHANGE_STYLE;
             StateTimer = _changeStyleDuration;
-            SwapWeapon("WEST");
+            _newStyle = ElementType.FIRE;
         }
         else if (controller.GetButton("ChangeStyle_Void") && _currentStyle != ElementType.VOID)
         {
             //Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0f, 1f, 1f));
             //ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0f, 1f));
-            _currentStyle = ElementType.VOID;
             CurrentState = PlayerState.CHANGE_STYLE;
             StateTimer = _changeStyleDuration;
-            SwapWeapon("NORTH");
+            _newStyle = ElementType.VOID;
         }
-        else if (controller.GetButton("ChangeStyle_Electric") && _currentStyle != ElementType.ZAP)
+        else if (controller.GetButton("ChangeStyle_Zap") && _currentStyle != ElementType.ZAP)
         {
             //Shader.SetGlobalColor("_MagicColor", new Color(0f, 1f, 0.5f, 1f));
             //ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0f, 1f, 0.5f));
-            _currentStyle = ElementType.ZAP;
             CurrentState = PlayerState.CHANGE_STYLE;
             StateTimer = _changeStyleDuration;
+            _newStyle = ElementType.ZAP;
         }
 
     }
@@ -769,10 +766,13 @@ public class PlayerHandler : EntityHandler
                 }
                 else if (obj.GetComponent<ProjectilePhysics>())
                 {
-                    Vibrate(1.0f, 0.15f);
-                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
-                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
+                    if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                    {
+                        Vibrate(1.0f, 0.15f);
+                        obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                        FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
+                        FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
+                    }
                 }
             }
             //------------------------| MOVE
@@ -934,7 +934,7 @@ public class PlayerHandler : EntityHandler
                     PlayerHeavyMelee_Void();
                     break;
                 case ElementType.ZAP:
-                    PlayerHeavyMelee_Electric();
+                    PlayerHeavyMelee_Zap();
                     break;
             }
 
@@ -988,7 +988,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerHeavyMelee_Electric()
+    private void PlayerHeavyMelee_Zap()
     {
         
         Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
@@ -1185,7 +1185,7 @@ public class PlayerHandler : EntityHandler
                     ChargedRanged_Void();
                     break;
                 case ElementType.ZAP:
-                    ChargedRanged_Electric();
+                    ChargedRanged_Zap();
                     //Debug.Log("ZAP");
                     break;
                 default: break;
@@ -1240,7 +1240,7 @@ public class PlayerHandler : EntityHandler
                     LightRanged_Void();
                     break;
                 case ElementType.ZAP:
-                    LightRanged_Electric();
+                    LightRanged_Zap();
                     //Debug.Log("ZAP");
                     break;
                 default: break;
@@ -1295,15 +1295,15 @@ public class PlayerHandler : EntityHandler
         FireBullet();
     }
 
-    private void LightRanged_Electric()
+    private void LightRanged_Zap()
     {
         //raycast in direction, to max distance (Might want it to be a circlecast or boxcast, to be more generous with enemy hit detection)
         //if hits an entity or environment object at the height it's cast at, endpoint there
         //else, endpoint at max distance
         //draw linerenderer between players position + offset and endpoint
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(.4f, .1f);
-        //RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance); //old linear raycast 
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(entityPhysics.GetComponent<Rigidbody2D>().position, radius:3f, aimDirection, _lightRangedElectricMaxDistance);
+        //RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedZapMaxDistance); //old linear raycast 
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(entityPhysics.GetComponent<Rigidbody2D>().position, radius:3f, aimDirection, _lightRangedZapMaxDistance);
         float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
         float shortestDistance = float.MaxValue;
         Vector2 endPoint = Vector2.zero;
@@ -1362,8 +1362,8 @@ public class PlayerHandler : EntityHandler
         //if hasnt hit anything
         if (endPoint == Vector2.zero)
         {
-            shortestDistance = _lightRangedElectricMaxDistance;
-            RaycastHit2D[] environmentHits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedElectricMaxDistance);
+            shortestDistance = _lightRangedZapMaxDistance;
+            RaycastHit2D[] environmentHits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _lightRangedZapMaxDistance);
             foreach (RaycastHit2D hit in environmentHits)
             {
                 if (hit.collider.tag == "Environment" && hit.collider.GetComponent<EnvironmentPhysics>().GetBottomHeight() < projectileElevation && hit.collider.GetComponent<EnvironmentPhysics>().GetTopHeight() > projectileElevation)
@@ -1404,7 +1404,7 @@ public class PlayerHandler : EntityHandler
         throw new NotImplementedException();
     }
 
-    private void ChargedRanged_Electric()
+    private void ChargedRanged_Zap()
     {
         Debug.Log("Here");
         //raycast in direction, to max distance (Might want it to be a circlecast or boxcast, to be more generous with enemy hit detection)
@@ -1412,7 +1412,7 @@ public class PlayerHandler : EntityHandler
         //else, endpoint at max distance
         //draw linerenderer between players position + offset and endpoint
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(1f, .1f);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _chargedRangedElectricMaxDistance);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _chargedRangedZapMaxDistance);
         float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
         float shortestDistance = float.MaxValue;
         Vector2 endPoint = Vector2.zero;
@@ -1449,7 +1449,7 @@ public class PlayerHandler : EntityHandler
         if (endPoint == Vector2.zero)
         {
             //Debug.Log("Hit nothing");
-            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _chargedRangedElectricMaxDistance;
+            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _chargedRangedZapMaxDistance;
         }
         
         foreach(EntityPhysics enemy in enemiesHit)
@@ -1480,12 +1480,12 @@ public class PlayerHandler : EntityHandler
     //---------------------------------------------| Misc
     public void PlayerHeal()
     {
-        if (StateTimer == heal_duration)
+        if (StateTimer == heal_duration )
         {
             characterAnimator.Play(HEAL_ANIM);
             Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.0f, 0.5f, 1f));
         }
-        else if (StateTimer < _changeStyleColorChangeTime && !hasHealed)
+        else if (StateTimer < _changeStyleColorChangeTime && !hasHealed )
         {
             switch (_currentStyle)
             {
@@ -1502,15 +1502,32 @@ public class PlayerHandler : EntityHandler
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
                     break;
             }
+            ChangeEnergy(-4);
             entityPhysics.Heal(1);
             Vibrate(1f, 0.1f);
             hasHealed = true;
         }
-        else if (StateTimer < 0)
+        else if (StateTimer < 0 || !controller.GetButton("Heal"))
         {
             CurrentState = PlayerState.IDLE;
             hasHealed = false;
+            switch (_currentStyle)
+            {
+                case ElementType.FIRE:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+                    break;
+                case ElementType.VOID:
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                    break;
+                case ElementType.ZAP:
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                    break;
+                default:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
+                    break;
+            }
         }
+
         StateTimer -= Time.deltaTime;
     }
 
@@ -1523,34 +1540,40 @@ public class PlayerHandler : EntityHandler
         if (StateTimer < _changeStyleColorChangeTime && !_changeStyle_HasChanged)
         {
             _changeStyle_HasChanged = true;
-            switch (_currentStyle)
+            switch (_newStyle)
             {
                 case ElementType.FIRE:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0.0f));
                     Vibrate(1f, 0.1f);
+                    _currentStyle = ElementType.FIRE;
+                    SwapWeapon("WEST");
                     break;
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0.0f, 1.0f));
                     Vibrate(1f, 0.1f);
+                    _currentStyle = ElementType.VOID;
+                    SwapWeapon("NORTH");
                     break;
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
                     Vibrate(1f, 0.1f);
+                    _currentStyle = ElementType.ZAP;
                     break;
                 default:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
                     Vibrate(1f, 0.1f);
+                    Debug.LogError("HOWDY : Somehow, the player changed style to a nonexistent style!");
                     break;
             }
         }
 
 
-        if (StateTimer < 0)
-        {
+        if ( StateTimer < 0 || ( !controller.GetButton("ChangeStyle_Fire") && !controller.GetButton("ChangeStyle_Void") && !controller.GetButton("ChangeStyle_Zap") ) )
+        { 
             CurrentState = PlayerState.RUN;
             _changeStyle_HasChanged = false;
         }
@@ -1600,7 +1623,6 @@ public class PlayerHandler : EntityHandler
     {
         if (entityPhysics.GetCurrentHealth() < entityPhysics.GetMaxHealth() && CurrentEnergy >= heal_cost)
         {
-            ChangeEnergy(-4);
             CurrentState = PlayerState.HEAL;
             StateTimer = heal_duration;
         }
@@ -1615,7 +1637,7 @@ public class PlayerHandler : EntityHandler
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.7f, 0.1f, Color.red);
         ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.15f);
         StartCoroutine(VibrateDecay(1f, 0.025f));
-        entityPhysics.PlayInvincibilityFrames(0.5f);
+        entityPhysics.PlayInvincibilityFrames(0.4f);
         //_healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
     }
 

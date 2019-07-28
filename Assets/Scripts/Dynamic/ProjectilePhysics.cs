@@ -24,10 +24,12 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool doesTracking;
     [SerializeField] private Collider2D trackingArea;
     [SerializeField] private int _damageAmount = 1;
+    [SerializeField] private float _impactForce = 0.5f;
     [SerializeField] private ElementType _damageType = ElementType.NONE;
     [SerializeField] private float _zVelocityDamping = 1f;
     [SerializeField] private float _zMinimumVelocity = 20f;
     [SerializeField] private AudioSource _deflectSFX;
+    
 
 
 
@@ -138,7 +140,7 @@ public class ProjectilePhysics : DynamicPhysics
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:Velocity * 0.5f, type:_damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:_impactForce * Velocity.normalized, type:_damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 if (!canPenetrate)
                 {
@@ -161,7 +163,7 @@ public class ProjectilePhysics : DynamicPhysics
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: Velocity * 0.5f, type: _damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: _impactForce * Velocity.normalized, type: _damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 if (!canPenetrate)
                 {
@@ -192,7 +194,7 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (!_targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] && other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight) //if has not been hit and is overlapping
             {
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:Velocity * 0.5f, type:_damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:Velocity.normalized * _impactForce, type:_damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 _targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] = true;
                 if (!canPenetrate)
@@ -211,7 +213,7 @@ public class ProjectilePhysics : DynamicPhysics
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: Velocity * 0.5f, type: _damageType);
+                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: _impactForce * Velocity.normalized, type: _damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
                 if (!canPenetrate)
                 {

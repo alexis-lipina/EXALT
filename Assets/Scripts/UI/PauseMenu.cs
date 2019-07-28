@@ -71,7 +71,7 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1;
         //do something
-        SceneManager.LoadScene("FirstLevel");
+        SceneManager.LoadScene("Demo_Arena_Empty");
     }
 
     public void QuitPressed()

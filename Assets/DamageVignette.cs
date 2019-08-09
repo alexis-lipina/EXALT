@@ -6,13 +6,16 @@ using UnityEngine.UI;
 public class DamageVignette : MonoBehaviour
 {
     [SerializeField] private EntityPhysics playerPhysics;
+    private PlayerHandler _playerHandler;
     private int previousHealth;
     private Coroutine currentCoroutine;
+    private AudioSource _heartBeat;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        _playerHandler = playerPhysics.Handler as PlayerHandler;
+        _heartBeat = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -53,23 +56,39 @@ public class DamageVignette : MonoBehaviour
 
     IEnumerator MildPulse()
     {
+        _heartBeat.volume = 0.5f;
         while (true)
         {
-            yield return ExponentialDecayOpacity(0.4f, 0.25f, 0.4f, 0.3f);
-            yield return ExponentialDecayOpacity(0.25f, 0.4f, 0.05f, 0.5f);
-            yield return ExponentialDecayOpacity(0.4f, 0.25f, 0.1f, 0.3f);
-            yield return ExponentialDecayOpacity(0.25f, 0.4f, 0.05f, 0.5f);
+            StartCoroutine(_playerHandler.VibrateDecay(0.05f, 0.1f));          // ba
+            _heartBeat.Play();
+            yield return ExponentialDecayOpacity(0.28f, 0.45f, 0.15f, 0.5f);   
+
+            yield return ExponentialDecayOpacity(0.45f, 0.28f, 0.1f, 0.3f);    // -
+
+            StartCoroutine(_playerHandler.VibrateDecay(0.05f, 0.05f));         // bum
+            _heartBeat.Play();
+            yield return ExponentialDecayOpacity(0.28f, 0.45f, 0.15f, 0.5f);   
+
+            yield return ExponentialDecayOpacity(0.45f, 0.28f, 0.5f, 0.1f);    // ...
         }
     }
 
     IEnumerator MajorPulse()
     {
+        _heartBeat.volume = 1.0f;
         while (true)
         {
-            yield return ExponentialDecayOpacity(0.8f, 0.5f, 0.4f, 0.3f);
-            yield return ExponentialDecayOpacity(0.5f, 0.8f, 0.05f, 0.5f);
-            yield return ExponentialDecayOpacity(0.8f, 0.5f, 0.1f, 0.3f);
-            yield return ExponentialDecayOpacity(0.5f, 0.8f, 0.05f, 0.5f);
+            StartCoroutine(_playerHandler.VibrateDecay(0.3f, 0.05f));      // ba
+            _heartBeat.Play();
+            yield return ExponentialDecayOpacity(0.6f, 0.8f, 0.1f, 0.5f);  
+
+            yield return ExponentialDecayOpacity(0.8f, 0.6f, 0.1f, 0.3f);  // -
+
+            StartCoroutine(_playerHandler.VibrateDecay(0.3f, 0.01f));      // bum
+            _heartBeat.Play();
+            yield return ExponentialDecayOpacity(0.6f, 0.8f, 0.1f, 0.5f);  
+
+            yield return ExponentialDecayOpacity(0.8f, 0.6f, 0.4f, 0.1f);  // ...
 
         }
     }

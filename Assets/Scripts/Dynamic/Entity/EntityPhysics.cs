@@ -165,6 +165,7 @@ public class EntityPhysics : DynamicPhysics
     public Vector2 MoveAvoidEntities(Vector2 velocity)
     {
         
+        // Extrude from intersecting entities
         if (EntitiesTouched.Count > 0)
         {
             foreach (PhysicsObject entity in EntitiesTouched)
@@ -182,9 +183,21 @@ public class EntityPhysics : DynamicPhysics
                 }
             }
         }
+        /*
+        // Added extrusion from intersecting environment
+        foreach (KeyValuePair<GameObject, KeyValuePair<float, float>> pair in TerrainTouching)
+        {
+            if (pair.Value.Key + 0.5f < this.GetTopHeight()  && pair.Value.Value - 0.5f > this.GetBottomHeight())
+            {
+                //get the location relative to this objects location
+                Vector2 amountOfForceToAdd = new Vector2(pair.Key.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, pair.Key.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
+                amountOfForceToAdd = amountOfForceToAdd.normalized * 1f; //TODO - just a velocity of 1, m ight want different force strengths
+                velocity = new Vector2(velocity.x - amountOfForceToAdd.x, velocity.y - amountOfForceToAdd.y);
+            }
+        }*/
 
         // /*
-        
+
         velocity += (Vector2)_netForces * _pushForceMultiplier;
         if (_netForces.magnitude < _forceDamping) //zero out forces if the current net force is less than the amount it would be damped
         {
@@ -315,7 +328,7 @@ public class EntityPhysics : DynamicPhysics
         }
         //Debug.Log("Updating point!!!");
         //Debug.Log(this.handlerObject);
-        
+        Debug.Log(navManager);
         if (navManager.entityChangePositionDelegate != null)
             navManager.entityChangePositionDelegate(this.gameObject, tempphys);
         currentNavEnvironmentObject = tempphys;
@@ -368,6 +381,7 @@ public class EntityPhysics : DynamicPhysics
 
     public virtual void Heal(int amount)
     {
+        Debug.Log("HEALIN");
         currentHP += amount;
     }
 

@@ -22,7 +22,7 @@ public class DynamicPhysics : PhysicsObject
 
 
     public Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the ***collider***
-    //                                        bottom-^    ^-top
+    //                                     bottom-^    ^-top
     protected Dictionary<int, EnvironmentPhysics> TerrainTouched;//each element touching ***EnvironmentHandler***
     //                   ^ instanceID
     //protected Dictionary<int, KeyValuePair<float, GameObject>> Shadows;
@@ -161,7 +161,7 @@ public class DynamicPhysics : PhysicsObject
     {
         if (playerTop > terrainBottom && playerBottom + 0.6f < terrainTop)// +0.6 is a tolerance so entity moves up anyway
         {
-            Debug.Log("Collision");
+            //Debug.Log("Collision");
             return true;
         }
         return false;
@@ -285,7 +285,7 @@ public class DynamicPhysics : PhysicsObject
                     }
                 }
             }
-
+            
             if ((NorthCollision && velocityY > 0 || SouthCollision && velocityY < 0) && (EastCollision && velocityX > 0 || WestCollision && velocityX < 0)) //Wedged into a corner, disallow motion
             {
                 //Debug.Log("Stuck in a corner!");

@@ -20,6 +20,10 @@ public class ReticleHandler : MonoBehaviour
     [SerializeField] private float _maxReticleDistance;
     [SerializeField] private bool _isUsingCursor;
 
+    private float _timeSinceMoved = 0f;
+    private const float _timeTillFade = 4f;
+    private bool _isFaded = false;
+
 
     private Vector2 _reticleDimensions;
     private Vector2 _tempRightAnalogDirection;
@@ -106,20 +110,31 @@ public class ReticleHandler : MonoBehaviour
                 if (controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical").magnitude >= 0.2)
                 {
                     _tempRightAnalogDirection = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
+                    _timeSinceMoved = 0f;
                 }
                 else
                 {
                     _tempRightAnalogDirection = _tempRightAnalogDirection.normalized * 0.2f;
+                    _timeSinceMoved += Time.fixedDeltaTime;
                 }
             }
             else
             {
-
+                _timeSinceMoved = 0f;
                 _tempRightAnalogDirection = controller.GetAxis2DRaw("LookHorizontal", "LookVertical");
             }
         }
 
-
+        if ( !_isFaded && _timeSinceMoved > _timeTillFade )
+        {
+            StartCoroutine(FadeOut());
+            _isFaded = true;
+        }
+        if ( _isFaded && _timeSinceMoved == 0 )
+        {
+            StartCoroutine(FadeIn());
+            _isFaded = false;
+        }
 
         /*
         if (reticlevector.magnitude == 0) //get vector reticle should be drawn along, and distance of it
@@ -185,6 +200,44 @@ public class ReticleHandler : MonoBehaviour
         _cursorWorldPos = position;
     }
 
+    private IEnumerator FadeOut()
+    {
+        float opacity = 1f;
+        for (int i = 0; i < 10; i++)
+        {
+            _entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, opacity);
+            SetOpacityOfShadows(_entityPhysics, opacity);
 
+            opacity -= 0.1f;
+            yield return new WaitForSeconds(0.05f);
+        }
+        SetOpacityOfShadows(_entityPhysics, 0);
+        _entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+
+    }
+
+    private IEnumerator FadeIn()
+    {
+        float opacity = 0f;
+        for (int i = 0; i < 10; i++)
+        {
+            _entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, opacity);
+            SetOpacityOfShadows(_entityPhysics, opacity);
+            opacity += 0.1f;
+            yield return new WaitForSeconds(0.05f);
+        }
+        _entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+        SetOpacityOfShadows(_entityPhysics, 1);
+
+    }
+
+    private void SetOpacityOfShadows(EntityPhysics physics, float opacity)
+    {
+        var sprites = physics.GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer sprite in sprites)
+        {
+            sprite.material.SetFloat("_Opacity", opacity);
+        }
+    }
 
 }

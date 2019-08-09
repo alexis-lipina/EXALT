@@ -13,6 +13,8 @@ Shader "Custom/ShadowShader"
 
 		_HighColor("High Color", Color) = (0.0, 0.0, 0.0, 1.0)
 		_LowColor("Low Color", Color) = (1.0, 1.0, 1.0, 1.0)
+
+		_Opacity("Opacity", Float) = 1.0
 	}
 
 	SubShader
@@ -52,14 +54,14 @@ Shader "Custom/ShadowShader"
 
 			sampler2D _MainTex;
 			float4 _CullRect;
-			
+
 			//apply depth color effect
 			float _PlayerElevation; 
 			float _Elevation;
 			float4 _HighColor;
 			float4 _LowColor;
 			float _MaxElevationOffset;
-			
+			float _Opacity;
 
 			//FRAGMENT SHADER
 			float4 frag(vertOutput output) : COLOR
@@ -67,6 +69,7 @@ Shader "Custom/ShadowShader"
 				float4 color = tex2D(_MainTex, output.uv);
 				float4 rect = _CullRect;
 				float original_opacity = color.a;
+				float imposed_opacity = _Opacity;
 
 				float diff = _Elevation - _PlayerElevation;
 				float4 mask_color;
@@ -82,13 +85,13 @@ Shader "Custom/ShadowShader"
 				float ratio = diff / _MaxElevationOffset;
 				if (ratio >= 1.0)
 				{
-					mask_color.a = original_opacity;
+					mask_color.a = original_opacity * imposed_opacity;
 					//return mask_color;
 				}
 				else
 				{
 					mask_color = (1.0 - ratio) * color + ratio * mask_color;
-					mask_color.a = original_opacity;
+					mask_color.a = original_opacity * imposed_opacity;
 					//return mask_color;
 				}
 

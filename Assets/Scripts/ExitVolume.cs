@@ -25,4 +25,9 @@ public class ExitVolume : MonoBehaviour
 
         }
     }
+
+    private IEnumerator SceneTransition()
+    {
+        yield return new WaitForSecondsRealtime(0.1f);
+    }
 }

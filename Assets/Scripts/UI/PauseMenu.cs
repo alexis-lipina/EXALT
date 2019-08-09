@@ -20,7 +20,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject _energyBar;
 
 
-    private bool _isPaused = false;
+    private bool _isCurrentlyPaused = false;
     private Player _controller;
 
 
@@ -35,36 +35,38 @@ public class PauseMenu : MonoBehaviour
     {
         if (_controller.GetButtonDown("Pause"))
         {
-            _isPaused = !_isPaused;
-            if (_isPaused)
-            {
-                Time.timeScale = 0;
-                _menuPanel.SetActive(true);
-                _healthBar.SetActive(false);
-                _energyBar.SetActive(false);
-                EventSystem.current.SetSelectedGameObject(_resume.gameObject, new BaseEventData(EventSystem.current));
-                _resume.Select();
-                
-            }
-            else
-            {
-                Time.timeScale = 1;
-                _menuPanel.SetActive(false);
-                _healthBar.SetActive(true);
-                _energyBar.SetActive(true);
-            }
+            SetPaused(!_isCurrentlyPaused);
         }
 
 
     }
-
+    
+    private void SetPaused(bool isToBePaused)
+    {
+        if (isToBePaused)
+        {
+            Time.timeScale = 0;
+            _menuPanel.SetActive(true);
+            _healthBar.SetActive(false);
+            _energyBar.SetActive(false);
+            EventSystem.current.SetSelectedGameObject(_resume.gameObject, new BaseEventData(EventSystem.current));
+            _resume.Select();
+        }
+        else
+        {
+            Time.timeScale = 1;
+            _menuPanel.SetActive(false);
+            _healthBar.SetActive(true);
+            _energyBar.SetActive(true);
+        }
+        _isCurrentlyPaused = isToBePaused;
+    }
 
     //==============================| Button Press Methods
 
     public void ResumePressed()
     {
-        Time.timeScale = 1;
-        _menuPanel.SetActive(false);
+        SetPaused(false);
     }
 
     public void OptionsPressed()

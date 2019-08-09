@@ -13,6 +13,7 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected GameObject[] neighbors;
     [SerializeField] protected bool isTransparentOnOcclude;
     [SerializeField] protected EnvironmentPhysics _transparencyReference = null;
+    [SerializeField] protected TriggerVolume _transparencyVolume = null; 
     [SerializeField] protected float _opacityHeightTolerance = 1f;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
     private float _opacity = 1;
@@ -68,7 +69,21 @@ public class EnvironmentPhysics : PhysicsObject
     {
         if (isTransparentOnOcclude)
         {
-            if (_transparencyReference != null)
+            if (_transparencyVolume != null)
+            {
+                float desiredOpacity = _transparencyVolume.GetComponent<Transform>().position.y - _playerSprite.GetComponent<Transform>().position.z;
+
+                //less than 0 if player is within x-bounds, greater than 0 otherwise
+                float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((_transparencyVolume.GetComponent<BoxCollider2D>().bounds.center - _playerSprite.GetComponent<Transform>().position).x) - _transparencyVolume.GetComponent<BoxCollider2D>().bounds.extents.x;
+                desiredOpacity = Mathf.Max(desiredOpacity, distanceFromPlayerToLeftOrRightBound);
+
+                desiredOpacity *= 0.1f;
+
+                desiredOpacity = Mathf.Clamp(desiredOpacity, 0f, 1.0f);
+                if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > _transparencyVolume.GetTopHeight()) desiredOpacity = 1f;
+                _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
+            }
+            else if (_transparencyReference != null)
             {
                 _opacity = _transparencyReference._opacity;
             }
@@ -87,23 +102,6 @@ public class EnvironmentPhysics : PhysicsObject
                 desiredOpacity = Mathf.Clamp(desiredOpacity, 0f, 1.0f);
                 if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > TopHeight) desiredOpacity = 1f;
                 _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
-
-                
-
-                /*
-                if (playerSprite.GetComponent<Transform>().position.z > gameObject.GetComponent<Transform>().position.z)
-                {
-                    //distance
-                    float opacity = gameObject.GetComponent<Transform>().position.z - playerSprite.GetComponent<Transform>().position.z + 3f;
-                    opacity *= 0.1f;
-                    GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", opacity);
-                    GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", opacity);
-                }
-                else
-                {
-                    GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", 1f);
-                    GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", 1f);
-                }*/
             }
             GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", _opacity);
             if (GetComponentsInChildren<SpriteRenderer>().Length > 1) GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", _opacity);

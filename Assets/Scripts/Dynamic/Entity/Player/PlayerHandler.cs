@@ -47,7 +47,7 @@ public class PlayerHandler : EntityHandler
     //[SerializeField] private UIHealthBar _healthBar;
     [SerializeField] private PlayerHealthBarHandler _healthBar;
     
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST};
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -82,7 +82,7 @@ public class PlayerHandler : EntityHandler
     private ElementType _newStyle;
 
     private FaceDirection currentFaceDirection;
-
+    private FaceDirection previousFaceDirection;
     
     private bool hasSwung;
 
@@ -159,13 +159,21 @@ public class PlayerHandler : EntityHandler
     private const int heal_cost = 4;
     private bool hasHealed = false;
 
+    //======================| REST
+    private const float rest_kneel_duration = 0.51f;
+    private bool isStanding = false;
+    private const float _rest_recover_health_duration = 1.0f;
+    private float _rest_recover_health_timer = 0f;
+    private const float _rest_recover_energy_duration = 0.33f;
+    private float _rest_recover_energy_timer = 0f;
+
 
     //=====================| JUMP/FALL FIELDS
-    [SerializeField] private float JumpImpulse = 30f;
+    [SerializeField] private float JumpImpulse = 80f;
     [SerializeField] private float JumpHeldGravity;
     [SerializeField] private float JumpFallGravity;
     [SerializeField] private float FallGravity;
-
+    private bool _jump_hasStartedFalling = false;
 
 
     public bool IsUsingMouse
@@ -297,6 +305,9 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.HEAL):
                 PlayerHeal();
                 break;
+            case (PlayerState.REST):
+                PlayerRest();
+                break;
             default:
                 throw new Exception("Unhandled player state");
         }
@@ -381,6 +392,11 @@ public class PlayerHandler : EntityHandler
         HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
 
         //------------------------------------------------| STATE CHANGE
+        if (controller.GetButton("Rest"))
+        {
+            StateTimer = rest_kneel_duration;
+            CurrentState = PlayerState.REST;
+        }
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
         {
             //Debug.Log("IDLE -> RUN");
@@ -587,7 +603,7 @@ public class PlayerHandler : EntityHandler
     {
         //Debug.Log("Player Jumping");
         //Facing Determination
-
+        previousFaceDirection = currentFaceDirection;
         Vector2 direction = new Vector2(xInput, yInput);
         if (direction.sqrMagnitude > 1) direction.Normalize(); //prevents going too fast on KB
         if (direction.sqrMagnitude > 0.01f)
@@ -611,7 +627,73 @@ public class PlayerHandler : EntityHandler
         }
 
         //=======================| DRAW
+        float threshold = 2f;
+        switch (currentFaceDirection)
+        {
+            case FaceDirection.EAST:
+                if (entityPhysics.ZVelocity > threshold)
+                {
+                    characterAnimator.Play("PlayerJumpEast");
+                }
+                else if (entityPhysics.ZVelocity <= threshold && !_jump_hasStartedFalling && previousFaceDirection == currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerHoverEast");
+                    _jump_hasStartedFalling = true;
+                }
+                else if (entityPhysics.ZVelocity < threshold && previousFaceDirection != currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerFallEast");
+                }
+                break;
+            case FaceDirection.WEST:
+                if (entityPhysics.ZVelocity > threshold)
+                {
+                    characterAnimator.Play("PlayerJumpWest");
+                }
+                else if (entityPhysics.ZVelocity <= threshold && !_jump_hasStartedFalling && previousFaceDirection == currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerHoverWest");
+                    _jump_hasStartedFalling = true;
+                }
+                else if (entityPhysics.ZVelocity < threshold && previousFaceDirection != currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerFallWest");
+                }
+                break;
+            case FaceDirection.NORTH:
+                if (entityPhysics.ZVelocity > threshold)
+                {
+                    characterAnimator.Play("PlayerJumpNorth");
+                }
+                else if (entityPhysics.ZVelocity <= threshold && !_jump_hasStartedFalling && previousFaceDirection == currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerHoverNorth");
+                    _jump_hasStartedFalling = true;
+                }
+                else if (entityPhysics.ZVelocity < threshold && previousFaceDirection != currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerFallNorth");
+                }
+                break;
+            case FaceDirection.SOUTH:
+                if (entityPhysics.ZVelocity > threshold)
+                {
+                    characterAnimator.Play("PlayerJumpSouth");
+                }
+                else if (entityPhysics.ZVelocity <= threshold && !_jump_hasStartedFalling && previousFaceDirection == currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerHoverSouth");
+                    _jump_hasStartedFalling = true;
+                }
+                else if (entityPhysics.ZVelocity < threshold && previousFaceDirection != currentFaceDirection)
+                {
+                    characterAnimator.Play("PlayerFallSouth");
+                }
+                break;
+        }
 
+
+        /*
         if (entityPhysics.ZVelocity > 0 && currentFaceDirection == FaceDirection.EAST)
         {
             characterAnimator.Play(JUMP_EAST_Anim);
@@ -627,7 +709,8 @@ public class PlayerHandler : EntityHandler
         else if (entityPhysics.ZVelocity < 0)
         {
             characterAnimator.Play(FALL_WEST_Anim);
-        }
+        }*/
+
         //------------------------------| MOVE
         Vector2 vec = entityPhysics.MoveAvoidEntities(direction);
         entityPhysics.MoveCharacterPositionPhysics(vec.x, vec.y);
@@ -660,6 +743,7 @@ public class PlayerHandler : EntityHandler
         if (controller.GetButtonDown("Blink") && !_hasAlreadyBlinkedInMidAir)
         {
             PlayerBlinkTransitionAttempt();
+            _jump_hasStartedFalling = false;
         }
 
         if (entityPhysics.GetObjectElevation() <= maxheight)
@@ -668,6 +752,7 @@ public class PlayerHandler : EntityHandler
             Vibrate(vibrationMagnitude, 0.1f * vibrationMagnitude);
             entityPhysics.SetObjectElevation(maxheight);
             _hasAlreadyBlinkedInMidAir = false;
+            _jump_hasStartedFalling = false;
             if (Mathf.Abs(xInput) < 0.1 || Mathf.Abs(yInput) < 0.1)
             {
                 entityPhysics.SavePosition();
@@ -715,7 +800,7 @@ public class PlayerHandler : EntityHandler
         
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
-        CurrentState = PlayerState.IDLE;
+        CurrentState = PlayerState.JUMP;
     }
 
     
@@ -1580,7 +1665,117 @@ public class PlayerHandler : EntityHandler
 
     }
 
+    private void PlayerRest()
+    {
+        if (!isStanding && StateTimer > 0)
+        {
+            characterAnimator.Play("PlayerRestTransition");
+            _rest_recover_energy_timer = _rest_recover_energy_duration;
+            _rest_recover_health_timer = _rest_recover_health_duration;
+        }
+        else if (isStanding && StateTimer > 0)
+        {
+            characterAnimator.Play("PlayerRestStanding");
+        }
+        else if (!isStanding)
+        {
+            characterAnimator.Play("PlayerRestLoop");
+            if (_rest_recover_health_timer < 0)
+            {
+                entityPhysics.Heal(1);
+                _rest_recover_health_timer = _rest_recover_health_duration;
+            }
+            if (_rest_recover_energy_timer < 0)
+            {
+                ChangeEnergy(1);
+                _rest_recover_energy_timer = _rest_recover_energy_duration;
+            }
 
+            _rest_recover_energy_timer -= Time.deltaTime;
+            _rest_recover_health_timer -= Time.deltaTime;
+
+            if (controller.GetButtonDown("Rest"))
+            {
+                StateTimer = rest_kneel_duration;
+                isStanding = true;
+            }
+        }
+        else
+        {
+            currentFaceDirection = FaceDirection.SOUTH;
+            CurrentState = PlayerState.IDLE;
+            isStanding = false;
+        }
+        StateTimer -= Time.deltaTime;
+
+
+
+
+        
+        #region IDLE state transitions (copied)
+
+        if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2)
+        {
+            //Debug.Log("IDLE -> RUN");
+            isStanding = false;
+            CurrentState = PlayerState.RUN;
+        }
+        if (controller.GetButtonDown("Jump"))
+        {
+            //Debug.Log("IDLE -> JUMP");
+            isStanding = false;
+            Vibrate(.5f, 0.05f);
+            entityPhysics.ZVelocity = JumpImpulse;
+            CurrentState = PlayerState.JUMP;
+        }
+
+        if (controller.GetButtonDown("Melee"))
+        {
+            isStanding = false;
+            hasSwung = false;
+            //Debug.Log("IDLE -> ATTACK");
+            StateTimer = time_lightMelee;
+            CurrentState = PlayerState.LIGHT_MELEE;
+        }
+
+        if (controller.GetButton("Charge"))
+        {
+            isStanding = false;
+            StateTimer = time_Charge;
+            CurrentState = PlayerState.CHARGE;
+        }
+
+        if (controller.GetButton("RangedAttack"))
+        {
+            isStanding = false;
+            PlayerLightRangedTransitionAttempt();
+        }
+        if (controller.GetButtonDown("Blink"))
+        {
+            isStanding = false;
+            PlayerBlinkTransitionAttempt();
+        }
+        CheckStyleChange();
+        if (controller.GetButtonDown("Heal"))
+        {
+            isStanding = false;
+            PlayerHealTransitionAttempt();
+        }
+
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
+        {
+            isStanding = false;
+            entityPhysics.ZVelocity = 0;
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
+        #endregion
+
+    }
     //================================================================================| TRANSITIONS
 
     private void PlayerLightRangedTransitionAttempt()
@@ -1683,7 +1878,7 @@ public class PlayerHandler : EntityHandler
             }
         }
     }
-    IEnumerator VibrateDecay(float magnitude, float decayRate)
+    public IEnumerator VibrateDecay(float magnitude, float decayRate)
     {
         /*
         while (magnitude > 0)

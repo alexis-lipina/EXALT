@@ -23,7 +23,8 @@ public class ScalablePlatform : MonoBehaviour {
     [SerializeField] private float elevation; //height of bottom of object from world-plane zero
     [SerializeField] private SpriteDrawMode drawMode = SpriteDrawMode.Sliced;
     [SerializeField] private bool autoCollider = false; //automatically set collider offset
-    [SerializeField] private bool forceDrawMode = true; 
+    [SerializeField] private bool forceDrawMode = true;
+    [SerializeField] private bool forcePhysicsZBounds = false;
 
     private void OnDrawGizmosSelected()
     {
@@ -58,9 +59,15 @@ public class ScalablePlatform : MonoBehaviour {
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
         boxCollider.size = new Vector2(dimensions.x, dimensions.y);
         if (autoCollider) { boxCollider.offset = Vector2.down * (dimensions.z); }
-
-        //GetComponent<EnvironmentPhysics>().environmentBottomHeight = elevation;
-        //GetComponent<EnvironmentPhysics>().environmentTopHeight = dimensions.z + elevation;
+        if (forcePhysicsZBounds)
+        {
+            
+            GetComponent<EnvironmentPhysics>().environmentBottomHeight = elevation;
+            GetComponent<EnvironmentPhysics>().BottomHeight = elevation;
+            GetComponent<EnvironmentPhysics>().environmentTopHeight = dimensions.z + elevation;
+            GetComponent<EnvironmentPhysics>().TopHeight = dimensions.z + elevation;
+            
+        }
 
 
     }

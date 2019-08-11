@@ -24,10 +24,38 @@ public class ScalablePlatform : MonoBehaviour {
     [SerializeField] private SpriteDrawMode drawMode = SpriteDrawMode.Sliced;
     [SerializeField] private bool autoCollider = false; //automatically set collider offset
     [SerializeField] private bool forceDrawMode = true;
-    [SerializeField] private bool forcePhysicsZBounds = false;
+
+    [Space(5)]
+    [Header("Editor Utilities")]
+    [SerializeField] private bool fixTransform = false;
+
+    [Space(5)]
+    [Header("Custom Scaling Buttons")]
+    [Space(10)]
+    [SerializeField] private bool X_Up = false;
+    [SerializeField] private bool X_Down = false;
+    [Space(10)]
+    [SerializeField] private bool Y_Up = false;
+    [SerializeField] private bool Y_Down = false;
+    [Space(10)]
+    [SerializeField] private bool Z_Up = false;
+    [SerializeField] private bool Z_Down = false;
+    [Space(10)]
+    [SerializeField] private bool Raise = false;
+    [SerializeField] private bool Lower = false;
+
+    public float TopHeight
+    {
+        get { return dimensions.z + elevation; }
+    }
+    public float BottomHeight
+    {
+        get { return elevation; }
+    }
 
     private void OnDrawGizmosSelected()
     {
+        
         //find the sprite renderers
         SpriteRenderer top = transform.GetChild(0).GetComponent<SpriteRenderer>();
         SpriteRenderer side = transform.GetChild(1).GetComponent<SpriteRenderer>();
@@ -59,16 +87,67 @@ public class ScalablePlatform : MonoBehaviour {
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
         boxCollider.size = new Vector2(dimensions.x, dimensions.y);
         if (autoCollider) { boxCollider.offset = Vector2.down * (dimensions.z); }
-        if (forcePhysicsZBounds)
+
+
+    }
+
+    private void OnValidate()
+    {
+        #region BUTTONS
+        if (X_Up)
         {
-            
-            GetComponent<EnvironmentPhysics>().environmentBottomHeight = elevation;
-            GetComponent<EnvironmentPhysics>().BottomHeight = elevation;
-            GetComponent<EnvironmentPhysics>().environmentTopHeight = dimensions.z + elevation;
-            GetComponent<EnvironmentPhysics>().TopHeight = dimensions.z + elevation;
-            
+            dimensions.x++;
+            Debug.Log("X++");
+            X_Up = false;
+        }
+        if (X_Down)
+        {
+            dimensions.x--;
+            Debug.Log("X--");
+            X_Down = false;
+        }
+        if (Y_Up)
+        {
+            dimensions.y++;
+            Debug.Log("Y++");
+            Y_Up = false;
+        }
+        if (Y_Down)
+        {
+            dimensions.y--;
+            Debug.Log("Y--");
+            Y_Down = false;
+        }
+        if (Z_Up)
+        {
+            dimensions.z++;
+            Debug.Log("Z++");
+            Z_Up = false;
+        }
+        if (Z_Down)
+        {
+            dimensions.z--;
+            Debug.Log("Z--");
+            Z_Down = false;
+        }
+        if (Raise)
+        {
+            elevation++;
+            Debug.Log("Elevation++");
+            Raise = false;
+        }
+        if (Lower)
+        {
+            elevation--;
+            Debug.Log("Elevation--");
+            Lower = false;
         }
 
-
+        if (fixTransform)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
+        }
+        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
+        #endregion
     }
 }

@@ -124,7 +124,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1340802446491156}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 26, y: 53, z: 6}
+  m_LocalPosition: {x: 26, y: 53, z: 51.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4923787600069606}
@@ -174,8 +174,11 @@ MonoBehaviour:
   environmentTopHeight: 6
   neighbors: []
   isTransparentOnOcclude: 0
+  _transparencyReference: {fileID: 0}
+  _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
   isSavePoint: 1
+  _inheritZCollisionFromScalablePlatform: 0
 --- !u!114 &114453362967325094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +211,15 @@ MonoBehaviour:
   drawMode: 1
   autoCollider: 1
   forceDrawMode: 1
+  fixTransform: 0
+  X_Up: 0
+  X_Down: 0
+  Y_Up: 0
+  Y_Down: 0
+  Z_Up: 0
+  Z_Down: 0
+  Raise: 0
+  Lower: 0
 --- !u!1 &1812943315370356
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,6 +16,8 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected TriggerVolume _transparencyVolume = null; 
     [SerializeField] protected float _opacityHeightTolerance = 1f;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
+    [SerializeField] protected bool _inheritZCollisionFromScalablePlatform = false;
+
     private float _opacity = 1;
 
     public static EntityPhysics _playerPhysics;
@@ -41,11 +43,17 @@ public class EnvironmentPhysics : PhysicsObject
 
     void Awake()
     {
-       
-        bottomHeight = environmentBottomHeight;
-        topHeight = environmentTopHeight;
+        if (!_inheritZCollisionFromScalablePlatform)
+        {
+            bottomHeight = environmentBottomHeight;
+            topHeight = environmentTopHeight;
+        }
+        else
+        {
+            bottomHeight = GetComponent<ScalablePlatform>().BottomHeight;
+            topHeight = GetComponent<ScalablePlatform>().TopHeight;
+        }
         neighborEdges = new List<NavEdge>();
-        
     }
 
     void Start()

@@ -328,7 +328,7 @@ public class EntityPhysics : DynamicPhysics
         }
         //Debug.Log("Updating point!!!");
         //Debug.Log(this.handlerObject);
-        Debug.Log(navManager);
+
         if (navManager.entityChangePositionDelegate != null)
             navManager.entityChangePositionDelegate(this.gameObject, tempphys);
         currentNavEnvironmentObject = tempphys;

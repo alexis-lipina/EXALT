@@ -8,14 +8,12 @@ public class TestBombHandler : BulletHandler
     [SerializeField] private TriggerVolume _explosionVolume;
     private float _timer;
     private float _fuse = 1f;
-    private bool _hasExploded;
     private float _explosionDuration = 0.4f;
 
     protected override void Start()
     {
         base.Start();
         _timer = 0.0f;
-        _hasExploded = false;
         _projectilePhysics.enabled = true;
         _projectilePhysics.ObjectSprite.GetComponent<Animator>().enabled = false;
         _projectilePhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = _grenadeSprite;
@@ -49,7 +47,6 @@ public class TestBombHandler : BulletHandler
         //_explosion.Detonate();
         _projectilePhysics.ObjectSprite.GetComponent<Animator>().enabled = true;
         _projectilePhysics.enabled = false;
-        _hasExploded = true;
         
         if (_explosionVolume.IsTriggered)
         {

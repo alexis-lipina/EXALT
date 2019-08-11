@@ -116,7 +116,6 @@ public class LightningChainNode : MonoBehaviour
     /// <returns></returns>
     public static GameObject GetNode()
     {
-        GameObject returnThis;
         if (_pooledNodes == null) _pooledNodes = new List<GameObject>();
         foreach (GameObject obj in _pooledNodes)
         {

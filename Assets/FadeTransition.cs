@@ -37,9 +37,9 @@ public class FadeTransition : MonoBehaviour
         float opacity = 1f;
         while (opacity > 0)
         {
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.01f);
             GetComponent<Image>().color = new Color(0, 0, 0, opacity);
-            opacity -= Time.deltaTime * rate;
+            opacity -= 0.02f * rate;
         }
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
     }
@@ -50,11 +50,12 @@ public class FadeTransition : MonoBehaviour
         float opacity = 0f;
         while (opacity < 1)
         {
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.01f);
             GetComponent<Image>().color = new Color(0, 0, 0, opacity);
-            opacity += Time.deltaTime * rate;
+            opacity += 0.02f * rate;
         }
         GetComponent<Image>().color = new Color(0, 0, 0, 1);
+        PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(sceneName);
     }
 }

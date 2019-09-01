@@ -191,7 +191,6 @@ public class PlayerHandler : EntityHandler
             PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         }
         _currentEnergy = _maxEnergy;
-        //PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         controller = ReInput.players.GetPlayer(0);
         //this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         inventory = gameObject.GetComponent<PlayerInventory>();

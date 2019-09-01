@@ -19,15 +19,7 @@ public class ExitVolume : MonoBehaviour
     {
         if (GetComponent<TriggerVolume>().IsTriggered)
         {
-            
-            SceneManager.LoadScene(_destination);
-            Debug.Log("Load!");
-
+            FadeTransition.Singleton.FadeToScene(_destination);
         }
-    }
-
-    private IEnumerator SceneTransition()
-    {
-        yield return new WaitForSecondsRealtime(0.1f);
     }
 }

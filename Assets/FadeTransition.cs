@@ -30,7 +30,7 @@ public class FadeTransition : MonoBehaviour
     }
 
 
-    private IEnumerator FadeInTransition(float rate = 1f)
+    private IEnumerator FadeInTransition(float rate = 2f)
     {
         _hasBeganToExit = false;
         GetComponent<Image>().color = new Color(0, 0, 0, 1);
@@ -44,7 +44,7 @@ public class FadeTransition : MonoBehaviour
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
     }
 
-    private IEnumerator FadeOutTransition(string sceneName, float rate = 1f)
+    private IEnumerator FadeOutTransition(string sceneName, float rate = 2f)
     {
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
         float opacity = 0f;

@@ -12,6 +12,8 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] public float environmentTopHeight; //for initialization only
     [SerializeField] protected GameObject[] neighbors;
     [SerializeField] protected bool isTransparentOnOcclude;
+    [Tooltip("Proximity in the X axis the player must be to the object before it starts to fade out")]
+    [SerializeField] protected float transparencyXScalar = 1.0f;
     [SerializeField] protected EnvironmentPhysics _transparencyReference = null;
     [SerializeField] protected TriggerVolume _transparencyVolume = null; 
     [SerializeField] protected float _opacityHeightTolerance = 1f;
@@ -103,7 +105,7 @@ public class EnvironmentPhysics : PhysicsObject
 
                 //less than 0 if player is within x-bounds, greater than 0 otherwise
                 float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((GetComponent<BoxCollider2D>().bounds.center - _playerSprite.GetComponent<Transform>().position).x) - GetComponent<BoxCollider2D>().bounds.extents.x;
-                desiredOpacity = Mathf.Max(desiredOpacity, distanceFromPlayerToLeftOrRightBound);
+                desiredOpacity = Mathf.Max(desiredOpacity, distanceFromPlayerToLeftOrRightBound * transparencyXScalar);
 
                 desiredOpacity *= 0.1f;
 

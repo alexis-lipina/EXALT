@@ -17,21 +17,54 @@ public class CameraScript : MonoBehaviour
     private bool _isUsingCursor;
     private Vector2 _cursorWorldPos;
 
+    private List<CameraAttractor> _currentAttractors;
+
+
     public bool IsUsingMouse
     {
         get { return _isUsingCursor; }
         set { _isUsingCursor = value; }
     }
 
+    public void AddAttractor(CameraAttractor attractor)
+    {
+        if (!_currentAttractors.Contains(attractor))
+        {
+            _currentAttractors.Add(attractor);
+        }
+        else
+        {
+            Debug.LogWarning("AddAttractor() already in list!");
+        }
+    }
+
+    public void RemoveAttractor(CameraAttractor attractor)
+    {
+        if (_currentAttractors.Contains(attractor))
+        {
+            _currentAttractors.Remove(attractor);
+        }
+        else
+        {
+            Debug.LogWarning("RemoveAttractor() attempt failed : CameraAttractor not in list!");
+        }
+    }
+
 
     private void Awake()
     {
         controller = ReInput.players.GetPlayer(0);
+        _currentAttractors = new List<CameraAttractor>();
     }
 
     void Update()
     {
         Vector3 targetPosition = UpdateTargetPosition();
+        foreach (CameraAttractor attractor in _currentAttractors)
+        {
+            targetPosition = (targetPosition + attractor.transform.position * attractor.PullMagnitude) / (attractor.PullMagnitude + 1f);
+        }
+
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
 

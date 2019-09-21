@@ -47,7 +47,7 @@ MonoBehaviour:
   entityPhysics: {fileID: 765300104}
   navManager: {fileID: 0}
   target: {fileID: 0}
-  detectionRange: 1000
+  detectionRange: 60
 --- !u!1 &671543542
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,16 +191,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectHeight: 4.25
-  _startElevation: 16
+  _startElevation: 10
   _spriteZOffset: 2.5
   _objectSprite: {fileID: 855883426}
   _environmentHandler: {fileID: 1339665833}
   gravity: -120
-  speed: 20
+  speed: 15
   ZVelocity: 0
   navManager: {fileID: 0}
   entityHandler: {fileID: 7438247497635926654}
-  MaxHP: 5
+  MaxHP: 3
   _pushForceMultiplier: 1
   _maxVelocity: 8
   _spawner: {fileID: 0}
@@ -749,7 +749,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1508240309
 Transform:
   m_ObjectHideFlags: 0
@@ -757,7 +757,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508240308}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

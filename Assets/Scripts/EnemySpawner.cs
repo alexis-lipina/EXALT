@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private int _maxEnemies;
-    [SerializeField] private string _prefabName;
+    [SerializeField] private Transform _prefab;
     [SerializeField] private float _spawnInterval;
     [SerializeField] private EnvironmentPhysics _startEnvironment;
     [SerializeField] private GameObject _playerPhysics;
@@ -27,7 +27,7 @@ public class EnemySpawner : MonoBehaviour
         GameObject tempEnemy;
         for (int i = 0; i < _maxEnemies; i++)
         {
-            tempEnemy = Instantiate(Resources.Load("Prefabs/Enemies/" + _prefabName)) as GameObject;
+            tempEnemy = Instantiate(_prefab, transform).gameObject;
             //tempBullet.GetComponentInChildren<Rigidbody2D>().position = new Vector2(1000, 1000);
             tempEnemy.GetComponentInChildren<EntityAI>().navManager = _navManager;
             tempEnemy.GetComponentInChildren<EntityPhysics>().navManager = _navManager;
@@ -67,7 +67,7 @@ public class EnemySpawner : MonoBehaviour
             {
                 GameObject tempEnemy = GetFromPool();
                 EntityPhysics tempPhysics = tempEnemy.GetComponentInChildren<EntityPhysics>();
-                tempPhysics.SetObjectElevation(_startEnvironment.GetTopHeight() + 0.5f);
+                tempPhysics.SetObjectElevation(_startEnvironment.GetTopHeight() + 2f);
                 // tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
                 tempPhysics.transform.parent.position = (Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f);
                 Debug.Log("<color=red>" + _startEnvironment + "</color>");
@@ -98,6 +98,7 @@ public class EnemySpawner : MonoBehaviour
     {
         foreach (KeyValuePair<int, GameObject> entry in _enemyPool)
         {
+            if (entry.Value == null) continue; 
             if (!entry.Value.activeSelf)
             {
                 enemiesAlive++;
@@ -109,8 +110,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
         //if there are no more inactive objects
-        Debug.Log("Expanding enemy pool (" + _prefabName + ")");
-        GameObject tempEnemy = Instantiate(Resources.Load("Prefabs/Enemies/" + _prefabName)) as GameObject;
+        GameObject tempEnemy = Instantiate(_prefab, transform).gameObject;
         //tempEnemy.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
         _enemyPool.Add(tempEnemy.GetInstanceID(), tempEnemy);
         return tempEnemy;

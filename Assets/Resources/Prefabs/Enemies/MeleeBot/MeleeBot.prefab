@@ -96,12 +96,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectHeight: 4.25
-  _startElevation: 16
+  _startElevation: 10
   _spriteZOffset: 2.5
   _objectSprite: {fileID: 1727732317533918}
   _environmentHandler: {fileID: 1148562347676408}
   gravity: -120
-  speed: 12
+  speed: 20
   ZVelocity: 0
   navManager: {fileID: 0}
   entityHandler: {fileID: 114388937944588230}
@@ -362,7 +362,7 @@ MonoBehaviour:
   entityPhysics: {fileID: 114302638073707500}
   navManager: {fileID: 0}
   target: {fileID: 0}
-  detectionRange: 1000
+  detectionRange: 60
 --- !u!1 &1368671692545778
 GameObject:
   m_ObjectHideFlags: 0
@@ -701,7 +701,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4544289410517422
 Transform:
   m_ObjectHideFlags: 0

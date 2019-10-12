@@ -6967,6 +6967,7 @@ RectTransform:
   m_Children:
   - {fileID: 1447805451}
   - {fileID: 2130145705}
+  - {fileID: 320981576}
   m_Father: {fileID: 837362150}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9168,6 +9169,80 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+--- !u!1 &320981575
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 320981576}
+  - component: {fileID: 320981578}
+  - component: {fileID: 320981577}
+  m_Layer: 5
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &320981576
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320981575}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 237418129}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 454, y: -288}
+  m_SizeDelta: {x: 1000, y: 500}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &320981577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320981575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: 33637e292a1d5d14d8a2e85d51b5f93b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!222 &320981578
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320981575}
+  m_CullTransparentMesh: 0
 --- !u!4 &321407887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -55083,7 +55158,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 579, y: -243.49998}
+  m_AnchoredPosition: {x: 579, y: -322.9}
   m_SizeDelta: {x: 856, y: 49.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1847396032
@@ -55141,7 +55216,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1847396034}
   m_OnClick:
     m_PersistentCalls:
@@ -61921,7 +61996,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 579, y: -164.09999}
+  m_AnchoredPosition: {x: 579, y: -243.49998}
   m_SizeDelta: {x: 856, y: 49.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &2051409625
@@ -70081,6 +70156,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 181027086}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70102,6 +70178,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 986251701}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70123,6 +70200,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 1688140806}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70144,6 +70222,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 718429071}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70165,6 +70244,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 215461266}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70186,6 +70266,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 1688140806}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70207,6 +70288,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70228,6 +70310,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70249,6 +70332,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70270,6 +70354,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70291,6 +70376,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70312,6 +70398,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70333,6 +70420,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70354,6 +70442,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70375,6 +70464,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 215461266}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70396,6 +70486,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70417,6 +70508,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70438,6 +70530,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70459,6 +70552,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70480,6 +70574,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70501,6 +70596,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70522,6 +70618,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70543,6 +70640,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 1688140806}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70564,6 +70662,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70585,6 +70684,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 986251701}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70606,6 +70706,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70627,6 +70728,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70648,6 +70750,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70669,6 +70772,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70690,6 +70794,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70711,6 +70816,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70732,6 +70838,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 986251701}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70753,6 +70860,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70774,6 +70882,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 181027086}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70795,6 +70904,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 1688140806}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70816,6 +70926,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70837,6 +70948,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 986251701}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70858,6 +70970,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 718429071}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70879,6 +70992,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70900,6 +71014,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70921,6 +71036,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70942,6 +71058,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70963,6 +71080,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -70984,6 +71102,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 181027086}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -71005,6 +71124,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -71026,6 +71146,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 215461266}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -71047,6 +71168,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 1688140806}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -71068,6 +71190,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1
@@ -71089,6 +71212,7 @@ MonoBehaviour:
   environmentTopHeight: 16
   neighbors: []
   isTransparentOnOcclude: 1
+  transparencyXScalar: 1
   _transparencyReference: {fileID: 0}
   _transparencyVolume: {fileID: 0}
   _opacityHeightTolerance: 1

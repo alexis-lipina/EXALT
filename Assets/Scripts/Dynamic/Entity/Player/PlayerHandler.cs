@@ -1103,6 +1103,16 @@ public class PlayerHandler : EntityHandler
                     obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized*2.0f, type:ElementType.ZAP); 
                 }
             }
+            else if (obj.GetComponent<ProjectilePhysics>())
+            {
+                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    Vibrate(1.0f, 0.15f);
+                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
+                }
+            }
         }
     }
 
@@ -1127,6 +1137,16 @@ public class PlayerHandler : EntityHandler
                     obj.GetComponent<EntityPhysics>().Burn();
                 }
             }
+            else if (obj.GetComponent<ProjectilePhysics>())
+            {
+                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    Vibrate(1.0f, 0.15f);
+                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
+                }
+            }
         }
     }
 
@@ -1147,7 +1167,17 @@ public class PlayerHandler : EntityHandler
 
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized * 5.0f, type:ElementType.VOID);
+                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized * 3.0f, type:ElementType.VOID);
+                }
+            }
+            else if (obj.GetComponent<ProjectilePhysics>())
+            {
+                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    Vibrate(1.0f, 0.15f);
+                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
                 }
             }
         }

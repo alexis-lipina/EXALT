@@ -14,14 +14,13 @@ public class OpeningCinematicManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (PlayerHandler.PREVIOUS_SCENE == "NewGameMainMenu")
+        if (PlayerHandler.PREVIOUS_SCENE != "NewGameMainMenu")
             StartCoroutine(CameraPanDown(_duration));
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     IEnumerator CameraPanDown(float duration)

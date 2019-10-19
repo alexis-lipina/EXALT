@@ -33,6 +33,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private Transform _zapNodePrefab;
     [SerializeField] private PlayerProjection _chargedMeleeProjection;
     [SerializeField] private int _maxEnergy;
+    [SerializeField] private DeathFlash _deathFlash;
     private int _currentEnergy;
 
     public int MaxEnergy { get { return _maxEnergy; } }
@@ -251,6 +252,9 @@ public class PlayerHandler : EntityHandler
         UpdateAimDirection();
 
 
+        //temp
+        _deathFlash.SetBlammoDirection(aimDirection);
+        _deathFlash.transform.position = characterSprite.transform.position;
     }
 
     protected override void ExecuteState()

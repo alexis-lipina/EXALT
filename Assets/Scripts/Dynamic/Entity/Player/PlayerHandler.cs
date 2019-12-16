@@ -34,6 +34,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private PlayerProjection _chargedMeleeProjection;
     [SerializeField] private int _maxEnergy;
     [SerializeField] private DeathFlash _deathFlash;
+    [SerializeField] private FadeTransition _fadeTransition;
+    [SerializeField] private RectTransform _gameplayUI;
     private int _currentEnergy;
 
     public int MaxEnergy { get { return _maxEnergy; } }
@@ -48,7 +50,7 @@ public class PlayerHandler : EntityHandler
     //[SerializeField] private UIHealthBar _healthBar;
     [SerializeField] private PlayerHealthBarHandler _healthBar;
     
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST, DEAD};
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -67,6 +69,7 @@ public class PlayerHandler : EntityHandler
     const string FALL_EAST_Anim = "Anim_PlayerFallEast";
     const string FALL_WEST_Anim = "Anim_PlayerFallWest";
     const string STYLE_CHANGE_Anim = "Change_Attunement";
+    const string DEATH_WEST_Anim = "PlayerDeath_West";
     const string HEAL_ANIM = "Change_Attunement"; //TODO : have a different animation for this my dude
 
     
@@ -126,7 +129,7 @@ public class PlayerHandler : EntityHandler
     private const float _lightRangedDuration = 0.25f;
     private const int _lightRangedEnergyCost = 2;
 
-    //Light Ranged Zapal Attack
+    //Light Ranged Zap Attack
     private const float _lightRangedZapMaxDistance = 30f;
     private const float _chargedRangedZapMaxDistance = 50f;
 
@@ -134,6 +137,10 @@ public class PlayerHandler : EntityHandler
     private const float _changeStyleDuration = 0.95f;
     private const float _changeStyleColorChangeTime = 0.4f;
     private bool _changeStyle_HasChanged = false;
+
+    // Taking damage
+    private Vector2 _lastHitDirection = Vector2.right;
+
 
     private Vector2 _cursorWorldPos;
 
@@ -198,14 +205,17 @@ public class PlayerHandler : EntityHandler
         
     }
 
-	void Start ()
+    void Start()
     {
         EnvironmentPhysics._playerPhysics = entityPhysics;
         EnvironmentPhysics._playerSprite = characterSprite;
         aimDirection = Vector2.right;
         //SwapWeapon("NORTH"); //Debug
         //Debug.Log(_equippedWeapon);
-        CurrentState = PlayerState.IDLE;
+
+
+        if (PREVIOUS_SCENE == SceneManager.GetActiveScene().name) { CurrentState = PlayerState.REST; }
+        else { CurrentState = PlayerState.IDLE; }
         StateTimer = 0;
         //playerRigidBody = PhysicsObject.GetComponent<Rigidbody2D>();
         
@@ -233,7 +243,12 @@ public class PlayerHandler : EntityHandler
         
         xInput = controller.GetAxisRaw("MoveHorizontal");
         yInput = controller.GetAxisRaw("MoveVertical");
-        if (entityPhysics.GetCurrentHealth() < 1) { OnDeath(); }
+        if (entityPhysics.GetCurrentHealth() < 1 && CurrentState != PlayerState.DEAD)
+        {
+            CurrentState = PlayerState.DEAD;
+            entityPhysics.IsDead = true;
+            OnDeath();
+        }
         //---------------------------| Manage State Machine |
         this.ExecuteState();
 
@@ -250,11 +265,6 @@ public class PlayerHandler : EntityHandler
         //Change fighting style
 
         UpdateAimDirection();
-
-
-        //temp
-        _deathFlash.SetBlammoDirection(aimDirection);
-        _deathFlash.transform.position = characterSprite.transform.position;
     }
 
     protected override void ExecuteState()
@@ -310,6 +320,8 @@ public class PlayerHandler : EntityHandler
                 break;
             case (PlayerState.REST):
                 PlayerRest();
+                break;
+            case (PlayerState.DEAD):
                 break;
             default:
                 throw new Exception("Unhandled player state");
@@ -1858,9 +1870,12 @@ public class PlayerHandler : EntityHandler
 
     //==================================================================================| MISC
 
-    public override void JustGotHit()
+    public override void JustGotHit(Vector2 hitdirection)
     {
         Debug.Log("Player: Ow!");
+        _lastHitDirection = hitdirection;
+        StartCoroutine(VibrateDecay(1f, 0.025f));
+        if (entityPhysics.GetCurrentHealth() <= 0) return;
         FollowingCamera.GetComponent<CameraScript>().Shake(1f, 6, 0.01f);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.7f, 0.1f, Color.red);
         ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.15f);
@@ -1872,7 +1887,8 @@ public class PlayerHandler : EntityHandler
     public override void OnDeath()
     {
         Debug.Log("<color=pink>HEY!</color>");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        StartCoroutine(PlayDeathAnimation(_lastHitDirection));
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     //Misc Animations
@@ -1976,29 +1992,36 @@ public class PlayerHandler : EntityHandler
         if (_currentEnergy < 0) _currentEnergy = 0;
     }
 
-
-
-    // I think I changed my mind on having this in the player class, I kinda want it in the Reticle's code to avoid clutter here
-    /*
-    /// <summary>
-    /// Updates the targeting reticle's position based on player input and environment 
-    /// 
-    ///
-    /// </summary>
-    private void UpdateReticle()
+    IEnumerator PlayDeathAnimation(Vector2 killingBlowDirection)
     {
-        Vector2 reticlevector = _inputHandler.RightAnalog;
-
-        if (reticlevector.magnitude == 0)
+        Debug.Log("Playing death");
+        // flash that black + white final slam, freeze time for a moment
+        _deathFlash.SetBlammoDirection(killingBlowDirection);
+        _deathFlash.transform.position = new Vector3(characterSprite.transform.position.x, characterSprite.transform.position.y, FollowingCamera.transform.position.z + 2.0f);
+        SpriteRenderer[] renderers = _deathFlash.GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < renderers.Length; i++)
         {
-            reticlevector = _inputHandler.LeftAnalog;
-            if (reticlevector.magnitude == 0 )
-            {
-                //idk what to do here, maybe a private field just for the cases where this happens?
-            }
+            renderers[i].enabled = true;
         }
-        RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(this.gameObject.transform.position, this.GetComponent<BoxCollider2D>().size, 0f, new Vector2(velocityX, velocityY), distance: boxCastDistance);
 
+        _gameplayUI.GetComponent<CanvasGroup>().alpha = 0.0f; // Disable visibility game ui for a moment 
+
+        yield return new WaitForEndOfFrame();
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        Time.timeScale = 0.5f; // -------------| RESUME TIME |--------------
+
+        _gameplayUI.GetComponent<CanvasGroup>().alpha = 1.0f;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].enabled = false;
+        }
+        characterAnimator.Play(DEATH_WEST_Anim);
+
+        yield return new WaitForSeconds(1.0f);
+        Time.timeScale = 1.0f;
+        _fadeTransition.FadeToScene(SceneManager.GetActiveScene().name);
+        // play death animation, stop for a bit, then fade to black
     }
-    */
 }

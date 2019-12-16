@@ -400,7 +400,7 @@ public class SwordEnemyHandler : EntityHandler
                 EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
                 if (hit.tag == "Friend" && hitEntity.GetObjectHeight() + hitEntity.GetObjectElevation() > entityPhysics.GetObjectElevation() && hitEntity.GetObjectElevation() < entityPhysics.GetObjectElevation() + entityPhysics.GetObjectHeight())
                 {
-                    hit.gameObject.GetComponent<EntityPhysics>().Inflict(1);
+                    hit.gameObject.GetComponent<EntityPhysics>().Inflict(1, force:(hitEntity.transform.position - entityPhysics.transform.position).normalized);
                     Debug.Log("Hit player!");
                 }
             }
@@ -483,7 +483,7 @@ public class SwordEnemyHandler : EntityHandler
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
 
         stateTimer += Time.deltaTime;
-        if (stateTimer < 0.5) //if 500 ms have passed
+        if (stateTimer < 0.500) //if 500 ms have passed
         {
             //do nothing
         }
@@ -511,7 +511,7 @@ public class SwordEnemyHandler : EntityHandler
     {
         jumpPressed = value;
     }
-    public override void JustGotHit()
+    public override void JustGotHit(Vector2 hitDirection)
     {
         //stateTimer = 1.0f;
         wasJustHit = true;

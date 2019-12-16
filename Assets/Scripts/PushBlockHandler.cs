@@ -25,7 +25,7 @@ public class PushBlockHandler : EntityHandler
 
 
 
-    public override void JustGotHit()
+    public override void JustGotHit(Vector2 hitDirection)
     {
         throw new NotImplementedException();
     }

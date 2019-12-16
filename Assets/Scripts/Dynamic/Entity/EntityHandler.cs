@@ -32,7 +32,7 @@ public abstract class EntityHandler : MonoBehaviour
         return entityPhysics;
     }
 
-    public abstract void JustGotHit();
+    public abstract void JustGotHit(Vector2 hitDirection);
     public virtual void OnDeath()
     {
         GameObject.Destroy(transform.parent);

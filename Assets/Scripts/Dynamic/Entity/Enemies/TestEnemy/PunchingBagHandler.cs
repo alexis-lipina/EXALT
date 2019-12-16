@@ -226,7 +226,7 @@ public class PunchingBagHandler : EntityHandler
     {
         jumpPressed = value;
     }
-    public override void JustGotHit()
+    public override void JustGotHit(Vector2 hitDirection)
     {
         cooldowntimer = 1.0f;
         wasJustHit = true;

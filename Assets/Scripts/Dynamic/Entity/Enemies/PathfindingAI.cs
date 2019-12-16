@@ -38,7 +38,7 @@ public class PathfindingAI : EntityAI
     // Update is called once per frame
     void Update()
     {
-        if (path == null || !TargetInDetectionRange())
+        if (path == null || !TargetInDetectionRange() || target.GetComponent<EntityPhysics>().GetCurrentHealth() <= 0)
         {
             //do nothing
             testhandler.SetXYAnalogInput(0, 0);

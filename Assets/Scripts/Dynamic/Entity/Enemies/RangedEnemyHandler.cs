@@ -494,7 +494,7 @@ public class RangedEnemyHandler : EntityHandler
     {
         jumpPressed = value;
     }
-    public override void JustGotHit()
+    public override void JustGotHit(Vector2 hitDirection)
     {
         //stateTimer = 1.0f;
         wasJustHit = true;

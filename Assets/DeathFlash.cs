@@ -8,6 +8,6 @@ public class DeathFlash : MonoBehaviour
 
     public void SetBlammoDirection(Vector2 direction)
     {
-        _blammo.transform.up = direction;
+        _blammo.transform.up = direction * -1;
     }
 }

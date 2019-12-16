@@ -1,19 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TitlePulse : MonoBehaviour
 {
-    private float _time;
-    // Start is called before the first frame update
-    void Start()
-    {
-        _time = 0f;
-    }
-
     // Update is called once per frame
     void Update()
     {
-        
+        float pulseFloat = (Mathf.Sin(Time.realtimeSinceStartup) + 1) * 0.5f;
+        Debug.Log(pulseFloat);
+        GetComponent<Image>().material.SetFloat("_Opacity", pulseFloat);
     }
 }

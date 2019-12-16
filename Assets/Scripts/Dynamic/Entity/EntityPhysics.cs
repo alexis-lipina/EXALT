@@ -34,6 +34,12 @@ public class EntityPhysics : DynamicPhysics
     protected int currentHP;
     private bool hasBeenHit;
     private bool isInvincible = false;
+    protected bool _isDead;
+    public bool IsDead
+    {
+        get { return _isDead; }
+        set { _isDead = value; }
+    }
 
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
     private EnvironmentPhysics currentNavEnvironmentObject;
@@ -343,7 +349,7 @@ public class EntityPhysics : DynamicPhysics
     /// <param name="damage">Quantity of health to subtract from the entity</param>
     public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
-        if (isInvincible) return;
+        if (isInvincible || _isDead) return;
         entityHandler.PerformDetonations(type);
 
         MoveWithCollision(force.x * _pushForceMultiplier, force.y * _pushForceMultiplier); //TODO : HEY UHHHH THIS DOESNT DO ANYTHING IF THEYRE MOVING ALREADY I DONT THINK
@@ -352,16 +358,13 @@ public class EntityPhysics : DynamicPhysics
         GetComponent<AudioSource>().Play();
         hasBeenHit = true;
         currentHP -= damage;
-        if (currentHP <= 0)
+        entityHandler.JustGotHit(force);
+
+
+        if (currentHP > 0)
         {
-            //GameObject.Destroy(gameObject.transform.parent.gameObject); //TODO - this is an awful way of dealing with death
-            //Reset();
-            Handler.OnDeath();
-        }
-        else
-        {
-            StartCoroutine(TakeDamageFlash());
-            //ScreenFlash.InstanceOfScreenFlash.PlayHitPause(hitPauseDuration);
+            Debug.Log("Playing damage flash");
+            StartCoroutine(TakeDamageFlash(force.normalized));
         }
     }
     
@@ -385,10 +388,8 @@ public class EntityPhysics : DynamicPhysics
         currentHP += amount;
     }
 
-    IEnumerator TakeDamageFlash()
+    IEnumerator TakeDamageFlash(Vector2 hitDirection)
     {
-        //Debug.Log("TakeDamageFlash entered");
-        entityHandler.JustGotHit();
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
         for (float i = 0; i < 2; i++)
         {

@@ -1872,7 +1872,7 @@ public class PlayerHandler : EntityHandler
 
     public override void JustGotHit(Vector2 hitdirection)
     {
-        Debug.Log("Player: Ow!");
+        //Debug.Log("Player: Ow!");
         _lastHitDirection = hitdirection;
         StartCoroutine(VibrateDecay(1f, 0.025f));
         if (entityPhysics.GetCurrentHealth() <= 0) return;
@@ -1886,7 +1886,7 @@ public class PlayerHandler : EntityHandler
 
     public override void OnDeath()
     {
-        Debug.Log("<color=pink>HEY!</color>");
+        //Debug.Log("<color=pink>HEY!</color>");
         StartCoroutine(PlayDeathAnimation(_lastHitDirection));
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

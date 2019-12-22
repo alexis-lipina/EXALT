@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// This class behaves as a spawn point for enemies - specifically that noted by the _prefab field.
+/// It performs object pooling, each spawner having its own pool.
+/// </summary>
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private int _maxEnemies;
     [SerializeField] private Transform _prefab;
     [SerializeField] private float _spawnInterval;
-    [SerializeField] private EnvironmentPhysics _startEnvironment;
+    public EnvironmentPhysics _startEnvironment;
     [SerializeField] private GameObject _playerPhysics;
 
     [SerializeField] private NavigationManager _navManager;
@@ -65,16 +70,8 @@ public class EnemySpawner : MonoBehaviour
             //spawn a bad guy if timer is up
             if (_timer == 0)
             {
-                GameObject tempEnemy = GetFromPool();
-                EntityPhysics tempPhysics = tempEnemy.GetComponentInChildren<EntityPhysics>();
-                tempPhysics.SetObjectElevation(_startEnvironment.GetTopHeight() + 2f);
-                // tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
-                tempPhysics.transform.parent.position = (Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f);
-                Debug.Log("<color=red>" + _startEnvironment + "</color>");
-                Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
-                tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f));
-                tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
 
+                //SpawnEnemy();
                 //move enemy into position
 
                 _timer = _spawnInterval;
@@ -89,8 +86,23 @@ public class EnemySpawner : MonoBehaviour
 	}
 
 
-
-
+    /// <summary>
+    /// Returns enemy spawned
+    /// </summary>
+    /// <returns></returns>
+    public GameObject SpawnEnemy()
+    {
+        GameObject tempEnemy = GetFromPool();
+        EntityPhysics tempPhysics = tempEnemy.GetComponentInChildren<EntityPhysics>();
+        tempPhysics.SetObjectElevation(_startEnvironment.GetTopHeight() + 2f);
+        // tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
+        tempPhysics.transform.parent.position = (Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f);
+        Debug.Log("<color=red>" + _startEnvironment + "</color>");
+        Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
+        tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f));
+        tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
+        return tempEnemy;
+    }
 
     //========================================| Object Pooling |======================================
 
@@ -111,6 +123,12 @@ public class EnemySpawner : MonoBehaviour
 
         //if there are no more inactive objects
         GameObject tempEnemy = Instantiate(_prefab, transform).gameObject;
+        tempEnemy.GetComponentInChildren<EntityAI>().navManager = _navManager;
+        tempEnemy.GetComponentInChildren<EntityPhysics>().navManager = _navManager;
+        tempEnemy.GetComponentInChildren<PathfindingAI>().target = _playerPhysics;
+        tempEnemy.GetComponentInChildren<EntityPhysics>()._spawner = this;
+
+
         //tempEnemy.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
         _enemyPool.Add(tempEnemy.GetInstanceID(), tempEnemy);
         return tempEnemy;
@@ -146,6 +164,11 @@ public class EnemySpawner : MonoBehaviour
         {
             Debug.Log("Invalid InstanceID - Object not in pool.");
         }
+    }
+
+    public int GetEnemiesAlive()
+    {
+        return enemiesAlive;
     }
 
 

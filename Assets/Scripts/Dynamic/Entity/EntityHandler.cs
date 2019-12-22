@@ -78,7 +78,7 @@ public abstract class EntityHandler : MonoBehaviour
         StartCoroutine(ExecuteDetonations(detonations));
 
 
-        Debug.Log("Blam!");
+        //Debug.Log("Blam!");
     }
 
     public void PrimeEnemy(ElementType type)

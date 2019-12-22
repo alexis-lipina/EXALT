@@ -139,6 +139,12 @@ public class RangedEnemyHandler : EntityHandler
                 FlinchState();
                 break;
         }
+
+        // there exists a special case for enemy death occurs during detonation
+        if (!_isDetonating && entityPhysics.GetCurrentHealth() <= 0)
+        {
+            OnDeath();
+        }
     }
 
     //==============================| State Methods |
@@ -519,6 +525,17 @@ public class RangedEnemyHandler : EntityHandler
         if (_zapPrimeVfx != null) Destroy(_zapPrimeVfx);
         if (_voidPrimeVfx != null) Destroy(_voidPrimeVfx);
         if (_firePrimeVfx != null) Destroy(_firePrimeVfx);
-        Destroy(transform.parent.gameObject);
+        
+
+        if (entityPhysics._spawner)
+        {
+            Debug.Log("Returning ranged enemy to pool");
+            entityPhysics._spawner.ReturnToPool(transform.parent.gameObject.GetInstanceID());
+        }
+        else
+        {
+            Debug.Log("Destroying enemy");
+            Destroy(transform.parent.gameObject);
+        }
     }
 }

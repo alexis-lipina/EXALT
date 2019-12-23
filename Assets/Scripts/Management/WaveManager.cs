@@ -9,6 +9,9 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private List<EnemySpawner> RangedSpawnLocations;
     [SerializeField] private List<EnemySpawner> MeleeSpawnLocations;
     [SerializeField] private EntityPhysics Player;
+
+    [SerializeField] private WaveChangeUIManager WaveChangeUI;
+
     private List<Wave> WaveList;
     private int CurrentWave = 0;
     private bool IsNextWaveReady = false;
@@ -121,7 +124,11 @@ public class WaveManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator RunWave(int index)
     {
-        yield return new WaitForSecondsRealtime(3.0f);
+        yield return new WaitForSeconds(3.0f);
+
+        WaveChangeUI.PlayWaveChange(index);
+
+        yield return new WaitForSecondsRealtime(5.0f);
         Debug.Log("<color=red>Wave " + index + " start!</color>");
         Wave currentWave = WaveList[index];
 

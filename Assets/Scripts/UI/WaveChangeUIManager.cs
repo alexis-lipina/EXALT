@@ -10,6 +10,7 @@ public class WaveChangeUIManager : MonoBehaviour
     [SerializeField] private Image WaveNumber;
 
     [SerializeField] private Sprite FilledCounterSprite;
+    [SerializeField] private Sprite SelectedCounterSprite;
     [SerializeField] private Sprite EmptyCounterSprite;
     [SerializeField] private List<Sprite> WaveNumberSprites; // FROM 0 TO MAX (inclusive)
 
@@ -46,7 +47,8 @@ public class WaveChangeUIManager : MonoBehaviour
 
         // play the transition
         yield return new WaitForSeconds(1.0f);
-        ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.1f);
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.05f);
+        WaveUIGroup.alpha = 0.0f;
         // set counters
         for (int i = 0; i < WaveCounters.Count; i++)
         {
@@ -54,13 +56,18 @@ public class WaveChangeUIManager : MonoBehaviour
             {
                 WaveCounters[i].sprite = FilledCounterSprite;
             }
+            else if (i == newWaveNumber)
+            {
+                WaveCounters[i].sprite = SelectedCounterSprite;
+            }
         }
         // set number
-        if (newWaveNumber < WaveNumberSprites.Count)
+        if (newWaveNumber + 1 < WaveNumberSprites.Count)
         {
-            WaveNumber.sprite = WaveNumberSprites[newWaveNumber];
+            WaveNumber.sprite = WaveNumberSprites[newWaveNumber + 1];
         }
-
+        yield return new WaitForEndOfFrame();
+        WaveUIGroup.alpha = 1.0f;
         yield return new WaitForSeconds(1.0f);
 
         // fade out everything

@@ -29,6 +29,9 @@ public class ScalablePlatform : MonoBehaviour {
     [Header("Editor Utilities")]
     [SerializeField] private bool fixTransform = false;
 
+    [Space(10)]
+    [SerializeField] private bool alignToGrid = false;
+
     [Space(5)]
     [Header("Custom Scaling Buttons")]
     [Space(10)]
@@ -146,6 +149,17 @@ public class ScalablePlatform : MonoBehaviour {
         if (fixTransform)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
+        }
+        if (alignToGrid)
+        {
+            //adjust position to be on the grid
+            Vector3 realignedPosition = transform.position;
+            int step_size = 16;
+            realignedPosition *= step_size;
+            realignedPosition = new Vector3(Mathf.Round(realignedPosition.x), Mathf.Round(realignedPosition.y), Mathf.Round(realignedPosition.z));
+            realignedPosition /= step_size;
+            transform.position = realignedPosition;
+            alignToGrid = false;
         }
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
         #endregion

@@ -195,6 +195,21 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8227193792726114557, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9103870386534681002, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7118394775971521871, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9dba7b926b1d30b4da5768e90b5db8d4, type: 3}
 --- !u!114 &23052731 stripped
@@ -1066,6 +1081,16 @@ PrefabInstance:
       propertyPath: _playerPhysics
       value: 
       objectReference: {fileID: 1611882267}
+    - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerHandler
+      value: 
+      objectReference: {fileID: 23052731}
+    - target: {fileID: 7689713315722516649, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: playerPhysics
+      value: 
+      objectReference: {fileID: 1611882267}
     - target: {fileID: 7689713315288279232, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -1166,11 +1191,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -63.87982
       objectReference: {fileID: 0}
-    - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerHandler
-      value: 
-      objectReference: {fileID: 23052731}
     - target: {fileID: 7689713314710873933, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -1411,10 +1431,5 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -30.954823
       objectReference: {fileID: 0}
-    - target: {fileID: 7689713315722516649, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: playerPhysics
-      value: 
-      objectReference: {fileID: 1611882267}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da7bb31c46d30024ca198e692321c33d, type: 3}

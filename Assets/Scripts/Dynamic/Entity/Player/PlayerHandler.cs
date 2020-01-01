@@ -1738,8 +1738,17 @@ public class PlayerHandler : EntityHandler
 
             _rest_recover_energy_timer -= Time.deltaTime;
             _rest_recover_health_timer -= Time.deltaTime;
-
-            if (controller.GetButtonDown("Rest"))
+            
+            //attempt to perform most any action should require the stand up animation play
+            if (controller.GetButtonDown("Rest") ||
+                Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2 ||
+                controller.GetButtonDown("Jump") ||
+                controller.GetButtonDown("Melee") ||
+                controller.GetButton("Charge") ||
+                controller.GetButton("RangedAttack") ||
+                controller.GetButtonDown("Blink") ||
+                controller.GetButtonDown("Heal")
+                )
             {
                 StateTimer = rest_kneel_duration;
                 isStanding = true;
@@ -1758,7 +1767,8 @@ public class PlayerHandler : EntityHandler
 
         
         #region IDLE state transitions (copied)
-
+        // commented out due to decision to require the "stand up" animation play under most circumstances
+        /*
         if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2)
         {
             //Debug.Log("IDLE -> RUN");
@@ -1800,12 +1810,14 @@ public class PlayerHandler : EntityHandler
             isStanding = false;
             PlayerBlinkTransitionAttempt();
         }
-        CheckStyleChange();
         if (controller.GetButtonDown("Heal"))
         {
             isStanding = false;
             PlayerHealTransitionAttempt();
         }
+        */
+        CheckStyleChange();
+
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall

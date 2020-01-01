@@ -154,7 +154,7 @@ public class ScalablePlatform : MonoBehaviour {
         {
             //adjust position to be on the grid
             Vector3 realignedPosition = transform.position;
-            int step_size = 16;
+            int step_size = 8;
             realignedPosition *= step_size;
             realignedPosition = new Vector3(Mathf.Round(realignedPosition.x), Mathf.Round(realignedPosition.y), Mathf.Round(realignedPosition.z));
             realignedPosition /= step_size;

@@ -73,7 +73,7 @@ public class CameraScript : MonoBehaviour
     /// </summary>
     Vector3 UpdateTargetPosition()
     {
-        Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -100f));
+        Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -150f));
         Vector2 offset;
         if (_isUsingCursor)
         {

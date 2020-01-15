@@ -15,7 +15,8 @@ public class EnvironmentPhysics : PhysicsObject
     [Tooltip("Proximity in the X axis the player must be to the object before it starts to fade out")]
     [SerializeField] protected float transparencyXScalar = 1.0f;
     [SerializeField] protected EnvironmentPhysics _transparencyReference = null;
-    [SerializeField] protected TriggerVolume _transparencyVolume = null; 
+    [SerializeField] protected TriggerVolume _transparencyVolume = null;
+    [SerializeField] protected bool _transparencyVolumeIsTrigger = false;
     [SerializeField] protected float _opacityHeightTolerance = 1f;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
     [SerializeField] protected bool _inheritZCollisionFromScalablePlatform = false;
@@ -81,17 +82,31 @@ public class EnvironmentPhysics : PhysicsObject
         {
             if (_transparencyVolume != null)
             {
-                float desiredOpacity = _transparencyVolume.GetComponent<Transform>().position.y - _playerSprite.GetComponent<Transform>().position.z;
+                if (_transparencyVolumeIsTrigger)
+                {
+                    if (_transparencyVolume.IsTriggered)
+                    {
+                        _opacity = Mathf.Lerp(_opacity, 0.0f, 0.1f);
+                    }
+                    else
+                    {
+                        _opacity = Mathf.Lerp(_opacity, 1.0f, 0.1f);
+                    }
+                }
+                else
+                {
+                    float desiredOpacity = _transparencyVolume.GetComponent<Transform>().position.y - _playerSprite.GetComponent<Transform>().position.z;
 
-                //less than 0 if player is within x-bounds, greater than 0 otherwise
-                float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((_transparencyVolume.GetComponent<BoxCollider2D>().bounds.center - _playerSprite.GetComponent<Transform>().position).x) - _transparencyVolume.GetComponent<BoxCollider2D>().bounds.extents.x;
-                desiredOpacity = Mathf.Max(desiredOpacity, distanceFromPlayerToLeftOrRightBound);
+                    //less than 0 if player is within x-bounds, greater than 0 otherwise
+                    float distanceFromPlayerToLeftOrRightBound = Mathf.Abs((_transparencyVolume.GetComponent<BoxCollider2D>().bounds.center - _playerSprite.GetComponent<Transform>().position).x) - _transparencyVolume.GetComponent<BoxCollider2D>().bounds.extents.x;
+                    desiredOpacity = Mathf.Max(desiredOpacity, distanceFromPlayerToLeftOrRightBound);
 
-                desiredOpacity *= 0.1f;
+                    desiredOpacity *= 0.1f;
 
-                desiredOpacity = Mathf.Clamp(desiredOpacity, 0f, 1.0f);
-                if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > _transparencyVolume.GetTopHeight()) desiredOpacity = 1f;
-                _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
+                    desiredOpacity = Mathf.Clamp(desiredOpacity, 0f, 1.0f);
+                    if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > _transparencyVolume.GetTopHeight()) desiredOpacity = 1f;
+                    _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
+                }
             }
             else if (_transparencyReference != null)
             {

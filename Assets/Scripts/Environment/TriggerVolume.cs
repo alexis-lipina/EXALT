@@ -63,12 +63,12 @@ public class TriggerVolume : PhysicsObject
             if (!_touchingObjects.Contains(other) && IsVerticalCollision(other.GetComponent<EntityPhysics>())) //check if enters virtual collider
             {
                 _touchingObjects.Add(other.gameObject);
-                //Debug.Log("Entered!");
+                Debug.Log("Entered!");
             }
             else if (_touchingObjects.Contains(other) && !IsVerticalCollision(other.GetComponent<EntityPhysics>())) //check if exits virtual collider
             {
                 _touchingObjects.Remove(other.gameObject);
-                //Debug.Log("Exited!");
+                Debug.Log("Exited!");
             }
         }
         if (_touchingObjects.Count > 0)

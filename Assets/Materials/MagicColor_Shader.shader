@@ -51,11 +51,11 @@
 			float4 frag(vertOutput output) : COLOR
 			{
 				float4 color = tex2D(_MainTex, output.uv);
-				if (abs(color.b - _SourceColor.b) < 0.2/* && color.a != 0*/)
+				if (abs(color.b - _SourceColor.b) < 0.2 && color.a != 0)
 				{
 					color = _MagicColor;
 				}
-				color.a = _Transparency;
+				color.a = _Transparency * color.a;
 				return color;
 			}
 			ENDCG

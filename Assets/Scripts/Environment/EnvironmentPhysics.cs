@@ -20,8 +20,9 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected float _opacityHeightTolerance = 1f;
     [SerializeField] protected bool isSavePoint = true; //whether the object can be relied on as a teleport location (does it move? does it activate/deactivate?)
     [SerializeField] protected bool _inheritZCollisionFromScalablePlatform = false;
-
     private float _opacity = 1;
+
+    public bool _isCollapsed = false;
 
     public static EntityPhysics _playerPhysics;
     public static GameObject _playerSprite;
@@ -78,7 +79,7 @@ public class EnvironmentPhysics : PhysicsObject
 
     void Update()
     {
-        if (isTransparentOnOcclude)
+        if (isTransparentOnOcclude && !_isCollapsed)
         {
             if (_transparencyVolume != null)
             {

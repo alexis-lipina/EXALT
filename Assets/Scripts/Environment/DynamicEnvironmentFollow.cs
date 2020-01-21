@@ -21,6 +21,5 @@ public class DynamicEnvironmentFollow : MonoBehaviour
         _environment.BottomHeight = _destination.GetBottomHeight();
         _environment.TopHeight = _environment.BottomHeight + _height;
         _sprites.transform.position = new Vector3(_destination.transform.position.x, _destination.transform.position.y + _verticalSpriteOffset + _environment.BottomHeight, gameObject.transform.position.y + _destination.GetComponent<BoxCollider2D>().offset.y - _destination.GetComponent<BoxCollider2D>().size.y / 2);
-        
 	}
 }

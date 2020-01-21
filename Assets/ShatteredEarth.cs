@@ -12,17 +12,42 @@ public class ShatteredEarth : MonoBehaviour
     [SerializeField] private SpriteRenderer TopSprite;
     [SerializeField] private SpriteRenderer FrontSprite;
     [SerializeField] private bool alignToGrid = false;
+    private const float density = 0.1f;
+
+
+    public bool IsShattered;
+    public Vector3 newPosition;
+
+    private float startY;
+    private float elevation; //height difference from normal
+    private Color defaultColor;
+    [SerializeField] private Color highColor;
+    [SerializeField] private float maxElevationForColor;
+    public float mass;
+
+    public Vector3 GetBlockCenter()
+    {
+        return transform.localPosition + new Vector3(0, Height / 32.0f, 0);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        defaultColor = TopSprite.GetComponent<SpriteRenderer>().color;
+        startY = transform.localPosition.y;
+        mass = Width * Height * density;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (IsShattered)
+        {
+            elevation = transform.localPosition.y - startY;
+            transform.localPosition = Vector3.Lerp(transform.localPosition, newPosition, 0.01f / mass);
+            TopSprite.color = Color.Lerp(defaultColor, highColor, elevation / maxElevationForColor);
+        }
     }
 
     private void OnDrawGizmosSelected()

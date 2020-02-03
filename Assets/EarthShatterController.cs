@@ -18,16 +18,17 @@ public class EarthShatterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         timeToWait -= Time.deltaTime;
         if (timeToWait < 0 && hasLaunched == false)
         {
             hasLaunched = true;
             StartShatter();
-        }
+        }*/
     }
 
 
-    private void StartShatter()
+    public void StartShatter()
     {
         ShatteredEarth[] blocks = BlocksParent.GetComponentsInChildren<ShatteredEarth>();
 
@@ -47,8 +48,8 @@ public class EarthShatterController : MonoBehaviour
 
             blocks[i].newPosition = newPosition;
             blocks[i].IsShattered = true;
-            Debug.Log("START" + blocks[i].GetBlockCenter());
-            Debug.Log("END" + newPosition);
+            //Debug.Log("START" + blocks[i].GetBlockCenter());
+            //Debug.Log("END" + newPosition);
 
         }
 

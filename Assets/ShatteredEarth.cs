@@ -12,6 +12,7 @@ public class ShatteredEarth : MonoBehaviour
     [SerializeField] private SpriteRenderer TopSprite;
     [SerializeField] private SpriteRenderer FrontSprite;
     [SerializeField] private bool alignToGrid = false;
+    [SerializeField] private bool scaleSprites = false;
     private const float density = 0.1f;
 
 
@@ -51,14 +52,7 @@ public class ShatteredEarth : MonoBehaviour
     }
 
     private void OnDrawGizmosSelected()
-    {
-        TopSprite.transform.localScale = new Vector3(Width, Height, 1);
-        FrontSprite.transform.localScale = new Vector3(Width, 1, 1);
-
-        TopSprite.transform.localPosition = new Vector3(0, Height * 0.5f / 16.0f, 0);
-        FrontSprite.transform.localPosition = new Vector3(0, GradientSpriteHeight / -32.0f, 0);
-        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.y);
-
+    {        
         if (alignToGrid)
         {
             //adjust position to be on the grid
@@ -70,6 +64,15 @@ public class ShatteredEarth : MonoBehaviour
             transform.position = realignedPosition;
             alignToGrid = false;
         }
+        if (scaleSprites)
+        {
+            TopSprite.transform.localScale = new Vector3(Width, Height, 1);
+            FrontSprite.transform.localScale = new Vector3(Width, 1, 1);
+
+            TopSprite.transform.localPosition = new Vector3(0, Height * 0.5f / 16.0f, 0);
+            FrontSprite.transform.localPosition = new Vector3(0, GradientSpriteHeight / -32.0f, 0);
+        }
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, transform.localPosition.y);
     }
 
 }

@@ -18,15 +18,19 @@ public class FloorCollapseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         TimeUntilStart -= Time.deltaTime;
         if (TimeUntilStart < 0 && !HasStarted)
         {
             HasStarted = true;
             StartCoroutine(CollapseAllInSequence());
-        }
+        }*/
     }
 
-
+    public void StartCollapse()
+    {
+        StartCoroutine(CollapseAllInSequence());
+    }
     private IEnumerator CollapseAllInSequence()
     {
         for (int i = 0; i < PlatformsToCollapse.Length; i++)

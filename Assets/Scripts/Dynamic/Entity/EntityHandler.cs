@@ -22,6 +22,8 @@ public abstract class EntityHandler : MonoBehaviour
     protected List<ElementType> currentPrimes;
     protected bool _isDetonating = false;
 
+    protected ElementType _shieldType = ElementType.NONE;
+
     /// <summary>
     /// Contains the state machine switch statement and calls state methods
     /// </summary>
@@ -56,6 +58,7 @@ public abstract class EntityHandler : MonoBehaviour
                 case ElementType.FIRE:
                     Debug.Log("Fire Detonation");
                     _isPrimed_Fire = false;
+                    if (_shieldType == ElementType.ZAP)
                     //Destroy(_firePrimeVfx);
                     detonations.Add(ElementType.FIRE);
                     break;
@@ -115,6 +118,8 @@ public abstract class EntityHandler : MonoBehaviour
     {
         _isDetonating = true;
         yield return new WaitForSeconds(0.1f);
+        if (detonations.Contains(_shieldType)) {  BreakShield();  } //Shield break on detonate
+
         foreach (ElementType element in detonations)
         {
             switch (element)
@@ -170,5 +175,25 @@ public abstract class EntityHandler : MonoBehaviour
         }
 
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+    }
+
+    /// <summary>
+    /// Give the entity a shield of a certain elemental type
+    /// </summary>
+    /// <param name="elementToMakeShield"></param>
+    public virtual void ActivateShield(ElementType elementToMakeShield)
+    {
+        _shieldType = elementToMakeShield;
+    }
+
+    public ElementType GetShield()
+    {
+        return _shieldType;
+    }
+
+    public virtual void BreakShield()
+    {
+        Debug.Log("CRACK! Shield broken!");
+        _shieldType = ElementType.NONE;
     }
 }

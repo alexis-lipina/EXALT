@@ -34,7 +34,8 @@ public class NavigationManager : MonoBehaviour
         Stack<EnvironmentPhysics> path = AStarSearchExceptItReturnsEnvironmentObjects(start, destination);
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Valid path not found");
+            //comment this in for navmap debug
+            //Debug.Log("Valid path not found"); 
         }
         //Debug.Log(path);
         return path;

@@ -7,9 +7,14 @@ public class SwordEnemyHandler : EntityHandler
 {
     [SerializeField] private Animator characterAnimator;
     [SerializeField] private bool isCompanion;
+    [SerializeField] private SpriteRenderer shieldSprite;
+
+    [SerializeField] private Sprite shieldSpriteImage_Void;
+    [SerializeField] private Sprite shieldSpriteImage_Zap;
+    [SerializeField] private Sprite shieldSpriteImage_Fire;
 
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "SwordEnemy_IdleEast";
@@ -38,11 +43,13 @@ public class SwordEnemyHandler : EntityHandler
 
     const string FLINCH_Anim = "Anim_Flinch";
 
+    const string SPAWN_Anim = "SwordEnemy_Spawn";
+
     const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
 
+    const float SPAWN_DURATION = 0.63f;
     
-
     
 
 
@@ -66,7 +73,7 @@ public class SwordEnemyHandler : EntityHandler
     bool hasSwung;
 
     bool wasJustHit;
-    float stateTimer;
+    float stateTimer = 0.0f;
 
     private EnemySpawner _spawner;
 
@@ -84,7 +91,8 @@ public class SwordEnemyHandler : EntityHandler
     {
         xInput = 0;
         yInput = 0;
-        currentState = TestEnemyState.IDLE;
+        currentState = TestEnemyState.SPAWN;
+        stateTimer = 0.0f;
         jumpPressed = false;
         wasJustHit = false;
         hasSwung = false;
@@ -133,6 +141,9 @@ public class SwordEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.FLINCH:
                 FlinchState();
+                break;
+            case TestEnemyState.SPAWN:
+                SpawnState();
                 break;
         }
 
@@ -500,12 +511,31 @@ public class SwordEnemyHandler : EntityHandler
         }
     }
     
-    
     private void FlinchState()
     {
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         characterAnimator.Play(FLINCH_Anim);
+    }
+
+    private void SpawnState()
+    {
+        //Draw
+        characterAnimator.Play(SPAWN_Anim);
+
+        //Physics
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(0, 0));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
+
+        //state transitions
+        stateTimer += Time.deltaTime;
+
+        if (stateTimer >= SPAWN_DURATION)
+        {
+            currentState = TestEnemyState.IDLE;
+        }
     }
 
     public void SetAttackPressed(bool value)
@@ -523,9 +553,38 @@ public class SwordEnemyHandler : EntityHandler
         wasJustHit = true;
     }
 
-    
+    //==========================| SHIELD MANAGEMENT
+    public override void ActivateShield(ElementType elementToMakeShield)
+    {
+        base.ActivateShield(elementToMakeShield);
+        switch (elementToMakeShield)
+        {
+            case ElementType.FIRE:
+                shieldSprite.enabled = true;
+                shieldSprite.sprite = shieldSpriteImage_Fire;
+                break;
+            case ElementType.VOID:
+                shieldSprite.enabled = true;
+                shieldSprite.sprite = shieldSpriteImage_Void;
+                break;
+            case ElementType.ZAP:
+                shieldSprite.enabled = true;
+                shieldSprite.sprite = shieldSpriteImage_Zap;
+                break;
+            case ElementType.NONE:
+                Debug.LogWarning("Attempted to assign NONE type shield to enemy!");
+                break;
+        }
+    }
 
-    
+    public override void BreakShield()
+    {
+        base.BreakShield();
+        //TODO : dramatic thing must happen
+        shieldSprite.enabled = false;
+    }
+
+
 
     public override void OnDeath()
     {

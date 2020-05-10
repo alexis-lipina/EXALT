@@ -341,7 +341,8 @@ public class EntityPhysics : DynamicPhysics
     }
 
 
-    //TODO : Just make these all one method with optional parameters, please, you idiot, you absolute moron
+    // Just make these all one method with optional parameters, please, you idiot, you absolute moron
+    // ^Fixed, please be nice
 
     /// <summary>
     /// Deal this entity damage, causing them to flash and lose health
@@ -350,7 +351,14 @@ public class EntityPhysics : DynamicPhysics
     public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
         if (isInvincible || _isDead) return;
+
         entityHandler.PerformDetonations(type);
+
+        if (entityHandler.GetShield() != ElementType.NONE) //early return if enemy has shield
+        {
+            //TODO : do somethin to show deflection
+            return; 
+        }
 
         MoveWithCollision(force.x * _pushForceMultiplier, force.y * _pushForceMultiplier); //TODO : HEY UHHHH THIS DOESNT DO ANYTHING IF THEYRE MOVING ALREADY I DONT THINK
         _netForces += (Vector3)(force);

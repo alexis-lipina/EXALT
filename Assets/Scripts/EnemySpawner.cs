@@ -17,6 +17,7 @@ public class EnemySpawner : MonoBehaviour
 
     [SerializeField] private NavigationManager _navManager;
     [SerializeField] private bool canRespawnEnemies; //toggle object pooling
+    [SerializeField] private ElementType _shieldElementType = ElementType.NONE;
     private Dictionary<int, GameObject> _enemyPool;
     private float _timer;
     private int enemiesAlive;
@@ -25,6 +26,8 @@ public class EnemySpawner : MonoBehaviour
     {
         enemiesAlive = 0;
         _timer = _spawnInterval;
+        if (_spawnInterval < 1) _spawnInterval = 1.0f; //floor spawninterval
+
         if (_enemyPool != null) return;
 
         Debug.Log("Pool populating...");
@@ -71,7 +74,7 @@ public class EnemySpawner : MonoBehaviour
             if (_timer == 0)
             {
 
-                //SpawnEnemy();
+                SpawnEnemy(_shieldElementType); //THIS SHOULD BE COMMENTED OUT UNDER NORMAL CIRCUMSTANCES
                 //move enemy into position
 
                 _timer = _spawnInterval;
@@ -90,7 +93,7 @@ public class EnemySpawner : MonoBehaviour
     /// Returns enemy spawned
     /// </summary>
     /// <returns></returns>
-    public GameObject SpawnEnemy()
+    public GameObject SpawnEnemy(ElementType shieldType = ElementType.NONE)
     {
         GameObject tempEnemy = GetFromPool();
         EntityPhysics tempPhysics = tempEnemy.GetComponentInChildren<EntityPhysics>();
@@ -101,6 +104,14 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
         tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f));
         tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
+
+        //give shield
+        EntityHandler tempHandler = tempEnemy.GetComponentInChildren<EntityHandler>();
+        if (tempHandler)
+        {
+            tempHandler.ActivateShield(shieldType);
+        }
+        else { Debug.LogError("Spawned enemy without EntityHandler!"); }
         return tempEnemy;
     }
 

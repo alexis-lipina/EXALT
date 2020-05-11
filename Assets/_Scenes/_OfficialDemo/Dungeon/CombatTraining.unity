@@ -150,6 +150,21 @@ PrefabInstance:
       propertyPath: JumpImpulse
       value: 40
       objectReference: {fileID: 0}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _gameplayUI
+      value: 
+      objectReference: {fileID: 1015807169}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _healthBar
+      value: 
+      objectReference: {fileID: 2009624186}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _fadeTransition
+      value: 
+      objectReference: {fileID: 1811656550}
     - target: {fileID: 114767209249802744, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
         type: 3}
       propertyPath: navManager
@@ -4990,7 +5005,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxEnemies: 0
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-  _spawnInterval: 0
+  _spawnInterval: 2
   _startEnvironment: {fileID: 582333675}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
@@ -12132,7 +12147,7 @@ MonoBehaviour:
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 0
+  _shieldElementType: 1
 --- !u!4 &1178507372 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -19923,6 +19938,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 293448880}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1811656550 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3140105151673136046, guid: da7bb31c46d30024ca198e692321c33d,
+    type: 3}
+  m_PrefabInstance: {fileID: 2126174600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0c084e3c9c38448b7bb6c99630368d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1811806282
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21178,6 +21205,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 967719409}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2009624186 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7689713314767831524, guid: da7bb31c46d30024ca198e692321c33d,
+    type: 3}
+  m_PrefabInstance: {fileID: 2126174600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173c46cdbd7ec71429cd003d3a4522c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2015488362
 PrefabInstance:
   m_ObjectHideFlags: 0

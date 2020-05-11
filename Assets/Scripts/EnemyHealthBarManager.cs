@@ -9,6 +9,7 @@ public class EnemyHealthBarManager : MonoBehaviour
     [SerializeField] private float _spacing;
 
     private int _currentHp;
+    private ElementType _currentShield = ElementType.NONE;
     private GameObject[] _segments;
 
     private void Start()
@@ -22,8 +23,21 @@ public class EnemyHealthBarManager : MonoBehaviour
 
     public void UpdateUI()
     {
+        // Update shielding if applicable
+        if (_currentShield != _physics.Handler.GetShield())
+        {
+            Debug.Log("Shielding segment!");
+            _currentShield = _physics.Handler.GetShield();
+            foreach (GameObject seg in _segments)
+            {
+                seg.GetComponent<EnemyHealthBarSegment>().SetShieldSegment(_currentShield);
+            }
+        }
+
+        // Update HP count
+
         int newHp = _physics.GetCurrentHealth();
-        if (newHp == _currentHp) return;
+                if (newHp == _currentHp) return; // early return for no HP change
         for (int i = 0; i < _segments.Length; i++)
         {
             if (i < newHp)
@@ -36,6 +50,7 @@ public class EnemyHealthBarManager : MonoBehaviour
             }
         }
         _currentHp = newHp;
+        
     }
 
     private void SetupUI()

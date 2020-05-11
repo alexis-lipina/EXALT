@@ -405,8 +405,15 @@ public class ProjectilePhysics : DynamicPhysics
         _whoToHurt = newWhoToHurt;
         _timer = 0f;
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
-        
-        _deflectSFX.Play();
+
+        if (_deflectSFX)
+        {
+            _deflectSFX.Play();
+        }
+        else
+        {
+            Debug.LogError("Deflect SFX is null for object " + this);
+        }
         SlashDeflectVFX.DeployFromPool(ObjectSprite.transform.position, redirection_vector);
         DeflectFlareVFX.DeployFromPool(ObjectSprite.transform.position);
 

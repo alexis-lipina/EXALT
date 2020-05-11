@@ -43,7 +43,7 @@ public abstract class EntityHandler : MonoBehaviour
     public void PerformDetonations(ElementType elementOfAttack)
     {
         if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap) || elementOfAttack == ElementType.NONE) return;
-
+        Debug.Log("PAST VALIDATION");
         if (!currentPrimes.Contains(elementOfAttack))
         {
             PrimeEnemy(elementOfAttack);
@@ -58,7 +58,6 @@ public abstract class EntityHandler : MonoBehaviour
                 case ElementType.FIRE:
                     Debug.Log("Fire Detonation");
                     _isPrimed_Fire = false;
-                    if (_shieldType == ElementType.ZAP)
                     //Destroy(_firePrimeVfx);
                     detonations.Add(ElementType.FIRE);
                     break;
@@ -116,6 +115,7 @@ public abstract class EntityHandler : MonoBehaviour
 
     IEnumerator ExecuteDetonations(List<ElementType> detonations)
     {
+        Debug.Log("DETONATING?????");
         _isDetonating = true;
         yield return new WaitForSeconds(0.1f);
         if (detonations.Contains(_shieldType)) {  BreakShield();  } //Shield break on detonate
@@ -126,6 +126,7 @@ public abstract class EntityHandler : MonoBehaviour
             {
                 case ElementType.FIRE:
                     //FireDetonationHandler.DeployFromPool(entityPhysics);
+                    Debug.Log("DETONATING FIRE!!!");
                     _firePrimeVfx.GetComponent<FireDetonationHandler>().Detonate();
                     _firePrimeVfx = null;
                     break;

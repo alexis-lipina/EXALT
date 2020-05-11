@@ -78,7 +78,7 @@ public class FireDetonationHandler : ProjectionHandler
         hasDetonated = false;
         Debug.Log("Deployed!");
         MoveTo(DesiredPosition);
-        _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
+        //_physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         _projection.SetOpacity(1.0f);
 
         if (_sparks == null)

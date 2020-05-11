@@ -561,15 +561,21 @@ public class SwordEnemyHandler : EntityHandler
         {
             case ElementType.FIRE:
                 shieldSprite.enabled = true;
-                shieldSprite.sprite = shieldSpriteImage_Fire;
+                //shieldSprite.sprite = shieldSpriteImage_Fire;
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(1f, 0.5f, 0f, 1f));
                 break;
             case ElementType.VOID:
                 shieldSprite.enabled = true;
-                shieldSprite.sprite = shieldSpriteImage_Void;
+                //shieldSprite.sprite = shieldSpriteImage_Void;
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(0.5f, 0f, 1f, 1f));
                 break;
             case ElementType.ZAP:
                 shieldSprite.enabled = true;
-                shieldSprite.sprite = shieldSpriteImage_Zap;
+                //shieldSprite.sprite = shieldSpriteImage_Zap;
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(0, 1, 0.5f, 1));
                 break;
             case ElementType.NONE:
                 Debug.LogWarning("Attempted to assign NONE type shield to enemy!");
@@ -581,7 +587,9 @@ public class SwordEnemyHandler : EntityHandler
     {
         base.BreakShield();
         //TODO : dramatic thing must happen
-        shieldSprite.enabled = false;
+        //shieldSprite.enabled = false;
+        Debug.Log("SHIELD MACHINE BROKE");
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 0.0f);
     }
 
 

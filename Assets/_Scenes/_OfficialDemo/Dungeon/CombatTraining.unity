@@ -1999,12 +1999,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxEnemies: 0
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-  _spawnInterval: 0
+  _spawnInterval: 2
   _startEnvironment: {fileID: 191679915}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 3
+  _shieldElementType: 2
 --- !u!4 &198378845 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -5010,7 +5010,7 @@ MonoBehaviour:
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 3
+  _shieldElementType: 0
 --- !u!4 &497843473 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -12147,7 +12147,7 @@ MonoBehaviour:
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 1
+  _shieldElementType: 0
 --- !u!4 &1178507372 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,

@@ -357,6 +357,7 @@ public class EntityPhysics : DynamicPhysics
         if (entityHandler.GetShield() != ElementType.NONE) //early return if enemy has shield
         {
             //TODO : do somethin to show deflection
+            StartCoroutine(ShieldBlockFlash());
             return; 
         }
 
@@ -396,21 +397,7 @@ public class EntityPhysics : DynamicPhysics
         currentHP += amount;
     }
 
-    IEnumerator TakeDamageFlash(Vector2 hitDirection)
-    {
-        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
-        for (float i = 0; i < 2; i++)
-        {
-            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
-            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
-            yield return new WaitForSeconds(0.05f);
-            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
-            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 0, 0, 1));
-            yield return new WaitForSeconds(0.05f);
-        }
-
-        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
-    }
+    
 
     //===================================================| Object Pooling
 
@@ -433,8 +420,7 @@ public class EntityPhysics : DynamicPhysics
 
 
 
-    //===============================================================| getters and setters
-
+    // ==================================================| Animations
     public void PlayInvincibilityFrames(float duration)
     {
         StartCoroutine(PlayIFrames(duration));
@@ -461,8 +447,50 @@ public class EntityPhysics : DynamicPhysics
         //_objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
     }
 
+    IEnumerator TakeDamageFlash(Vector2 hitDirection)
+    {
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
+        for (float i = 0; i < 2; i++)
+        {
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
+            yield return new WaitForSeconds(0.05f);
+            //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 0, 0, 1));
+            yield return new WaitForSeconds(0.05f);
+        }
+
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+    }
+
+    /// <summary>
+    /// Play a shield block effect, specifically flashing the outline and making the enemy the shield color for a few frames
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator ShieldBlockFlash()
+    {
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(1, 1, 1, 1));
+        yield return new WaitForSeconds(0.05f);
+
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0, 0, 0, 0));
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(0, 0, 0, 0));
+        yield return new WaitForSeconds(0.05f);
+
+        //characterSprite.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0);
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", EntityHandler.GetElementColor(entityHandler.GetShield()));
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(1, 1, 1, 1));
+        yield return new WaitForSeconds(0.08f);
 
 
+        
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 0);
+        _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", EntityHandler.GetElementColor(entityHandler.GetShield()));
+    }
+
+
+    //===============================================================| getters and setters
 
     public EnvironmentPhysics GetCurrentNavObject()
     {

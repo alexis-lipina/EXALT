@@ -24,6 +24,24 @@ public abstract class EntityHandler : MonoBehaviour
 
     protected ElementType _shieldType = ElementType.NONE;
 
+    public static Color GetElementColor(ElementType type)
+    {
+        switch (type)
+        {
+            case ElementType.FIRE:
+                return new Color(1f, 0.5f, 0f, 1f);
+            case ElementType.VOID:
+                return new Color(0.5f, 0.0f, 1.0f, 1f);
+            case ElementType.ZAP:
+                return new Color(0.0f, 1.0f, 0.5f, 1f);
+            default:
+                Debug.LogWarning("GetElementColor() called with type NONE");
+                return new Color(1f, 0.2f, 0.1f, 1f);
+        }
+    }
+
+
+
     /// <summary>
     /// Contains the state machine switch statement and calls state methods
     /// </summary>
@@ -156,21 +174,8 @@ public abstract class EntityHandler : MonoBehaviour
             entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0, 0, 0, 1));
             yield return new WaitForSeconds(0.08f);
             //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
-            switch (type)
-            {
-                case ElementType.FIRE:
-                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1f, 0.5f, 0f, 1f));
-                    break;
-                case ElementType.VOID:
-                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0.5f, 0.0f, 1.0f, 1f));
-                    break;
-                case ElementType.ZAP:
-                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(0.0f, 1.0f, 0.5f, 1f));
-                    break;
-                default:
-                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1f, 0.2f, 0.1f, 1f));
-                    break;
-            }
+            entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", GetElementColor(type));
+            
             yield return new WaitForSeconds(0.08f);
             
         }

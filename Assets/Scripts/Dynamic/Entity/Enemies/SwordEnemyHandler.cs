@@ -14,7 +14,7 @@ public class SwordEnemyHandler : EntityHandler
     [SerializeField] private Sprite shieldSpriteImage_Fire;
 
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "SwordEnemy_IdleEast";
@@ -41,6 +41,10 @@ public class SwordEnemyHandler : EntityHandler
     const string SWING_EAST_Anim = "SwordEnemy_SlashEast";
     const string SWING_WEST_Anim = "SwordEnemy_SlashWest";
 
+    const string SHIELDBREAK_FIRE = "SwordEnemy_ShieldBreak_Fire";
+    const string SHIELDBREAK_VOID = "SwordEnemy_ShieldBreak_Void";
+    const string SHIELDBREAK_ZAP = "SwordEnemy_ShieldBreak_Zap";
+
     const string FLINCH_Anim = "Anim_Flinch";
 
     const string SPAWN_Anim = "SwordEnemy_Spawn";
@@ -49,6 +53,7 @@ public class SwordEnemyHandler : EntityHandler
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
 
     const float SPAWN_DURATION = 0.63f;
+    const float SHIELDBREAK_DURATION = 0.66f;
     
     
 
@@ -74,6 +79,7 @@ public class SwordEnemyHandler : EntityHandler
 
     bool wasJustHit;
     float stateTimer = 0.0f;
+    private ElementType shieldToBreak = ElementType.NONE;
 
     private EnemySpawner _spawner;
 
@@ -144,6 +150,12 @@ public class SwordEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.SPAWN:
                 SpawnState();
+                break;
+            case TestEnemyState.SHIELDBREAK:
+                ShieldBreakState();
+                break;
+            default:
+                Debug.LogError("State " + currentState + "not implemented in state machine!");
                 break;
         }
 
@@ -538,6 +550,41 @@ public class SwordEnemyHandler : EntityHandler
         }
     }
 
+    private void ShieldBreakState()
+    {
+        //Draw
+        switch (shieldToBreak)
+        {
+            case ElementType.VOID:
+                characterAnimator.Play(SHIELDBREAK_VOID);
+                break;
+            case ElementType.FIRE:
+                characterAnimator.Play(SHIELDBREAK_FIRE);
+                break;
+            case ElementType.ZAP:
+                characterAnimator.Play(SHIELDBREAK_ZAP);
+                break;
+        }
+
+
+        //Physics
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(0, 0));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
+
+        //state transitions
+        stateTimer += Time.deltaTime;
+
+        if (stateTimer >= SHIELDBREAK_DURATION)
+        {
+            stateTimer = 0;
+            shieldToBreak = ElementType.NONE;
+            currentState = TestEnemyState.IDLE;
+        }
+    }
+
+
     public void SetAttackPressed(bool value)
     {
         attackPressed = value;
@@ -557,42 +604,31 @@ public class SwordEnemyHandler : EntityHandler
     public override void ActivateShield(ElementType elementToMakeShield)
     {
         base.ActivateShield(elementToMakeShield);
-        switch (elementToMakeShield)
+        if (elementToMakeShield == ElementType.NONE)
         {
-            case ElementType.FIRE:
-                shieldSprite.enabled = true;
-                //shieldSprite.sprite = shieldSpriteImage_Fire;
-                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
-                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(1f, 0.5f, 0f, 1f));
-                break;
-            case ElementType.VOID:
-                shieldSprite.enabled = true;
-                //shieldSprite.sprite = shieldSpriteImage_Void;
-                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
-                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(0.5f, 0f, 1f, 1f));
-                break;
-            case ElementType.ZAP:
-                shieldSprite.enabled = true;
-                //shieldSprite.sprite = shieldSpriteImage_Zap;
-                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
-                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", new Color(0, 1, 0.5f, 1));
-                break;
-            case ElementType.NONE:
-                Debug.LogWarning("Attempted to assign NONE type shield to enemy!");
-                break;
+            Debug.LogWarning("ActivateShield called with NONE ElementType!");
+            return;
         }
+        shieldSprite.enabled = true;
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", GetElementColor(elementToMakeShield));
     }
 
     public override void BreakShield()
     {
+        shieldToBreak = _shieldType;
         base.BreakShield();
         //TODO : dramatic thing must happen
         //shieldSprite.enabled = false;
         Debug.Log("SHIELD MACHINE BROKE");
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 0.0f);
+
+        //force state transition when shield breaks
+        stateTimer = 0f;
+        currentState = TestEnemyState.SHIELDBREAK;
     }
 
-
+    //==========================| DEATH MANAGEMENT
 
     public override void OnDeath()
     {

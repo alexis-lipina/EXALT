@@ -9,7 +9,7 @@ public class RangedEnemyHandler : EntityHandler
     [SerializeField] private bool isCompanion;
     [SerializeField] private PathfindingAI _pathfindingAi;
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "RangedBot_IdleEast";
@@ -38,9 +38,11 @@ public class RangedEnemyHandler : EntityHandler
 
     const string FLINCH_Anim = "Anim_Flinch";
 
+    const string SPAWN_Anim = "RangedBot_Spawn";
+
     const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
-
+    const float SPAWN_DURATION = 0.66f;
 
 
 
@@ -70,6 +72,8 @@ public class RangedEnemyHandler : EntityHandler
     bool wasJustHit;
     float stateTimer;
 
+    private ElementType _shieldToBreak = ElementType.NONE; 
+
     private EnemySpawner _spawner;
 
 
@@ -86,7 +90,7 @@ public class RangedEnemyHandler : EntityHandler
     {
         xInput = 0;
         yInput = 0;
-        currentState = TestEnemyState.IDLE;
+        currentState = TestEnemyState.SPAWN;
         jumpPressed = false;
         wasJustHit = false;
         hasSwung = false;
@@ -137,6 +141,12 @@ public class RangedEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.FLINCH:
                 FlinchState();
+                break;
+            case TestEnemyState.SPAWN:
+                SpawnState();
+                break;
+            default:
+                Debug.LogError("RangedBot has unimplemented state : " + currentState);
                 break;
         }
 
@@ -491,6 +501,56 @@ public class RangedEnemyHandler : EntityHandler
         characterAnimator.Play(FLINCH_Anim);
     }
 
+    private void SpawnState()
+    {
+        //Draw
+        characterAnimator.Play(SPAWN_Anim);
+
+        //Physics
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(0, 0));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
+
+        //state transitions
+        stateTimer += Time.deltaTime;
+
+        if (stateTimer >= SPAWN_DURATION)
+        {
+            currentState = TestEnemyState.IDLE;
+        }
+    }
+
+    // ========================| Shield
+
+    //==========================| SHIELD MANAGEMENT
+    public override void ActivateShield(ElementType elementToMakeShield)
+    {
+        base.ActivateShield(elementToMakeShield);
+        if (elementToMakeShield == ElementType.NONE)
+        {
+            Debug.LogWarning("ActivateShield called with NONE ElementType!");
+            return;
+        }
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 1.0f);
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_OutlineColor", GetElementColor(elementToMakeShield));
+    }
+
+    public override void BreakShield()
+    {
+        _shieldToBreak = _shieldType;
+        base.BreakShield();
+        //TODO : dramatic thing must happen
+        //shieldSprite.enabled = false;
+        Debug.Log("SHIELD MACHINE BROKE");
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_Outline", 0.0f);
+
+        //force state transition when shield breaks
+        stateTimer = 0f;
+        currentState = TestEnemyState.IDLE; // TODO : CHANGE THIS
+    }
+
+    // ========================| SETTERS
     public void SetAttackPressed(bool value)
     {
         attackPressed = value;
@@ -505,10 +565,6 @@ public class RangedEnemyHandler : EntityHandler
         //stateTimer = 1.0f;
         wasJustHit = true;
     }
-
-
-
-
 
     public override void OnDeath()
     {

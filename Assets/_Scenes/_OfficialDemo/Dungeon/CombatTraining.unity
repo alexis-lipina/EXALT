@@ -1999,12 +1999,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxEnemies: 0
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-  _spawnInterval: 2
+  _spawnInterval: 3
   _startEnvironment: {fileID: 191679915}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 2
+  _shieldElementType: 0
 --- !u!4 &198378845 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -5004,13 +5004,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxEnemies: 0
-  _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-  _spawnInterval: 2
+  _prefab: {fileID: 1508240309, guid: 406fce316d013b54490ec75f0d6f9db8, type: 3}
+  _spawnInterval: 3
   _startEnvironment: {fileID: 582333675}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 0
+  _shieldElementType: 2
 --- !u!4 &497843473 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -12140,14 +12140,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa6ac3161d6fd014f8db469f2f61ddac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxEnemies: 1
+  _maxEnemies: 0
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-  _spawnInterval: 2
+  _spawnInterval: 3
   _startEnvironment: {fileID: 147407777}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 0
+  _shieldElementType: 2
 --- !u!4 &1178507372 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -17870,13 +17870,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxEnemies: 0
-  _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
-  _spawnInterval: 0
+  _prefab: {fileID: 1508240309, guid: 406fce316d013b54490ec75f0d6f9db8, type: 3}
+  _spawnInterval: 3
   _startEnvironment: {fileID: 1621264084}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
-  _shieldElementType: 3
+  _shieldElementType: 0
 --- !u!4 &1611237206 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -22467,6 +22467,24 @@ PrefabInstance:
       propertyPath: _playerHandler
       value: 
       objectReference: {fileID: 23052731}
+    - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _onSprite_Zap
+      value: 
+      objectReference: {fileID: 21300000, guid: 1cdf02a59f76a174bac6c9028b3ccec9,
+        type: 3}
+    - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _onSprite_Fire
+      value: 
+      objectReference: {fileID: 21300000, guid: 275f7000d49d77c4dac505257e0c25d3,
+        type: 3}
+    - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _onSprite_Void
+      value: 
+      objectReference: {fileID: 21300000, guid: 4ede181eb996099468bde87971ca7ab4,
+        type: 3}
     - target: {fileID: 7689713315722516649, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: playerPhysics
@@ -23101,6 +23119,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7689713314710873934, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: da7bb31c46d30024ca198e692321c33d, type: 3}

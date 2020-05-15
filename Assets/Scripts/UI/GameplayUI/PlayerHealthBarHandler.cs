@@ -14,6 +14,9 @@ public class PlayerHealthBarHandler : MonoBehaviour
 
     private int _currentPlayerHealth = 5;
 
+    private static float TimeToFadeOut = 3.0f;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +26,25 @@ public class PlayerHealthBarHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //fade in/out for combat
+        if ( ((PlayerHandler)_playerPhysics.Handler).TimeSinceCombat > TimeToFadeOut )
+        {
+            Debug.Log("fading out");
+            const float lerpRate = 1.0f;
+            float newSegmentAlpha = Mathf.Lerp(1.0f, 0.0f, (((PlayerHandler)_playerPhysics.Handler).TimeSinceCombat - TimeToFadeOut) * lerpRate);
+            foreach (Image segment in _healthBarSegments)
+            {
+                segment.color = new Color(1.0f, 1.0f, 1.0f, newSegmentAlpha);
+            }
+        }
+        else
+        {
+            foreach (Image segment in _healthBarSegments)
+            {
+                segment.color = new Color(1.0f, 1.0f, 1.0f, Mathf.Lerp(segment.color.a, 1.0f, 0.2f));
+            }
+        }
+
         if (_currentPlayerHealth == _playerPhysics.GetCurrentHealth()) return; //short circuit if no changes
         int _previousPlayerHealth = _currentPlayerHealth;
         _currentPlayerHealth = _playerPhysics.GetCurrentHealth();

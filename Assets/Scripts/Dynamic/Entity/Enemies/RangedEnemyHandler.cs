@@ -8,8 +8,10 @@ public class RangedEnemyHandler : EntityHandler
     [SerializeField] private Animator characterAnimator;
     [SerializeField] private bool isCompanion;
     [SerializeField] private PathfindingAI _pathfindingAi;
+    [SerializeField] private SpriteRenderer bloodSplatterSprite;
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN };
+
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "RangedBot_IdleEast";
@@ -40,9 +42,18 @@ public class RangedEnemyHandler : EntityHandler
 
     const string SPAWN_Anim = "RangedBot_Spawn";
 
+    const string SHIELDBREAK_ZAP_Anim = "RangedBot_ShieldBreak_Zap";
+    const string SHIELDBREAK_FIRE_Anim = "RangedBot_ShieldBreak_Fire";
+    const string SHIELDBREAK_VOID_Anim = "RangedBot_ShieldBreak_Void";
+
+    const string DEATH_WEST_Anim = "RangedBot_DeathWest";
+    const string DEATH_EAST_Anim = "RangedBot_DeathEast";
+
     const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
     const float SPAWN_DURATION = 0.66f;
+    const float SHIELDBREAK_DURATION = 0.66f;
+    const float DEATH_DURATION = 1.3f;
 
 
 
@@ -144,6 +155,12 @@ public class RangedEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.SPAWN:
                 SpawnState();
+                break;
+            case TestEnemyState.SHIELDBREAK:
+                ShieldBreakState();
+                break;
+            case TestEnemyState.DEATH:
+                DeathState();
                 break;
             default:
                 Debug.LogError("RangedBot has unimplemented state : " + currentState);
@@ -521,9 +538,66 @@ public class RangedEnemyHandler : EntityHandler
         }
     }
 
-    // ========================| Shield
+    private void ShieldBreakState()
+    {
+        //Draw
+        switch (_shieldToBreak)
+        {
+            case ElementType.VOID:
+                characterAnimator.Play(SHIELDBREAK_VOID_Anim);
+                break;
+            case ElementType.FIRE:
+                characterAnimator.Play(SHIELDBREAK_FIRE_Anim);
+                break;
+            case ElementType.ZAP:
+                characterAnimator.Play(SHIELDBREAK_ZAP_Anim);
+                break;
+        }
+
+
+        //Physics
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(0, 0));
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
+
+        //state transitions
+        stateTimer += Time.deltaTime;
+
+        if (stateTimer >= SHIELDBREAK_DURATION)
+        {
+            stateTimer = 0;
+            _shieldToBreak = ElementType.NONE;
+            currentState = TestEnemyState.IDLE;
+        }
+    }
+
+
+    private void DeathState()
+    {
+        //Debug.LogError("NOT IMPLEMENTED");
+
+        //Draw
+        if (DeathVector.x > 0)
+        {
+            characterAnimator.Play(DEATH_EAST_Anim);
+        }
+        else
+        {
+            characterAnimator.Play(DEATH_WEST_Anim);
+        }
+
+
+        //Physics
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(DeathVector);
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
+        DeathVector *= 0.95f;
+    }
 
     //==========================| SHIELD MANAGEMENT
+
     public override void ActivateShield(ElementType elementToMakeShield)
     {
         base.ActivateShield(elementToMakeShield);
@@ -547,7 +621,7 @@ public class RangedEnemyHandler : EntityHandler
 
         //force state transition when shield breaks
         stateTimer = 0f;
-        currentState = TestEnemyState.IDLE; // TODO : CHANGE THIS
+        currentState = TestEnemyState.SHIELDBREAK; // TODO : CHANGE THIS
     }
 
     // ========================| SETTERS
@@ -563,6 +637,7 @@ public class RangedEnemyHandler : EntityHandler
     public override void JustGotHit(Vector2 hitDirection)
     {
         //stateTimer = 1.0f;
+        DeathVector = hitDirection;
         wasJustHit = true;
     }
 
@@ -575,17 +650,18 @@ public class RangedEnemyHandler : EntityHandler
 
     private IEnumerator PlayDeathAnim()
     {
-        currentState = TestEnemyState.FLINCH;
-        yield return new WaitForSeconds(0.25f);
+        currentState = TestEnemyState.DEATH;
+        StartCoroutine(PlayBloodSplatter());
+        yield return new WaitForSeconds(DEATH_DURATION);
         //destroy VFX
         if (_zapPrimeVfx != null) Destroy(_zapPrimeVfx);
         if (_voidPrimeVfx != null) Destroy(_voidPrimeVfx);
         if (_firePrimeVfx != null) Destroy(_firePrimeVfx);
-        
+
 
         if (entityPhysics._spawner)
         {
-            Debug.Log("Returning ranged enemy to pool");
+            Debug.Log("Returning enemy to pool");
             entityPhysics._spawner.ReturnToPool(transform.parent.gameObject.GetInstanceID());
         }
         else
@@ -593,5 +669,15 @@ public class RangedEnemyHandler : EntityHandler
             Debug.Log("Destroying enemy");
             Destroy(transform.parent.gameObject);
         }
+    }
+
+    private IEnumerator PlayBloodSplatter()
+    {
+        Debug.Log("SPLAT");
+        bloodSplatterSprite.gameObject.SetActive(true);
+        bloodSplatterSprite.transform.rotation = Quaternion.Euler(0, 0, Vector2.SignedAngle(Vector2.right, DeathVector));
+        bloodSplatterSprite.GetComponent<Animator>().Play("SplatterShort");
+        yield return new WaitForSeconds(0.5f);
+        bloodSplatterSprite.enabled = false;
     }
 }

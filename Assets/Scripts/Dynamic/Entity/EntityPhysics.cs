@@ -395,6 +395,7 @@ public class EntityPhysics : DynamicPhysics
     {
         Debug.Log("HEALIN");
         currentHP += amount;
+        if (currentHP > MaxHP) currentHP = MaxHP;
     }
 
     

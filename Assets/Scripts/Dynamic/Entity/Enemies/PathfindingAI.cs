@@ -45,6 +45,9 @@ public class PathfindingAI : EntityAI
         }
         else
         {
+            // Enemy is pursuing player
+            ( (PlayerHandler)target.GetComponent<EntityPhysics>().Handler ).TimeSinceCombat = 0.0f;
+
             //shortcut for ranged enemy if player is in line of sight
             //if (handler is RangedEnemyHandler && Mathf.Abs(target.GetComponent<EntityPhysics>().GetBottomHeight() - entityPhysics.GetBottomHeight()) < 0.5f) //Old sometimes-inaccurate one
             if (handler is RangedEnemyHandler && target.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetBottomHeight() + 2.0f && target.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() + 2.0f)

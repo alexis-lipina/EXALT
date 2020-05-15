@@ -24,6 +24,14 @@ public abstract class EntityHandler : MonoBehaviour
 
     protected ElementType _shieldType = ElementType.NONE;
 
+    protected Vector2 DeathVector = Vector2.zero;
+
+    public void SetDeathVector(Vector2 value)
+    {
+        DeathVector = value;
+    }
+
+
     public static Color GetElementColor(ElementType type)
     {
         switch (type)

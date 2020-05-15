@@ -183,6 +183,12 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private float FallGravity;
     private bool _jump_hasStartedFalling = false;
 
+    public float TimeSinceCombat = 0.0f;
+
+    public ElementType GetStyle()
+    {
+        return _currentStyle;
+    }
 
     public bool IsUsingMouse
     {
@@ -229,7 +235,7 @@ public class PlayerHandler : EntityHandler
         //SwapWeapon("NORTH");
         _currentStyle = ElementType.ZAP;
         //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
-        Shader.SetGlobalColor("_MagicColor",  new Color(0.3f, 1f, 0.7f, 1f));
+        Shader.SetGlobalColor("_MagicColor",  new Color(0.0f, 1f, 0.5f, 1f));
 
     }
 
@@ -238,6 +244,17 @@ public class PlayerHandler : EntityHandler
     {
         if (Time.timeScale == 0) return;
 
+        if (_currentEnergy == MaxEnergy && entityPhysics.GetCurrentHealth() == 5)
+        {
+            TimeSinceCombat += Time.deltaTime;
+        }
+        else
+        {
+            TimeSinceCombat = 0.0f;
+            Debug.Log("Not at max! Energy = " + _currentEnergy + "   Health = " + entityPhysics.GetCurrentHealth());
+        }
+
+        //Debug.Log(TimeSinceCombat);
         //increment timers
         _blinkTimer += Time.deltaTime;
         
@@ -830,7 +847,8 @@ public class PlayerHandler : EntityHandler
     private void PlayerLightMelee()
     {
         //snappy directional change (if this aint here it sometimes doesnt work)
-        
+        TimeSinceCombat = 0.0f;
+
         //Functionality to be done at very beginning
         if (StateTimer == time_lightMelee)
         {
@@ -1371,7 +1389,6 @@ public class PlayerHandler : EntityHandler
                     break;
                 case ElementType.ZAP:
                     LightRanged_Zap();
-                    //Debug.Log("ZAP");
                     break;
                 default: break;
             }
@@ -1666,7 +1683,7 @@ public class PlayerHandler : EntityHandler
         characterAnimator.Play(STYLE_CHANGE_Anim);
         UpdateAimDirection();
         StateTimer -= Time.deltaTime;
-
+        TimeSinceCombat = 0.0f;
         if (StateTimer < _changeStyleColorChangeTime && !_changeStyle_HasChanged)
         {
             _changeStyle_HasChanged = true;
@@ -2000,8 +2017,19 @@ public class PlayerHandler : EntityHandler
     public void ChangeEnergy(int delta)
     {
         _currentEnergy += delta;
-        if (_currentEnergy > _maxEnergy) _currentEnergy = _maxEnergy;
-        if (_currentEnergy < 0) _currentEnergy = 0;
+        if (_currentEnergy > _maxEnergy)
+        {
+            _currentEnergy = _maxEnergy;
+        }
+        else if (_currentEnergy < 0)
+        {
+            TimeSinceCombat = 0.0f;
+            _currentEnergy = 0;
+        }
+        else
+        {
+            TimeSinceCombat = 0.0f;
+        }
     }
 
     IEnumerator PlayDeathAnimation(Vector2 killingBlowDirection)

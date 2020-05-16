@@ -48,7 +48,6 @@ public class PlayerEnergyBarHandler : MonoBehaviour
         //fade in/out for combat
         if (_playerHandler.TimeSinceCombat > TimeToFadeOut)
         {
-            Debug.Log("fading out");
             const float lerpRate = 1.0f;
             float newSegmentAlpha = Mathf.Lerp(1.0f, 0.0f, (_playerHandler.TimeSinceCombat - TimeToFadeOut) * lerpRate);
             foreach (Image segment in _energyBarSegments)
@@ -118,22 +117,11 @@ public class PlayerEnergyBarHandler : MonoBehaviour
 
     IEnumerator TurnOff(Image segment)
     {
-        //float originalHeight = segment.GetComponent<RectTransform>().rect.height;
-        //segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight * 100f);
         segment.sprite = _flashSprite;
 
         yield return new WaitForSeconds(0.02f);
 
         segment.sprite = _darkSprite;
-
-        //yield return new WaitForSeconds(0.02f);
-
-        //segment.sprite = _flashSprite;
-
-        //yield return new WaitForSeconds(0.02f);
-
-        //segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight);
-        //segment.sprite = _darkSprite;
 
         yield return new WaitForSeconds(0.02f);
         segment.sprite = _offSprite;

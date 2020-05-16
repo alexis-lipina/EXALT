@@ -29,7 +29,6 @@ public class PlayerHealthBarHandler : MonoBehaviour
         //fade in/out for combat
         if ( ((PlayerHandler)_playerPhysics.Handler).TimeSinceCombat > TimeToFadeOut )
         {
-            Debug.Log("fading out");
             const float lerpRate = 1.0f;
             float newSegmentAlpha = Mathf.Lerp(1.0f, 0.0f, (((PlayerHandler)_playerPhysics.Handler).TimeSinceCombat - TimeToFadeOut) * lerpRate);
             foreach (Image segment in _healthBarSegments)

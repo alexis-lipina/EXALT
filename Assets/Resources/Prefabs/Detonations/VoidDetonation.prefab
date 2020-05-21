@@ -88,9 +88,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6539249904927649445}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b6074dbe8cec07348b2bcc345cadfb4f, type: 2}
+  m_Controller: {fileID: 9100000, guid: 734695cd87d68554ba2db35b1c0e17a8, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -357,6 +357,8 @@ MonoBehaviour:
   _projection: {fileID: 40484731321653720}
   _physics: {fileID: 2420986720231088159}
   _damageVolume: {fileID: 3132387661971111087}
+  _pullVFXPrefab: {fileID: 2072075300350924475, guid: 032913c8637223e47b0f17abdfd457b0,
+    type: 3}
   _sourceEnemy: {fileID: 0}
 --- !u!82 &534045524376334276
 AudioSource:

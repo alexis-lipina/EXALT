@@ -251,7 +251,6 @@ public class PlayerHandler : EntityHandler
         else
         {
             TimeSinceCombat = 0.0f;
-            Debug.Log("Not at max! Energy = " + _currentEnergy + "   Health = " + entityPhysics.GetCurrentHealth());
         }
 
         //Debug.Log(TimeSinceCombat);
@@ -2064,4 +2063,10 @@ public class PlayerHandler : EntityHandler
         _fadeTransition.FadeToScene(SceneManager.GetActiveScene().name);
         // play death animation, stop for a bit, then fade to black
     }
+
+    public ElementType GetElementalAttunement()
+    {
+        return _currentStyle;
+    }
+
 }

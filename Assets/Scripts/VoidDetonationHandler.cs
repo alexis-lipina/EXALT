@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class VoidDetonationHandler : ProjectionHandler
 {
+    private const float DETONATION_DURATION = 0.1875f;
+
     //global/static stuff
     private static List<GameObject> _objectPool;
     protected override ElementType Element
@@ -54,6 +56,8 @@ public class VoidDetonationHandler : ProjectionHandler
     [SerializeField] private PlayerProjection _projection;
     [SerializeField] private DynamicPhysics _physics;
     [SerializeField] private BoxCollider2D _damageVolume;
+    [SerializeField] private Transform _pullVFXPrefab;
+
     private bool hasDetonated = false;
     public Vector2 DesiredPosition { get; set; }
 
@@ -72,7 +76,8 @@ public class VoidDetonationHandler : ProjectionHandler
         hasDetonated = false;
         Debug.Log("Deployed!");
         MoveTo(DesiredPosition);
-        _projection.SetOpacity(1.0f);    }
+        _projection.SetOpacity(1.0f);
+    }
 
 
     protected void Update()
@@ -93,7 +98,7 @@ public class VoidDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size * 4.0f, 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(24f, 18f), 0.0f);
         foreach (Collider2D collider in collidersHit)
         {
             if (collider.gameObject.tag == "Enemy")
@@ -105,7 +110,11 @@ public class VoidDetonationHandler : ProjectionHandler
                 else
                 {
                     Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
-                    collider.GetComponent<EntityPhysics>().Inflict(1, force:enemyToCenter * Mathf.Sqrt(enemyToCenter.magnitude) / 5f, type:ElementType.VOID);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, force:enemyToCenter.normalized * 1.25f, type:ElementType.VOID);
+
+                    Transform pullVFX = Instantiate(_pullVFXPrefab);
+                    pullVFX.position = collider.GetComponent<EntityPhysics>().ObjectSprite.transform.position;
+                    pullVFX.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, enemyToCenter)));
                 }
             }
         }
@@ -116,20 +125,15 @@ public class VoidDetonationHandler : ProjectionHandler
     IEnumerator PlayAnimation()
     {
         GetComponentInChildren<SpriteRenderer>().enabled = true;
+        GetComponentInChildren<Animator>().Play("VoidDetonation");
+        GetComponentInChildren<Animator>().transform.position += new Vector3(0, 0, 9);
         _projection.SetColor(Color.black);
         yield return new WaitForSeconds(0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
         _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(0.02f);
+        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
+        GetComponentInChildren<SpriteRenderer>().enabled = false;
 
-
-        float opacity = 1f;
-        while (opacity > 0)
-        {
-            _projection.SetOpacity(opacity);
-            opacity -= 0.2f;
-            yield return new WaitForSeconds(0.01f);
-        }
+        GetComponentInChildren<Animator>().Play("VoidDetonationIdle");
 
         gameObject.SetActive(false);
     }

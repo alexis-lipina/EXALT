@@ -49,8 +49,15 @@ public class ProjectilePhysics : DynamicPhysics
     {
         get { return canBeDamaged; }
     }
+    public ElementType GetElement()
+    {
+        return _damageType; 
+    }
 
-    
+    public string GetWhoToHurt()
+    {
+        return _whoToHurt;
+    }
 
     /// <summary>
     /// "ALL" - Damages all entity types

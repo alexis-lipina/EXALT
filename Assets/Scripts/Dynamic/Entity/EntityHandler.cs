@@ -143,10 +143,16 @@ public abstract class EntityHandler : MonoBehaviour
     {
         Debug.Log("DETONATING?????");
         _isDetonating = true;
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.3f);
         if (detonations.Contains(_shieldType)) {  BreakShield();  } //Shield break on detonate
 
-        foreach (ElementType element in detonations)
+        List<ElementType> orderedDetonations = new List<ElementType>();
+
+        if (detonations.Contains(ElementType.VOID)) orderedDetonations.Add(ElementType.VOID);
+        if (detonations.Contains(ElementType.FIRE)) orderedDetonations.Add(ElementType.FIRE);
+        if (detonations.Contains(ElementType.ZAP)) orderedDetonations.Add(ElementType.ZAP);
+
+        foreach (ElementType element in orderedDetonations)
         {
             switch (element)
             {
@@ -166,7 +172,7 @@ public abstract class EntityHandler : MonoBehaviour
                     _zapPrimeVfx = null;
                     break;
             }
-            yield return new WaitForSeconds(0.15f);
+            yield return new WaitForSeconds(0.3f); //TIME BETWEEN DETONATIONS
         }
         _isDetonating = false;
         if (entityPhysics.GetCurrentHealth() <= 0) OnDeath();

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ZapDetonationHandler : ProjectionHandler
 {
+    private const float DETONATION_DURATION = 0.25f;
+
     //global/static stuff
     private static List<GameObject> _objectPool;
     protected override ElementType Element
@@ -62,7 +64,7 @@ public class ZapDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 4, pos.y);
+        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y, pos.y);
     }
 
     private void OnEnable()
@@ -110,20 +112,23 @@ public class ZapDetonationHandler : ProjectionHandler
     IEnumerator PlayAnimation()
     {
         GetComponentInChildren<SpriteRenderer>().enabled = true;
+        GetComponentInChildren<Animator>().Play("ZapDetonation_Short");
         _projection.SetColor(Color.black);
         yield return new WaitForSeconds(0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        //GetComponentInChildren<SpriteRenderer>().enabled = false;
         _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(0.02f);
+        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
+        GetComponentInChildren<SpriteRenderer>().enabled = false;
 
-
+        /*
         float opacity = 1f;
         while (opacity > 0)
         {
             _projection.SetOpacity(opacity);
             opacity -= 0.2f;
             yield return new WaitForSeconds(0.01f);
-        }
+        }*/
+        GetComponentInChildren<Animator>().Play("ZapDetonationIdle");
 
         gameObject.SetActive(false);
     }

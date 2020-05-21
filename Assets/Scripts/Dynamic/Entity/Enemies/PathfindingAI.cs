@@ -172,4 +172,9 @@ public class PathfindingAI : EntityAI
     {
         return Vector2.Distance(target.transform.position, entityPhysics.transform.position) < detectionRange;
     }
+
+    public void SetDetectionRange(float value)
+    {
+        detectionRange = value;
+    }
 }

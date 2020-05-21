@@ -9,6 +9,7 @@ using UnityEngine;
 /// </summary>
 public class EnemySpawner : MonoBehaviour
 {
+    [SerializeField] private bool IsAutomaticallySpawning = false;
     [SerializeField] private int _maxEnemies;
     [SerializeField] private Transform _prefab;
     [SerializeField] private float _spawnInterval;
@@ -49,10 +50,11 @@ public class EnemySpawner : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        if (!IsAutomaticallySpawning) return; // early return if automatic spawning behavior not wanted
+
         //pool contains "dead" enemies
         //goal of spawner is to have all enemies alive
         //only can spawn one every so often
-
         //time management (a skill I find myself lacking)
         if (_timer > 0)
         {
@@ -93,17 +95,21 @@ public class EnemySpawner : MonoBehaviour
     /// Returns enemy spawned
     /// </summary>
     /// <returns></returns>
-    public GameObject SpawnEnemy(ElementType shieldType = ElementType.NONE)
+    public GameObject SpawnEnemy(ElementType shieldType = ElementType.NONE, bool isHostile = true)
     {
         GameObject tempEnemy = GetFromPool();
         EntityPhysics tempPhysics = tempEnemy.GetComponentInChildren<EntityPhysics>();
-        tempPhysics.SetObjectElevation(_startEnvironment.GetTopHeight() + 2f);
+        tempPhysics.SetObjectElevation(_startEnvironment.GetTopHeight() + 0.5f);
         // tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
-        tempPhysics.transform.parent.position = (Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f);
+        tempPhysics.transform.parent.position = (Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset; //- new Vector2(0f, 2f);
         Debug.Log("<color=red>" + _startEnvironment + "</color>");
         Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
-        tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset - new Vector2(0f, 2f));
+        tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset); //- new Vector2(0f, 2f); 
         tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
+        if (!isHostile)
+        {
+            tempEnemy.GetComponentInChildren<PathfindingAI>().SetDetectionRange(0.0f);
+        }
 
         //give shield
         EntityHandler tempHandler = tempEnemy.GetComponentInChildren<EntityHandler>();

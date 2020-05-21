@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class FireDetonationHandler : ProjectionHandler
 {
+    private const float DETONATION_DURATION = 0.333f;
+
     //global/static stuff
     private static List<GameObject> _objectPool;
     protected override ElementType Element
@@ -80,7 +82,9 @@ public class FireDetonationHandler : ProjectionHandler
         MoveTo(DesiredPosition);
         //_physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         _projection.SetOpacity(1.0f);
-
+        
+        // I'm canceling sparks, sparks are canceled
+        /*
         if (_sparks == null)
         {
             _sparks = new List<GameObject>();
@@ -93,7 +97,7 @@ public class FireDetonationHandler : ProjectionHandler
                 _sparks.Add(tempBullet);
             }
             
-        }
+        }*/
     }
     
 
@@ -115,7 +119,7 @@ public class FireDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(4f, 3f), 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(4f, 4f), 0.0f);
         Debug.DrawLine(_damageVolume.bounds.center + new Vector3(4f, 3f, 0f), _damageVolume.bounds.center + new Vector3(-4f, -3f, 0f), Color.cyan, 1f, false);
         foreach (Collider2D collider in collidersHit)
         {
@@ -133,6 +137,8 @@ public class FireDetonationHandler : ProjectionHandler
 
         //spawn projectiles
 
+        // not doin sparks
+        /*
         for (int i = 0; i < _sparks.Count; i++)
         {
             _sparks[i].SetActive(true);
@@ -142,27 +148,21 @@ public class FireDetonationHandler : ProjectionHandler
             _sparks[i].GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (_physics.GetComponent<Rigidbody2D>().position);
             Debug.Log("SPARK HEIGHT : " + _sparks[i].GetComponentInChildren<ProjectilePhysics>().GetObjectElevation());
             //_sparks[i].GetComponentInChildren<ProjectilePhysics>().ZVelocity = 100f;
-        }
+        }*/
     }
 
     IEnumerator PlayAnimation()
     {
         GetComponentInChildren<SpriteRenderer>().enabled = true;
+        GetComponentInChildren<Animator>().Play("FireDetonation");
         _projection.SetColor(Color.black);
         yield return new WaitForSeconds(0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
         _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(0.02f);
-        
+        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
+        GetComponentInChildren<SpriteRenderer>().enabled = false;
 
-        float opacity = 1f;
-        while (opacity > 0)
-        {
-            _projection.SetOpacity(opacity);
-            opacity -= 0.2f;
-            yield return new WaitForSeconds(0.01f);
-        }
-        
+        GetComponentInChildren<Animator>().Play("FireDetonation_Idle");
+
         gameObject.SetActive(false);
     }
 }

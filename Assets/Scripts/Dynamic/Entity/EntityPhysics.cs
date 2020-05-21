@@ -258,7 +258,9 @@ public class EntityPhysics : DynamicPhysics
     {
         if (lastFootHold.Value == null)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            currentHP = 0;
+            return;
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
         //Debug.Log(lastFootHold.Key);
         /*

@@ -94,9 +94,6 @@ public class PlayerEnergyBarHandler : MonoBehaviour
                 StartCoroutine(TurnOff(_energyBarSegments[i]));
             }
         }
-
-        
-
     }
     IEnumerator TurnOn(Image segment)
     {

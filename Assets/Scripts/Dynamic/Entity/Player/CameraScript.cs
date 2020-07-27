@@ -11,6 +11,7 @@ public class CameraScript : MonoBehaviour
     [SerializeField] private EntityPhysics _playerPhysics;
     public Transform player;
     public float smoothTime;
+    public float lerpAmount = 0.5f;
     //[SerializeField] private InputHandler input;
     private Player controller;
     private Vector3 velocity = Vector3.zero;
@@ -66,6 +67,7 @@ public class CameraScript : MonoBehaviour
         }
 
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+        //transform.position = Vector3.Lerp(transform.position, targetPosition, lerpAmount);
     }
 
     /// <summary>

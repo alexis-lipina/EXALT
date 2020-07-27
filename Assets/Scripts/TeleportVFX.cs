@@ -54,13 +54,13 @@ public class TeleportVFX : MonoBehaviour
         for (float f = 1f; f >= 0; f -= 0.1f)
         {
             GetComponent<SpriteRenderer>().material.SetFloat("_Transparency", f);
-            yield return null;
+            yield return new WaitForSeconds(0.01f);
         }
         gameObject.SetActive(false);
     }
 
     private void OnDestroy()
     {
-        _objectPool = new List<GameObject>();
+        _objectPool = null;
     }
 }

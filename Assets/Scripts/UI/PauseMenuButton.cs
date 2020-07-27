@@ -20,7 +20,7 @@ public class PauseMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler, 
 	// Use this for initialization
 	void Start ()
     {
-        Debug.Log("run");
+        //Debug.Log("run");
         gameObject.GetComponent<Image>().color = DEFAULT_COLOR;
         _text.color = DEFAULT_TEXT_COLOR;
 	}

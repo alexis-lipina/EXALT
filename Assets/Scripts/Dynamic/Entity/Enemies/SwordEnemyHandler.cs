@@ -49,12 +49,15 @@ public class SwordEnemyHandler : EntityHandler
     const string DEATH_WEST_Anim = "SwordEnemy_DeathWest";
     const string DEATH_EAST_Anim = "SwordEnemy_DeathEast";
 
+    const string DEATH_FALL_Anim = "DeathBeam";
+
     const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
 
     const float SPAWN_DURATION = 0.66f;
     const float SHIELDBREAK_DURATION = 0.66f;
     const float DEATH_DURATION = 1.3f;
+    const float DEATH_FALL_DURATION = 0.666f;
 
 
 
@@ -67,7 +70,7 @@ public class SwordEnemyHandler : EntityHandler
     }
     private TempTexDirection tempDirection;
     private const float AttackMovementSpeed = 0.2f;
-    private const float JumpImpulse = 40f;
+    private const float JumpImpulse = 45f;
 
     private float attackCoolDown;
     float xInput;
@@ -83,7 +86,7 @@ public class SwordEnemyHandler : EntityHandler
 
     private EnemySpawner _spawner;
     private bool isDead = false;
-
+    private bool fallDeath = false;
 
     void Awake()
     {
@@ -114,6 +117,8 @@ public class SwordEnemyHandler : EntityHandler
         wasJustHit = false;
         jumpPressed = false;
         attackPressed = false;
+
+        Debug.Log("Enemy Elevation : " + GetEntityPhysics().GetBottomHeight());
     }
 
     public override void SetXYAnalogInput(float x, float y)
@@ -387,6 +392,16 @@ public class SwordEnemyHandler : EntityHandler
     {
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        //free fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.FreeFall();
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
 
         //========| Draw
         switch (tempDirection)
@@ -481,6 +496,16 @@ public class SwordEnemyHandler : EntityHandler
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.FreeFall();
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
+
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.4) //if 500 ms have passed
         {
@@ -515,6 +540,15 @@ public class SwordEnemyHandler : EntityHandler
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.FreeFall();
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
 
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.500) //if 500 ms have passed
@@ -592,24 +626,29 @@ public class SwordEnemyHandler : EntityHandler
     private void DeathState()
     {
         //Debug.LogError("NOT IMPLEMENTED");
-
+        
         //Draw
-        if (DeathVector.x > 0)
+        if (entityPhysics.FellOutOfBounds)
         {
-            characterAnimator.Play(DEATH_EAST_Anim);
+            characterAnimator.Play(DEATH_FALL_Anim);
         }
         else
         {
-            characterAnimator.Play(DEATH_WEST_Anim);
+            if (DeathVector.x > 0)
+            {
+                characterAnimator.Play(DEATH_EAST_Anim);
+            }
+            else
+            {
+                characterAnimator.Play(DEATH_WEST_Anim);
+            }
+            //Physics
+            //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+            Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(DeathVector);
+            entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+            entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
+            DeathVector *= 0.95f;
         }
-
-
-        //Physics
-        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
-        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(DeathVector);
-        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
-        entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
-        DeathVector *= 0.95f;
     }
 
     public void SetAttackPressed(bool value)
@@ -669,8 +708,18 @@ public class SwordEnemyHandler : EntityHandler
     private IEnumerator PlayDeathAnim()
     {
         currentState = TestEnemyState.DEATH;
-        StartCoroutine(PlayBloodSplatter());
-        yield return new WaitForSeconds(DEATH_DURATION);
+        if (GetEntityPhysics().FellOutOfBounds)
+        {
+            Camera.main.GetComponent<CameraScript>().Jolt(2.0f, Vector2.down);
+            yield return new WaitForSeconds(0.05f);
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.75f, 0.125f);
+            yield return new WaitForSeconds(DEATH_FALL_DURATION - 0.05f);
+        }
+        else
+        {
+            StartCoroutine(PlayBloodSplatter());
+            yield return new WaitForSeconds(DEATH_DURATION);
+        }
         //destroy VFX
         if (_zapPrimeVfx != null) Destroy(_zapPrimeVfx);
         if (_voidPrimeVfx != null) Destroy(_voidPrimeVfx);

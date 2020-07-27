@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using UnityEditorInternal;
+
 
 #if UNITY_EDITOR
+using UnityEditorInternal;
 public class SpritesheetSlicerByColor
 {
     [MenuItem("Assets/Slice_By_Color")]

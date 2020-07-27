@@ -69,11 +69,13 @@ public abstract class EntityHandler : MonoBehaviour
     public void PerformDetonations(ElementType elementOfAttack)
     {
         if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap) || elementOfAttack == ElementType.NONE) return;
-        Debug.Log("PAST VALIDATION");
+
+        // decided against adding detonating attack to prime stack
+        /*
         if (!currentPrimes.Contains(elementOfAttack))
         {
             PrimeEnemy(elementOfAttack);
-        }
+        }*/
 
         List<ElementType> detonations = new List<ElementType>();
 
@@ -172,7 +174,8 @@ public abstract class EntityHandler : MonoBehaviour
                     _zapPrimeVfx = null;
                     break;
             }
-            yield return new WaitForSeconds(0.3f); //TIME BETWEEN DETONATIONS
+            //yield return new WaitForSeconds(0.3f); //TIME BETWEEN DETONATIONS
+            yield return new WaitForSeconds(Random.Range(0.22f, 0.38f)); //TIME BETWEEN DETONATIONS
         }
         _isDetonating = false;
         if (entityPhysics.GetCurrentHealth() <= 0) OnDeath();

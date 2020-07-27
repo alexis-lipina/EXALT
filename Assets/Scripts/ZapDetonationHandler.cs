@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ZapDetonationHandler : ProjectionHandler
 {
-    private const float DETONATION_DURATION = 0.25f;
+    private const float DETONATION_DURATION = 0.3f;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -112,7 +112,7 @@ public class ZapDetonationHandler : ProjectionHandler
     IEnumerator PlayAnimation()
     {
         GetComponentInChildren<SpriteRenderer>().enabled = true;
-        GetComponentInChildren<Animator>().Play("ZapDetonation_Short");
+        GetComponentInChildren<Animator>().Play("ZapDetonation_V2");
         _projection.SetColor(Color.black);
         yield return new WaitForSeconds(0.02f);
         //GetComponentInChildren<SpriteRenderer>().enabled = false;

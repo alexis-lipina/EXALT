@@ -31,7 +31,7 @@ public class EnemySpawner : MonoBehaviour
 
         if (_enemyPool != null) return;
 
-        Debug.Log("Pool populating...");
+        //Debug.Log("Pool populating...");
         _enemyPool = new Dictionary<int, GameObject>();
         GameObject tempEnemy;
         for (int i = 0; i < _maxEnemies; i++)

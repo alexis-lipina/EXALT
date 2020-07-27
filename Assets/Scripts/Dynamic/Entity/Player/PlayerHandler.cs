@@ -36,6 +36,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private DeathFlash _deathFlash;
     [SerializeField] private FadeTransition _fadeTransition;
     [SerializeField] private RectTransform _gameplayUI;
+    [SerializeField] private SpriteRenderer _haloSprite;
     private int _currentEnergy;
 
     public int MaxEnergy { get { return _maxEnergy; } }
@@ -103,7 +104,7 @@ public class PlayerHandler : EntityHandler
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
     private float _timeToComboReady = 0.17f; //higher means more generous
     private bool _hitComboBeforeReady;
-    private const float LIGHTMELEE_FORCE = 1.0f;
+    private const float LIGHTMELEE_FORCE = 0.5f;
 
     // heavy melee
     private const float time_heavyMelee = 0.3f;
@@ -170,10 +171,17 @@ public class PlayerHandler : EntityHandler
     //======================| REST
     private const float rest_kneel_duration = 0.51f;
     private bool isStanding = false;
-    private const float _rest_recover_health_duration = 1.0f;
+    private const float _rest_recover_health_duration = 2.0f;
     private float _rest_recover_health_timer = 0f;
-    private const float _rest_recover_energy_duration = 0.33f;
+    private const float _rest_recover_energy_duration = 0.5f;
     private float _rest_recover_energy_timer = 0f;
+
+    //======================| HALO SPRITE RELATIVE POSITION OFFSETS
+    private Vector3 HaloOffset_RunWest;
+    private Vector3 HaloOffset_RunEast;
+    private Vector3 HaloOffset_RunNorth;
+    private Vector3 HaloOffset_RunSouth;
+    private Vector3 HaloOffset_Default;
 
 
     //=====================| JUMP/FALL FIELDS
@@ -181,6 +189,10 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private float JumpHeldGravity;
     [SerializeField] private float JumpFallGravity;
     [SerializeField] private float FallGravity;
+
+    [SerializeField] private Sprite Halo_Void;
+    [SerializeField] private Sprite Halo_Zap;
+    [SerializeField] private Sprite Halo_Fire;
     private bool _jump_hasStartedFalling = false;
 
     public float TimeSinceCombat = 0.0f;
@@ -198,6 +210,13 @@ public class PlayerHandler : EntityHandler
 
     void Awake()
     {
+        HaloOffset_RunEast = new Vector3(0.25f, 2.0f, 0.0f);
+        HaloOffset_RunWest = new Vector3(-0.25f, 2.0f, 0.0f);
+        HaloOffset_RunNorth = new Vector3(0.0f, 2.5f, 0.0f);
+        HaloOffset_RunSouth = new Vector3(0.0f, 2.5f, 0.0f);
+        HaloOffset_Default = new Vector3(0.0f, 2.25f, 0.0f);
+
+
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
         if (PREVIOUS_SCENE == "")
@@ -313,17 +332,11 @@ public class PlayerHandler : EntityHandler
                 }
                 PlayerHeavyMelee();
                 break;
-            case (PlayerState.CHARGE):
-                PlayerCharge();
-                break;
             case (PlayerState.BURST):
                 PlayerBurst();
                 break;
             case (PlayerState.LIGHT_RANGED):
                 PlayerLightRanged();
-                break;
-            case (PlayerState.CHARGED_RANGE):
-                PlayerChargedRanged();
                 break;
             case (PlayerState.BLINK):
                 PlayerBlink();
@@ -448,12 +461,6 @@ public class PlayerHandler : EntityHandler
             StateTimer = time_lightMelee;
             CurrentState = PlayerState.LIGHT_MELEE;
         }
-        
-        if (controller.GetButton("Charge"))
-        {
-            StateTimer = time_Charge;
-            CurrentState = PlayerState.CHARGE;
-        }
 
         if (controller.GetButton("RangedAttack"))
         {
@@ -493,18 +500,22 @@ public class PlayerHandler : EntityHandler
             if (Vector2.Angle(new Vector2(1, 0), direction) < 60)
             {
                 currentFaceDirection = FaceDirection.EAST;
+                _haloSprite.transform.localPosition = HaloOffset_RunEast;
             }
             else if (Vector2.Angle(new Vector2(0, 1), direction) < 30)
             {
                 currentFaceDirection = FaceDirection.NORTH;
+                _haloSprite.transform.localPosition = HaloOffset_RunNorth;
             }
             else if (Vector2.Angle(new Vector2(0, -1), direction) < 30)
             {
                 currentFaceDirection = FaceDirection.SOUTH;
+                _haloSprite.transform.localPosition = HaloOffset_RunSouth;
             }
             else if (Vector2.Angle(new Vector2(-1, 0), direction) < 60)
             {
                 currentFaceDirection = FaceDirection.WEST;
+                _haloSprite.transform.localPosition = HaloOffset_RunWest;
             }
         }
         
@@ -604,11 +615,6 @@ public class PlayerHandler : EntityHandler
             CurrentState = PlayerState.LIGHT_MELEE;
         }
         
-        if (controller.GetButton("Charge"))
-        {
-            CurrentState = PlayerState.CHARGE;
-            StateTimer = time_Charge;
-        }
         if (controller.GetButton("RangedAttack"))
         {
             PlayerLightRangedTransitionAttempt();
@@ -626,6 +632,10 @@ public class PlayerHandler : EntityHandler
         if (CurrentState == PlayerState.RUN)
         {
             entityPhysics.SavePosition();
+        }
+        else
+        {
+            _haloSprite.transform.localPosition = HaloOffset_Default;
         }
 
     }
@@ -806,8 +816,8 @@ public class PlayerHandler : EntityHandler
         //Vibrate( .5f, 0.05f);
         Vibrate(.5f, 0.05f);
 
-        //apply effect to any entities caught within player's path
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.GetComponent<BoxCollider2D>().size, 0.0f, aimDirection, aimDirection.magnitude * 7f);
+        //apply effect to any entities caught within player's path..                                                                   V-- Scaling collider for more generous detection
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.GetComponent<BoxCollider2D>().size * 2.0f, 0.0f, aimDirection, aimDirection.magnitude * 7f);
         foreach (RaycastHit2D hit in hits)
         {
             if (hit.collider.tag == "Enemy" && hit.collider.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && hit.collider.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
@@ -877,7 +887,7 @@ public class PlayerHandler : EntityHandler
                         Vibrate( 1.0f, 0.15f);
 
                         //Debug.Log("Owch!");
-                        obj.GetComponent<EntityPhysics>().Inflict(1, force: aimDirection.normalized * 1f);
+                        obj.GetComponent<EntityPhysics>().Inflict(1, force: aimDirection.normalized * LIGHTMELEE_FORCE);
                         ChangeEnergy(1);
                     }
                 }
@@ -887,6 +897,7 @@ public class PlayerHandler : EntityHandler
                     {
                         Vibrate(1.0f, 0.15f);
                         obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                        obj.GetComponent<ProjectilePhysics>()._damageAmount = obj.GetComponent<ProjectilePhysics>()._damageAmount + 1;
                         FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
                     }
@@ -961,7 +972,8 @@ public class PlayerHandler : EntityHandler
         {
             if (StateTimer > _timeToComboReady) //penalize player for hitting button too fast
             {
-                _hitComboBeforeReady = true;
+                // combo penalty not clear enough
+                //_hitComboBeforeReady = true;
             }
             else
             {
@@ -1213,57 +1225,6 @@ public class PlayerHandler : EntityHandler
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
                 }
             }
-        }
-    }
-
-
-    private void PlayerCharge()
-    {
-        StateTimer -= Time.deltaTime;
-        //Debug.Log(StateTimer);
-        if (StateTimer < 0)
-        {
-            characterAnimator.Play("New_ChargeFinal");
-        }
-        else if (StateTimer < time_Charge - time_ChargeLight - time_ChargeMedium) //play transition
-        {
-            characterAnimator.Play("New_ChargeTransition");
-        }
-        else if (StateTimer < time_Charge - time_ChargeLight) //play medium
-        {
-            characterAnimator.Play("New_ChargeMedium");
-        }
-        else //play small
-        {
-            characterAnimator.Play("New_ChargeSmall");
-        }
-
-        //projection
-        _chargedMeleeProjection.SetOpacity((time_Charge - StateTimer) / time_Charge);
-
-        UpdateAimDirection();
-
-        Debug.Log("Charging...!!!");
-
-
-        //State Switching
-        if ( !controller.GetButton("Charge") )
-        {
-            _chargedMeleeProjection.SetOpacity(0);
-            CurrentState = PlayerState.IDLE;
-        }
-        else if (StateTimer < 0.1 && controller.GetButtonDown("Melee"))
-        {
-            _chargedMeleeProjection.SetOpacity(0);
-            StateTimer = _burstDuration;
-            CurrentState = PlayerState.BURST;
-
-        }
-        else if (StateTimer < 0.1 && controller.GetButtonDown("RangedAttack"))
-        {
-            StateTimer = _burstDuration;
-            _chargedMeleeProjection.SetOpacity(0);
-            CurrentState = PlayerState.CHARGED_RANGE;
         }
     }
     
@@ -1523,7 +1484,7 @@ public class PlayerHandler : EntityHandler
         }
         if (hitEntity)
         {
-            hitEntity.Inflict(1, force:aimDirection * 2.0f, type:ElementType.ZAP);
+            hitEntity.Inflict(1, force:aimDirection/* * 2.0f*/, type:ElementType.ZAP);
         }
         /*
         _lightRangedZap.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
@@ -1694,6 +1655,7 @@ public class PlayerHandler : EntityHandler
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.FIRE;
                     SwapWeapon("WEST");
+                    _haloSprite.sprite = Halo_Fire;
                     break;
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
@@ -1701,12 +1663,14 @@ public class PlayerHandler : EntityHandler
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.VOID;
                     SwapWeapon("NORTH");
+                    _haloSprite.sprite = Halo_Void;
                     break;
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ZAP;
+                    _haloSprite.sprite = Halo_Zap;
                     break;
                 default:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
@@ -1760,7 +1724,6 @@ public class PlayerHandler : EntityHandler
                 Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2 ||
                 controller.GetButtonDown("Jump") ||
                 controller.GetButtonDown("Melee") ||
-                controller.GetButton("Charge") ||
                 controller.GetButton("RangedAttack") ||
                 controller.GetButtonDown("Blink") ||
                 controller.GetButtonDown("Heal")
@@ -1778,62 +1741,9 @@ public class PlayerHandler : EntityHandler
         }
         StateTimer -= Time.deltaTime;
 
-
-
-
-        
         #region IDLE state transitions (copied)
-        // commented out due to decision to require the "stand up" animation play under most circumstances
-        /*
-        if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2)
-        {
-            //Debug.Log("IDLE -> RUN");
-            isStanding = false;
-            CurrentState = PlayerState.RUN;
-        }
-        if (controller.GetButtonDown("Jump"))
-        {
-            //Debug.Log("IDLE -> JUMP");
-            isStanding = false;
-            Vibrate(.5f, 0.05f);
-            entityPhysics.ZVelocity = JumpImpulse;
-            CurrentState = PlayerState.JUMP;
-        }
-
-        if (controller.GetButtonDown("Melee"))
-        {
-            isStanding = false;
-            hasSwung = false;
-            //Debug.Log("IDLE -> ATTACK");
-            StateTimer = time_lightMelee;
-            CurrentState = PlayerState.LIGHT_MELEE;
-        }
-
-        if (controller.GetButton("Charge"))
-        {
-            isStanding = false;
-            StateTimer = time_Charge;
-            CurrentState = PlayerState.CHARGE;
-        }
-
-        if (controller.GetButton("RangedAttack"))
-        {
-            isStanding = false;
-            PlayerLightRangedTransitionAttempt();
-        }
-        if (controller.GetButtonDown("Blink"))
-        {
-            isStanding = false;
-            PlayerBlinkTransitionAttempt();
-        }
-        if (controller.GetButtonDown("Heal"))
-        {
-            isStanding = false;
-            PlayerHealTransitionAttempt();
-        }
-        */
+        
         CheckStyleChange();
-
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
@@ -1882,7 +1792,8 @@ public class PlayerHandler : EntityHandler
             }
             else
             {
-                _blink_hasButtonMashed = true; //fool, you clicked too fast
+                //decided to not punish player for buttonmashing 
+                //_blink_hasButtonMashed = true; //fool, you clicked too fast
             }
         }
     }
@@ -2047,7 +1958,7 @@ public class PlayerHandler : EntityHandler
 
         yield return new WaitForEndOfFrame();
         Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(0.25f);
 
         Time.timeScale = 0.5f; // -------------| RESUME TIME |--------------
 

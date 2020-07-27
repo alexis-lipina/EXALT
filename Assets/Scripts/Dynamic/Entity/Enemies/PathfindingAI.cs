@@ -19,7 +19,6 @@ public class PathfindingAI : EntityAI
     //[SerializeField] EntityHandler handler;
     public GameObject target;
     [SerializeField] float detectionRange;
-    private Stack<Vector2> coordpath;
     private Stack<EnvironmentPhysics> path;
     private EntityHandler testhandler;
     private Vector2 _moveDirection;
@@ -102,6 +101,11 @@ public class PathfindingAI : EntityAI
                         if (testhandler is SwordEnemyHandler) ((SwordEnemyHandler)testhandler).SetJumpPressed(true);
                         else if (testhandler is RangedEnemyHandler) ((RangedEnemyHandler)testhandler).SetJumpPressed(true);
                     }
+                    else if (NeedsToJump())//jump to other platform
+                    {
+                        if (testhandler is SwordEnemyHandler) ((SwordEnemyHandler)testhandler).SetJumpPressed(true);
+                        else if (testhandler is RangedEnemyHandler) ((RangedEnemyHandler)testhandler).SetJumpPressed(true);
+                    }
                     else
                     {
                         if (testhandler is SwordEnemyHandler) ((SwordEnemyHandler)testhandler).SetJumpPressed(false);
@@ -155,6 +159,55 @@ public class PathfindingAI : EntityAI
             if (testhandler is SwordEnemyHandler) ((SwordEnemyHandler)testhandler).SetAttackPressed(true);
             else if (testhandler is RangedEnemyHandler) ((RangedEnemyHandler)testhandler).SetAttackPressed(true);
         }
+    }
+
+    private bool NeedsToJump()
+    {
+        Debug.Log("got here");
+        //check if bounds of this collider are too far from the other
+        Debug.Log(testhandler.GetEntityPhysics().GetCurrentNavObject().name);
+
+        Collider2D[] objectsbelow = Physics2D.OverlapPointAll(testhandler.GetEntityPhysics().transform.position);
+        float max = -1000;
+        EnvironmentPhysics tempphys = null;
+
+        foreach (Collider2D physobj in objectsbelow)
+        {
+            if (physobj.GetComponent<EnvironmentPhysics>())
+            {
+                if (physobj.GetComponent<EnvironmentPhysics>().GetTopHeight() > max && testhandler.GetEntityPhysics().GetTopHeight() > physobj.GetComponent<EnvironmentPhysics>().GetTopHeight())
+                {
+                    max = physobj.GetComponent<EnvironmentPhysics>().GetTopHeight();
+                    tempphys = physobj.GetComponent<EnvironmentPhysics>();
+                }
+            }
+        }
+
+        //continue here, I was gettin somewhere
+
+        return testhandler.GetEntityPhysics().GetBottomHeight() - max > 3;
+
+        /*
+        bool _willJump = testhandler.GetEntityPhysics().GetCurrentNavObject().GetComponent<BoxCollider2D>().Distance(path.Peek().GetComponent<BoxCollider2D>()).distance > 2;
+        if (_willJump)
+        {
+            Debug.Log("Separation between : " + testhandler.GetEntityPhysics().GetCurrentNavObject().gameObject.name + " and " + path.Peek().name);
+            Debug.Log(testhandler.GetEntityPhysics().GetCurrentNavObject().GetComponent<BoxCollider2D>().Distance(path.Peek().GetComponent<BoxCollider2D>()).distance);
+        }
+
+        return _willJump;
+        */
+
+        /*
+        //                                                               Is the center of the entity physics outside the environment collider,                     
+        return !testhandler.GetEntityPhysics().GetCurrentNavObject().GetComponent<BoxCollider2D>().OverlapPoint(testhandler.GetEntityPhysics().transform.position) 
+            && Vector2.Dot(_moveDirection, testhandler.GetEntityPhysics().GetCurrentNavObject().GetComponent<BoxCollider2D>().bounds.center - testhandler.GetEntityPhysics().transform.position) < 0;
+            */
+    }//     and       is the movement vector away from the center of the environment collider
+
+    private void JumpToPlatform()
+    {
+        
     }
 
     // =================| Update path if target changes touched nav

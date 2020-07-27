@@ -32,6 +32,9 @@ public class ScalablePlatform : MonoBehaviour {
     [Space(10)]
     [SerializeField] private bool alignToGrid = false;
 
+    [Space(10)]
+    [SerializeField] private bool addNearbyEnvironmentAsNeighbors = false;
+
     [Space(5)]
     [Header("Custom Scaling Buttons")]
     [Space(10)]
@@ -162,6 +165,31 @@ public class ScalablePlatform : MonoBehaviour {
             alignToGrid = false;
         }
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
+        if (addNearbyEnvironmentAsNeighbors)
+        {
+            Collider2D[] nearbyCollidersX = Physics2D.OverlapBoxAll(GetComponent<BoxCollider2D>().bounds.center, GetComponent<BoxCollider2D>().bounds.size + new Vector3(-0.25f, 0.25f, 0.0f), 0f);
+            Collider2D[] nearbyCollidersY = Physics2D.OverlapBoxAll(GetComponent<BoxCollider2D>().bounds.center, GetComponent<BoxCollider2D>().bounds.size + new Vector3(0.25f, -0.25f, 0.0f), 0f);
+            foreach (Collider2D nearcollider in nearbyCollidersX)
+            {
+                if (nearcollider.gameObject == gameObject) continue;
+                if (nearcollider.GetComponent<EnvironmentPhysics>())
+                {
+                    GetComponent<EnvironmentPhysics>().AddNeighbor(nearcollider.gameObject);
+                }
+            }
+
+            foreach (Collider2D nearcollider in nearbyCollidersY)
+            {
+                if (nearcollider.gameObject == gameObject) continue;
+                if (nearcollider.GetComponent<EnvironmentPhysics>())
+                {
+                    GetComponent<EnvironmentPhysics>().AddNeighbor(nearcollider.gameObject);
+                }
+            }
+
+            addNearbyEnvironmentAsNeighbors = false;
+            OnValidate();
+        }
         #endregion
     }
 }

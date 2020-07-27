@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class NavigationManager : MonoBehaviour
 {
+    [SerializeField] private int MaxIterationCount = 30;
     List<int> visited;
     public delegate void UpdatePathfindDelegate(GameObject changedEntity, EnvironmentPhysics newDestination);
     public UpdatePathfindDelegate entityChangePositionDelegate;
@@ -199,7 +200,7 @@ public class NavigationManager : MonoBehaviour
 
         EnvironmentPhysics current = null;
         int iterations = 0;
-        while (frontier.Count != 0 && iterations < 30)
+        while (frontier.Count != 0 && iterations < MaxIterationCount)
         {
             //Debug.Log("bloop:" + iterations);
 
@@ -235,16 +236,16 @@ public class NavigationManager : MonoBehaviour
             iterations++;
         }
         Stack<EnvironmentPhysics> path = new Stack<EnvironmentPhysics>();
-        if (iterations > 30) return null;
+        if (iterations > MaxIterationCount) return null;
         iterations = 0;
-        while (current != start && iterations < 30)//while current thing isnt start
+        while (current != start && iterations < MaxIterationCount)//while current thing isnt start
         {
             //Debug.Log("nooo");
             path.Push(current);
             current = cameFrom[current];
             iterations++;
         }
-        if (iterations > 30) return null;
+        if (iterations > MaxIterationCount) return null;
         return path;
     }
 }

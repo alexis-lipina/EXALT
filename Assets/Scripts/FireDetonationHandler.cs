@@ -72,7 +72,7 @@ public class FireDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y, pos.y);
+        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
     }
 
     private void OnEnable()
@@ -119,7 +119,7 @@ public class FireDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(4f, 4f), 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(16f, 12f), 0.0f);
         Debug.DrawLine(_damageVolume.bounds.center + new Vector3(4f, 3f, 0f), _damageVolume.bounds.center + new Vector3(-4f, -3f, 0f), Color.cyan, 1f, false);
         foreach (Collider2D collider in collidersHit)
         {
@@ -127,9 +127,14 @@ public class FireDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, type:Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
+                    collider.GetComponent<EntityPhysics>().Burn();
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(1, type:Element);
+                else
+                {
+                    //collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
+                    collider.GetComponent<EntityPhysics>().Burn();
+                }
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

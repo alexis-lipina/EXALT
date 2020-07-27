@@ -29,11 +29,16 @@ public class EntityPhysics : DynamicPhysics
     [SerializeField] protected int MaxHP;
     [SerializeField] private float _pushForceMultiplier = 1.0f;
     [SerializeField] private float _maxVelocity = 8f;
-
+    [SerializeField] private bool _shouldDieWhenFall = true;
 
     protected int currentHP;
     private bool hasBeenHit;
     private bool isInvincible = false;
+    private bool _fellOutOfBounds = false;
+    public bool FellOutOfBounds
+    {
+        get { return _fellOutOfBounds; }
+    }
     protected bool _isDead;
     public bool IsDead
     {
@@ -184,7 +189,7 @@ public class EntityPhysics : DynamicPhysics
                     }
                     //get the location relative to this objects location
                     Vector2 amountOfForceToAdd = new Vector2(entity.GetComponent<Transform>().position.x - gameObject.GetComponent<Transform>().position.x, entity.GetComponent<Transform>().position.y - gameObject.GetComponent<Transform>().position.y);
-                    amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, m ight want different force strengths
+                    amountOfForceToAdd.Normalize(); //TODO - just a velocity of 1, might want different force strengths
                     velocity = new Vector2(velocity.x - amountOfForceToAdd.x , velocity.y - amountOfForceToAdd.y);
                 }
             }
@@ -256,7 +261,8 @@ public class EntityPhysics : DynamicPhysics
     /// </summary>
     private void WarpToPlatform()
     {
-        if (lastFootHold.Value == null)
+        _fellOutOfBounds = true;
+        if (lastFootHold.Value == null || _shouldDieWhenFall)
         {
             currentHP = 0;
             return;
@@ -410,6 +416,7 @@ public class EntityPhysics : DynamicPhysics
     public void Reset()
     {
         currentHP = MaxHP;
+        _fellOutOfBounds = false;
         lastFootHold = new KeyValuePair<Vector2, EnvironmentPhysics>();
         currentNavEnvironmentObject = null;
         hasBeenHit = false;

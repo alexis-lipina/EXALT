@@ -45,6 +45,16 @@ public class EnvironmentPhysics : PhysicsObject
         get { return isSavePoint; }
     }
 
+    public void AddNeighbor(GameObject newNeighbor)
+    {
+        GameObject[] finalArray = new GameObject[neighbors.Length + 1];
+        for (int i = 0; i < neighbors.Length; i++ ) {
+            finalArray[i] = neighbors[i];
+        }
+        finalArray[finalArray.Length - 1] = newNeighbor;
+        neighbors = finalArray;
+    }
+
     void Awake()
     {
         if (!_inheritZCollisionFromScalablePlatform)

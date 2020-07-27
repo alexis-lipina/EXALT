@@ -20,45 +20,55 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private EnemySpawner _spawnerCenter;
     [SerializeField] private List<EnemySpawner> _spawners_Corners;
 
-    private static readonly string[] STEP_FireTransition = { "Hold LEFT to equip FIRE element", "" };
-    private static readonly string[] STEP_VoidTransition = { "Hold UP to equip void element", "" };
-    private static readonly string[] STEP_ZapTransition = { "Hold RIGHT to equip ZAP element", "" };
+    private static readonly string[] STEP_FireTransition_KBM = { "Hold <KEY_LEFT> to equip |fire|FIRE|white| element", "" };
+    private static readonly string[] STEP_FireTransition_Gamepad = { "Hold <DPAD_LEFT> to equip |fire|FIRE|white| element", "" };
+    private static readonly string[] STEP_VoidTransition_KBM = { "Hold <KEY_UP> to equip |void|void|white| element", "" };
+    private static readonly string[] STEP_VoidTransition_Gamepad = { "Hold <DPAD_UP> to equip |void|void|white| element", "" };
+    private static readonly string[] STEP_ZapTransition_KBM = { "Hold <KEY_RIGHT> to equip |zap|ZAP|white| element", "" };
+    private static readonly string[] STEP_ZapTransition_Gamepad = { "Hold <DPAD_RIGHT> to equip |zap|ZAP|white| element", "" };
 
     private static readonly string[] STEP_Energy_Explanation = { "Energy is spent to cast elemental magic", "" };
-    private static readonly string[] STEP_Energy_Recovery = { "Recover energy by meleeing enemies", "or press Y to rest" };
+    private static readonly string[] STEP_Energy_Recovery_KBM = { "Recover energy by meleeing enemies", "or press [CTRL] to rest" };
+    private static readonly string[] STEP_Energy_Recovery_Gamepad = { "Recover energy by meleeing enemies", "or press <FACEBUTTON_UP> to rest" };
 
 
 
-    private static readonly string[] STEP_SimpleMelee = { "RT to melee attack", "" };
+    private static readonly string[] STEP_SimpleMelee_KBM = { "<MOUSE_LEFT> to melee attack", "" };
+    private static readonly string[] STEP_SimpleMelee_Gamepad = { "<TRIGGER_R> to melee attack", "" };
 
     private static readonly string[] STEP_ElementalMelee_Intro = { "Melee 3 times to perform an", "elemental melee" };
-    private static readonly string[] STEP_ElementalMelee_ZapAttack = { "Zap elemental melee causes", "chain lightning" };
-    private static readonly string[] STEP_ElementalMelee_VoidAttack = { "Void elemental melee", "pushes enemies" };
-    private static readonly string[] STEP_ElementalMelee_FireAttack = { "FIRE elemental melee", "burns enemies" };
+    private static readonly string[] STEP_ElementalMelee_ZapAttack = { "|zap|Zap|white| elemental melee causes", "chain lightning" };
+    private static readonly string[] STEP_ElementalMelee_VoidAttack = { "|void|Void|white| elemental melee", "pushes enemies" };
+    private static readonly string[] STEP_ElementalMelee_FireAttack = { "|fire|FIRE|white| elemental melee", "burns enemies" };
 
-    private static readonly string[] STEP_ElementalRanged_Intro = { "Use LT to throw", "elemental magic" };
-    private static readonly string[] STEP_ElementalRanged_Aim = { "Use RT to aim", "" };
-    private static readonly string[] STEP_ElementalRanged_FireAttack = { "Cast Fire elemental magic to throw", "a bouncing fireball" };
-    private static readonly string[] STEP_ElementalRanged_VoidAttack = { "cast Void elemental magic to throw", "a seeking missile" };
-    private static readonly string[] STEP_ElementalRanged_ZapAttack = { "Cast Zap elemental magic to throw", "a lightning bolt" };
+    private static readonly string[] STEP_ElementalRanged_Intro_KBM = { "Use <MOUSE_RIGHT> to throw", "elemental magic" };
+    private static readonly string[] STEP_ElementalRanged_Intro_Gamepad = { "Use <TRIGGER_L> to throw", "elemental magic" };
+    private static readonly string[] STEP_ElementalRanged_Aim_KBM = { "Use mouse cursor to aim", "" };
+    private static readonly string[] STEP_ElementalRanged_Aim_Gamepad = { "Use <STICK_R> to aim", "" };
+    private static readonly string[] STEP_ElementalRanged_FireAttack = { "Cast |fire|FIRE|white| elemental magic to throw", "a bouncing fireball" };
+    private static readonly string[] STEP_ElementalRanged_VoidAttack = { "cast |void|Void|white| elemental magic to throw", "a seeking missile" };
+    private static readonly string[] STEP_ElementalRanged_ZapAttack = { "Cast |zap|Zap|white| elemental magic to throw", "a lightning bolt" };
 
-    private static readonly string[] STEP_ElementalPrime_Intro = { "Blink B through an enemy to place an", "elemental curse on them" }; //Prime = Curse, Detonation = Trigger
+    private static readonly string[] STEP_ElementalPrime_Intro_KBM = { "Blink [SHIFT] through an enemy to place", "an elemental curse on them" }; //Prime = Curse, Detonation = Trigger
+    private static readonly string[] STEP_ElementalPrime_Intro_Gamepad = { "Blink <FACEBUTTON_RIGHT> through an enemy to place", "an elemental curse on them" }; //Prime = Curse, Detonation = Trigger
     private static readonly string[] STEP_ElementalDetonation_Intro1 = { "CURSES have no effect", "until they are TRIGGERED" };
     private static readonly string[] STEP_ElementalDetonation_Intro2 = { "Use ELEMENTAL MELEE or MAGIC", "to TRIGGER all CURSES on an enemy" };
 
-    private static readonly string[] STEP_ElementalDetonation_Zap = { "ZAP Curses strike the cursed enemy", "with a damaging lightning bolt" };
-    private static readonly string[] STEP_ElementalDetonation_Fire = { "FIRE Curses cause a fiery explosion", "" };
-    private static readonly string[] STEP_ElementalDetonation_Void = { "VOID Curses pull nearby enemies closer", "" };
+    private static readonly string[] STEP_ElementalDetonation_Zap = { "|zap|Zap|white| Curses strike the cursed enemy", "with a damaging lightning bolt" };
+    private static readonly string[] STEP_ElementalDetonation_Fire = { "|fire|FIRE|white| Curses cause a fiery explosion", "" };
+    private static readonly string[] STEP_ElementalDetonation_Void = { "|void|Void|white| Curses pull nearby enemies closer", "" };
 
 
     private static readonly string[] STEP_ElementalDetonation_All1 = { "Many curses can be stacked", "on one enemy" };
-    private static readonly string[] STEP_ElementalDetonation_All2 = { "Stack many curses on many enemies", "for widespread destruction" };
+    private static readonly string[] STEP_ElementalDetonation_All2 = { "|void|Stack |fire|many |zap|curses |white|on many enemies", "for widespread destruction" };
 
     private static readonly string[] STEP_ElementalShield_Intro1 = { "Some enemies have", "elemental shields" };
     private static readonly string[] STEP_ElementalShield_Intro2 = { "Shields can only be broken by", "matching elemental curses" };
 
-    private static readonly string[] STEP_Heal1 = { "Hold DOWN to spend 4 energy", "to quickly heal" };
-    private static readonly string[] STEP_Heal2 = { "Or press Y to rest", "" };
+    private static readonly string[] STEP_Heal1_KBM = { "Hold <KEY_DOWN> to spend 4 energy", "to quickly heal" };
+    private static readonly string[] STEP_Heal1_Gamepad = { "Hold <DPAD_DOWN> to spend 4 energy", "to quickly heal" };
+    private static readonly string[] STEP_Heal2_KBM = { "Or press [CTRL] to rest", "" };
+    private static readonly string[] STEP_Heal2_Gamepad = { "Or press <FACEBUTTON_UP> to rest", "" };
 
     private static readonly string[] STEP_Deflect = { "Melee enemy projectiles", "to deflect them" };
 
@@ -93,7 +103,14 @@ public class TutorialManager : MonoBehaviour
     {
         // hide the bridge! TODO : Probably should do this in a more dignified way, like have it lerp away or something
         _entranceBridge.gameObject.SetActive(false);
-        hintTextManager.ShowHintText(STEP_SimpleMelee[0], STEP_SimpleMelee[1]);
+        if (_playerHandler.IsUsingMouse)
+        {
+            hintTextManager.ShowHintText(STEP_SimpleMelee_KBM[0], STEP_SimpleMelee_KBM[1]);
+        }
+        else
+        {
+            hintTextManager.ShowHintText(STEP_SimpleMelee_Gamepad[0], STEP_SimpleMelee_Gamepad[1]);
+        }
         EntityPhysics enemy = _spawners_North[0].SpawnEnemy(shieldType: ElementType.NONE, isHostile: false).GetComponentInChildren<EntityPhysics>();
         bool readyToProgress = false;
         bool hasExplainedEnergy = false;
@@ -117,7 +134,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.ZAP)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_ZapTransition[0], STEP_ZapTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_ZapTransition_KBM[0], STEP_ZapTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_ZapTransition_Gamepad[0], STEP_ZapTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ZAP;
@@ -145,7 +169,14 @@ public class TutorialManager : MonoBehaviour
             if (_playerHandler.GetElementalAttunement() != ElementType.ZAP)
             {
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_ZapTransition[0], STEP_ZapTransition[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_ZapTransition_KBM[0], STEP_ZapTransition_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_ZapTransition_Gamepad[0], STEP_ZapTransition_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ZAP;
@@ -167,7 +198,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.VOID)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_VoidTransition[0], STEP_VoidTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_VoidTransition_KBM[0], STEP_VoidTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_VoidTransition_Gamepad[0], STEP_VoidTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.VOID;
@@ -196,7 +234,14 @@ public class TutorialManager : MonoBehaviour
             if (_playerHandler.GetElementalAttunement() != ElementType.VOID)
             {
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_VoidTransition[0], STEP_VoidTransition[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_VoidTransition_KBM[0], STEP_VoidTransition_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_VoidTransition_Gamepad[0], STEP_VoidTransition_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.VOID;
@@ -221,7 +266,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.FIRE)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_FireTransition[0], STEP_FireTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_FireTransition_KBM[0], STEP_FireTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_FireTransition_Gamepad[0], STEP_FireTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.FIRE;
@@ -246,7 +298,14 @@ public class TutorialManager : MonoBehaviour
             if (_playerHandler.GetElementalAttunement() != ElementType.FIRE)
             {
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_FireTransition[0], STEP_FireTransition[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_FireTransition_KBM[0], STEP_FireTransition_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_FireTransition_Gamepad[0], STEP_FireTransition_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.FIRE;
@@ -265,18 +324,39 @@ public class TutorialManager : MonoBehaviour
 
         // ====================================================| ELEMENTAL RANGED TEST - FIRE
         hintTextManager.HideHintText();
-        hintTextManager.ShowHintText(STEP_ElementalRanged_Intro[0], STEP_ElementalRanged_Intro[1]);
+        if (_playerHandler.IsUsingMouse)
+        {
+            hintTextManager.ShowHintText(STEP_ElementalRanged_Intro_KBM[0], STEP_ElementalRanged_Intro_KBM[1]);
+        }
+        else
+        {
+            hintTextManager.ShowHintText(STEP_ElementalRanged_Intro_Gamepad[0], STEP_ElementalRanged_Intro_Gamepad[1]);
+        }
         yield return new WaitForSeconds(3.0f);
 
         hintTextManager.HideHintText();
-        hintTextManager.ShowHintText(STEP_ElementalRanged_Aim[0], STEP_ElementalRanged_Aim[1]);
-        yield return new WaitForSeconds(3.0f);
+        if (_playerHandler.IsUsingMouse)
+        {
+            hintTextManager.ShowHintText(STEP_ElementalRanged_Aim_KBM[0], STEP_ElementalRanged_Aim_KBM[1]);
+        }
+        else
+        {
+            hintTextManager.ShowHintText(STEP_ElementalRanged_Aim_Gamepad[0], STEP_ElementalRanged_Aim_Gamepad[1]);
+        }
+        yield return new WaitForSeconds(4.0f);
 
         #region Fire Element Test
         if (_playerHandler.GetElementalAttunement() != ElementType.FIRE)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_FireTransition[0], STEP_FireTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_FireTransition_KBM[0], STEP_FireTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_FireTransition_Gamepad[0], STEP_FireTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.FIRE;
@@ -304,7 +384,14 @@ public class TutorialManager : MonoBehaviour
                     yield return new WaitForSeconds(4.0f);
                 }
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_Energy_Recovery[0], STEP_Energy_Recovery[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_Energy_Recovery_KBM[0], STEP_Energy_Recovery_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_Energy_Recovery_Gamepad[0], STEP_Energy_Recovery_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.CurrentEnergy > 4;
@@ -316,7 +403,14 @@ public class TutorialManager : MonoBehaviour
             if (_playerHandler.GetElementalAttunement() != ElementType.FIRE)
             {
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_FireTransition[0], STEP_FireTransition[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_FireTransition_KBM[0], STEP_FireTransition_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_FireTransition_Gamepad[0], STEP_FireTransition_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.FIRE;
@@ -344,7 +438,14 @@ public class TutorialManager : MonoBehaviour
                 yield return new WaitForSeconds(4.0f);
             }
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_Energy_Recovery[0], STEP_Energy_Recovery[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_Energy_Recovery_KBM[0], STEP_Energy_Recovery_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_Energy_Recovery_Gamepad[0], STEP_Energy_Recovery_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.CurrentEnergy > 4;
@@ -360,7 +461,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.VOID)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_VoidTransition[0], STEP_VoidTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_VoidTransition_KBM[0], STEP_VoidTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_VoidTransition_Gamepad[0], STEP_VoidTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.VOID;
@@ -388,7 +496,14 @@ public class TutorialManager : MonoBehaviour
                     yield return new WaitForSeconds(4.0f);
                 }
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_Energy_Recovery[0], STEP_Energy_Recovery[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_Energy_Recovery_KBM[0], STEP_Energy_Recovery_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_Energy_Recovery_Gamepad[0], STEP_Energy_Recovery_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.CurrentEnergy > 4;
@@ -400,7 +515,14 @@ public class TutorialManager : MonoBehaviour
             if (_playerHandler.GetElementalAttunement() != ElementType.VOID)
             {
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_VoidTransition[0], STEP_VoidTransition[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_VoidTransition_KBM[0], STEP_VoidTransition_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_VoidTransition_Gamepad[0], STEP_VoidTransition_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.VOID;
@@ -422,7 +544,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.ZAP)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_ZapTransition[0], STEP_ZapTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_ZapTransition_KBM[0], STEP_ZapTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_ZapTransition_Gamepad[0], STEP_ZapTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ZAP;
@@ -450,7 +579,14 @@ public class TutorialManager : MonoBehaviour
                     yield return new WaitForSeconds(4.0f);
                 }
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_Energy_Recovery[0], STEP_Energy_Recovery[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_Energy_Recovery_KBM[0], STEP_Energy_Recovery_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_Energy_Recovery_Gamepad[0], STEP_Energy_Recovery_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.CurrentEnergy > 4;
@@ -462,7 +598,14 @@ public class TutorialManager : MonoBehaviour
             if (_playerHandler.GetElementalAttunement() != ElementType.ZAP)
             {
                 hintTextManager.HideHintText();
-                hintTextManager.ShowHintText(STEP_ZapTransition[0], STEP_ZapTransition[1]);
+                if (_playerHandler.IsUsingMouse)
+                {
+                    hintTextManager.ShowHintText(STEP_ZapTransition_KBM[0], STEP_ZapTransition_KBM[1]);
+                }
+                else
+                {
+                    hintTextManager.ShowHintText(STEP_ZapTransition_Gamepad[0], STEP_ZapTransition_Gamepad[1]);
+                }
                 while (!readyToProgress)
                 {
                     readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ZAP;
@@ -486,7 +629,14 @@ public class TutorialManager : MonoBehaviour
         //============================================| PRIMING DEMO
 
         hintTextManager.HideHintText();
-        hintTextManager.ShowHintText(STEP_ElementalPrime_Intro[0], STEP_ElementalPrime_Intro[1]);
+        if (_playerHandler.IsUsingMouse)
+        {
+            hintTextManager.ShowHintText(STEP_ElementalPrime_Intro_KBM[0], STEP_ElementalPrime_Intro_KBM[1]);
+        }
+        else
+        {
+            hintTextManager.ShowHintText(STEP_ElementalPrime_Intro_Gamepad[0], STEP_ElementalPrime_Intro_Gamepad[1]);
+        }
         yield return new WaitForSeconds(4.0f);
         enemies.Add(_spawnerCenter.SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
         while (!readyToProgress)
@@ -533,7 +683,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.ZAP)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_ZapTransition[0], STEP_ZapTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_ZapTransition_KBM[0], STEP_ZapTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_ZapTransition_Gamepad[0], STEP_ZapTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ZAP;
@@ -585,7 +742,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.FIRE)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_FireTransition[0], STEP_FireTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_FireTransition_KBM[0], STEP_FireTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_FireTransition_Gamepad[0], STEP_FireTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.FIRE;
@@ -642,7 +806,14 @@ public class TutorialManager : MonoBehaviour
         if (_playerHandler.GetElementalAttunement() != ElementType.VOID)
         {
             hintTextManager.HideHintText();
-            hintTextManager.ShowHintText(STEP_VoidTransition[0], STEP_VoidTransition[1]);
+            if (_playerHandler.IsUsingMouse)
+            {
+                hintTextManager.ShowHintText(STEP_VoidTransition_KBM[0], STEP_VoidTransition_KBM[1]);
+            }
+            else
+            {
+                hintTextManager.ShowHintText(STEP_VoidTransition_Gamepad[0], STEP_VoidTransition_Gamepad[1]);
+            }
             while (!readyToProgress)
             {
                 readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.VOID;
@@ -708,7 +879,7 @@ public class TutorialManager : MonoBehaviour
         //=====================================================| All detonations fun time!
         hintTextManager.HideHintText();
         hintTextManager.ShowHintText(STEP_ElementalDetonation_All1[0], STEP_ElementalDetonation_All1[1]);
-        yield return new WaitForSeconds(4.0f);
+        yield return new WaitForSeconds(5.0f);
         hintTextManager.HideHintText();
         hintTextManager.ShowHintText(STEP_ElementalDetonation_All2[0], STEP_ElementalDetonation_All2[1]);
         yield return new WaitForSeconds(4.0f);
@@ -777,7 +948,7 @@ public class TutorialManager : MonoBehaviour
 
         //==============================================| HEALING INSTRUCTION
         hintTextManager.HideHintText();
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(4.0f);
         //force inflict the player 
         for (int i = 0; i < 4; i++)
         {
@@ -786,7 +957,14 @@ public class TutorialManager : MonoBehaviour
         }
 
         int playerHealth = _playerHandler.GetEntityPhysics().GetCurrentHealth();
-        hintTextManager.ShowHintText(STEP_Heal1[0], STEP_Heal1[1]);
+        if (_playerHandler.IsUsingMouse)
+        {
+            hintTextManager.ShowHintText(STEP_Heal1_KBM[0], STEP_Heal1_KBM[1]);
+        }
+        else
+        {
+            hintTextManager.ShowHintText(STEP_Heal1_Gamepad[0], STEP_Heal1_Gamepad[1]);
+        }
         while (!readyToProgress)
         {
             //give player enough energy to heal
@@ -801,7 +979,14 @@ public class TutorialManager : MonoBehaviour
         readyToProgress = false;
 
         hintTextManager.HideHintText();
-        hintTextManager.ShowHintText(STEP_Heal2[0], STEP_Heal2[1]);
+        if (_playerHandler.IsUsingMouse)
+        {
+            hintTextManager.ShowHintText(STEP_Heal2_KBM[0], STEP_Heal2_KBM[1]);
+        }
+        else
+        {
+            hintTextManager.ShowHintText(STEP_Heal2_Gamepad[0], STEP_Heal2_Gamepad[1]);
+        }
         while (!readyToProgress)
         {
             yield return new WaitForSeconds(0.2f);
@@ -813,7 +998,7 @@ public class TutorialManager : MonoBehaviour
 
         hintTextManager.HideHintText();
         hintTextManager.ShowHintText(STEP_Deflect[0], STEP_Deflect[1]);
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(7.0f);
         bool deflectionExists = false;
         while (!readyToProgress)
         {

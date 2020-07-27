@@ -69,6 +69,8 @@ TextureImporter:
     21300128: QUESTION
     21300130: EXCLAMATION
     21300132: SPACE
+    21300134: ']'
+    21300136: '['
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -914,6 +916,46 @@ TextureImporter:
       name: SPACE
       rect:
         serializedVersion: 2
+        x: 65
+        y: 23
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d780682ffc872de46a940dcdb7975d7a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ']'
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 23
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e56ff005eb189e45aa3d12b577840d2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: '['
+      rect:
+        serializedVersion: 2
         x: 49
         y: 23
         width: 6
@@ -925,7 +967,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d780682ffc872de46a940dcdb7975d7a
+      spriteID: 6aefc13db9195f04c9194ab624e62421
       vertices: []
       indices: 
       edges: []

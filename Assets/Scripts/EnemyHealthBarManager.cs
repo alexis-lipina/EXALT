@@ -37,9 +37,17 @@ public class EnemyHealthBarManager : MonoBehaviour
         // Update HP count
 
         int newHp = _physics.GetCurrentHealth();
-                if (newHp == _currentHp) return; // early return for no HP change
+        if (newHp == _currentHp) return; // early return for no HP change
         for (int i = 0; i < _segments.Length; i++)
         {
+            if (newHp == 0)
+            {
+                _segments[i].GetComponent<SpriteRenderer>().enabled = false;
+            }
+            else if (newHp > 0 && _currentHp == 0)
+            {
+                _segments[i].GetComponent<SpriteRenderer>().enabled = true;
+            }
             if (i < newHp)
             {
                 _segments[i].GetComponent<EnemyHealthBarSegment>().SetSegment(true);
@@ -50,6 +58,8 @@ public class EnemyHealthBarManager : MonoBehaviour
             }
         }
         _currentHp = newHp;
+
+
         
     }
 

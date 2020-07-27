@@ -68,7 +68,7 @@ public class VoidDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y);
+        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
     }
 
     private void OnEnable()
@@ -110,7 +110,7 @@ public class VoidDetonationHandler : ProjectionHandler
                 else
                 {
                     Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
-                    collider.GetComponent<EntityPhysics>().Inflict(1, force:enemyToCenter.normalized * 1.25f, type:ElementType.VOID);
+                    collider.GetComponent<EntityPhysics>().Inflict(1, force:enemyToCenter.normalized * 2f, type:ElementType.VOID);
 
                     Transform pullVFX = Instantiate(_pullVFXPrefab);
                     pullVFX.position = collider.GetComponent<EntityPhysics>().ObjectSprite.transform.position;

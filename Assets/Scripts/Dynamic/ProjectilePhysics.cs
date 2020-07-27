@@ -23,7 +23,7 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool explodesOnDeath;
     [SerializeField] private bool doesTracking;
     [SerializeField] private Collider2D trackingArea;
-    [SerializeField] private int _damageAmount = 1;
+    [SerializeField] public int _damageAmount = 1;
     [SerializeField] private float _impactForce = 0.5f;
     [SerializeField] private ElementType _damageType = ElementType.NONE;
     [SerializeField] private float _zVelocityDamping = 1f;

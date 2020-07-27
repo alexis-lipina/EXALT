@@ -6,10 +6,12 @@ using Rewired;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
+
+/// <summary>
+/// Holy shit this is in such need of a rework, I did this horridly
+/// </summary>
 public class PauseMenu : MonoBehaviour
 {
-
-
     [SerializeField] private Button _resume;
     [SerializeField] private Button _options;
     [SerializeField] private Button _screenshot;
@@ -18,7 +20,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject _menuPanel;
     [SerializeField] private GameObject _healthBar;
     [SerializeField] private GameObject _energyBar;
-
+    [Space(10)]
+    [SerializeField] private ControlMenuManager controlMenuManager;
 
     private bool _isCurrentlyPaused = false;
     private Player _controller;
@@ -35,10 +38,11 @@ public class PauseMenu : MonoBehaviour
     {
         if (_controller.GetButtonDown("Pause"))
         {
-            SetPaused(!_isCurrentlyPaused);
+            if (_menuPanel.activeSelf && _isCurrentlyPaused || !_isCurrentlyPaused)
+            {
+                SetPaused(!_isCurrentlyPaused);
+            }
         }
-
-
     }
     
     private void SetPaused(bool isToBePaused)
@@ -49,8 +53,8 @@ public class PauseMenu : MonoBehaviour
             _menuPanel.SetActive(true);
             _healthBar.SetActive(false);
             _energyBar.SetActive(false);
-            EventSystem.current.SetSelectedGameObject(_resume.gameObject, new BaseEventData(EventSystem.current));
-            _resume.Select();
+            //_resume.Select();
+            StartCoroutine(OnPause());
         }
         else
         {
@@ -71,9 +75,10 @@ public class PauseMenu : MonoBehaviour
 
     public void OptionsPressed()
     {
+        //open options, but for now its tutorial level
         Time.timeScale = 1;
         //do something
-        SceneManager.LoadScene("Demo_Arena_Empty");
+        SceneManager.LoadScene("CombatTraining");
     }
 
     public void QuitPressed()
@@ -85,15 +90,31 @@ public class PauseMenu : MonoBehaviour
 
     public void ScreenshotPressed()
     {
-        //take screenshot, but for now its combat demo
+        //take screenshot, but for now its arena
         Time.timeScale = 1;
         SceneManager.LoadScene("Demo_Arena");
     }
 
     public void MainMenuPressed()
     {
-        Time.timeScale = 1;
-        SceneManager.LoadScene("SwitchBlocks");
-        //go to main menu
+        //Time.timeScale = 1;
+        //SceneManager.LoadScene("SwitchBlocks");
+
+        //temporarily, this is the options button
+        controlMenuManager.gameObject.SetActive(true);
+        controlMenuManager.Source_Menu = gameObject;
+        gameObject.SetActive(false);
+    }
+
+    void OnEnable()
+    {
+        StartCoroutine(OnPause());
+    }
+
+    private IEnumerator OnPause()
+    {
+        EventSystem.current.SetSelectedGameObject(null, new BaseEventData(EventSystem.current));
+        yield return new WaitForEndOfFrame();
+        EventSystem.current.SetSelectedGameObject(_resume.gameObject, new BaseEventData(EventSystem.current));
     }
 }

@@ -118,7 +118,7 @@ public class SwordEnemyHandler : EntityHandler
         jumpPressed = false;
         attackPressed = false;
 
-        Debug.Log("Enemy Elevation : " + GetEntityPhysics().GetBottomHeight());
+        //Debug.Log("Enemy Elevation : " + GetEntityPhysics().GetBottomHeight());
     }
 
     public override void SetXYAnalogInput(float x, float y)

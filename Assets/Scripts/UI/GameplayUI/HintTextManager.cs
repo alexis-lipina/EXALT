@@ -90,7 +90,8 @@ public class HintTextManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning("Sprite " + sprite.name + " does not have corresponding entry in _inputEncoder!");
+                    //Debug.LogWarning("Sprite " + sprite.name + " does not have corresponding entry in _inputEncoder!");
+                    //TODO : Replace inputEncoder with reference to control menu manager
                 }
             }
         }

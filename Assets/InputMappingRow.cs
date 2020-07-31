@@ -11,6 +11,10 @@ public class InputMappingRow : MonoBehaviour
     [SerializeField] private Button Button_KBM;
     [SerializeField] private string ActionName;
     [SerializeField] private int ActionId;
+    [Space(10)]
+    [SerializeField] public bool IsAxis;
+    [SerializeField] public bool IsPositiveAxis;
+    [SerializeField] public string AxisContributionName;
 
     public void SetButtonSprite_Gamepad(Sprite image)
     {

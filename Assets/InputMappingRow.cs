@@ -8,7 +8,8 @@ public class InputMappingRow : MonoBehaviour
 {
     [SerializeField] private ControlMenuManager controlMenuManager;
     [SerializeField] private Button Button_Gamepad;
-    [SerializeField] private Button Button_KBM;
+    [SerializeField] private Button Button_KB;
+    [SerializeField] private Button Button_Mouse;
     [SerializeField] private string ActionName;
     [SerializeField] private int ActionId;
     [Space(10)]
@@ -21,9 +22,14 @@ public class InputMappingRow : MonoBehaviour
         Button_Gamepad.GetComponent<Image>().sprite = image;
     }
 
-    public void SetButtonSprite_KBM(Sprite image)
+    public void SetButtonSprite_KB(Sprite image)
     {
-        Button_KBM.GetComponent<Image>().sprite = image;
+        Button_KB.GetComponent<Image>().sprite = image;
+    }
+
+    public void SetButtonSprite_Mouse(Sprite image)
+    {
+        Button_Mouse.GetComponent<Image>().sprite = image;
     }
 
     public string GetMappingName()
@@ -36,9 +42,14 @@ public class InputMappingRow : MonoBehaviour
         Button_Gamepad.interactable = isActive;
     }
 
-    public void SetButtonActive_KBM(bool isActive)
+    public void SetButtonActive_KB(bool isActive)
     {
-        Button_KBM.interactable = isActive;
+        Button_KB.interactable = isActive;
+    }
+
+    public void SetButtonActive_Mouse(bool isActive)
+    {
+        Button_Mouse.interactable = isActive;
     }
 
     public void Gamepad_OnRemapButtonPress()
@@ -55,9 +66,14 @@ public class InputMappingRow : MonoBehaviour
         return Button_Gamepad;
     }
 
-    public Button GetKBMButton()
+    public Button GetKBButton()
     {
-        return Button_KBM;
+        return Button_KB;
+    }
+
+    public Button GetMouseButton()
+    {
+        return Button_Mouse;
     }
 
     public int GetActionId()

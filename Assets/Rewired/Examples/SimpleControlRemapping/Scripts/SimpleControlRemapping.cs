@@ -145,7 +145,8 @@ namespace Rewired.Demos {
             RedrawUI();
         }
 
-        private void CreateUIRow(InputAction action, AxisRange actionRange, string label) {
+        private void CreateUIRow(InputAction action, AxisRange actionRange, string label)
+        {
             // Create the Action label
             GameObject labelGo = Object.Instantiate<GameObject>(textPrefab);
             labelGo.transform.SetParent(actionGroupTransform);

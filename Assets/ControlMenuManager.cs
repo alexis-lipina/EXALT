@@ -25,18 +25,21 @@ struct AxisInfo
     }
 }
 
+
+///This class manages the UI/frontend for control mapping. See ControlMappingManager for the backend.
 public class ControlMenuManager : MonoBehaviour
 {
     public static Rewired.Player player;
 
     [SerializeField] private string InputSpritesheet_ResourceName;
     [SerializeField] private Sprite DefaultInputIcon;
+    [SerializeField] private Sprite ErrorInputIcon;
     private static Dictionary<string, Sprite> InputStringToImageMapping; //maps Exalt input string name for input to sprite, built on load
     private static Dictionary<int, string> GamepadIdToStringMapping; //maps GamepadTemplate id to Exalt input string name, built on load
     private static Dictionary<AxisInfo, string> GamepadAxisToStringMapping; //maps GamepadTemplate id to Exalt input string name, built on load
     private static Dictionary<int, string> KeyboardIdToStringMapping; //maps GamepadTemplate id to Exalt input string name, built on load
     private static Dictionary<int, string> MouseIdToStringMapping; //maps GamepadTemplate id to Exalt input string name, built on load
-    [SerializeField] private List<InputMappingRow> MappingRows;
+    public List<InputMappingRow> MappingRows;
 
     private List<Button> Buttons_KBM;
     private List<Button> Buttons_Gamepad;
@@ -45,6 +48,8 @@ public class ControlMenuManager : MonoBehaviour
     private bool Buttons_Gamepad_IsEnabled = true;
 
     //private List<InputMapper> currentRunningInputMappers;
+
+    private ControlMappingManager backend;
 
     #region Dumb Weird Delegate Stuff
     private bool isInputMapperFinishedMapping = false;
@@ -65,11 +70,12 @@ public class ControlMenuManager : MonoBehaviour
 
     void OnEnable()
     {
-        StartCoroutine(FocusElement(MappingRows[0].GetKBMButton().gameObject));
+        StartCoroutine(FocusElement(MappingRows[0].GetKBButton().gameObject));
     }
 
     void Awake()
     {
+        backend = GetComponent<ControlMappingManager>();
         #region Setup GamepadIdToStringMapping table
         if (GamepadIdToStringMapping == null)
         {
@@ -230,8 +236,8 @@ public class ControlMenuManager : MonoBehaviour
         }*/
 
 
-        RefreshGamepadMappings();
-        RefreshKbmMappings();
+        //RefreshGamepadMappings();
+        //RefreshKbmMappings();
     }
 
     // Update is called once per frame
@@ -251,6 +257,7 @@ public class ControlMenuManager : MonoBehaviour
             {
                 row.SetButtonActive_Gamepad(false);
             }
+            Buttons_Gamepad_IsEnabled = false;
         }
         else if (player.controllers.joystickCount > 0 && !Buttons_Gamepad_IsEnabled)
         {
@@ -259,6 +266,7 @@ public class ControlMenuManager : MonoBehaviour
             {
                 row.SetButtonActive_Gamepad(true);
             }
+            Buttons_Gamepad_IsEnabled = true;
         }
     }
 
@@ -308,6 +316,7 @@ public class ControlMenuManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Uh oh! Trouble finding icon!");
+                    row.SetButtonSprite_Gamepad(ErrorInputIcon);
                 }
             }
             else
@@ -327,19 +336,72 @@ public class ControlMenuManager : MonoBehaviour
         var mouseMappings = player.controllers.maps.GetMaps(ControllerType.Mouse, 0)[0];
         foreach (var row in MappingRows)
         {
+            row.SetButtonSprite_KB(ErrorInputIcon); //default is error button
             if (keyboardMappings.ContainsAction(row.GetMappingName()))
             {
                 var elementmaps = keyboardMappings.GetElementMapsWithAction(row.GetMappingName());
                 ActionElementMap currentMap = new ActionElementMap();
+
                 if (elementmaps.Length == 1)
                 {
                     Debug.Log(elementmaps[0].elementIdentifierName);
                     Debug.Log(elementmaps[0].elementIdentifierId);
                     currentMap = elementmaps[0];
-                    var asdf = (int)currentMap.keyboardKeyCode;
-                    var qwer = KeyboardIdToStringMapping[asdf];
-                    var zxcv = InputStringToImageMapping[qwer];
-                    row.SetButtonSprite_KBM(zxcv);
+
+                    //skip if not this specific action, for axis case
+                    if (keyboardMappings.ContainsElementMap(currentMap))
+                    {
+                        var asdf = (int)currentMap.keyboardKeyCode;
+                        var qwer = KeyboardIdToStringMapping[asdf];
+                        var zxcv = InputStringToImageMapping[qwer];
+                        row.SetButtonSprite_KB(zxcv);
+                    }
+                }
+                else if (elementmaps.Length > 1)
+                {
+                    foreach (var map in elementmaps)
+                    {
+                        if (!keyboardMappings.ContainsElementMap(map)) continue; //skip if not this specific action, for axis case
+
+                        if (map.axisContribution == Pole.Positive && row.IsPositiveAxis /* && row.IsPositiveAxis*/)
+                        {
+                            currentMap = map;
+                            var asdf = (int)currentMap.keyboardKeyCode;
+                            var qwer = KeyboardIdToStringMapping[asdf];
+                            var zxcv = InputStringToImageMapping[qwer];
+                            row.SetButtonSprite_KB(zxcv);
+                        }
+                        else if (map.axisContribution == Pole.Negative && !row.IsPositiveAxis /* && !row.IsPositiveAxis*/)
+                        {
+                            currentMap = map;
+                            var asdf = (int)currentMap.keyboardKeyCode;
+                            var qwer = KeyboardIdToStringMapping[asdf];
+                            var zxcv = InputStringToImageMapping[qwer];
+                            row.SetButtonSprite_KB(zxcv);
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Error finding element mapping for action \"" + row.GetMappingName() + "\"");
+                    row.SetButtonSprite_KB(DefaultInputIcon);
+                }
+            }
+            if (mouseMappings.ContainsAction(row.GetMappingName()))
+            {
+                var elementmaps = mouseMappings.GetElementMapsWithAction(row.GetMappingName());
+                ActionElementMap currentMap = new ActionElementMap();
+                if (elementmaps.Length == 1)
+                {
+                    currentMap = elementmaps[0];
+                    //skip if not this specific action, for axis case
+                    if (mouseMappings.ContainsElementMap(currentMap))
+                    {
+                        var asdf = (int)elementmaps[0].elementIdentifierId;
+                        var qwer = MouseIdToStringMapping[asdf];
+                        var zxcv = InputStringToImageMapping[qwer];
+                        row.SetButtonSprite_KB(zxcv);
+                    }
                 }
                 else if (elementmaps.Length > 1)
                 {
@@ -350,63 +412,45 @@ public class ControlMenuManager : MonoBehaviour
                         Debug.Log(map.axisContribution);
                         Debug.Log(map.actionDescriptiveName);
                         Debug.Log(map.elementIdentifierName);
-                        
+
+                        if (!mouseMappings.ContainsElementMap(map)) continue; //skip if not this specific action, for axis case
 
                         if (map.axisContribution == Pole.Positive && row.IsPositiveAxis /* && row.IsPositiveAxis*/)
                         {
                             Debug.Log("Win!!!");
                             currentMap = map;
-                            var asdf = (int)currentMap.keyboardKeyCode;
-                            var qwer = KeyboardIdToStringMapping[asdf];
+                            var asdf = (int)elementmaps[0].elementIdentifierId;
+                            var qwer = MouseIdToStringMapping[asdf];
                             var zxcv = InputStringToImageMapping[qwer];
-                            row.SetButtonSprite_KBM(zxcv);
+                            row.SetButtonSprite_KB(zxcv);
                         }
                         else if (map.axisContribution == Pole.Negative && !row.IsPositiveAxis /* && !row.IsPositiveAxis*/)
                         {
                             Debug.Log("Also win!!!");
                             currentMap = map;
-                            var asdf = (int)currentMap.keyboardKeyCode;
-                            var qwer = KeyboardIdToStringMapping[asdf];
+                            var asdf = (int)elementmaps[0].elementIdentifierId;
+                            var qwer = MouseIdToStringMapping[asdf];
                             var zxcv = InputStringToImageMapping[qwer];
-                            row.SetButtonSprite_KBM(zxcv);
+                            row.SetButtonSprite_KB(zxcv);
                         }
                     }
                 }
                 else
                 {
                     Debug.LogError("Error finding element mapping for action \"" + row.GetMappingName() + "\"");
-                }
-            }
-            else if (mouseMappings.ContainsAction(row.GetMappingName()))
-            {
-                var elementmaps = mouseMappings.GetElementMapsWithAction(row.GetMappingName());
-                if (elementmaps.Length == 1)
-                {
-                    Debug.Log(elementmaps[0].elementIdentifierName);
-                    Debug.Log(elementmaps[0].elementIdentifierId);
-                }
-                else
-                {
-                    Debug.LogError("Multiple element mappings for action \"" + row.GetMappingName() + "\"");
+                    row.SetButtonSprite_KB(DefaultInputIcon);
                 }
 
                 Debug.Log("HERE!");
                 Debug.Log(elementmaps[0].elementIdentifierId);
                 Debug.Log(elementmaps[0].elementIdentifierName);
 
-                var asdf = (int)elementmaps[0].elementIdentifierId;
-                var qwer = MouseIdToStringMapping[asdf];
-                var zxcv = InputStringToImageMapping[qwer];
-                row.SetButtonSprite_KBM(zxcv);
-            }
-            else
-            {
-                Debug.LogError("Action \"" + row.GetMappingName() + "\" does not exist!");
+
             }
         }
     }
 
-
+    
     public void StartWaitForInputForRemap(InputMappingRow row, ControllerType controllerType)
     {
         if (controllerType == ControllerType.Joystick) StartCoroutine(WaitForInputForRemap_Gamepad(row));
@@ -422,41 +466,125 @@ public class ControlMenuManager : MonoBehaviour
         ReInput.players.GetPlayer(0).controllers.maps.SetAllMapsEnabled(false);
 
 
-        //==============================| Setup input mapper
-
-        var something = player.controllers.maps.GetMaps(ControllerType.Keyboard, player.controllers.Keyboard.id)[0].ElementMapsWithAction(mappingRow.GetActionId());
-        ActionElementMap mapToReplace = new ActionElementMap();
-        int numMapsWithAction = 0;
+        //==============================| Get current action-element map for the *action*
+        #region See Above
+        //get all maps with action on keyboard
+        var mapsWithAction = player.controllers.maps.GetMaps(ControllerType.Keyboard, player.controllers.Keyboard.id)[0].ElementMapsWithAction(mappingRow.GetActionId());
+        ActionElementMap mapToReplace = null;
         ControllerType currentType = ControllerType.Keyboard;
-        // check keyboard maps for action
-        foreach (var thing in something)
+
+        // split based on whether an action is an axis or not
+        if (mappingRow.IsAxis)
         {
-            mapToReplace = thing;
-            numMapsWithAction++;
+            // check keyboard mappings
+            foreach (var aem in mapsWithAction) 
+            {
+                if (aem.axisContribution == Pole.Positive && mappingRow.IsPositiveAxis)
+                {
+                    if (mapToReplace == null)
+                    {
+                        mapToReplace = aem;
+                    }
+                    else
+                    {
+                        Debug.LogError("Uh oh! Axis conflict! Original map to replace : " + mapToReplace + "    New map to replace : " + aem);
+                    }
+                }
+                else if (aem.axisContribution == Pole.Negative && !mappingRow.IsPositiveAxis)
+                {
+                    if (mapToReplace == null)
+                    {
+                        mapToReplace = aem;
+                    }
+                    else
+                    {
+                        Debug.LogError("Uh oh! Axis conflict! Original map to replace : " + mapToReplace + "    New map to replace : " + aem);
+                    }
+                }
+            }
+            //check mouse mappings
+            if (mapToReplace == null)
+            {
+                currentType = ControllerType.Mouse;
+                mapsWithAction = player.controllers.maps.GetMaps(ControllerType.Mouse, player.controllers.Mouse.id)[0].ElementMapsWithAction(mappingRow.GetActionId());
+                mapToReplace = new ActionElementMap();
+                foreach (var aem in mapsWithAction)
+                {
+                    if (aem.axisContribution == Pole.Positive && mappingRow.IsPositiveAxis)
+                    {
+                        if (mapToReplace == null)
+                        {
+                            mapToReplace = aem;
+                        }
+                        else
+                        {
+                            Debug.LogError("Uh oh! Axis conflict!");
+                        }
+                    }
+                    else if (aem.axisContribution == Pole.Negative && !mappingRow.IsPositiveAxis)
+                    {
+                        if (mapToReplace == null)
+                        {
+                            mapToReplace = aem;
+                        }
+                        else
+                        {
+                            Debug.LogError("Uh oh! Axis conflict!");
+                        }
+                    }
+                }
+            }
+            if (mapToReplace == null)
+            {
+                string axisDirectionString = (mappingRow.IsPositiveAxis ? "POSITIVE" : "NEGATIVE");
+                Debug.LogError("Alert! No maps for the " + axisDirectionString + "axis action of ID \"" + mappingRow.GetActionId() + "\" found!");
+            }
         }
-        if (numMapsWithAction == 0)
+        else //is just a button
         {
-            currentType = ControllerType.Mouse;
-            // check mouse maps for action
-            something = player.controllers.maps.GetMaps(ControllerType.Mouse, player.controllers.Mouse.id)[0].ElementMapsWithAction(mappingRow.GetActionId());
-            mapToReplace = new ActionElementMap();
-            numMapsWithAction = 0;
-            foreach (var thing in something)
+            int numMapsWithAction = 0;
+            // check keyboard maps for action to be cleared
+            foreach (var thing in mapsWithAction)
             {
                 mapToReplace = thing;
                 numMapsWithAction++;
             }
-            if (numMapsWithAction == 0)
+            if (numMapsWithAction == 0) // check mouse maps for action
             {
-                Debug.LogError("Alert! No maps with the action of ID \"" + mappingRow.GetActionId() + "\" found!");
+                currentType = ControllerType.Mouse;
+                mapsWithAction = player.controllers.maps.GetMaps(ControllerType.Mouse, player.controllers.Mouse.id)[0].ElementMapsWithAction(mappingRow.GetActionId());
+                mapToReplace = new ActionElementMap();
+                numMapsWithAction = 0;
+                foreach (var thing in mapsWithAction)
+                {
+                    mapToReplace = thing;
+                    numMapsWithAction++;
+                }
+                if (numMapsWithAction == 0)
+                {
+                    Debug.LogError("Alert! No maps with the action of ID \"" + mappingRow.GetActionId() + "\" found!");
+                }
             }
-        }
-        else if (numMapsWithAction > 1)
-        {
-            Debug.LogError("Alert! Multiple maps with action ID \"" + mappingRow.GetActionId() + "\" found!");
-        }
+            else if (numMapsWithAction > 1)
+            {
+                Debug.LogError("Alert! Multiple maps with action ID \"" + mappingRow.GetActionId() + "\" found!");
+            }
 
-        player.controllers.maps.GetMaps(currentType, player.controllers.Mouse.id)[0].DeleteElementMapsWithAction(mappingRow.GetActionId());
+        }
+        #endregion
+
+
+        //===================================|  Clear that action-element mapping
+        // currently using "replace" keyword instead
+
+        if (currentType == ControllerType.Mouse)
+        {
+            player.controllers.maps.GetMaps(currentType, player.controllers.Mouse.id)[0].DeleteElementMap(mapToReplace.id);
+        }
+        else if (currentType == ControllerType.Keyboard)
+        {
+            player.controllers.maps.GetMaps(currentType, player.controllers.Keyboard.id)[0].DeleteElementMap(mapToReplace.id);
+        }
 
         var inputMapper_Keyboard = new InputMapper();
         var inputMapper_Mouse = new InputMapper();
@@ -465,22 +593,30 @@ public class ControlMenuManager : MonoBehaviour
         inputMapper_Mouse.options.ignoreMouseXAxis = true;
         inputMapper_Mouse.options.ignoreMouseYAxis = true;
         inputMapper_Mouse.options.defaultActionWhenConflictFound = InputMapper.ConflictResponse.Replace; //might want this replaced if it sucks
+        //inputMapper_Mouse.options.defaultActionWhenConflictFound = InputMapper.ConflictResponse.Ignore; 
 
         inputMapper_Keyboard.options.timeout = 0;
         inputMapper_Keyboard.options.ignoreMouseXAxis = true;
         inputMapper_Keyboard.options.ignoreMouseYAxis = true;
         inputMapper_Keyboard.options.defaultActionWhenConflictFound = InputMapper.ConflictResponse.Replace; //might want this replaced if it sucks
+        //inputMapper_Keyboard.options.defaultActionWhenConflictFound = InputMapper.ConflictResponse.Ignore; 
 
         inputMapper_Mouse.InputMappedEvent += OnInputMapped;
         inputMapper_Keyboard.InputMappedEvent += OnInputMapped;
+
+        AxisRange currentAxisRange = AxisRange.Positive;
+        if (mappingRow.IsAxis)
+        {
+            currentAxisRange = (mappingRow.IsPositiveAxis ? AxisRange.Positive : AxisRange.Negative);
+        }
 
         inputMapper_Keyboard.Start(
             new InputMapper.Context()
             {
                 actionId = mappingRow.GetActionId(),
                 controllerMap = player.controllers.maps.GetMaps(ControllerType.Keyboard, player.controllers.Keyboard.id)[0],
-                actionRange = AxisRange.Positive,
-                //actionElementMapToReplace = mapToReplace
+                actionRange = currentAxisRange/*,
+                actionElementMapToReplace = (mapToReplace.controllerMap.controllerType == ControllerType.Keyboard ? mapToReplace : null)*/
             }
         );
 
@@ -489,16 +625,12 @@ public class ControlMenuManager : MonoBehaviour
             {
                 actionId = mappingRow.GetActionId(),
                 controllerMap = player.controllers.maps.GetMaps(ControllerType.Mouse, player.controllers.Mouse.id)[0],
-                actionRange = AxisRange.Positive,
-                //actionElementMapToReplace = mapToReplace
+                actionRange = currentAxisRange/*,
+                actionElementMapToReplace = (mapToReplace.controllerMap.controllerType == ControllerType.Mouse ? mapToReplace : null)*/
             }
         );
 
-        //=================================| End input mapper setup
-
-        //currentRunningInputMappers.Add(inputMapper_Mouse);
-        //currentRunningInputMappers.Add(inputMapper_Keyboard);
-
+        Debug.Log("WAITING FOR INPUT - CURRENT INPUT MAPPING IS : " + mapToReplace.elementIdentifierName); // issue where I cant swap off + back to an input
 
         yield return new WaitUntil(GetInputMapperStatus);
         isInputMapperFinishedMapping = false;
@@ -585,5 +717,43 @@ public class ControlMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null, new BaseEventData(EventSystem.current));
         yield return null;
         EventSystem.current.SetSelectedGameObject(newTarget, new BaseEventData(EventSystem.current));
+    }
+
+    public void UpdateUI()
+    {
+        //called by controlmappingmanager when things need to change
+        //RefreshGamepadMappings();
+        //RefreshKbmMappings();
+
+        if (player == null) player = ReInput.players.GetPlayer(0);
+
+        var keyboardmap = player.controllers.maps.GetMap(ControllerType.Keyboard, 0, 0);
+        var mousemap = player.controllers.maps.GetMap(ControllerType.Mouse, 0, 0);
+        var joystickmap = player.controllers.maps.GetMap(ControllerType.Joystick, 0, 0);
+
+        foreach (var row in backend.rows)
+        {
+            foreach (var actionelementmap in keyboardmap.ElementMapsWithAction(row.action.id)) //might want to store actionelementmaps directly in the rows list
+            {
+                if (actionelementmap.ShowInField(row.range))
+                {
+                    row.inputMappingRow.SetButtonSprite_KB(InputStringToImageMapping[KeyboardIdToStringMapping[actionelementmap.elementIdentifierId]]);
+                }
+            }
+            foreach (var actionelementmap in mousemap.ElementMapsWithAction(row.action.id)) //might want to store actionelementmaps directly in the rows list
+            {
+                if (actionelementmap.ShowInField(row.range))
+                {
+                    row.inputMappingRow.SetButtonSprite_Mouse(InputStringToImageMapping[MouseIdToStringMapping[actionelementmap.elementIdentifierId]]);
+                }
+            }
+            foreach (var actionelementmap in joystickmap.ElementMapsWithAction(row.action.id)) //might want to store actionelementmaps directly in the rows list
+            {
+                if (actionelementmap.ShowInField(row.range))
+                {
+                    row.inputMappingRow.SetButtonSprite_Gamepad(InputStringToImageMapping[GamepadIdToStringMapping[actionelementmap.elementIdentifierId]]);
+                }
+            }
+        }
     }
 }

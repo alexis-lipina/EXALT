@@ -225,7 +225,7 @@ MonoBehaviour:
     - _id: 3
       _name: Melee
       _type: 1
-      _descriptiveName: Melee Attack
+      _descriptiveName: Melee
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -261,7 +261,7 @@ MonoBehaviour:
     - _id: 9
       _name: MouseSwitch
       _type: 1
-      _descriptiveName: Input that makes the player switch to mouse
+      _descriptiveName: MouseSwitch
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -270,7 +270,7 @@ MonoBehaviour:
     - _id: 10
       _name: GamepadSwitch
       _type: 1
-      _descriptiveName: Inputs that cause a switch from gamepad input to mouse input.
+      _descriptiveName: GamepadSwitch
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -279,7 +279,7 @@ MonoBehaviour:
     - _id: 13
       _name: RangedAttack
       _type: 1
-      _descriptiveName: Ranged Attack
+      _descriptiveName: RangedAttack
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -288,7 +288,7 @@ MonoBehaviour:
     - _id: 14
       _name: ChangeStyle_Fire
       _type: 1
-      _descriptiveName: Change Style to Fire
+      _descriptiveName: ChangeStyle_Fire
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -297,7 +297,7 @@ MonoBehaviour:
     - _id: 15
       _name: ChangeStyle_Void
       _type: 1
-      _descriptiveName: Change Style to Void
+      _descriptiveName: ChangeStyle_Void
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -306,7 +306,7 @@ MonoBehaviour:
     - _id: 16
       _name: ChangeStyle_Zap
       _type: 1
-      _descriptiveName: Change Style to Zap
+      _descriptiveName: ChangeStyle_Zap
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -315,7 +315,7 @@ MonoBehaviour:
     - _id: 17
       _name: Heal
       _type: 1
-      _descriptiveName: Self-heal ability
+      _descriptiveName: Heal
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -324,7 +324,7 @@ MonoBehaviour:
     - _id: 18
       _name: Blink
       _type: 1
-      _descriptiveName: Teleport a short distance
+      _descriptiveName: Blink
       _positiveDescriptiveName: 
       _negativeDescriptiveName: 
       _behaviorId: 0
@@ -526,17 +526,6 @@ MonoBehaviour:
         _modifierKey2: 0
         _modifierKey3: 0
       - _actionCategoryId: 0
-        _actionId: 7
-        _elementType: 1
-        _elementIdentifierId: 15
-        _axisRange: 0
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 0
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
         _actionId: 10
         _elementType: 0
         _elementIdentifierId: 3
@@ -573,50 +562,6 @@ MonoBehaviour:
         _actionId: 10
         _elementType: 0
         _elementIdentifierId: 2
-        _axisRange: 2
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 0
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 10
-        _elementType: 0
-        _elementIdentifierId: 0
-        _axisRange: 1
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 0
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 10
-        _elementType: 0
-        _elementIdentifierId: 0
-        _axisRange: 2
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 0
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 10
-        _elementType: 0
-        _elementIdentifierId: 1
-        _axisRange: 1
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 0
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 10
-        _elementType: 0
-        _elementIdentifierId: 1
         _axisRange: 2
         _invert: 0
         _axisContribution: 0
@@ -745,7 +690,29 @@ MonoBehaviour:
         _actionId: 20
         _elementType: 0
         _elementIdentifierId: 0
-        _axisRange: 0
+        _axisRange: 1
+        _invert: 0
+        _axisContribution: 0
+        _keyboardKeyCode: 0
+        _modifierKey1: 0
+        _modifierKey2: 0
+        _modifierKey3: 0
+      - _actionCategoryId: 0
+        _actionId: 20
+        _elementType: 0
+        _elementIdentifierId: 0
+        _axisRange: 2
+        _invert: 0
+        _axisContribution: 1
+        _keyboardKeyCode: 0
+        _modifierKey1: 0
+        _modifierKey2: 0
+        _modifierKey3: 0
+      - _actionCategoryId: 0
+        _actionId: 21
+        _elementType: 0
+        _elementIdentifierId: 1
+        _axisRange: 1
         _invert: 0
         _axisContribution: 0
         _keyboardKeyCode: 0
@@ -756,9 +723,9 @@ MonoBehaviour:
         _actionId: 21
         _elementType: 0
         _elementIdentifierId: 1
-        _axisRange: 0
+        _axisRange: 2
         _invert: 0
-        _axisContribution: 0
+        _axisContribution: 1
         _keyboardKeyCode: 0
         _modifierKey1: 0
         _modifierKey2: 0
@@ -803,6 +770,17 @@ MonoBehaviour:
         _axisRange: 0
         _invert: 0
         _axisContribution: 1
+        _keyboardKeyCode: 0
+        _modifierKey1: 0
+        _modifierKey2: 0
+        _modifierKey3: 0
+      - _actionCategoryId: 0
+        _actionId: 7
+        _elementType: 1
+        _elementIdentifierId: 15
+        _axisRange: 0
+        _invert: 0
+        _axisContribution: 0
         _keyboardKeyCode: 0
         _modifierKey1: 0
         _modifierKey2: 0
@@ -878,17 +856,6 @@ MonoBehaviour:
         _invert: 0
         _axisContribution: 0
         _keyboardKeyCode: 32
-        _modifierKey1: 0
-        _modifierKey2: 0
-        _modifierKey3: 0
-      - _actionCategoryId: 0
-        _actionId: 7
-        _elementType: 1
-        _elementIdentifierId: -1
-        _axisRange: 0
-        _invert: 0
-        _axisContribution: 0
-        _keyboardKeyCode: 27
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0
@@ -1072,6 +1039,17 @@ MonoBehaviour:
         _invert: 0
         _axisContribution: 0
         _keyboardKeyCode: 8
+        _modifierKey1: 0
+        _modifierKey2: 0
+        _modifierKey3: 0
+      - _actionCategoryId: 0
+        _actionId: 7
+        _elementType: 1
+        _elementIdentifierId: -1
+        _axisRange: 0
+        _invert: 0
+        _axisContribution: 0
+        _keyboardKeyCode: 27
         _modifierKey1: 0
         _modifierKey2: 0
         _modifierKey3: 0

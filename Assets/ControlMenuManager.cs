@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Rewired;
+using Rewired.UI.ControlMapper;
 
 struct AxisInfo
 {
@@ -34,6 +35,16 @@ public class ControlMenuManager : MonoBehaviour
     [SerializeField] private string InputSpritesheet_ResourceName;
     [SerializeField] private Sprite DefaultInputIcon;
     [SerializeField] private Sprite ErrorInputIcon;
+    [Space(10)]
+    [SerializeField] private Sprite ControllerIcon_Keyboard;
+    [SerializeField] private Sprite ControllerIcon_Mouse;
+    [SerializeField] private Sprite ControllerIcon_Gamepad;
+    [Space(10)]
+    [SerializeField] private GameObject WaitForInput_Panel;
+    [SerializeField] private GameObject WaitForInput_ControllerIcon;
+    [SerializeField] private GameObject WaitForInput_ProgressBar;
+    [Space(10)]
+    [SerializeField] private ScrollRect scrollRect;
     private static Dictionary<string, Sprite> InputStringToImageMapping; //maps Exalt input string name for input to sprite, built on load
     private static Dictionary<int, string> GamepadIdToStringMapping; //maps GamepadTemplate id to Exalt input string name, built on load
     private static Dictionary<AxisInfo, string> GamepadAxisToStringMapping; //maps GamepadTemplate id to Exalt input string name, built on load
@@ -46,6 +57,8 @@ public class ControlMenuManager : MonoBehaviour
 
     private bool Buttons_KBM_IsEnabled = true;
     private bool Buttons_Gamepad_IsEnabled = true;
+    private bool IsWaitingForInput = false;
+    private GameObject LastSelectedGameObject;
 
     //private List<InputMapper> currentRunningInputMappers;
 
@@ -73,9 +86,12 @@ public class ControlMenuManager : MonoBehaviour
         StartCoroutine(FocusElement(MappingRows[0].GetKBButton().gameObject));
     }
 
-    void Awake()
+    public void InitializeMappings()
     {
-        backend = GetComponent<ControlMappingManager>();
+        if (backend) return;
+
+        backend = gameObject.GetComponent<ControlMappingManager>();
+
         #region Setup GamepadIdToStringMapping table
         if (GamepadIdToStringMapping == null)
         {
@@ -219,6 +235,7 @@ public class ControlMenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        backend = GetComponent<ControlMappingManager>();
         if (player == null) player = ReInput.players.GetPlayer(0);
 
         Debug.Log(ReInput.mapping.JoystickLayouts.Count);
@@ -240,11 +257,10 @@ public class ControlMenuManager : MonoBehaviour
         //RefreshKbmMappings();
     }
 
-    // Update is called once per frame
     void Update()
     {
         //press menu or back to return
-        if (player.GetButton("UICancel") || player.GetButton("Pause"))
+        if (player.GetButtonDown("UICancel") || player.GetButtonDown("Pause"))
         {
             Source_Menu.SetActive(true);
             gameObject.SetActive(false);
@@ -267,6 +283,11 @@ public class ControlMenuManager : MonoBehaviour
                 row.SetButtonActive_Gamepad(true);
             }
             Buttons_Gamepad_IsEnabled = true;
+        }
+        if (LastSelectedGameObject != EventSystem.current.currentSelectedGameObject && EventSystem.current.currentSelectedGameObject)
+        {
+            SnapTo(EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>());
+            LastSelectedGameObject = EventSystem.current.currentSelectedGameObject;
         }
     }
 
@@ -325,7 +346,7 @@ public class ControlMenuManager : MonoBehaviour
             }
         }      
     }
-
+    /*
     void RefreshKbmMappings()
     {
         if (!player.controllers.hasKeyboard) return;
@@ -363,7 +384,7 @@ public class ControlMenuManager : MonoBehaviour
                     {
                         if (!keyboardMappings.ContainsElementMap(map)) continue; //skip if not this specific action, for axis case
 
-                        if (map.axisContribution == Pole.Positive && row.IsPositiveAxis /* && row.IsPositiveAxis*/)
+                        if (map.axisContribution == Pole.Positive && row.IsPositiveAxis  && row.IsPositiveAxis)
                         {
                             currentMap = map;
                             var asdf = (int)currentMap.keyboardKeyCode;
@@ -371,7 +392,7 @@ public class ControlMenuManager : MonoBehaviour
                             var zxcv = InputStringToImageMapping[qwer];
                             row.SetButtonSprite_KB(zxcv);
                         }
-                        else if (map.axisContribution == Pole.Negative && !row.IsPositiveAxis /* && !row.IsPositiveAxis*/)
+                        else if (map.axisContribution == Pole.Negative && !row.IsPositiveAxis  && !row.IsPositiveAxis)
                         {
                             currentMap = map;
                             var asdf = (int)currentMap.keyboardKeyCode;
@@ -415,7 +436,7 @@ public class ControlMenuManager : MonoBehaviour
 
                         if (!mouseMappings.ContainsElementMap(map)) continue; //skip if not this specific action, for axis case
 
-                        if (map.axisContribution == Pole.Positive && row.IsPositiveAxis /* && row.IsPositiveAxis*/)
+                        if (map.axisContribution == Pole.Positive && row.IsPositiveAxis  && row.IsPositiveAxis)
                         {
                             Debug.Log("Win!!!");
                             currentMap = map;
@@ -423,8 +444,8 @@ public class ControlMenuManager : MonoBehaviour
                             var qwer = MouseIdToStringMapping[asdf];
                             var zxcv = InputStringToImageMapping[qwer];
                             row.SetButtonSprite_KB(zxcv);
-                        }
-                        else if (map.axisContribution == Pole.Negative && !row.IsPositiveAxis /* && !row.IsPositiveAxis*/)
+                        
+                        else if (map.axisContribution == Pole.Negative && !row.IsPositiveAxis  && !row.IsPositiveAxis)
                         {
                             Debug.Log("Also win!!!");
                             currentMap = map;
@@ -444,20 +465,17 @@ public class ControlMenuManager : MonoBehaviour
                 Debug.Log("HERE!");
                 Debug.Log(elementmaps[0].elementIdentifierId);
                 Debug.Log(elementmaps[0].elementIdentifierName);
-
-
             }
         }
-    }
+    }*/
 
-    
+    /*
     public void StartWaitForInputForRemap(InputMappingRow row, ControllerType controllerType)
     {
         if (controllerType == ControllerType.Joystick) StartCoroutine(WaitForInputForRemap_Gamepad(row));
         else if (controllerType == ControllerType.Keyboard) StartCoroutine(WaitForInputForRemap_KBM(row));
         //SetGamepadMapping(row, controllerType);
     }
-
     private IEnumerator WaitForInputForRemap_KBM(InputMappingRow mappingRow)
     {
         //show wait for key press UI
@@ -616,7 +634,7 @@ public class ControlMenuManager : MonoBehaviour
                 actionId = mappingRow.GetActionId(),
                 controllerMap = player.controllers.maps.GetMaps(ControllerType.Keyboard, player.controllers.Keyboard.id)[0],
                 actionRange = currentAxisRange/*,
-                actionElementMapToReplace = (mapToReplace.controllerMap.controllerType == ControllerType.Keyboard ? mapToReplace : null)*/
+                actionElementMapToReplace = (mapToReplace.controllerMap.controllerType == ControllerType.Keyboard ? mapToReplace : null)
             }
         );
 
@@ -625,8 +643,8 @@ public class ControlMenuManager : MonoBehaviour
             {
                 actionId = mappingRow.GetActionId(),
                 controllerMap = player.controllers.maps.GetMaps(ControllerType.Mouse, player.controllers.Mouse.id)[0],
-                actionRange = currentAxisRange/*,
-                actionElementMapToReplace = (mapToReplace.controllerMap.controllerType == ControllerType.Mouse ? mapToReplace : null)*/
+                actionRange = currentAxisRange,
+                actionElementMapToReplace = (mapToReplace.controllerMap.controllerType == ControllerType.Mouse ? mapToReplace : null)
             }
         );
 
@@ -703,7 +721,7 @@ public class ControlMenuManager : MonoBehaviour
         mappingRow.GetComponent<Image>().color = oldColor;
         ReInput.players.GetPlayer(0).controllers.maps.SetAllMapsEnabled(true);
         RefreshGamepadMappings();
-    }
+    }*/
 
     private void OnInputMapped(InputMapper.InputMappedEventData data)
     {
@@ -728,32 +746,152 @@ public class ControlMenuManager : MonoBehaviour
         if (player == null) player = ReInput.players.GetPlayer(0);
 
         var keyboardmap = player.controllers.maps.GetMap(ControllerType.Keyboard, 0, 0);
-        var mousemap = player.controllers.maps.GetMap(ControllerType.Mouse, 0, 0);
-        var joystickmap = player.controllers.maps.GetMap(ControllerType.Joystick, 0, 0);
+        var mousemap = player.controllers.maps.GetMaps(ControllerType.Mouse, 0)[0];
+        var joystickmap = player.controllers.maps.GetMaps(ControllerType.Joystick, 0).Count > 0 ? player.controllers.maps.GetMaps(ControllerType.Joystick, 0)[0] : null;
 
         foreach (var row in backend.rows)
         {
-            foreach (var actionelementmap in keyboardmap.ElementMapsWithAction(row.action.id)) //might want to store actionelementmaps directly in the rows list
+            bool registeredKB = false;
+            bool registeredMouse = false;
+            bool registeredGamepad = false;
+
+            foreach (var actionelementmap in keyboardmap.ElementMapsWithAction(row.action.id))
             {
                 if (actionelementmap.ShowInField(row.range))
                 {
-                    row.inputMappingRow.SetButtonSprite_KB(InputStringToImageMapping[KeyboardIdToStringMapping[actionelementmap.elementIdentifierId]]);
+                    row.inputMappingRow.SetButtonSprite_KB(InputStringToImageMapping[KeyboardIdToStringMapping[(int)actionelementmap.keyboardKeyCode]]);// expand this out for debugging
+                    registeredKB = true;
                 }
             }
-            foreach (var actionelementmap in mousemap.ElementMapsWithAction(row.action.id)) //might want to store actionelementmaps directly in the rows list
+            foreach (var actionelementmap in mousemap.ElementMapsWithAction(row.action.id)) 
             {
                 if (actionelementmap.ShowInField(row.range))
                 {
                     row.inputMappingRow.SetButtonSprite_Mouse(InputStringToImageMapping[MouseIdToStringMapping[actionelementmap.elementIdentifierId]]);
+                    registeredMouse = true;
                 }
             }
-            foreach (var actionelementmap in joystickmap.ElementMapsWithAction(row.action.id)) //might want to store actionelementmaps directly in the rows list
+            if (joystickmap != null)
             {
-                if (actionelementmap.ShowInField(row.range))
+                foreach (var actionelementmap in joystickmap.ElementMapsWithAction(row.action.id))
                 {
-                    row.inputMappingRow.SetButtonSprite_Gamepad(InputStringToImageMapping[GamepadIdToStringMapping[actionelementmap.elementIdentifierId]]);
+                    if (actionelementmap.ShowInField(row.range))
+                    {
+                        List<ControllerTemplateElementTarget> targets = new List<ControllerTemplateElementTarget>();
+                        player.controllers.Joysticks[0].Templates[0].GetElementTargets(actionelementmap, targets);
+                        var a = targets[0].element.id;
+
+                        if (GamepadIdToStringMapping.ContainsKey(a)) //is hardware-button
+                        {
+                            var b = GamepadIdToStringMapping.ContainsKey(a) ? GamepadIdToStringMapping[a] : GamepadAxisToStringMapping[new AxisInfo(row.range == AxisRange.Positive, a)];
+                            var c = InputStringToImageMapping[b];
+                            row.inputMappingRow.SetButtonSprite_Gamepad(c);
+                            registeredGamepad = true;
+                        }
+                        else if (GamepadAxisToStringMapping.ContainsKey(new AxisInfo(true, a)) || GamepadAxisToStringMapping.ContainsKey(new AxisInfo(false, a))) //is hardware-axis (joystick)
+                        {
+                            var b = actionelementmap.axisContribution == Pole.Positive && actionelementmap.axisRange == AxisRange.Positive || actionelementmap.axisContribution == Pole.Negative && actionelementmap.axisRange == AxisRange.Negative ? GamepadAxisToStringMapping[new AxisInfo(row.range == AxisRange.Positive, a)] : GamepadAxisToStringMapping[new AxisInfo(row.range == AxisRange.Negative, a)];
+                            var c = InputStringToImageMapping[b];
+                            row.inputMappingRow.SetButtonSprite_Gamepad(c);
+                            registeredGamepad = true;
+                        }
+                    }
                 }
             }
+
+            if (!registeredKB && !registeredMouse)
+            {
+                row.inputMappingRow.SetButtonSprite_KB(ErrorInputIcon);
+                row.inputMappingRow.SetButtonSprite_Mouse(ErrorInputIcon);
+            }
+            else if (!registeredKB)
+            {
+                row.inputMappingRow.SetButtonSprite_KB(DefaultInputIcon);
+            }
+            else if (!registeredMouse)
+            {
+                row.inputMappingRow.SetButtonSprite_Mouse(DefaultInputIcon);
+            }
+
+            if (!registeredGamepad)
+            {
+                row.inputMappingRow.SetButtonSprite_Gamepad(ErrorInputIcon);
+            }
+
         }
+    }
+
+    public void StartWaitingForInputUI(ControllerType controllerType)
+    {
+        StartCoroutine(WaitForInput(controllerType));
+    }
+
+    public void StopWaitingForInputUI()
+    {
+        if (IsWaitingForInput)
+        {
+            IsWaitingForInput = false;
+        }
+        else
+        {
+            Debug.LogError("Warning! Called StopWaitForInput while no input was active!");
+        }
+    }
+
+    private IEnumerator WaitForInput(ControllerType type)
+    {
+        if (IsWaitingForInput)
+        {
+            Debug.LogError("This should NEVER HAPPEN! Started WaitForInput while another WaitForInput is already active!");
+        }
+
+        IsWaitingForInput = true;
+        WaitForInput_Panel.SetActive(true);
+        player.controllers.maps.SetMapsEnabled(false, "UIControls");
+        GameObject currentUIElement = EventSystem.current.currentSelectedGameObject;
+        EventSystem.current.SetSelectedGameObject(null);
+
+        switch (type)
+        {
+            case ControllerType.Keyboard:
+                WaitForInput_ControllerIcon.GetComponent<Image>().sprite = ControllerIcon_Keyboard;
+                break;
+            case ControllerType.Mouse:
+                WaitForInput_ControllerIcon.GetComponent<Image>().sprite = ControllerIcon_Mouse;
+                break;
+            case ControllerType.Joystick:
+                WaitForInput_ControllerIcon.GetComponent<Image>().sprite = ControllerIcon_Gamepad;
+                break;
+        }
+        float mappingTimer = ControlMappingManager.MapperTimeout;
+        WaitForInput_ProgressBar.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        Debug.Log("Mapping Timer (Start) : " + mappingTimer);
+
+        while (/*mappingTimer > 0 &&*/ IsWaitingForInput)
+        {
+            yield return null;
+            mappingTimer -= Time.unscaledDeltaTime;
+            WaitForInput_ProgressBar.GetComponent<RectTransform>().localScale = new Vector3(mappingTimer / ControlMappingManager.MapperTimeout, 1, 1);
+        }
+        Debug.Log("Mapping Timer (End) : " + mappingTimer);
+
+        //yield return new WaitForSecondsRealtime(0.1f);
+        
+        IsWaitingForInput = false;
+        WaitForInput_Panel.SetActive(false);
+        player.controllers.maps.SetMapsEnabled(true, "UIControls");
+        EventSystem.current.SetSelectedGameObject(currentUIElement);
+        WaitForInput_ProgressBar.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+
+    }
+
+    void SnapTo(RectTransform target)
+    {
+        Canvas.ForceUpdateCanvases();
+        Canvas.ForceUpdateCanvases();
+
+        scrollRect.content.anchoredPosition =
+            (Vector2)scrollRect.transform.InverseTransformPoint(scrollRect.content.position)
+            - (Vector2)scrollRect.transform.InverseTransformPoint(target.parent.position) + new Vector2(0, scrollRect.viewport.rect.height * -0.5f);
     }
 }

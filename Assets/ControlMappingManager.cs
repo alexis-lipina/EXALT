@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Rewired;
 using UnityEngine.UI;
-
+using UnityEditor;
 
 public struct InputMapperDbRow
 {
@@ -19,7 +19,7 @@ public struct InputMapperDbRow
 /// </summary>
 public class ControlMappingManager : MonoBehaviour
 {
-
+    public const float MapperTimeout = 4f;
     private const string category = "Default";
     private const string layout = "Default";
 
@@ -55,20 +55,23 @@ public class ControlMappingManager : MonoBehaviour
 
         menuManager = GetComponent<ControlMenuManager>();
 
-        // Timeout after 5 seconds of listening
-        inputMapper.options.timeout = 0f;
-
         // Ignore Mouse X and Y axes
         inputMapper.options.ignoreMouseXAxis = true;
         inputMapper.options.ignoreMouseYAxis = true;
+        inputMapper.options.timeout = MapperTimeout;
+        inputMapper.options.allowKeyboardKeysWithModifiers = false;
+        inputMapper.options.allowKeyboardModifierKeyAsPrimary = true;
+        inputMapper.options.allowAxes = true;
 
         // Subscribe to events
         ReInput.ControllerConnectedEvent += OnControllerChanged;
         ReInput.ControllerDisconnectedEvent += OnControllerChanged;
         inputMapper.InputMappedEvent += OnInputMapped;
         inputMapper.StoppedEvent += OnStopped;
+        inputMapper.options.isElementAllowedCallback = CheckIsConflictAllowed;
 
         // Create UI elements
+        menuManager.InitializeMappings();
         InitializeUI();
     }
 
@@ -82,11 +85,11 @@ public class ControlMappingManager : MonoBehaviour
         ReInput.ControllerConnectedEvent -= OnControllerChanged;
         ReInput.ControllerDisconnectedEvent -= OnControllerChanged;
     }
-
+    /*
     private void RedrawUI()
     {
         //old redraw shit
-        /*
+        
         if (controller == null)
         { // no controller is selected
             ClearUI();
@@ -123,12 +126,12 @@ public class ControlMappingManager : MonoBehaviour
             row.button.onClick.RemoveAllListeners(); // clear the button event listeners first
             int index = i; // copy variable for closure
             row.button.onClick.AddListener(() => OnInputFieldClicked(index, actionElementMapId));
-        }*/
+        }
         
 
         //Update each row based on current mapping (done in ControlMenuManager)
-        menuManager.UpdateUI();
-    }
+        //menuManager.UpdateUI();
+    }*/
 
     /*
     private void ClearUI()
@@ -173,9 +176,11 @@ public class ControlMappingManager : MonoBehaviour
             InputAction action = rows[i].action;
 
             string name = string.Empty;
+            /*
             int actionElementMapId = -1;
 
             // Find the first ActionElementMap that maps to this Action and is compatible with this field type
+            
             foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
             {
                 if (actionElementMap.ShowInField(row.range))
@@ -184,22 +189,75 @@ public class ControlMappingManager : MonoBehaviour
                     actionElementMapId = actionElementMap.id;
                     break;
                 }
+            }*/
+
+            // Set the field button callback
+            row.inputMappingRow.GetGamepadButton().onClick.RemoveAllListeners();
+            row.inputMappingRow.GetKBButton().onClick.RemoveAllListeners();
+            row.inputMappingRow.GetMouseButton().onClick.RemoveAllListeners();
+
+            int index = i; // copy variable for closure
+
+            // setup keyboard button
+            bool keyboardLinked = false;
+            selectedControllerType = ControllerType.Keyboard;
+            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
+            {
+                if (actionElementMap.ShowInField(row.range))
+                {
+                    if (keyboardLinked) Debug.LogError("Duplicate mapping! This probably shouldnt happen???");
+                    name = actionElementMap.elementIdentifierName;
+                    row.inputMappingRow.GetKBButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Keyboard));
+                    keyboardLinked = true;
+                    break;
+                }
+            }
+            if (!keyboardLinked)
+            {
+                row.inputMappingRow.GetKBButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Keyboard));
+            }
+
+            // setup mouse button
+            bool mouseLinked = false;
+            selectedControllerType = ControllerType.Mouse;
+            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
+            {
+                if (actionElementMap.ShowInField(row.range))
+                {
+                    mouseLinked = true;
+                    name = actionElementMap.elementIdentifierName;
+                    row.inputMappingRow.GetMouseButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Mouse));
+                    break;
+                }
+            }
+            if (!mouseLinked)
+            {
+                row.inputMappingRow.GetMouseButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Mouse));
+            }
+
+            // setup keyboard button
+            bool gamepadLinked = false;
+            selectedControllerType = ControllerType.Joystick;
+            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
+            {
+                if (actionElementMap.ShowInField(row.range))
+                {
+                    gamepadLinked = true;
+                    name = actionElementMap.elementIdentifierName;
+                    row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Joystick));
+                    break;
+                }
+            }
+            if (!gamepadLinked)
+            {
+                row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Joystick));
             }
 
             // Set the label in the field button
             //row.text.text = name;
-
-            // Set the field button callback
-            row.inputMappingRow.GetGamepadButton().onClick.RemoveAllListeners();
-            row.inputMappingRow.GetKBButton().onClick.RemoveAllListeners(); 
-            row.inputMappingRow.GetMouseButton().onClick.RemoveAllListeners(); 
-            int index = i; // copy variable for closure
-            row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMapId, ControllerType.Joystick));
-            row.inputMappingRow.GetKBButton().onClick.AddListener(()      => OnInputFieldClicked(index, actionElementMapId, ControllerType.Keyboard));
-            row.inputMappingRow.GetMouseButton().onClick.AddListener(()   => OnInputFieldClicked(index, actionElementMapId, ControllerType.Mouse));
         }
 
-       RedrawUI();
+        menuManager.UpdateUI();
     }
 
     /// <summary>
@@ -277,7 +335,7 @@ public class ControlMappingManager : MonoBehaviour
         if (changed)
         {
             inputMapper.Stop();
-            RedrawUI();
+            menuManager.UpdateUI();
         }
     }
 
@@ -296,8 +354,15 @@ public class ControlMappingManager : MonoBehaviour
 
         if (index < 0 || index >= rows.Count) return; // index out of range
         if (controller == null) return; // there is no Controller selected
-        
-        
+
+
+        var aemtrid = controllerMap.GetElementMap(actionElementMapToReplaceId);
+
+        if (aemtrid == null)
+        {
+            Debug.Log("Whooop");
+        }
+
         // Begin listening for input
         inputMapper.Start(
             new InputMapper.Context()
@@ -305,11 +370,10 @@ public class ControlMappingManager : MonoBehaviour
                 actionId = rows[index].action.id,
                 controllerMap = controllerMap,
                 actionRange = rows[index].range,
-                actionElementMapToReplace = controllerMap.GetElementMap(actionElementMapToReplaceId)
+                actionElementMapToReplace = controllerMap.GetElementMap(actionElementMapToReplaceId),
             }
         );
-
-        //statusUIText.text = "Listening...";
+        menuManager.StartWaitingForInputUI(buttonControllerType);
     }
 
     private void OnControllerChanged(ControllerStatusChangedEventArgs args)
@@ -319,12 +383,29 @@ public class ControlMappingManager : MonoBehaviour
 
     private void OnInputMapped(InputMapper.InputMappedEventData data)
     {
-        RedrawUI();
+        menuManager.UpdateUI();
     }
 
     private void OnStopped(InputMapper.StoppedEventData data)
     {
-        //statusUIText.text = string.Empty;
+        menuManager.StopWaitingForInputUI();
+    }
+
+    private bool CheckIsConflictAllowed(ControllerPollingInfo data)
+    {
+        if (data.elementIdentifierName == "ESC")
+        {
+            return false;
+        }
+        if (data.controllerType == ControllerType.Joystick)
+        {
+            var map = player.controllers.maps.GetFirstElementMapWithAction(ControllerType.Joystick, "Pause", false);
+            if (map.elementIdentifierId == data.elementIdentifierId)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     // A small class to store information about the input field buttons

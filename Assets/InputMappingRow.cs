@@ -51,7 +51,7 @@ public class InputMappingRow : MonoBehaviour
     {
         Button_Mouse.interactable = isActive;
     }
-
+    /*
     public void Gamepad_OnRemapButtonPress()
     {
         controlMenuManager.StartWaitForInputForRemap(this, ControllerType.Joystick);
@@ -59,7 +59,7 @@ public class InputMappingRow : MonoBehaviour
     public void KBM_OnRemapButtonPress()
     {
         controlMenuManager.StartWaitForInputForRemap(this, ControllerType.Keyboard);
-    }
+    }*/
 
     public Button GetGamepadButton()
     {

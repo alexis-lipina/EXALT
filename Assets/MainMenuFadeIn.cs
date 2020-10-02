@@ -12,7 +12,7 @@ public class MainMenuFadeIn : MonoBehaviour
     {
         if (PlayerHandler.PREVIOUS_SCENE == "")
         {
-            StartCoroutine(PlayFade(_speed));
+            //StartCoroutine(PlayFade(_speed));
         }
     }
 

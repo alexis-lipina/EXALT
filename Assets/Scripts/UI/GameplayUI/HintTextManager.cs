@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HintTextManager : MonoBehaviour
 {
+    [SerializeField] private ControlMenuManager controlMenuManager;
     [SerializeField] private List<Image> TopRow;
     [SerializeField] private List<Image> BottomRow;
     [SerializeField] private Image TopRowBackground;
@@ -34,28 +35,19 @@ public class HintTextManager : MonoBehaviour
     void Awake()
     {
         _inputEncoder = new Dictionary<string, char>();
-        _inputEncoder.Add("DPAD_DOWN", '#');
-        _inputEncoder.Add("DPAD_LEFT", '@');
-        _inputEncoder.Add("DPAD_RIGHT", '%');
-        _inputEncoder.Add("DPAD_UP", '&');
-        _inputEncoder.Add("FACEBUTTON_UP", '*');
-        _inputEncoder.Add("FACEBUTTON_DOWN", '$');
-        _inputEncoder.Add("FACEBUTTON_RIGHT", '}');
-        _inputEncoder.Add("FACEBUTTON_LEFT", '{');
-        _inputEncoder.Add("KEY_W", ';');
-        _inputEncoder.Add("KEY_A", ':');
-        _inputEncoder.Add("KEY_S", '^');
-        _inputEncoder.Add("KEY_D", '=');
-        _inputEncoder.Add("KEY_DOWN", '_');
-        _inputEncoder.Add("KEY_UP", '+');
-        _inputEncoder.Add("KEY_RIGHT", '/');
-        _inputEncoder.Add("KEY_LEFT", '\\');
-        _inputEncoder.Add("MOUSE_LEFT", ')');
-        _inputEncoder.Add("MOUSE_RIGHT", '(');
-        _inputEncoder.Add("STICK_L", '\'');
-        _inputEncoder.Add("STICK_R", '\"');
-        _inputEncoder.Add("TRIGGER_L", ',');
-        _inputEncoder.Add("TRIGGER_R", '-');
+        _inputEncoder.Add("Heal", '#');
+        _inputEncoder.Add("ChangeStyle_Fire", '@');
+        _inputEncoder.Add("ChangeStyle_Zap", '%');
+        _inputEncoder.Add("ChangeStyle_Void", '&');
+        _inputEncoder.Add("Rest", '*');
+        _inputEncoder.Add("Jump", '$');
+        _inputEncoder.Add("Blink", '}');
+        _inputEncoder.Add("MoveUp", ';');
+        _inputEncoder.Add("MoveDown", ':');
+        _inputEncoder.Add("MoveLeft", '^');
+        _inputEncoder.Add("MoveRight", '=');
+        _inputEncoder.Add("Melee", ')');
+        _inputEncoder.Add("RangedAttack", '(');
         _instanceOf = this;
 
         FONTRECT_NORMAL = new Vector2(36, 72);
@@ -199,7 +191,7 @@ public class HintTextManager : MonoBehaviour
 
     private void SetCharacter(Image image, char character)
     {
-        Sprite characterSprite;
+        Sprite characterSprite = null;
 
         image.gameObject.SetActive(true);
         image.rectTransform.sizeDelta = FONTRECT_NORMAL;
@@ -229,7 +221,17 @@ public class HintTextManager : MonoBehaviour
         }
         else if (_inputEncoder.ContainsValue(character))
         {
-            characterSprite = _inputMapping[character];
+            foreach (KeyValuePair<string, char> entry in _inputEncoder)
+            {
+                if (entry.Value == character)
+                {
+                    characterSprite = controlMenuManager.GetSpriteForAction(entry.Key);
+                }
+            }
+            if (characterSprite == null)
+            {
+                characterSprite = _inputMapping[character];
+            }
             image.rectTransform.sizeDelta = FONTRECT_SQUARE;
         }
         else

@@ -149,7 +149,7 @@ public class ControlMappingManager : MonoBehaviour
     }*/
 
     
-    private void InitializeUI()
+    public void InitializeUI()
     {
         // Create Action fields and input field buttons
         foreach (var action in ReInput.mapping.Actions)
@@ -193,64 +193,71 @@ public class ControlMappingManager : MonoBehaviour
 
             // Set the field button callback
             row.inputMappingRow.GetGamepadButton().onClick.RemoveAllListeners();
-            row.inputMappingRow.GetKBButton().onClick.RemoveAllListeners();
-            row.inputMappingRow.GetMouseButton().onClick.RemoveAllListeners();
-
+            if (!row.inputMappingRow.IsGamepadOnly)
+            {
+                row.inputMappingRow.GetKBButton().onClick.RemoveAllListeners();
+                row.inputMappingRow.GetMouseButton().onClick.RemoveAllListeners();
+            }
             int index = i; // copy variable for closure
 
-            // setup keyboard button
-            bool keyboardLinked = false;
-            selectedControllerType = ControllerType.Keyboard;
-            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
+            if (!row.inputMappingRow.IsGamepadOnly)
             {
-                if (actionElementMap.ShowInField(row.range))
+                // setup keyboard button
+                bool keyboardLinked = false;
+                selectedControllerType = ControllerType.Keyboard;
+                foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
                 {
-                    if (keyboardLinked) Debug.LogError("Duplicate mapping! This probably shouldnt happen???");
-                    name = actionElementMap.elementIdentifierName;
-                    row.inputMappingRow.GetKBButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Keyboard));
-                    keyboardLinked = true;
-                    break;
+                    if (actionElementMap.ShowInField(row.range))
+                    {
+                        if (keyboardLinked) Debug.LogError("Duplicate mapping! This probably shouldnt happen???");
+                        name = actionElementMap.elementIdentifierName;
+                        row.inputMappingRow.GetKBButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Keyboard));
+                        keyboardLinked = true;
+                        break;
+                    }
+                }
+                if (!keyboardLinked)
+                {
+                    row.inputMappingRow.GetKBButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Keyboard));
+                }
+
+                // setup mouse button
+                bool mouseLinked = false;
+                selectedControllerType = ControllerType.Mouse;
+                foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
+                {
+                    if (actionElementMap.ShowInField(row.range))
+                    {
+                        mouseLinked = true;
+                        name = actionElementMap.elementIdentifierName;
+                        row.inputMappingRow.GetMouseButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Mouse));
+                        break;
+                    }
+                }
+                if (!mouseLinked)
+                {
+                    row.inputMappingRow.GetMouseButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Mouse));
                 }
             }
-            if (!keyboardLinked)
-            {
-                row.inputMappingRow.GetKBButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Keyboard));
-            }
-
-            // setup mouse button
-            bool mouseLinked = false;
-            selectedControllerType = ControllerType.Mouse;
-            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
-            {
-                if (actionElementMap.ShowInField(row.range))
-                {
-                    mouseLinked = true;
-                    name = actionElementMap.elementIdentifierName;
-                    row.inputMappingRow.GetMouseButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Mouse));
-                    break;
-                }
-            }
-            if (!mouseLinked)
-            {
-                row.inputMappingRow.GetMouseButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Mouse));
-            }
-
-            // setup keyboard button
+            // setup gamepad button
             bool gamepadLinked = false;
             selectedControllerType = ControllerType.Joystick;
-            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
+            if (controllerMap != null)
             {
-                if (actionElementMap.ShowInField(row.range))
+                foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
                 {
-                    gamepadLinked = true;
-                    name = actionElementMap.elementIdentifierName;
-                    row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Joystick));
-                    break;
+                    if (actionElementMap.ShowInField(row.range))
+                    {
+                        gamepadLinked = true;
+                        name = actionElementMap.elementIdentifierName;
+                        row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, actionElementMap.id, ControllerType.Joystick));
+                        break;
+                    }
                 }
-            }
-            if (!gamepadLinked)
-            {
-                row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Joystick));
+                if (!gamepadLinked)
+                {
+                    row.inputMappingRow.GetGamepadButton().onClick.AddListener(() => OnInputFieldClicked(index, -1, ControllerType.Joystick));
+                }
             }
 
             // Set the label in the field button
@@ -269,6 +276,8 @@ public class ControlMappingManager : MonoBehaviour
         newRow.action = action;
         newRow.range = actionRange;
         newRow.descriptiveName = label;
+
+        if (!menuManager) menuManager = GetComponent<ControlMenuManager>();
 
         foreach (InputMappingRow mappingRow in menuManager.MappingRows)
         {

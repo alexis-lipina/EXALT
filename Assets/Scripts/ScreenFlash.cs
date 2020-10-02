@@ -73,13 +73,16 @@ public class ScreenFlash : MonoBehaviour
 
     IEnumerator Flash(float opacity, float decayRate, Color color)
     {
-        while (opacity > 0)
+        if (AccessibilityOptionsSingleton.GetInstance().IsFlashingEnabled)
         {
-            color.a = opacity;
-            GetComponent<Image>().color = color;
-            opacity -= decayRate;
-            yield return new WaitForSeconds(0.01f);
+            while (opacity > 0)
+            {
+                color.a = opacity;
+                GetComponent<Image>().color = color;
+                opacity -= decayRate;
+                yield return new WaitForSeconds(0.01f);
+            }
+            GetComponent<Image>().color = new Color(1, 1, 1, 0);
         }
-        GetComponent<Image>().color = new Color(1, 1, 1, 0);
     }
 }

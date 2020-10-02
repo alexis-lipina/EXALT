@@ -21,6 +21,11 @@ public class DamageVignette : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!AccessibilityOptionsSingleton.GetInstance().IsFlashingEnabled)
+        {
+            GetComponent<Image>().enabled = false;
+            return;
+        }
         if (playerPhysics.GetCurrentHealth() != previousHealth)
         {
             if (playerPhysics.GetCurrentHealth() == 2)
@@ -95,11 +100,11 @@ public class DamageVignette : MonoBehaviour
 
     IEnumerator DecayOpacity(float start, float end, float duration)
     {
-        GetComponent<Image>().color = new Color(1, 1, 1, start);
+        if (AccessibilityOptionsSingleton.GetInstance().LowHPVignette) GetComponent<Image>().color = new Color(1, 1, 1, start);
         float timer = duration;
         while (timer > 0)
         {
-            GetComponent<Image>().color = new Color(1, 1, 1, Mathf.Lerp(start, end, duration-timer/duration));
+            if (AccessibilityOptionsSingleton.GetInstance().LowHPVignette) GetComponent<Image>().color = new Color(1, 1, 1, Mathf.Lerp(start, end, duration-timer/duration));
             timer -= 0.01f;
             yield return new WaitForSeconds(0.01f);
         }
@@ -107,12 +112,11 @@ public class DamageVignette : MonoBehaviour
 
     IEnumerator ExponentialDecayOpacity(float start, float end, float duration, float scale)
     {
-        GetComponent<Image>().color = new Color(1, 1, 1, start);
+        if (AccessibilityOptionsSingleton.GetInstance().LowHPVignette) GetComponent<Image>().color = new Color(1, 1, 1, start);
         float timer = duration;
-        GetComponent<Image>().color = new Color(1, 1, 1, start);
         while (timer > 0)
         {
-            GetComponent<Image>().color = new Color(1, 1, 1, Mathf.Lerp(GetComponent<Image>().color.a, end, scale));
+            if (AccessibilityOptionsSingleton.GetInstance().LowHPVignette) GetComponent<Image>().color = new Color(1, 1, 1, Mathf.Lerp(GetComponent<Image>().color.a, end, scale));
             timer -= 0.01f;
             yield return new WaitForSeconds(0.01f);
         }

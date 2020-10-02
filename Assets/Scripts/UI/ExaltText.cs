@@ -6,48 +6,25 @@ using UnityEngine.UI;
 /// <summary>
 /// Exalt-specific implementation of UI text.
 /// </summary>
-
+[RequireComponent(typeof(HorizontalLayoutGroup))]
+[ExecuteInEditMode]
 public class ExaltText : MonoBehaviour
 {
     private static Dictionary<string, char> InputEncoder;
 
-    [SerializeField] private List<Image> CharacterImages;
-    [SerializeField] private Image FontSpritesheet;
+    [SerializeField] private string TextString;
+    [SerializeField] private Vector2 CharacterSize;
+    private static RectTransform characterPrefab;
+    private static Dictionary<string, Sprite> fontSpritesheet;
 
     void Awake()
     {
-        if (InputEncoder.Count == 0)
-        {
-            InputEncoder = new Dictionary<string, char>();
-            InputEncoder.Add("DPAD_DOWN", '#');
-            InputEncoder.Add("DPAD_LEFT", '@');
-            InputEncoder.Add("DPAD_RIGHT", '%');
-            InputEncoder.Add("DPAD_UP", '&');
-            InputEncoder.Add("FACEBUTTON_UP", '*');
-            InputEncoder.Add("FACEBUTTON_DOWN", '$');
-            InputEncoder.Add("FACEBUTTON_RIGHT", '}');
-            InputEncoder.Add("FACEBUTTON_LEFT", '{');
-            InputEncoder.Add("KEY_W", ';');
-            InputEncoder.Add("KEY_A", ':');
-            InputEncoder.Add("KEY_S", '^');
-            InputEncoder.Add("KEY_D", '=');
-            InputEncoder.Add("KEY_DOWN", '_');
-            InputEncoder.Add("KEY_UP", '+');
-            InputEncoder.Add("KEY_RIGHT", '/');
-            InputEncoder.Add("KEY_LEFT", '\\');
-            InputEncoder.Add("MOUSE_LEFT", ')');
-            InputEncoder.Add("MOUSE_RIGHT", '(');
-            InputEncoder.Add("STICK_L", '\'');
-            InputEncoder.Add("STICK_R", '\"');
-            InputEncoder.Add("TRIGGER_L", ',');
-            InputEncoder.Add("TRIGGER_R", '-');
-        }
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -56,17 +33,78 @@ public class ExaltText : MonoBehaviour
         
     }
 
-    public void SetString(string newString)
+    void OnValidate()
     {
-        if (newString.Length > CharacterImages.Count)
+        SetText(TextString);
+    }
+
+    public void SetText(string NewText)
+    {
+        //Initialization if necessary
+        if (fontSpritesheet == null || fontSpritesheet.Count == 0)
         {
-            Debug.LogError("ExaltText : String length exceeds amount of available character images!");
-            return;
+            fontSpritesheet = new Dictionary<string, Sprite>();
+            Sprite[] sprites = Resources.LoadAll<Sprite>("Font_Spritesheet");
+            foreach (Sprite sprite in sprites)
+            {
+                fontSpritesheet.Add(sprite.name, sprite);
+            }
         }
 
-        for (int i = 0; i < newString.Length; i++)
+        if (!characterPrefab)
         {
-
+            characterPrefab = Resources.Load<RectTransform>("Prefabs/UI/FontChar");
         }
+
+        TextString = NewText;
+        //create children for text
+        List<GameObject> objectsToDestroy = new List<GameObject>();
+        RectTransform newObj;
+        for (int i = 0; i < TextString.Length; i++)
+        {
+            if (i >= transform.childCount)
+            {
+                newObj = Instantiate(characterPrefab, transform);
+            }
+            else
+            {
+                newObj = transform.GetChild(i).GetComponent<RectTransform>();
+            }
+            if (fontSpritesheet.ContainsKey(TextString.Substring(i, 1).ToUpper()))
+            {
+                newObj.GetComponent<Image>().sprite = fontSpritesheet[TextString.Substring(i, 1).ToUpper()];
+            }
+            else if (TextString.Substring(i, 1) == " ")
+            {
+                newObj.GetComponent<Image>().sprite = fontSpritesheet["SPACE"];
+            }
+            else
+            {
+                newObj.GetComponent<Image>().sprite = fontSpritesheet["QUESTION"];
+            }
+            newObj.SetSizeWithCurrentAnchors( RectTransform.Axis.Horizontal, CharacterSize.x);
+            newObj.SetSizeWithCurrentAnchors( RectTransform.Axis.Vertical, CharacterSize.y);
+        }
+
+        if (TextString.Length < transform.childCount)
+        {
+            for (int i = TextString.Length; i < transform.childCount; i++)
+            {
+                if (!Application.isPlaying)
+                {
+                    StartCoroutine(DestroyWhenever(transform.GetChild(TextString.Length).gameObject));
+                }
+                else
+                {
+                    GameObject.Destroy(transform.GetChild(i).gameObject);
+                }
+            }
+        }
+    }
+
+    IEnumerator DestroyWhenever(GameObject obj)
+    {
+        yield return new WaitForEndOfFrame();
+        GameObject.DestroyImmediate(obj);
     }
 }

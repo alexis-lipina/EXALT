@@ -129,6 +129,7 @@ public class CameraScript : MonoBehaviour
 
     public void Jolt(float intensity, Vector2 direction)
     {
+        intensity *= AccessibilityOptionsSingleton.GetInstance().ScreenshakeAmount;
         //Debug.Log("Camera Jolt!");
         if (direction.magnitude == 0)
         {
@@ -145,6 +146,7 @@ public class CameraScript : MonoBehaviour
     IEnumerator CameraShake(float intensity, int repetitions, float timeBetweenJolts)
     {
         //Debug.Log("Camera shaking!");
+        intensity *= AccessibilityOptionsSingleton.GetInstance().ScreenshakeAmount;
         System.Random rand = new System.Random();
         Vector3 originalpos = gameObject.GetComponent<Transform>().position;
         Vector3 newpos = originalpos;

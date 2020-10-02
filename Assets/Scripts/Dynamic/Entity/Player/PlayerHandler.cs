@@ -1951,7 +1951,7 @@ public class PlayerHandler : EntityHandler
         SpriteRenderer[] renderers = _deathFlash.GetComponentsInChildren<SpriteRenderer>();
         for (int i = 0; i < renderers.Length; i++)
         {
-            renderers[i].enabled = true;
+            if (renderers[i].name != "Background") renderers[i].enabled = true;
         }
 
         _gameplayUI.GetComponent<CanvasGroup>().alpha = 0.0f; // Disable visibility game ui for a moment 

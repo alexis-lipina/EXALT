@@ -4,66 +4,64 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using Rewired;
+
 public class MainMenuButtonManager : MonoBehaviour
 {
-    [SerializeField] private Button DogButton;
-    [SerializeField] private Button ArenaButton;
-    [SerializeField] private Button PillarButton;
-    [SerializeField] private Button WavyButton;
-
-    [SerializeField] private GameObject ControlsImage;
+    [SerializeField] private MainOptionsMenu _optionsMenuManager;
+    [SerializeField] private MainPlayMenu _playMenuManager;
+    [SerializeField] private Button _defaultSelectedButton;
 
     private bool controlsVisible;
+    private bool _currentlyGamepad = false;
+    private Player _player;
+
 
     // Use this for initialization
     void Start ()
     {
-        EventSystem.current.SetSelectedGameObject(DogButton.gameObject);
-        controlsVisible = false;
-	}
-	
-	public void DogPressed()
-    {
-        SceneManager.LoadScene("WaterfallArenaNoEnemies", LoadSceneMode.Single);
-        //begin game
-        
-    }
-    public void ArenaPressed()
-    {
-        /*
-        //Show Controls if they arent already visible
-        if (!controlsVisible)
-        {
-            ControlsImage.SetActive(true);
-            controlsVisible = true;
-        }
-        else
-        {
-            ControlsImage.SetActive(false);
-            controlsVisible = false;
-        }
-        */
-        //its not controls anymore...
-        SceneManager.LoadScene("ArenaScene", LoadSceneMode.Single);
-    }
-    public void PillarPressed()
-    {
-        //Application.Quit();
-        SceneManager.LoadScene("ElevatorRoom", LoadSceneMode.Single);
+        _optionsMenuManager.gameObject.SetActive(false);
+        _player = ReInput.players.GetPlayer(0);
     }
 
-    public void WavyPressed()
+    public void OnEnable()
     {
-        SceneManager.LoadScene("RipplingPillars", LoadSceneMode.Single);
+        _defaultSelectedButton.Select();
     }
 
     void Update()
     {
-        /*
-        if (PlayDemoButton.isActiveAndEnabled && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
+        if (_player.controllers.GetLastActiveController() != null)
         {
-            PlayDemoPressed();
+            if (_currentlyGamepad && _player.controllers.GetLastActiveController().type == ControllerType.Mouse || _player.controllers.GetLastActiveController().type == ControllerType.Keyboard)
+            {
+                _currentlyGamepad = false;
+            }
+            if (!_currentlyGamepad && _player.controllers.GetLastActiveController().type == ControllerType.Joystick)
+            {
+                _currentlyGamepad = true;
+                _defaultSelectedButton.Select();
+            }
         }
-        */
+    }
+
+    public void PlayPressed()
+    {
+        //present play screen
+        gameObject.SetActive(false);
+        _playMenuManager.gameObject.SetActive(true);
+        _playMenuManager.SourceMenu = this.gameObject;
+    }
+    public void OptionsPressed()
+    {
+        //present options screen
+        gameObject.SetActive(false);
+        _optionsMenuManager.gameObject.SetActive(true);
+        _optionsMenuManager.SourceMenu = this.gameObject;
+    }
+    public void QuitPressed()
+    {
+        //probably should do an "are you sure?" type thing
+        Application.Quit();
     }
 }

@@ -12,16 +12,13 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
-    [SerializeField] private Button _resume;
-    [SerializeField] private Button _options;
-    [SerializeField] private Button _screenshot;
-    [SerializeField] private Button _mainmenu;
-    [SerializeField] private Button _quit;
+    [SerializeField] private Button _defaultSelectedButton;
     [SerializeField] private GameObject _menuPanel;
     [SerializeField] private GameObject _healthBar;
     [SerializeField] private GameObject _energyBar;
     [Space(10)]
     [SerializeField] private ControlMenuManager controlMenuManager;
+    [SerializeField] private AccessibilityMenu accessibilityMenuManager;
 
     private bool _isCurrentlyPaused = false;
     private Player _controller;
@@ -73,39 +70,28 @@ public class PauseMenu : MonoBehaviour
         SetPaused(false);
     }
 
-    public void OptionsPressed()
+    public void AccessibilityPressed()
     {
-        //open options, but for now its tutorial level
-        Time.timeScale = 1;
-        //do something
-        SceneManager.LoadScene("CombatTraining");
-    }
-
-    public void QuitPressed()
-    {
-        //MainMenuPressed();
-        //quit
-        Application.Quit();
-    }
-
-    public void ScreenshotPressed()
-    {
-        //take screenshot, but for now its arena
-        Time.timeScale = 1;
-        SceneManager.LoadScene("Demo_Arena");
-    }
-
-    public void MainMenuPressed()
-    {
-        //Time.timeScale = 1;
-        //SceneManager.LoadScene("SwitchBlocks");
-
-        //temporarily, this is the options button
-        controlMenuManager.gameObject.SetActive(true);
-        controlMenuManager.Source_Menu = gameObject;
         gameObject.SetActive(false);
+        accessibilityMenuManager.SourceUIMenu = gameObject;
+        accessibilityMenuManager.gameObject.SetActive(true);
     }
 
+    public void ControlsPressed()
+    {
+        gameObject.SetActive(false);
+        controlMenuManager.Source_Menu = gameObject;
+        controlMenuManager.gameObject.SetActive(true);
+    }
+
+    public void QuitToMainMenuPressed()
+    {
+        //quit
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    // ===========================| Pause stuff
     void OnEnable()
     {
         StartCoroutine(OnPause());
@@ -113,8 +99,9 @@ public class PauseMenu : MonoBehaviour
 
     private IEnumerator OnPause()
     {
+        Debug.Log("SETTING THE SELECTED OBJECT");
         EventSystem.current.SetSelectedGameObject(null, new BaseEventData(EventSystem.current));
         yield return new WaitForEndOfFrame();
-        EventSystem.current.SetSelectedGameObject(_resume.gameObject, new BaseEventData(EventSystem.current));
+        EventSystem.current.SetSelectedGameObject(_defaultSelectedButton.gameObject, new BaseEventData(EventSystem.current));
     }
 }

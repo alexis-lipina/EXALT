@@ -30,6 +30,9 @@ public class MainMenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        AccessibilityOptionsSingleton.GetInstance(); //init beginning of game stuff
+        CustomizationMenu.LoadOptions(false);
+
         GameObject.Find("Canvas").GetComponent<CanvasScaler>().scaleFactor = AccessibilityOptionsSingleton.GetInstance().UIScale;
         StartCoroutine(StartupAnimation());
     }

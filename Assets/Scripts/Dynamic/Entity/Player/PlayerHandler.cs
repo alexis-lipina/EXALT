@@ -71,7 +71,7 @@ public class PlayerHandler : EntityHandler
     const string FALL_WEST_Anim = "Anim_PlayerFallWest";
     const string STYLE_CHANGE_Anim = "Change_Attunement";
     const string DEATH_WEST_Anim = "PlayerDeath_West";
-    const string HEAL_ANIM = "Change_Attunement"; //TODO : have a different animation for this my dude
+    const string HEAL_ANIM = "ChangeAttunement_Anim"; //TODO : have a different animation for this my dude
 
     
 
@@ -128,15 +128,15 @@ public class PlayerHandler : EntityHandler
 
     //Light Ranged 
     private const float _lightRangedDuration = 0.25f;
-    private const int _lightRangedEnergyCost = 2;
+    private int _lightRangedEnergyCost = 2;
 
     //Light Ranged Zap Attack
     private const float _lightRangedZapMaxDistance = 30f;
     private const float _chargedRangedZapMaxDistance = 50f;
 
     // Change Style 
-    private const float _changeStyleDuration = 0.95f;
-    private const float _changeStyleColorChangeTime = 0.4f;
+    private const float _changeStyleDuration = 0.7125f;//0.95f;
+    private const float _changeStyleColorChangeTime = 0.3f;//0.4f;
     private bool _changeStyle_HasChanged = false;
 
     // Taking damage
@@ -227,7 +227,7 @@ public class PlayerHandler : EntityHandler
         controller = ReInput.players.GetPlayer(0);
         //this.entityPhysics.GetComponent<Rigidbody2D>().MovePosition(TemporaryPersistentDataScript.getDestinationPosition());
         inventory = gameObject.GetComponent<PlayerInventory>();
-        
+        CustomizationMenu.ApplyPlayerColorPalette();
     }
 
     void Start()
@@ -253,9 +253,10 @@ public class PlayerHandler : EntityHandler
 
         //SwapWeapon("NORTH");
         _currentStyle = ElementType.ZAP;
-        //characterSprite.GetComponent<SpriteRenderer>().material.SetColor("_MagicColor", new Color(0.3f, 1f, 0.7f, 1f));
         Shader.SetGlobalColor("_MagicColor",  new Color(0.0f, 1f, 0.5f, 1f));
-
+        if (_currentStyle == ElementType.ZAP) _lightRangedEnergyCost = 1;
+        Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
+        Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
     }
 
 
@@ -810,14 +811,15 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerBlink()
     {
+        Vector2 blinkDirection = AccessibilityOptionsSingleton.GetInstance().IsBlinkInDirectionOfMotion ? aimDirection : new Vector2(xInput, yInput);
         TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
-        FollowingCamera.GetComponent<CameraScript>().Jolt(1f, aimDirection);
+        FollowingCamera.GetComponent<CameraScript>().Jolt(1f, blinkDirection);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
         //Vibrate( .5f, 0.05f);
         Vibrate(.5f, 0.05f);
 
         //apply effect to any entities caught within player's path..                                                                   V-- Scaling collider for more generous detection
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.GetComponent<BoxCollider2D>().size * 2.0f, 0.0f, aimDirection, aimDirection.magnitude * 7f);
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.GetComponent<BoxCollider2D>().size * 2.0f, 0.0f, blinkDirection, blinkDirection.magnitude * 7f);
         foreach (RaycastHit2D hit in hits)
         {
             if (hit.collider.tag == "Enemy" && hit.collider.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && hit.collider.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
@@ -830,15 +832,13 @@ public class PlayerHandler : EntityHandler
         _blinkAudioSource.Play();
         //Debug.Log(aimDirection);
 
-        entityPhysics.MoveWithCollision(aimDirection.x * 7f, aimDirection.y * 7f); //buggy, occasionally player teleports a much shorter distance than they should
+        entityPhysics.MoveWithCollision(blinkDirection.x * 7f, blinkDirection.y * 7f); //buggy, occasionally player teleports a much shorter distance than they should
         //entityPhysics.GetComponent<Rigidbody2D>().position = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection * 7f;
 
 
         //setup timer
         _blinkTimer = 0f;
         _blink_hasButtonMashed = false;
-
-        
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         CurrentState = PlayerState.JUMP;
@@ -1274,41 +1274,6 @@ public class PlayerHandler : EntityHandler
     //---------------------------------------------| Ranged
     #region Ranged Attack State Methods
 
-    /// <summary>
-    /// Charged Ranged Attack
-    /// </summary>
-    private void PlayerChargedRanged()
-    {
-        //TODO : Draw Player
-        characterAnimator.Play("Anim_Swing_Right_NW");
-
-        if (StateTimer == _burstDuration)
-        {
-            switch (_currentStyle)
-            {
-                case ElementType.FIRE:
-                    ChargedRanged_Fire();
-                    break;
-                case ElementType.VOID:
-                    ChargedRanged_Void();
-                    break;
-                case ElementType.ZAP:
-                    ChargedRanged_Zap();
-                    //Debug.Log("ZAP");
-                    break;
-                default: break;
-            }
-        }
-
-        StateTimer -= Time.deltaTime; //tick
-
-        //state switching
-        if (StateTimer <= 0)
-        {
-            CurrentState = PlayerState.IDLE;
-        }
-    }
-
     private void PlayerLightRanged()
     {
         //TODO : Draw Player
@@ -1371,7 +1336,6 @@ public class PlayerHandler : EntityHandler
             CurrentState = PlayerState.IDLE;
         }
     }
-
 
     /// <summary>
     /// Swaps weapon with one from your inventory given a d-pad direction
@@ -1486,12 +1450,6 @@ public class PlayerHandler : EntityHandler
         {
             hitEntity.Inflict(1, force:aimDirection/* * 2.0f*/, type:ElementType.ZAP);
         }
-        /*
-        _lightRangedZap.GetComponent<LineRenderer>().SetPosition(0, new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y));
-        _lightRangedZap.GetComponent<LineRenderer>().SetPosition(1, new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y));
-        //StartCoroutine(FlashZap(_lightRangedDuration * 0.5f));
-        _lightRangedZap.Play(_lightRangedDuration * 0.5f);
-        */
         
         _lightRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y - _projectileStartHeight), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y - _projectileStartHeight));
         _lightRangedZap.Play(_lightRangedDuration * 0.5f);
@@ -1499,75 +1457,6 @@ public class PlayerHandler : EntityHandler
         //Debug.Log(entityPhysics.transform.position);
         //Debug.Log(endPoint);
     }
-
-    //TODO
-    private void ChargedRanged_Void()
-    {
-        throw new NotImplementedException();
-    }
-    //TODO
-    private void ChargedRanged_Fire()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void ChargedRanged_Zap()
-    {
-        Debug.Log("Here");
-        //raycast in direction, to max distance (Might want it to be a circlecast or boxcast, to be more generous with enemy hit detection)
-        //if hits an environment object at the height it's cast at, endpoint there
-        //else, endpoint at max distance
-        //draw linerenderer between players position + offset and endpoint
-        ScreenFlash.InstanceOfScreenFlash.PlayFlash(1f, .1f);
-        RaycastHit2D[] hits = Physics2D.RaycastAll(entityPhysics.GetComponent<Rigidbody2D>().position, aimDirection, _chargedRangedZapMaxDistance);
-        float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
-        float shortestDistance = float.MaxValue;
-        Vector2 endPoint = Vector2.zero;
-        List<EntityPhysics> enemiesHit = new List<EntityPhysics>();
-        for (int i = 0; i < hits.Length; i++)
-        {
-            //check if is something that can be collided with
-            //check to see if projectile z is within z bounds of physicsobject
-            //check to see if distance to target is shorter than shortestDistance
-
-            if (hits[i].collider.GetComponent<PhysicsObject>()) //can object be collided with
-            {
-                PhysicsObject other = hits[i].collider.GetComponent<PhysicsObject>();
-                if (other.GetBottomHeight() < projectileElevation && other.GetTopHeight() > projectileElevation) //is projectile height within z bounds of object
-                {
-                   
-                    if (other.tag == "Environment")
-                    {
-                        if (hits[i].distance < shortestDistance)
-                        {
-                            //set to current valid collision
-                            shortestDistance = hits[i].distance;
-                            endPoint = hits[i].point;
-                        }
-                    }
-                    else if (other.tag == "Enemy" && other.GetComponent<EntityPhysics>())
-                    {
-                        enemiesHit.Add(other.GetComponent<EntityPhysics>());
-                    }
-                }
-            }
-        }
-        //if hasnt hit anything
-        if (endPoint == Vector2.zero)
-        {
-            //Debug.Log("Hit nothing");
-            endPoint = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection.normalized * _chargedRangedZapMaxDistance;
-        }
-        
-        foreach(EntityPhysics enemy in enemiesHit)
-        {
-            enemy.Inflict(1, force:aimDirection * 5.0f, type:ElementType.ZAP);
-        }
-
-        _chargedRangedZap.SetupLine(new Vector3(entityPhysics.transform.position.x, entityPhysics.transform.position.y + projectileElevation, entityPhysics.transform.position.y - _projectileStartHeight), new Vector3(endPoint.x, endPoint.y + projectileElevation, endPoint.y - _projectileStartHeight));
-        _chargedRangedZap.Play(_lightRangedDuration * 0.5f);
-    }
-
 
     /// <summary>
     /// Fires a bullet
@@ -1656,6 +1545,7 @@ public class PlayerHandler : EntityHandler
                     _currentStyle = ElementType.FIRE;
                     SwapWeapon("WEST");
                     _haloSprite.sprite = Halo_Fire;
+                    _lightRangedEnergyCost = 2;
                     break;
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
@@ -1664,6 +1554,7 @@ public class PlayerHandler : EntityHandler
                     _currentStyle = ElementType.VOID;
                     SwapWeapon("NORTH");
                     _haloSprite.sprite = Halo_Void;
+                    _lightRangedEnergyCost = 2;
                     break;
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
@@ -1671,6 +1562,7 @@ public class PlayerHandler : EntityHandler
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ZAP;
                     _haloSprite.sprite = Halo_Zap;
+                    _lightRangedEnergyCost = 1;
                     break;
                 default:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
@@ -1682,9 +1574,14 @@ public class PlayerHandler : EntityHandler
         }
 
 
-        if ( StateTimer < 0 || ( !controller.GetButton("ChangeStyle_Fire") && !controller.GetButton("ChangeStyle_Void") && !controller.GetButton("ChangeStyle_Zap") ) )
+        if ( StateTimer < 0 /*|| ( !controller.GetButton("ChangeStyle_Fire") && !controller.GetButton("ChangeStyle_Void") && !controller.GetButton("ChangeStyle_Zap") )*/ )
         { 
             CurrentState = PlayerState.RUN;
+            _changeStyle_HasChanged = false;
+        }
+        if (controller.GetButtonDown("Blink"))
+        {
+            PlayerBlinkTransitionAttempt();
             _changeStyle_HasChanged = false;
         }
 
@@ -1768,7 +1665,7 @@ public class PlayerHandler : EntityHandler
             return;
         }
 
-        ChangeEnergy(-2);
+        ChangeEnergy(_lightRangedEnergyCost * -1);
         StateTimer = 0f;
         CurrentState = PlayerState.LIGHT_RANGED;
     }

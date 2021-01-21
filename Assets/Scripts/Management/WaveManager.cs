@@ -131,7 +131,7 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(5.0f);
         Debug.Log("<color=red>Wave " + index + " start!</color>");
         Wave currentWave = WaveList[index];
-
+        ElementType newEnemyShieldType = ElementType.NONE;
 
         //continue doing wave things until there are no enemies left on the field and no enemies left to deploy
         while (currentWave.TotalMelee > 0 || currentWave.TotalRanged > 0 || GetNumberOfMeleeAlive() > 0 || GetNumberOfRangedAlive() > 0)
@@ -139,14 +139,14 @@ public class WaveManager : MonoBehaviour
             //spawn ranged enemy if applicable
             if (currentWave.TotalRanged > 0 && GetNumberOfRangedAlive() < currentWave.MaxRanged && RangedRespawnTimer < 0.0f)
             {
-                SpawnRanged();
+                SpawnRanged(GetRandomShieldedStatus(index / 4.0f));
                 RangedRespawnTimer = TimeBetweenSpawns;
                 --currentWave.TotalRanged;
             }
             //spawn melee enemy if applicable
             if (currentWave.TotalMelee > 0 && GetNumberOfMeleeAlive() < currentWave.MaxMelee && MeleeRespawnTimer < 0.0f)
             {
-                SpawnMelee();
+                SpawnMelee(GetRandomShieldedStatus(index / 4.0f));
                 MeleeRespawnTimer = TimeBetweenSpawns;
                 --currentWave.TotalMelee;
             }
@@ -158,7 +158,7 @@ public class WaveManager : MonoBehaviour
         IsNextWaveReady = true;
     }
 
-    void SpawnRanged()
+    void SpawnRanged(ElementType shieldType = ElementType.NONE)
     {
         Debug.Log("Spawning Ranged");
         EnemySpawner currentSpawner = RangedSpawnLocations[0];
@@ -173,10 +173,10 @@ public class WaveManager : MonoBehaviour
             }
         }
 
-        LivingRangedEnemies.Add(currentSpawner.SpawnEnemy());
+        LivingRangedEnemies.Add(currentSpawner.SpawnEnemy(shieldType));
     }
 
-    void SpawnMelee()
+    void SpawnMelee(ElementType shieldType = ElementType.NONE)
     {
         Debug.Log("Spawning Melee");
         EnemySpawner currentSpawner = MeleeSpawnLocations[0];
@@ -191,7 +191,31 @@ public class WaveManager : MonoBehaviour
             }
         }
 
-        LivingMeleeEnemies.Add(currentSpawner.SpawnEnemy());
+        LivingMeleeEnemies.Add(currentSpawner.SpawnEnemy(shieldType));
     }
 
+    ElementType GetRandomShieldedStatus(float chanceOfShield)
+    {
+        if (Random.Range(0.0f, 1.0f) < chanceOfShield)
+        {
+            return GetRandomElement();
+        }
+        return ElementType.NONE;
+    }
+
+    ElementType GetRandomElement()
+    {
+        switch (Random.Range(0, 3))
+        {
+            case 0:
+                return ElementType.VOID;
+            case 1:
+                return ElementType.FIRE;
+            case 2:
+                return ElementType.ZAP;
+            default:
+                Debug.LogError("How the hell did this happen?");
+                return ElementType.NONE;
+        }
+    }
 }

@@ -9,7 +9,7 @@ using UnityEngine;
 public class OcclusionSprite : MonoBehaviour
 {
     [SerializeField] private TriggerVolume _trigger;
-
+    [SerializeField] private bool _visibleWhenTriggered = true;
     private bool _playerIsWithin = false;
     private float _targetOpacity;
     private float _currentOpacity;
@@ -23,7 +23,7 @@ public class OcclusionSprite : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_trigger.IsTriggered)
+        if (_trigger.IsTriggered == _visibleWhenTriggered)
         {
             _targetOpacity = 1.0f;
         }

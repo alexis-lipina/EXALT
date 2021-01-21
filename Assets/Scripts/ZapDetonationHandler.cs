@@ -100,9 +100,9 @@ public class ZapDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(2, type:Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(5, type:Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(2, type:Element);
+                else collider.GetComponent<EntityPhysics>().Inflict(5, type:Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

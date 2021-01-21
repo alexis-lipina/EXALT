@@ -14,7 +14,7 @@ public class CustomizationMenu : MonoBehaviour
     [SerializeField] private ExaltText _paletteNameText;
     public GameObject SourceUIMenu;
 
-    private static void LoadOptions(bool forceOverwrite)
+    public static void LoadOptions(bool forceOverwrite)
     {
         // if can load file, load it - otherwise, create default and save it to disk
         if (System.IO.File.Exists(Application.persistentDataPath + "ExaltPalettes") && !forceOverwrite)
@@ -28,6 +28,7 @@ public class CustomizationMenu : MonoBehaviour
         {
             GenerateFile();
         }
+        ApplyPlayerColorPalette();
     }
 
     private static void GenerateFile()
@@ -142,7 +143,7 @@ public class CustomizationMenu : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(_optionsSlider.gameObject);
         if (PaletteOptions == null)
         {
-            LoadOptions(true);
+            LoadOptions(false);
         }
         _optionsSlider.wholeNumbers = true;
         _optionsSlider.maxValue = PaletteOptions.array.Length - 1;
@@ -167,7 +168,7 @@ public class CustomizationMenu : MonoBehaviour
     {
         if (PaletteOptions == null)
         {
-            LoadOptions(true);
+            LoadOptions(false);
         }
         if (PaletteOptions.array.Length <= AccessibilityOptionsSingleton.GetInstance().CurrentPaletteIndex)
         {

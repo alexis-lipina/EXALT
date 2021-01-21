@@ -10,6 +10,7 @@ public class AccessibilityMenu : MonoBehaviour
     [SerializeField] private Slider Screenshake_Slider;
     [SerializeField] private ToggleButton IsFlashingEnabled_Button;
     [SerializeField] private ToggleButton LowHPVignette_Button;
+    [SerializeField] private ToggleButton BlinkDirection_Button;
     //[SerializeField] private Slider UIScale_Slider;
     [SerializeField] private GameObject _defaultOption;
 
@@ -25,8 +26,9 @@ public class AccessibilityMenu : MonoBehaviour
     public void SaveCurrentState()
     {
         AccessibilityOptionsSingleton.GetInstance().IsFlashingEnabled = IsFlashingEnabled_Button.GetCurrentValue();
+        AccessibilityOptionsSingleton.GetInstance().LowHPVignette = LowHPVignette_Button.GetCurrentValue();
         AccessibilityOptionsSingleton.GetInstance().ScreenshakeAmount = Screenshake_Slider.value;
-        //AccessibilityOptionsSingleton.GetInstance().UIScale = UIScale_Slider.value;
+        AccessibilityOptionsSingleton.GetInstance().IsBlinkInDirectionOfMotion = BlinkDirection_Button.GetCurrentValue();
         AccessibilityOptionsSingleton.GetInstance().SaveCurrentOptions();
     }
 

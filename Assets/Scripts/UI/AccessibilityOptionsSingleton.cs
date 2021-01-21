@@ -96,6 +96,17 @@ public class AccessibilityOptionsSingleton
             _data.CustomizationOptionIndex = value;
         }
     }
+    public bool IsBlinkInDirectionOfMotion
+    {
+        get
+        {
+            return _data.IsBlinkInDirectionOfMotion;
+        }
+        set
+        {
+            _data.IsBlinkInDirectionOfMotion = value;
+        }
+    }
 
 
 

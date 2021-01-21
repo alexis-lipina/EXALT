@@ -104,7 +104,7 @@ public class EnemySpawner : MonoBehaviour
         tempPhysics.transform.parent.position = (Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset; //- new Vector2(0f, 2f);
         Debug.Log("<color=red>" + _startEnvironment + "</color>");
         Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
-        tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset); //- new Vector2(0f, 2f); 
+        tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset + new Vector2(Random.Range(-2.0f, 2.0f), Random.Range(-1.5f, 1.5f))); //- new Vector2(0f, 2f); 
         tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
         if (!isHostile)
         {

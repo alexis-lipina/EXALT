@@ -98,7 +98,7 @@ public class VoidDetonationHandler : ProjectionHandler
     {
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
-        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(24f, 18f), 0.0f);
+        Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(32f, 24f), 0.0f);
         foreach (Collider2D collider in collidersHit)
         {
             if (collider.gameObject.tag == "Enemy")

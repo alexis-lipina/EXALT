@@ -127,7 +127,7 @@ public class FireDetonationHandler : ProjectionHandler
             {
                 if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
+                    collider.GetComponent<EntityPhysics>().Inflict(2, type: Element);
                     collider.GetComponent<EntityPhysics>().Burn();
                 }
                 else

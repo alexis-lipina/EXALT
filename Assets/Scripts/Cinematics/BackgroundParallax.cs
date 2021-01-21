@@ -21,7 +21,7 @@ public class BackgroundParallax : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
 
         //Perform parallax motion

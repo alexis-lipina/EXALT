@@ -92,12 +92,17 @@
 						color = _PaletteSwapG;
 					}
 
-
+					/*
 					if (abs(color.b - _SourceColor.b) < 0.1 && abs(color.r - _SourceColor.r) < 0.1 && abs(color.g - _SourceColor.g) < 0.1 && color.a != 0)
 					{
 						color = _MagicColor;
-					}
+					}*/
 
+					if (color.r == 0.0 / 255.0 && color.g == 255.0 / 255.0 && color.b == 153.0 / 255.0 && color.a != 0)
+					{
+						color = _MagicColor;
+					}
+					
 					if (color.a != 0 && _MaskOn != 0)
 					{
 						color = _MaskColor;

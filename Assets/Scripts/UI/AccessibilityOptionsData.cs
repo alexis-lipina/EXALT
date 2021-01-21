@@ -14,4 +14,5 @@ public class AccessibilityOptionsData
     public bool LowHPVignette = true;
     public float UIScale = 1.0f;
     public int CustomizationOptionIndex = 0;
+    public bool IsBlinkInDirectionOfMotion = true;
 }

@@ -814,7 +814,7 @@ public class PlayerHandler : EntityHandler
         Vector2 blinkDirection = AccessibilityOptionsSingleton.GetInstance().IsBlinkInDirectionOfMotion ? aimDirection : new Vector2(xInput, yInput);
         TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         FollowingCamera.GetComponent<CameraScript>().Jolt(1f, blinkDirection);
-        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
+        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.2f, 0.05f);
         //Vibrate( .5f, 0.05f);
         Vibrate(.5f, 0.05f);
 

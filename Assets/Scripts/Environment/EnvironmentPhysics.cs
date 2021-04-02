@@ -38,6 +38,11 @@ public class EnvironmentPhysics : PhysicsObject
         get { return bottomHeight; }
     }
 
+    public float ObjectHeight
+    {
+        get { return topHeight - bottomHeight; }
+    }
+
     protected List<NavEdge> neighborEdges;
 
     public bool IsSavePoint

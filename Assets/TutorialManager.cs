@@ -78,10 +78,11 @@ public class TutorialManager : MonoBehaviour
         _exitBridge.gameObject.SetActive(false);
         hintTextManager = HintTextManager.GetInstanceOf();
 
-        Shader.SetGlobalColor("_HighColor", _levelHighColor);
-        Shader.SetGlobalColor("_LowColor", _levelLowColor);
-        Shader.SetGlobalColor("_HighColor", _levelHighColor);
-        Shader.SetGlobalColor("_LowColor", _levelLowColor);
+        // This functionality has been moved to LevelManager
+        //Shader.SetGlobalColor("_HighColor", _levelHighColor);
+        //Shader.SetGlobalColor("_LowColor", _levelLowColor);
+        //Shader.SetGlobalColor("_HighColor", _levelHighColor);
+        //Shader.SetGlobalColor("_LowColor", _levelLowColor);
     }
 
     // Update is called once per frame

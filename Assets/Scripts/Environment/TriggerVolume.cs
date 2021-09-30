@@ -34,6 +34,9 @@ public class TriggerVolume : PhysicsObject
         get { return _touchingObjects; }
     }
 
+    // other triggers that add to the effective volume of this trigger
+    public List<TriggerVolume> ChildTriggers;
+
     void Awake()
     {
         _objectsInAirspace = new List<GameObject>();
@@ -54,6 +57,11 @@ public class TriggerVolume : PhysicsObject
         else
         {
             _isTriggered = false;
+        }
+
+        foreach (TriggerVolume tv in ChildTriggers)
+        {
+            if (tv.IsTriggered) { _isTriggered = true; }
         }
 
 

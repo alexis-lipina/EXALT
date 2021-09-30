@@ -9,10 +9,10 @@ Shader "Custom/WallShader"
 		//_PlayerElevation("Player Elevation", Float) = 0
 		_TopElevation("Top Elevation", Float) = 0
 		_BottomElevation("Bottom Elevation", Float) = 0
-		_MaxElevationOffset("Max Difference in Height between player and solid color", Float) = 30.0
+		//_MaxElevationOffset("Max Difference in Height between player and solid color", Float) = 30.0
 
-		_HighColor("High Color", Color) = (1, 1, 1, 1)
-		_LowColor("Low Color", Color) = (0, 0, 0, 1)
+		//_HighColor("High Color", Color) = (1, 1, 1, 1)
+		//_LowColor("Low Color", Color) = (0, 0, 0, 1)
 
 		_Opacity("Opacity", Float) = 1.0
 	}

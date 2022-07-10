@@ -14,8 +14,10 @@ public class OpeningCinematicManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (PlayerHandler.PREVIOUS_SCENE != "NewGameMainMenu")
+        if (PlayerHandler.PREVIOUS_SCENE != "BlinkTutorialHall")
+        {
             StartCoroutine(CameraPanDown(_duration));
+        }
     }
 
     // Update is called once per frame

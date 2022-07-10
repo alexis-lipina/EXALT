@@ -22,6 +22,11 @@ public class MainPlayMenu : MonoBehaviour
         SceneManager.LoadScene("Demo_Arena");
     }
 
+    public void DemoStoryButtonPressed()
+    {
+        SceneManager.LoadScene("WarpPlatform");
+    }
+
     public void OnBackToMainMenuPressed()
     {
         gameObject.SetActive(false);

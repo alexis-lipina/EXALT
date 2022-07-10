@@ -16,7 +16,7 @@ public class EntranceVolume : MonoBehaviour
         if (PlayerHandler.PREVIOUS_SCENE == _source)
         {
             _playerPhysics.transform.position = transform.position;
-            _playerPhysics.SetElevation(_elevation);
+            _playerPhysics.SetElevation(_elevation + 0.5f);
             StartCoroutine(KeepCameraInLine());
         }
     }

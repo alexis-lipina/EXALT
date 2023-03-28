@@ -20,11 +20,11 @@ public class FadeTransition : MonoBehaviour
         StartCoroutine( FadeInTransition() );
     }
 
-    public void FadeToScene(string levelName)
+    public void FadeToScene(string levelName, string doorName)
     {
         if (!_hasBeganToExit)
         {
-            StartCoroutine(FadeOutTransition(levelName));
+            StartCoroutine(FadeOutTransition(levelName, doorName));
             _hasBeganToExit = true;
         }
     }
@@ -66,7 +66,7 @@ public class FadeTransition : MonoBehaviour
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
     }
 
-    private IEnumerator FadeOutTransition(string sceneName, float rate = 2f)
+    private IEnumerator FadeOutTransition(string sceneName, string doorName, float rate = 2f)
     {
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
         float opacity = 0f;
@@ -78,6 +78,7 @@ public class FadeTransition : MonoBehaviour
         }
         GetComponent<Image>().color = new Color(0, 0, 0, 1);
         PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
+        PlayerHandler.PREVIOUS_SCENE_DOOR = doorName;
         SceneManager.LoadScene(sceneName);
     }
 }

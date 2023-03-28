@@ -73,6 +73,7 @@ public class RangedEnemyHandler : EntityHandler
     private Weapon _enemyProjectileLauncher;
 
     private float attackCoolDown;
+    private Vector2 aimVector;
     float xInput;
     float yInput;
     bool jumpPressed;
@@ -268,6 +269,7 @@ public class RangedEnemyHandler : EntityHandler
         {
             stateTimer = 0;
             currentState = TestEnemyState.READY;
+            aimVector = (_pathfindingAi.target.transform.position - entityPhysics.transform.position).normalized;
         }
         if (entityPhysics.GetObjectElevation() > maxheight)
         {
@@ -428,9 +430,10 @@ public class RangedEnemyHandler : EntityHandler
         //todo - test area for collision, if coll
         if (!hasSwung)
         {
-            
+
             //fire bullet
-            GameObject bullet = _enemyProjectileLauncher.FireBullet( _pathfindingAi.target.transform.position - entityPhysics.transform.position );
+            aimVector = (((Vector2)_pathfindingAi.target.transform.position - (Vector2)entityPhysics.transform.position).normalized + aimVector.normalized) / 2;
+            GameObject bullet = _enemyProjectileLauncher.FireBullet( aimVector );
             bullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
             bullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
             hasSwung = true;

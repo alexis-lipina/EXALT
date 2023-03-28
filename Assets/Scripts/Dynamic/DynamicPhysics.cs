@@ -110,7 +110,7 @@ public class DynamicPhysics : PhysicsObject
         float delta = 0f;
         foreach(KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
-            delta = bottomHeight - entry.Value.GetTopHeight();
+            delta = Mathf.Abs(bottomHeight - entry.Value.GetTopHeight());
             if (delta > 0 && delta < 1f) 
             {
                 bottomHeight -= delta;

@@ -43,6 +43,7 @@ public class PlayerHandler : EntityHandler
     public int CurrentEnergy { get { return _currentEnergy; } }
 
     public static string PREVIOUS_SCENE = "";
+    public static string PREVIOUS_SCENE_DOOR = "";
 
     private Animator characterAnimator;
     private PlayerInventory inventory;
@@ -232,6 +233,9 @@ public class PlayerHandler : EntityHandler
 
     void Start()
     {
+        _gameplayUI.parent.gameObject.SetActive(true); // if I put this at the bottom it just... doesnt execute???
+        _gameplayUI.gameObject.SetActive(true); 
+
         EnvironmentPhysics._playerPhysics = entityPhysics;
         EnvironmentPhysics._playerSprite = characterSprite;
         aimDirection = Vector2.right;
@@ -404,6 +408,7 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerIdle()
     {
+        entityPhysics.ZVelocity = 0.0f;
         //Draw
         switch (currentFaceDirection)
         {
@@ -492,7 +497,7 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerRun()
     {
-
+        entityPhysics.ZVelocity = 0.0f;
         //Face Direction Determination
         Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
         if (direction.sqrMagnitude > 1) direction.Normalize(); //prevents going too fast on KB
@@ -1868,7 +1873,7 @@ public class PlayerHandler : EntityHandler
 
         yield return new WaitForSeconds(1.0f);
         Time.timeScale = 1.0f;
-        _fadeTransition.FadeToScene(SceneManager.GetActiveScene().name);
+        _fadeTransition.FadeToScene(SceneManager.GetActiveScene().name, "");
         // play death animation, stop for a bit, then fade to black
     }
 
@@ -1877,4 +1882,18 @@ public class PlayerHandler : EntityHandler
         return _currentStyle;
     }
 
+    /// <summary>
+    /// "Permanently" reduce the amount of HP available to the player. Occurs in the campaign when the player destroys power cores in the Monolith
+    /// </summary>
+    public void ShatterHealth()
+    {
+        int newMaxHP = entityPhysics.GetMaxHealth() - 1;
+        entityPhysics.SetMaxHealth(newMaxHP);
+        _healthBar.ShatterHealthBarSegment(newMaxHP);
+    }
+
+    public Vector2 GetLookDirection()
+    {
+        return aimDirection;
+    }
 }

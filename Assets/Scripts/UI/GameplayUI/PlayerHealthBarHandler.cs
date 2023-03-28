@@ -11,9 +11,10 @@ public class PlayerHealthBarHandler : MonoBehaviour
     [SerializeField] private Sprite _offSprite;
     [SerializeField] private Sprite _flashSprite;
     [SerializeField] private Sprite _darkSprite;
+    [SerializeField] private Sprite _shatterSprite;
 
     private int _currentPlayerHealth = 5;
-
+    private int _numberOfShatteredHealthCells = 0;
     private static float TimeToFadeOut = 3.0f;
 
 
@@ -96,5 +97,22 @@ public class PlayerHealthBarHandler : MonoBehaviour
 
         segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight );
         segment.sprite = _onSprite;
+    }
+
+    public void ShatterHealthBarSegment(int NewMax)
+    {
+        _currentPlayerHealth--;
+        for (int i = 0; i < _healthBarSegments.Count; i++)
+        {
+            if (i < NewMax)
+            {
+                
+            }
+            else
+            {
+                _healthBarSegments[i].sprite = _shatterSprite;
+                _healthBarSegments[i].color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+            }
+        }
     }
 }

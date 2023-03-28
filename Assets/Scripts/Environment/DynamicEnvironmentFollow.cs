@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// I believe this makes an environmentphysics follow an assigned entityphysics for objects that can be slapped around
+/// </summary>
 public class DynamicEnvironmentFollow : MonoBehaviour
 {
     [SerializeField] private EntityPhysics _destination;

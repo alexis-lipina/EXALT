@@ -48,6 +48,7 @@ public class EnvironmentPhysics : PhysicsObject
     public bool IsSavePoint
     {
         get { return isSavePoint; }
+        set { isSavePoint = value; }
     }
 
     public void AddNeighbor(GameObject newNeighbor)
@@ -89,7 +90,11 @@ public class EnvironmentPhysics : PhysicsObject
             temp.Distance = Vector2.Distance(neighbor.transform.position, gameObject.transform.position); //change when using elevated objects, take into account collider offset
             neighborEdges.Add(temp);
         }
-       // Debug.Log("navedge number:" + neighborEdges.Count);
+        // Debug.Log("navedge number:" + neighborEdges.Count);
+        if (!isTransparentOnOcclude)
+        {
+            enabled = false;
+        }
     }
 
     void Update()
@@ -130,8 +135,6 @@ public class EnvironmentPhysics : PhysicsObject
             }
             else
             {
-
-
                 float desiredOpacity = gameObject.GetComponent<Transform>().position.z - _playerSprite.GetComponent<Transform>().position.z + 5f;
 
                 //less than 0 if player is within x-bounds, greater than 0 otherwise
@@ -147,16 +150,8 @@ public class EnvironmentPhysics : PhysicsObject
             GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", _opacity);
             if (GetComponentsInChildren<SpriteRenderer>().Length > 1) GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", _opacity);
         }
-        else
-        {
-            
-        }
-        
-        
     }
 
-    
-   
     /// <summary>
     /// Returns (bottomHeight, topHeight)
     /// </summary>

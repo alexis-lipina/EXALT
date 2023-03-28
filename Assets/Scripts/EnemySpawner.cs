@@ -148,6 +148,9 @@ public class EnemySpawner : MonoBehaviour
 
         //tempEnemy.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
         _enemyPool.Add(tempEnemy.GetInstanceID(), tempEnemy);
+        tempEnemy.SetActive(true);
+        enemiesAlive++;
+
         return tempEnemy;
     }
 

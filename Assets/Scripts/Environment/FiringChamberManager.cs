@@ -9,14 +9,14 @@ using UnityEngine;
 public class FiringChamberManager : MonoBehaviour
 {
 
-    [SerializeField] private TriggerVolume[] ShieldingVolumes;
-    [SerializeField] private EntityPhysics[] KillableThings;
+    [SerializeField] private List<TriggerVolume> ShieldingVolumes;
+    [SerializeField] private List<EntityPhysics> KillableThings;
     [SerializeField] private Animator LaserAnimation;
     [SerializeField] private int SecondsBetweenShots = 8;
     private int SecondsUntilNextShot;
-    [SerializeField] private SpriteRenderer LeftGlow;
-    [SerializeField] private SpriteRenderer RightGlow;
-
+    [SerializeField] private SpriteRenderer[] GlowGradients;
+    [SerializeField] private AnimationCurve GradientGlowOverTime;
+    float Timer = 0.0f;
 
 
     // Start is called before the first frame update
@@ -24,6 +24,15 @@ public class FiringChamberManager : MonoBehaviour
     {
         SecondsUntilNextShot = SecondsBetweenShots;
         StartCoroutine(PulseLaserBeam());
+    }
+
+    private void Update()
+    {
+        Timer += Time.deltaTime;
+        foreach (SpriteRenderer renderer in GlowGradients)
+        {
+            renderer.material.SetFloat("_Opacity", GradientGlowOverTime.Evaluate(Timer/SecondsBetweenShots)); 
+        }
     }
 
     void OnGUI()
@@ -38,10 +47,14 @@ public class FiringChamberManager : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
             SecondsUntilNextShot -= 1;
 
+            if (SecondsUntilNextShot == 4)
+            {
+                StartCoroutine(RampGlow(0.0f, 0.3f, 2.0f));
+            }
+
             if (SecondsUntilNextShot == 2)
             {
                 LaserAnimation.Play("FiringChamber_WarmUp", -1, 0.0f);
-                StartCoroutine(RampGlow(0.0f, 0.3f, 0.9f));
             }
 
             if (SecondsUntilNextShot == 1)
@@ -54,24 +67,32 @@ public class FiringChamberManager : MonoBehaviour
                 KillAllUnshieldedThings();
                 SecondsUntilNextShot = SecondsBetweenShots;
                 LaserAnimation.Play("FiringChamber_Fire", -1, 0.0f);
-                StartCoroutine(RampGlow(1.0f, 0.0f, 0.3f));
+                StartCoroutine(RampGlow(1.0f, 0.0f, 2.0f));
+                Timer = 0.0f;
+
             }
         }
     }
 
     IEnumerator RampGlow(float startNormalized, float endNormalized, float duration)
     {
+        yield return null;
+        /*
         float increment = 0.025f;
         float timer = duration;
         while (timer > 0.0f)
         {
-            LeftGlow.material.SetFloat("_Opacity", Mathf.Lerp(endNormalized, startNormalized, timer/duration)); //timer/duration starts at 1.0f (x/x), ends at 0.0f (0/x)
-            RightGlow.material.SetFloat("_Opacity", Mathf.Lerp(endNormalized, startNormalized, timer/duration)); //timer/duration starts at 1.0f (x/x), ends at 0.0f (0/x)
+            foreach (SpriteRenderer renderer in GlowGradients)
+            {
+                renderer.material.SetFloat("_Opacity", Mathf.Lerp(endNormalized, startNormalized, timer / duration)); //timer/duration starts at 1.0f (x/x), ends at 0.0f (0/x)
+            }
             timer -= increment;
             yield return new WaitForSeconds(increment);
         }
-        LeftGlow.material.SetFloat("_Opacity", endNormalized);
-        RightGlow.material.SetFloat("_Opacity", endNormalized);
+        foreach (SpriteRenderer renderer in GlowGradients)
+        {
+            renderer.material.SetFloat("_Opacity", endNormalized);
+        }*/
     }
 
 
@@ -84,6 +105,7 @@ public class FiringChamberManager : MonoBehaviour
         {
             foreach (GameObject obj in volume.TouchingObjects)
             {
+                if (!obj) continue;
                 EntityPhysics physics = obj.GetComponent<EntityPhysics>();
                 if (physics && !safeEntities.Contains(physics))
                 {
@@ -94,10 +116,23 @@ public class FiringChamberManager : MonoBehaviour
 
         foreach (EntityPhysics entity in KillableThings)
         {
-            if (!safeEntities.Contains(entity))
+            if (!safeEntities.Contains(entity) && entity)
             {
                 entity.Inflict(1000, 0);
             }
+        }
+    }
+
+    public void AddShieldingVolume(TriggerVolume volume)
+    {
+        ShieldingVolumes.Add(volume);
+    }
+
+    public void RemoveShieldingVolume(TriggerVolume volume)
+    {
+        if (ShieldingVolumes.Contains(volume))
+        {
+            ShieldingVolumes.Remove(volume);
         }
     }
 }

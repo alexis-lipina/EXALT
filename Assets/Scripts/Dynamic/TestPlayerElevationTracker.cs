@@ -61,6 +61,10 @@ public class TestPlayerElevationTracker : MonoBehaviour
         if (_canChangeElevation) UpdateShader();
     }
 
+    public void SetCanChangeElevation(bool canchange)
+    {
+        _canChangeElevation = canchange;
+    }
 
     /*
     // Update is called once per frame

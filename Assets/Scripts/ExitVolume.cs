@@ -7,6 +7,7 @@ using UnityEngine;
 public class ExitVolume : MonoBehaviour
 {
     [SerializeField] private string _destination;
+    [SerializeField] private string _doorName;
 
 
 	// Use this for initialization
@@ -19,7 +20,7 @@ public class ExitVolume : MonoBehaviour
     {
         if (GetComponent<TriggerVolume>().IsTriggered)
         {
-            FadeTransition.Singleton.FadeToScene(_destination);
+            FadeTransition.Singleton.FadeToScene(_destination, _doorName);
         }
     }
 }

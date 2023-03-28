@@ -9,6 +9,7 @@ public class SwitchPhysics : EntityPhysics
 {
     public bool IsOn { get; private set; }
     private bool _hasBeenHitAlreadyThisFrame = false;
+    public bool IsHittable = true; 
 
     public override void Inflict(int damage, float hitPauseDuration = 0.03F, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {

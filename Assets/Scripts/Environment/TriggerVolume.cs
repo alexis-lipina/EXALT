@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(BoxCollider2D))]
 
@@ -18,6 +19,8 @@ public class TriggerVolume : PhysicsObject
     [SerializeField] private bool _isTriggeredByPlayer;
     [SerializeField] private bool _isTriggeredByFriend;
     [SerializeField] private bool _isTriggeredByEnemy;
+    public UnityEvent On3DOverlapEvent;
+
 
     private float _height;
     private bool _isTriggered;
@@ -44,9 +47,19 @@ public class TriggerVolume : PhysicsObject
         _isTriggered = false;
         bottomHeight = _startBottomHeight;
         topHeight = _startTopHeight;
+        _height = topHeight - bottomHeight;
     }
-    
 
+    private void Start()
+    {
+        Collider2D[] colliders = new Collider2D[8];
+        ContactFilter2D cf = new ContactFilter2D();
+        int NumColliders = GetComponent<BoxCollider2D>().OverlapCollider(cf, colliders);
+        for (int i = 0; i < NumColliders; i++)
+        {
+            //OnTriggerEnter2D(colliders[i]);
+        }
+    }
 
     void Update()
     {
@@ -72,6 +85,7 @@ public class TriggerVolume : PhysicsObject
             {
                 _touchingObjects.Add(other.gameObject);
                 Debug.Log("Entered!");
+                On3DOverlapEvent.Invoke();
             }
             else if (_touchingObjects.Contains(other) && !IsVerticalCollision(other.GetComponent<EntityPhysics>())) //check if exits virtual collider
             {
@@ -91,14 +105,7 @@ public class TriggerVolume : PhysicsObject
         }
     }
 
-
-
-
-
-
-
     // COLLISION RESOLUTION
-
     void OnTriggerEnter2D(Collider2D other)
     {
         /*
@@ -131,10 +138,7 @@ public class TriggerVolume : PhysicsObject
             {
                 _objectsInAirspace.Add(other.gameObject);
             }
-            
         }
-
-
     }
 
     //necessary because an entity could enter the virtual 3D collider while having already been inside the 2D collider

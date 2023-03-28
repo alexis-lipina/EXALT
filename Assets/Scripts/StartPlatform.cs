@@ -10,13 +10,14 @@ using UnityEngine.SceneManagement;
 public class StartPlatform : MonoBehaviour
 {
     [SerializeField] private string _sourceScene;
+    [SerializeField] private string _sourceDoor;
     [SerializeField] private EntityPhysics _playerPhysics;
 
 
 	// Use this for initialization
 	void Start ()
-    {
-		if (PlayerHandler.PREVIOUS_SCENE == _sourceScene)
+    {                                                       // v- should eval true for normal cases where theres just one unlabeled door
+		if (PlayerHandler.PREVIOUS_SCENE == _sourceScene && PlayerHandler.PREVIOUS_SCENE_DOOR == _sourceDoor)
         {
             //move player here
             _playerPhysics.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
@@ -26,5 +27,4 @@ public class StartPlatform : MonoBehaviour
             PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         }
 	}
-	
 }

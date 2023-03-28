@@ -96,6 +96,8 @@ public class EntityPhysics : DynamicPhysics
         }
         UpdateEntityNavigationObject();
         hasBeenHit = false;
+        topHeight = bottomHeight + _objectHeight; // please let this fix the weird physics issue
+
         //Entity collision 
         HandleTouchedEntities();
 
@@ -521,5 +523,13 @@ public class EntityPhysics : DynamicPhysics
     {
         bottomHeight = elev;
         topHeight = elev + _objectHeight;
+    }
+
+
+    //probably should be avoided generally. currently used for player max HP reduction
+    public void SetMaxHealth(int NewMax)
+    {
+        MaxHP = NewMax;
+        currentHP = Mathf.Clamp(currentHP, 0, NewMax);
     }
 }

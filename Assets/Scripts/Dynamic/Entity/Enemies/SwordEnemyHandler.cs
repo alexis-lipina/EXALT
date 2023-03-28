@@ -129,6 +129,8 @@ public class SwordEnemyHandler : EntityHandler
 
     protected override void ExecuteState()
     {
+        //Debug.Log("Enemy Current Z value is " + entityPhysics.GetObjectElevation()) ;
+
         switch (currentState)
         {
             case (TestEnemyState.IDLE):

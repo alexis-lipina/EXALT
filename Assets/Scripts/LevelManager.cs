@@ -18,6 +18,8 @@ public class LevelManager : MonoBehaviour
         Shader.SetGlobalColor("_HighColor", heightsColor);
         Shader.SetGlobalColor("_LowColor", depthsColor);
         Shader.SetGlobalFloat("_MaxElevationOffset", elevationOffset);
+        GameObject.Find("Canvas").SetActive(true); // in case its been disabled
+
         //Shader.SetGlobalColor("_HighColor", heightsColor);
         //Shader.SetGlobalColor("_LowColor", depthsColor);
 

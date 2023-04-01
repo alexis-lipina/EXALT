@@ -43,7 +43,7 @@ public class BetterEnemySpawner : MonoBehaviour
             {
                 envt.SetToElevation(SpawnPlatform.TopHeight - 0.5f - heightOfEachCell * maxNumCells + heightOfEachCell * (numberOfEnemiesToSpawn - timer / TimeBetweenSpawns));
             }
-            Debug.Log(numberOfEnemiesToSpawn);
+           //Debug.Log(numberOfEnemiesToSpawn);
         }
     }
 

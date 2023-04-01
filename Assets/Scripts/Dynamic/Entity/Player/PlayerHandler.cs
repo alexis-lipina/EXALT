@@ -196,6 +196,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private Sprite Halo_Fire;
     private bool _jump_hasStartedFalling = false;
 
+    private static int NumberOfShatteredHealthBlocks = 0;
+
     public float TimeSinceCombat = 0.0f;
 
     public ElementType GetStyle()
@@ -234,7 +236,11 @@ public class PlayerHandler : EntityHandler
     void Start()
     {
         _gameplayUI.parent.gameObject.SetActive(true); // if I put this at the bottom it just... doesnt execute???
-        _gameplayUI.gameObject.SetActive(true); 
+        _gameplayUI.gameObject.SetActive(true);
+
+        entityPhysics.SetMaxHealth(5 - NumberOfShatteredHealthBlocks);
+        _healthBar.ShatterHealthBarSegment(5-NumberOfShatteredHealthBlocks);
+
 
         EnvironmentPhysics._playerPhysics = entityPhysics;
         EnvironmentPhysics._playerSprite = characterSprite;
@@ -1890,6 +1896,7 @@ public class PlayerHandler : EntityHandler
         int newMaxHP = entityPhysics.GetMaxHealth() - 1;
         entityPhysics.SetMaxHealth(newMaxHP);
         _healthBar.ShatterHealthBarSegment(newMaxHP);
+        NumberOfShatteredHealthBlocks++;
     }
 
     public Vector2 GetLookDirection()

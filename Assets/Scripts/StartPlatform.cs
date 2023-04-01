@@ -21,7 +21,8 @@ public class StartPlatform : MonoBehaviour
         {
             //move player here
             _playerPhysics.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
-            _playerPhysics.SetElevation(GetComponent<EnvironmentPhysics>().TopHeight + 5);
+            _playerPhysics.SetElevation(GetComponent<EnvironmentPhysics>().TopHeight + 0.2f);
+            _playerPhysics.ZVelocity = 0.0f;
             Debug.Log("TELEPORT!");
             Camera.main.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
             PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;

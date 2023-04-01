@@ -32,19 +32,31 @@ public class FadeTransition : MonoBehaviour
 
     private IEnumerator FadeInTransition(float rate = 2f)
     {
+        Time.timeScale = 0.0f; // prevents things from happening during loading, like player falling
         _hasBeganToExit = false;
         GetComponent<Image>().color = new Color(0, 0, 0, 1);
 
         // wait for a moment to ensure scene load
         PlayerHandler player = FindObjectOfType<PlayerHandler>();
+        
 
         if (player) //wait for scene to load for a few milliseconds, and hang player in position. Solves problems where player falls through objects as level loads in.
         {
-            yield return new WaitForSeconds(0.01f); // let the EntranceVolume initialize the players position before doing anything else
+            yield return new WaitForSecondsRealtime(0.01f); // let the EntranceVolume initialize the players position before doing anything else
 
             float StartPlayerHeight = player.GetEntityPhysics().GetObjectElevation();
 
-            float WaitTimer = 0.5f;
+            float WaitTimer = 0.2f;
+            while (WaitTimer > 0.0f)
+            {
+                player.GetEntityPhysics().SetObjectElevation(StartPlayerHeight);
+                player.GetEntityPhysics().ZVelocity = 0.0f;
+                yield return new WaitForSecondsRealtime(0.01f);
+                WaitTimer -= 0.01f;
+            }
+
+            Time.timeScale = 1.0f;
+            WaitTimer = 0.2f;
             while (WaitTimer > 0.0f)
             {
                 player.GetEntityPhysics().SetObjectElevation(StartPlayerHeight);

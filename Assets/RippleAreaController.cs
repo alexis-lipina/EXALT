@@ -13,10 +13,14 @@ public class RippleAreaController : MonoBehaviour
     [SerializeField] float ShockwaveDistance = 64f; // 3/4'din the Y to suit the "camera angle"
     [SerializeField] AnimationCurve ShockwavePeakOverDuration;
     [SerializeField] AnimationCurve ShockwaveRisePattern;
+    [SerializeField] float EnemyRaisedPlatformEffectRadius = 16f; // 3/4'din the Y to suit the "camera angle"
+    [SerializeField] AnimationCurve EnemyRaisedPlatformPattern;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        EnemyColliders = new List<EntityPhysics>();
         RipplePillars = new List<MovingEnvironment>();
         MovingEnvironment[] envts = GetComponentsInChildren<MovingEnvironment>();
         foreach (MovingEnvironment envt in envts)
@@ -33,9 +37,27 @@ public class RippleAreaController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        List<EntityPhysics> removeThese = new List<EntityPhysics>();
+        // Check player positions
+        foreach (EntityPhysics phys in EnemyColliders)
+        {
+            if (phys)
+            {
+                if (phys.GetCurrentHealth() == 0)
+                {
+                    removeThese.Add(phys);
+                }
+                RaisePillarsNearEntity(phys);
+            }
+        }
+        foreach (EntityPhysics phys in removeThese)
+        {
+            EnemyColliders.Remove(phys);
+        }
+
+
         for (int i = 0; i < RipplePillars.Count; i++)
         {
             RipplePillars[i].SetToElevation(RipplePillarNormalizedHeights[i] * 12.0f - 24);
@@ -46,6 +68,20 @@ public class RippleAreaController : MonoBehaviour
     public void TriggerShockwave(Vector2 Origin)
     {
         StartCoroutine(Shockwave(Origin));
+    }
+
+    void RaisePillarsNearEntity(EntityPhysics entity)
+    {
+        Vector2 entityLocation = entity.transform.position;
+        for (int i = 0; i < RipplePillarPositions.Count; i++)
+        {
+            float NormalizedDistance = Mathf.Clamp((entityLocation - RipplePillarPositions[i]).magnitude / EnemyRaisedPlatformEffectRadius, 0, 1);
+            float heightItShouldBe = EnemyRaisedPlatformPattern.Evaluate(NormalizedDistance);
+            if (heightItShouldBe > RipplePillarNormalizedHeights[i])
+            {
+                RipplePillarNormalizedHeights[i] = heightItShouldBe;
+            }
+        }
     }
 
     IEnumerator Shockwave(Vector2 OriginPoint)
@@ -67,5 +103,10 @@ public class RippleAreaController : MonoBehaviour
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    public void AddTrackedEnemy(GameObject enemy)
+    {
+        EnemyColliders.Add(enemy.GetComponentInChildren<EntityPhysics>());
     }
 }

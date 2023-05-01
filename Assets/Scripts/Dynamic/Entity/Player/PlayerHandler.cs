@@ -211,6 +211,11 @@ public class PlayerHandler : EntityHandler
         set { _isUsingCursor = value; }
     }
 
+    public bool IsResting()
+    {
+        return CurrentState == PlayerState.REST;
+    }
+
     void Awake()
     {
         HaloOffset_RunEast = new Vector3(0.25f, 2.0f, 0.0f);

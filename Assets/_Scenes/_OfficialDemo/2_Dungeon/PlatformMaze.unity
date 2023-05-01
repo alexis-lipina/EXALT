@@ -543,6 +543,26 @@ PrefabInstance:
       propertyPath: JumpImpulse
       value: 40
       objectReference: {fileID: 0}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _gameplayUI
+      value: 
+      objectReference: {fileID: 1015807169}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _fadeTransition
+      value: 
+      objectReference: {fileID: 312624980}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _healthBar
+      value: 
+      objectReference: {fileID: 1194069121}
+    - target: {fileID: 114497769348962992, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+        type: 3}
+      propertyPath: _primeAudioSource
+      value: 
+      objectReference: {fileID: 1160769510}
     - target: {fileID: 114767209249802744, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
         type: 3}
       propertyPath: navManager
@@ -6534,6 +6554,18 @@ MonoBehaviour:
   - {fileID: 1519743971}
   - {fileID: 2137893574}
   StartSummoned: 0
+--- !u!114 &312624980 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3140105151673136046, guid: da7bb31c46d30024ca198e692321c33d,
+    type: 3}
+  m_PrefabInstance: {fileID: 2126174600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0c084e3c9c38448b7bb6c99630368d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &314997500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23251,6 +23283,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+--- !u!82 &1160769510 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 82321395745128718, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
+    type: 3}
+  m_PrefabInstance: {fileID: 23052730}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1160776234
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24156,6 +24194,18 @@ MonoBehaviour:
   - {fileID: 1604468201}
   - {fileID: 1768938827}
   StartSummoned: 0
+--- !u!114 &1194069121 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7689713314767831524, guid: da7bb31c46d30024ca198e692321c33d,
+    type: 3}
+  m_PrefabInstance: {fileID: 2126174600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 173c46cdbd7ec71429cd003d3a4522c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1202979548
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29004,6 +29054,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _destination: LandingPlatform
+  _doorName: 
 --- !u!114 &1523035091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29016,11 +29067,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: 100
   _startBottomHeight: -100
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
   ChildTriggers: []
 --- !u!61 &1523035092
@@ -39694,6 +39752,52 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+--- !u!1 &2071058626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2071058628}
+  - component: {fileID: 2071058627}
+  m_Layer: 0
+  m_Name: Level Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2071058627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071058626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 641ba65e4e95eb84dadf4ec16d0d435d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthsColor: {r: 0.04139266, g: 0, b: 0.1792453, a: 0}
+  heightsColor: {r: 0.740566, g: 1, b: 0.9973789, a: 0}
+  elevationOffset: 30
+--- !u!4 &2071058628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071058626}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2072683771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40505,6 +40609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _destination: CollapsingBridgeArena
+  _doorName: 
 --- !u!114 &2104627752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40517,11 +40622,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: 100
   _startBottomHeight: -100
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
   ChildTriggers: []
 --- !u!61 &2104627753

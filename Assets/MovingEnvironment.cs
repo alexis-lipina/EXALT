@@ -24,6 +24,7 @@ public class MovingEnvironment : MonoBehaviour
     bool isPlaying = false;
     float objectHeight;
     float StartingElevation;
+    float animRateScale = 1.0f;
 
     Vector3 StartingPosition;
 
@@ -50,7 +51,7 @@ public class MovingEnvironment : MonoBehaviour
             float dy = YPositionOverTime.Evaluate(Timer / CycleDuration);
             float dz = ZPositionOverTime.Evaluate(Timer / CycleDuration);
 
-            Timer += Time.deltaTime;
+            Timer += Time.deltaTime * animRateScale;
             if (Cycle)
             {
                 Timer = Timer % CycleDuration;
@@ -89,6 +90,11 @@ public class MovingEnvironment : MonoBehaviour
     {
         isPlaying = true;
         Timer = 0.0f;
+    }
+
+    public void SetAnimRate(float NewRate)
+    {
+        animRateScale = NewRate;
     }
     
     public void SetToElevation(float TargetZ) // immediately change the Z of the lower part of the object to this value.

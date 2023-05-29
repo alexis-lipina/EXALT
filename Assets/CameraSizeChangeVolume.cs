@@ -44,6 +44,10 @@ public class CameraSizeChangeVolume : MonoBehaviour
                 case ChangeDirection.Y:
                     value = (playerPhysics.transform.position.y - transform.position.y) / TriggerSize.y + 0.5f;
                     break;
+                case ChangeDirection.Z:
+                    value = (playerPhysics.GetBottomHeight() - ourTrigger.GetBottomHeight()) / TriggerSize.z;
+                    Debug.Log("VALUE : " + value);
+                    break;
             }
 
             if (wasTracking == false) // force damped to be correct when player initially enters
@@ -53,7 +57,7 @@ public class CameraSizeChangeVolume : MonoBehaviour
             }
             else
             {
-                DampedSizeValue = Mathf.SmoothDamp(DampedSizeValue, value, ref CurrentVelocity, LerpRate, 0.25f);
+                DampedSizeValue = Mathf.SmoothDamp(DampedSizeValue, value, ref CurrentVelocity, LerpRate, 2.0f);
             }
 
             camera.GetComponent<Camera>().orthographicSize = DefaultCameraSize * SizeChange.Evaluate(DampedSizeValue);

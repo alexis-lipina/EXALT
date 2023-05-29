@@ -29,6 +29,14 @@ public class FadeTransition : MonoBehaviour
         }
     }
 
+    // allows fadetoscene to be called by a UnityEvent, which only exposes one arg
+    public void FadeToScene_OneArg(string LevelNameDotDoorName)
+    {
+        FadeToScene(
+            LevelNameDotDoorName.Split('.')[0],
+            LevelNameDotDoorName.Split('.')[1]);
+    }
+
 
     private IEnumerator FadeInTransition(float rate = 2f)
     {

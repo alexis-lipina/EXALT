@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 [System.Serializable]
@@ -15,10 +16,15 @@ public class MovingEnvironment : MonoBehaviour
 {
     public float CycleDuration = 8.0f;
     public TriggerVolume StandingTrigger; // entities inside this volume are "on" this object and will move with it
+    public RestPlatform RestPlatformToListen; // If this is moved by a rest-platform, this is the one that should trigger it. 
     public TimePosition[] keyframes;
     public AnimationCurve XPositionOverTime;
     public AnimationCurve YPositionOverTime;
     public AnimationCurve ZPositionOverTime;
+
+    public AnimationCurve[] TestCurves;
+    public UnityEvent OnAnimationComplete;
+
     float Timer;
     public bool Cycle = true;
     bool isPlaying = false;
@@ -31,6 +37,10 @@ public class MovingEnvironment : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (RestPlatformToListen)
+        {
+            RestPlatformToListen.OnActivated.AddListener(PlayAnim);
+        }
         StartingPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         isPlaying = Cycle;
         objectHeight = GetComponent<EnvironmentPhysics>().TopHeight - GetComponent<EnvironmentPhysics>().BottomHeight;
@@ -80,9 +90,13 @@ public class MovingEnvironment : MonoBehaviour
                     phys.MoveWithCollision(dx, dy);
                 }
             }
-            
 
-            if (!Cycle && Timer > CycleDuration) isPlaying = false;
+
+            if (!Cycle && Timer > CycleDuration && isPlaying)
+            {
+                isPlaying = false;
+                OnAnimationComplete.Invoke();
+            }
         }
     }
 

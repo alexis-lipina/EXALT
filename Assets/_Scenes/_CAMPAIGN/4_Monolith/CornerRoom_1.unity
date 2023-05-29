@@ -2516,8 +2516,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3776f47892f2e2498554e3409bc5f55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sourceScene: TeleportArena
-  _sourceDoor: 
+  _sourceScene: TeleporterTargeting
+  _sourceDoor: Teleporter
   _playerPhysics: {fileID: 1611882267}
 --- !u!4 &1123628957 stripped
 Transform:
@@ -7655,11 +7655,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48
       objectReference: {fileID: 0}
-    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerHandler
-      value: 
-      objectReference: {fileID: 23052731}
     - target: {fileID: 3196830636154884526, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -7670,6 +7665,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerHandler
+      value: 
+      objectReference: {fileID: 23052731}
     - target: {fileID: 7689713314710873934, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_Color.a

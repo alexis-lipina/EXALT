@@ -29,6 +29,10 @@ public class TriggerVolume : PhysicsObject
         get { return _isTriggered; }
     }
 
+    // attachment
+    private EnvironmentPhysics attachParent; // if null, is not attached
+    private Vector3 attachParentPriorPosition;
+
 
     private List<GameObject> _objectsInAirspace; //all object currently in contact with BoxCollider2D but which are not necessarily touching the virtual 3D collider
     [SerializeField] private List<GameObject> _touchingObjects;
@@ -63,6 +67,13 @@ public class TriggerVolume : PhysicsObject
 
     void Update()
     {
+        if (attachParent)
+        {
+            MoveBottom( bottomHeight + attachParent.BottomHeight - attachParentPriorPosition.z);
+            attachParentPriorPosition = new Vector3(attachParent.transform.position.x, attachParent.transform.position.y, attachParent.BottomHeight);
+            //Debug.Log("New trigger bottom height = " + bottomHeight);
+        }
+
         if (_touchingObjects.Count > 0)
         {
             _isTriggered = true;
@@ -204,5 +215,12 @@ public class TriggerVolume : PhysicsObject
     protected bool IsVerticalCollision(EntityPhysics other)
     {
         return (other.GetBottomHeight() < topHeight && other.GetTopHeight() > bottomHeight);
+    }
+
+    // forces trigger to change position as the target object changes position
+    public void AttachTriggerToEnvironment(EnvironmentPhysics newAttachParent)
+    {
+        attachParent = newAttachParent;
+        attachParentPriorPosition = new Vector3(attachParent.transform.position.x, attachParent.transform.position.y, attachParent.BottomHeight);
     }
 }

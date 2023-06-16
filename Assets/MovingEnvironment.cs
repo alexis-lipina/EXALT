@@ -79,6 +79,9 @@ public class MovingEnvironment : MonoBehaviour
             GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
             GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
 
+            // copied from scalableplatform, forces it to adjust to correct depth. too lazy to integrate in a more optimal way. fuck you
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
+
             if (StandingTrigger)
             {
                 StandingTrigger.MoveBottom(ZPositionOverTime.Evaluate(Timer / CycleDuration));

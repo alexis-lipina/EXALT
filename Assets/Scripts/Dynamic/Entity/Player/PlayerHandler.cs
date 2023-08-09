@@ -7,7 +7,7 @@ using Rewired;
 
 public enum ElementType
 {
-    ZAP, FIRE, VOID, NONE
+    ZAP, FIRE, VOID, ICHOR, NONE
 }
 
 
@@ -19,6 +19,7 @@ public class PlayerHandler : EntityHandler
 {
     //[SerializeField] private InputHandler _inputHandler;
     [SerializeField] private GameObject characterSprite;
+    [SerializeField] private SpriteRenderer weaponSprite;
     [SerializeField] private GameObject FollowingCamera;
     [SerializeField] private GameObject LightMeleeSprite;
     [SerializeField] private GameObject HeavyMeleeSprite;
@@ -74,9 +75,6 @@ public class PlayerHandler : EntityHandler
     const string DEATH_WEST_Anim = "PlayerDeath_West";
     const string HEAL_ANIM = "ChangeAttunement_Anim"; //TODO : have a different animation for this my dude
 
-    
-
-
     private const float AttackMovementSpeed = 0.6f;
 
     private Weapon _equippedWeapon;
@@ -104,7 +102,6 @@ public class PlayerHandler : EntityHandler
     private Vector2 thrustDirection;
     private Vector2 aimDirection; // direction AND magnitude of "right stick", used for attack direction, camera, never a 0 vector
     private float _timeToComboReady = 0.17f; //higher means more generous
-    private bool _hitComboBeforeReady;
     private const float LIGHTMELEE_FORCE = 0.5f;
 
     // heavy melee
@@ -200,6 +197,8 @@ public class PlayerHandler : EntityHandler
 
     public float TimeSinceCombat = 0.0f;
 
+    public RestPlatform CurrentRestPlatform; // if player is currently interacting with a rest platform, this is it
+
     public ElementType GetStyle()
     {
         return _currentStyle;
@@ -242,10 +241,13 @@ public class PlayerHandler : EntityHandler
     {
         _gameplayUI.parent.gameObject.SetActive(true); // if I put this at the bottom it just... doesnt execute???
         _gameplayUI.gameObject.SetActive(true);
+        weaponSprite.enabled = false;
+        //weaponSprite.transform.right = new Vector3(0, 1, 0);
 
         entityPhysics.SetMaxHealth(5 - NumberOfShatteredHealthBlocks);
         _healthBar.ShatterHealthBarSegment(5-NumberOfShatteredHealthBlocks);
 
+        
 
         EnvironmentPhysics._playerPhysics = entityPhysics;
         EnvironmentPhysics._playerSprite = characterSprite;
@@ -881,7 +883,6 @@ public class PlayerHandler : EntityHandler
             _audioSource.Play();
             Vibrate( 0.5f, 0.1f);
 
-            _hitComboBeforeReady = false;
             StartCoroutine(PlayLightAttack(_readyForThirdHit));
 
             thrustDirection = aimDirection;
@@ -1013,7 +1014,7 @@ public class PlayerHandler : EntityHandler
         {
             LightMeleeSprite.GetComponent<SpriteRenderer>().flipX = false;
 
-            if (_hasHitAttackAgain && _readyForThirdHit && !_hitComboBeforeReady)
+            if (_hasHitAttackAgain && _readyForThirdHit)
             {
 
                 CurrentState = PlayerState.HEAVY_MELEE;
@@ -1030,7 +1031,7 @@ public class PlayerHandler : EntityHandler
                 HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
             }
-            else if (_hasHitAttackAgain && !_hitComboBeforeReady)
+            else if (_hasHitAttackAgain)
             {
                 _readyForThirdHit = true;
                 CurrentState = PlayerState.LIGHT_MELEE;
@@ -1043,10 +1044,49 @@ public class PlayerHandler : EntityHandler
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
                 HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
                 HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+                
+                weaponSprite.enabled = true;
+                weaponSprite.gameObject.transform.parent = characterSprite.gameObject.transform;
+                switch (_currentStyle)
+                {
+                    case ElementType.ZAP:
+                        weaponSprite.transform.right = aimDirection;
+                        weaponSprite.transform.localPosition = new Vector3(0, 0, 0);
+                        weaponSprite.GetComponent<Animator>().Play("StormSpear_Manifest", 0, 0.0f);
+                        break;
+                    case ElementType.VOID:
+                        weaponSprite.transform.right = -aimDirection;
+                        weaponSprite.transform.localPosition = weaponSprite.transform.right * 4;
+                        weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f); break;
+                    case ElementType.FIRE:
+                        weaponSprite.transform.right = aimDirection;
+                        weaponSprite.transform.localPosition = new Vector3(0,0,0);
+                        weaponSprite.GetComponent<Animator>().Play("SolFlail_Manifest", 0, 0.0f); break;
+                        break;
+                    case ElementType.ICHOR:
+                        // TODO
+                        break;
+                }
+                
             }
             else
             {
                 LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+                switch (_currentStyle)
+                {
+                    case ElementType.ZAP:
+                        weaponSprite.GetComponent<Animator>().Play("StormSpear_Vanish");
+                        break;
+                    case ElementType.VOID:
+                        weaponSprite.GetComponent<Animator>().Play("RiftScythe_Vanish");
+                        break;
+                    case ElementType.FIRE:
+                        weaponSprite.GetComponent<Animator>().Play("SolFlail_Vanish");
+                        break;
+                    case ElementType.ICHOR:
+                        weaponSprite.GetComponent<Animator>().Play("IchorBlade_Vanish");
+                        break;
+                }
                 _hasHitAttackAgain = false;
                 CurrentState = PlayerState.RUN;
                 hitEnemies.Clear();
@@ -1122,6 +1162,7 @@ public class PlayerHandler : EntityHandler
         if (StateTimer < 0.1 && controller.GetButtonDown("Blink"))
         {
             PlayerBlinkTransitionAttempt();
+
         }
 
         if (StateTimer < 0)
@@ -1605,15 +1646,24 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerRest()
     {
-        if (!isStanding && StateTimer > 0)
+        // TODO : can we do this for rest platform?
+        CurrentRestPlatform = entityPhysics.currentNavEnvironmentObject.GetComponent<RestPlatform>();
+        entityPhysics.SnapToFloor();
+
+        if (!isStanding && StateTimer > 0) // transition INTO rest state
         {
             characterAnimator.Play("PlayerRestTransition");
             _rest_recover_energy_timer = _rest_recover_energy_duration;
             _rest_recover_health_timer = _rest_recover_health_duration;
         }
-        else if (isStanding && StateTimer > 0)
+        else if (isStanding && StateTimer > 0) // transition OUT OF rest state
         {
             characterAnimator.Play("PlayerRestStanding");
+            if (CurrentRestPlatform)
+            {
+                CurrentRestPlatform.OnDeactivated.Invoke();
+                CurrentRestPlatform.IsActivated = false;
+            }
         }
         else if (!isStanding)
         {
@@ -1631,12 +1681,12 @@ public class PlayerHandler : EntityHandler
 
             _rest_recover_energy_timer -= Time.deltaTime;
             _rest_recover_health_timer -= Time.deltaTime;
-            
+
             //attempt to perform most any action should require the stand up animation play
             if (controller.GetButtonDown("Rest") ||
-                Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2 ||
+                //Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2 ||
                 controller.GetButtonDown("Jump") ||
-                controller.GetButtonDown("Melee") ||
+                //controller.GetButtonDown("Melee") ||
                 controller.GetButton("RangedAttack") ||
                 controller.GetButtonDown("Blink") ||
                 controller.GetButtonDown("Heal")
@@ -1644,6 +1694,43 @@ public class PlayerHandler : EntityHandler
             {
                 StateTimer = rest_kneel_duration;
                 isStanding = true;
+                CurrentRestPlatform.OnActionReleased.Invoke();
+                CurrentRestPlatform.InputDirection = new Vector2(0, 0);
+            }
+
+            if (CurrentRestPlatform) // control rest platform
+            {
+                if (!CurrentRestPlatform.IsActivated)
+                {
+                    CurrentRestPlatform.OnActivated.Invoke();
+                    CurrentRestPlatform.IsActivated = true;
+                }
+                if (CurrentRestPlatform.DoesPlatformUseActionPress)
+                {
+                    if (controller.GetButtonDown("Melee"))
+                    {
+                        CurrentRestPlatform.OnActionPressed.Invoke();
+                        CurrentRestPlatform.SetTargetGlowAmount(1.0f);
+                        Debug.Log("Rest platform PRESSED!");
+                    }
+                    if (controller.GetButtonUp("Melee"))
+                    {
+                        CurrentRestPlatform.OnActionReleased.Invoke();
+                        CurrentRestPlatform.SetTargetGlowAmount(0.5f);
+                    }
+                }
+                if (CurrentRestPlatform.DoesPlatformUseInputDirection)
+                {
+                    if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2)
+                    {
+                        CurrentRestPlatform.InputDirection = new Vector2(xInput, yInput);
+                        CurrentRestPlatform.OnDirectionInputReceived.Invoke();
+                    }
+                    else
+                    {
+                        CurrentRestPlatform.InputDirection = new Vector2(0, 0);
+                    }
+                }
             }
         }
         else
@@ -1655,11 +1742,11 @@ public class PlayerHandler : EntityHandler
         StateTimer -= Time.deltaTime;
 
         #region IDLE state transitions (copied)
-        
+
         CheckStyleChange();
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f) //override other states to trigger fall
         {
             isStanding = false;
             entityPhysics.ZVelocity = 0;
@@ -1757,6 +1844,31 @@ public class PlayerHandler : EntityHandler
 
     IEnumerator PlayHeavyAttack(bool flip)
     {
+        switch (_currentStyle)
+        {
+            case ElementType.ZAP:
+                weaponSprite.gameObject.transform.parent = null;
+                weaponSprite.transform.right = aimDirection;
+                weaponSprite.GetComponent<Animator>().Play("StormSpear_Stab", 0, 0.0f);
+                break;
+            case ElementType.VOID:
+                weaponSprite.transform.right = -aimDirection;
+                weaponSprite.transform.localPosition = weaponSprite.transform.right * 4;
+                weaponSprite.gameObject.transform.parent = null;
+
+                weaponSprite.GetComponent<Animator>().Play("RiftScythe_Slash", 0, 0.0f);
+                break;
+            case ElementType.FIRE:
+                weaponSprite.transform.right = aimDirection;
+                weaponSprite.gameObject.transform.parent = null;
+                weaponSprite.GetComponent<Animator>().Play("SolFlail_Throw", 0, 0.0f);
+                // TODO
+                break;
+            case ElementType.ICHOR:
+                // TODO
+                break;
+        }
+
         //Debug.Log("POW!");
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().flipX = flip;
@@ -1766,6 +1878,7 @@ public class PlayerHandler : EntityHandler
         yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
         HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
     }
+
 
     public void Vibrate(float magnitude, float duration)
     {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 [RequireComponent(typeof(EnvironmentPhysics))] 
 
@@ -13,12 +14,15 @@ public class StartPlatform : MonoBehaviour
     [SerializeField] private string _sourceDoor;
     [SerializeField] private EntityPhysics _playerPhysics;
 
+    public UnityEvent OnPlayerStartHere;
+
 
 	// Use this for initialization
 	void Start ()
     {                                                       // v- should eval true for normal cases where theres just one unlabeled door
 		if (PlayerHandler.PREVIOUS_SCENE == _sourceScene && PlayerHandler.PREVIOUS_SCENE_DOOR == _sourceDoor)
         {
+            OnPlayerStartHere.Invoke();
             //move player here
             _playerPhysics.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
             _playerPhysics.SetElevation(GetComponent<EnvironmentPhysics>().TopHeight + 0.2f);

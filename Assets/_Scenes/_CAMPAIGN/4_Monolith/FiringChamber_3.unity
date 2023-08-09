@@ -2923,7 +2923,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48622a000a338a640be9b0465b5499bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destination: CornerRoom_3
+  _destination: CornerRoom_4
   _doorName: 
 --- !u!114 &81114684
 MonoBehaviour:
@@ -17265,6 +17265,11 @@ MonoBehaviour:
   _sourceScene: CornerRoom_3
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &914675212
 GameObject:
   m_ObjectHideFlags: 0
@@ -26563,6 +26568,11 @@ MonoBehaviour:
   _sourceScene: CornerRoom_4
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &1325964016 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1340802446491156, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -43255,11 +43265,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48
       objectReference: {fileID: 0}
-    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerHandler
-      value: 
-      objectReference: {fileID: 23052731}
     - target: {fileID: 3196830636154884526, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -43270,6 +43275,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerHandler
+      value: 
+      objectReference: {fileID: 23052731}
     - target: {fileID: 7689713314710873934, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_Color.a

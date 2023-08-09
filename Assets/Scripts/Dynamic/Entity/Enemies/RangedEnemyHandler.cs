@@ -6,6 +6,7 @@ using UnityEngine;
 public class RangedEnemyHandler : EntityHandler
 {
     [SerializeField] private Animator characterAnimator;
+    [SerializeField] private Animator fxAnimator;
     [SerializeField] private bool isCompanion;
     [SerializeField] private PathfindingAI _pathfindingAi;
     [SerializeField] private SpriteRenderer bloodSplatterSprite;
@@ -184,10 +185,12 @@ public class RangedEnemyHandler : EntityHandler
         if (tempDirection == TempTexDirection.EAST)
         {
             characterAnimator.Play(IDLE_EAST_Anim);
+            fxAnimator.Play(IDLE_EAST_Anim);
         }
         else
         {
             characterAnimator.Play(IDLE_WEST_Anim);
+            fxAnimator.Play(IDLE_WEST_Anim);
         }
 
         //===========| Physics
@@ -237,10 +240,12 @@ public class RangedEnemyHandler : EntityHandler
         if (xInput > 0)
         {
             characterAnimator.Play(RUN_EAST_Anim);
+            fxAnimator.Play(RUN_EAST_Anim);
         }
         else
         {
             characterAnimator.Play(RUN_WEST_Anim);
+            fxAnimator.Play(RUN_WEST_Anim);
         }
 
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
@@ -291,10 +296,12 @@ public class RangedEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(FALL_EAST_Anim);
+                fxAnimator.Play(FALL_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(FALL_WEST_Anim);
+                fxAnimator.Play(FALL_WEST_Anim);
             }
         }
         else
@@ -302,10 +309,12 @@ public class RangedEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(JUMP_EAST_Anim);
+                fxAnimator.Play(JUMP_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(JUMP_WEST_Anim);
+                fxAnimator.Play(JUMP_WEST_Anim);
             }
         }
 
@@ -344,10 +353,12 @@ public class RangedEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(FALL_EAST_Anim);
+                fxAnimator.Play(FALL_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(FALL_WEST_Anim);
+                fxAnimator.Play(FALL_WEST_Anim);
             }
         }
         else
@@ -355,10 +366,12 @@ public class RangedEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(JUMP_EAST_Anim);
+                fxAnimator.Play(JUMP_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(JUMP_WEST_Anim);
+                fxAnimator.Play(JUMP_WEST_Anim);
             }
         }
 
@@ -400,10 +413,12 @@ public class RangedEnemyHandler : EntityHandler
             if ((_pathfindingAi.target.transform.position - entityPhysics.transform.position).x > 0)
             {
                 characterAnimator.Play(ATTACK_EAST_Anim);
+                fxAnimator.Play(ATTACK_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(ATTACK_WEST_Anim);
+                fxAnimator.Play(ATTACK_WEST_Anim);
             }
         }
 
@@ -458,11 +473,13 @@ public class RangedEnemyHandler : EntityHandler
             if ((_pathfindingAi.target.transform.position - entityPhysics.transform.position).x > 0)
             {
                 characterAnimator.Play(READY_EAST_Anim);
+                fxAnimator.Play(READY_EAST_Anim);
                 BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(-1.375f, -0.5f, -1));
             }
             else
             {
                 characterAnimator.Play(READY_WEST_Anim);
+                fxAnimator.Play(READY_WEST_Anim);
                 BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(1.5f, -0.5f, -1));
             }
         }
@@ -491,10 +508,12 @@ public class RangedEnemyHandler : EntityHandler
             if ((_pathfindingAi.target.transform.position - entityPhysics.transform.position).x > 0)
             {
                 characterAnimator.Play(SWING_EAST_Anim);
+                fxAnimator.Play(SWING_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(SWING_WEST_Anim);
+                fxAnimator.Play(SWING_WEST_Anim);
             }
         }
         //Physics
@@ -519,12 +538,14 @@ public class RangedEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         characterAnimator.Play(FLINCH_Anim);
+        fxAnimator.Play(FLINCH_Anim);
     }
 
     private void SpawnState()
     {
         //Draw
         characterAnimator.Play(SPAWN_Anim);
+        fxAnimator.Play(SPAWN_Anim);
 
         //Physics
         //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
@@ -548,12 +569,15 @@ public class RangedEnemyHandler : EntityHandler
         {
             case ElementType.VOID:
                 characterAnimator.Play(SHIELDBREAK_VOID_Anim);
+                fxAnimator.Play(SHIELDBREAK_VOID_Anim);
                 break;
             case ElementType.FIRE:
                 characterAnimator.Play(SHIELDBREAK_FIRE_Anim);
+                fxAnimator.Play(SHIELDBREAK_FIRE_Anim);
                 break;
             case ElementType.ZAP:
                 characterAnimator.Play(SHIELDBREAK_ZAP_Anim);
+                fxAnimator.Play(SHIELDBREAK_ZAP_Anim);
                 break;
         }
 
@@ -584,10 +608,12 @@ public class RangedEnemyHandler : EntityHandler
         if (DeathVector.x > 0)
         {
             characterAnimator.Play(DEATH_EAST_Anim);
+            fxAnimator.Play(DEATH_EAST_Anim);
         }
         else
         {
             characterAnimator.Play(DEATH_WEST_Anim);
+            fxAnimator.Play(DEATH_WEST_Anim);
         }
 
 

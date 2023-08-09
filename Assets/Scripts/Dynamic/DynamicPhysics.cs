@@ -16,8 +16,7 @@ public class DynamicPhysics : PhysicsObject
     [SerializeField] protected float gravity;
     [SerializeField] protected float speed;
 
-
-    public const float MAX_Z_VELOCITY_MAGNITUDE = 80f;
+    public const float MAX_Z_VELOCITY_MAGNITUDE = 120f;
     protected Rigidbody2D PlayerRigidBody;
 
 
@@ -94,7 +93,7 @@ public class DynamicPhysics : PhysicsObject
         //CheckHitHeadOnCeiling();
         // deltaV = deltaT * a
         ZVelocity += Time.deltaTime * gravity;
-        Mathf.Clamp(ZVelocity, MAX_Z_VELOCITY_MAGNITUDE * -1, MAX_Z_VELOCITY_MAGNITUDE);
+        ZVelocity = Mathf.Clamp(ZVelocity, MAX_Z_VELOCITY_MAGNITUDE * -1, MAX_Z_VELOCITY_MAGNITUDE);
         bottomHeight += ZVelocity * Time.deltaTime; //CHANGE WITH FRAMERATE??
         topHeight = bottomHeight + _objectHeight;
         // ZVelocity -= gravity;
@@ -470,7 +469,7 @@ public class DynamicPhysics : PhysicsObject
 
     public float GetMaxTerrainHeightBelow()
     {
-        float max = -20;
+        float max = -200000;
         foreach (KeyValuePair<int, EnvironmentPhysics> entry in TerrainTouched)
         {
             if (entry.Value.GetTopHeight() > max && _objectHeight + bottomHeight > entry.Value.GetTopHeight()) max = entry.Value.GetTopHeight();

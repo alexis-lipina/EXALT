@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(TriggerVolume))]
 public class CameraSizeChangeVolume : MonoBehaviour
 {
-    enum ChangeDirection { X, Y, Z}
+    enum ChangeDirection { X, Y, Z, DistanceFromCenter}
     [SerializeField] ChangeDirection AxisToChangeAlong;
     [SerializeField] AnimationCurve SizeChange; // normalized X along size of trigger, Y : 1 = normal camera size
     [SerializeField] EntityPhysics playerPhysics;
@@ -46,7 +46,12 @@ public class CameraSizeChangeVolume : MonoBehaviour
                     break;
                 case ChangeDirection.Z:
                     value = (playerPhysics.GetBottomHeight() - ourTrigger.GetBottomHeight()) / TriggerSize.z;
-                    Debug.Log("VALUE : " + value);
+                    //Debug.Log("VALUE : " + value);
+                    break;
+                case ChangeDirection.DistanceFromCenter:
+                    Vector2 playerpos = new Vector2(playerPhysics.transform.position.x, playerPhysics.transform.position.y);
+                    Vector2 triggerpos = new Vector2(transform.position.x, transform.position.y);
+                    value = 1 - Mathf.Clamp((playerpos - triggerpos).magnitude / Mathf.Min(TriggerSize.x, TriggerSize.y), 0, 1) * 2;
                     break;
             }
 

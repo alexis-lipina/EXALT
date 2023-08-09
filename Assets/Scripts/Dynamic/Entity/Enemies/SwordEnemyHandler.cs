@@ -6,6 +6,7 @@ using UnityEngine;
 public class SwordEnemyHandler : EntityHandler
 {
     [SerializeField] private Animator characterAnimator;
+    [SerializeField] private Animator fxAnimator;
     [SerializeField] private bool isCompanion;
     [SerializeField] private SpriteRenderer shieldSprite;
 
@@ -187,10 +188,12 @@ public class SwordEnemyHandler : EntityHandler
         if (tempDirection == TempTexDirection.EAST)
         {
             characterAnimator.Play(IDLE_EAST_Anim);
+            fxAnimator.Play(IDLE_EAST_Anim);
         }
         else
         {
             characterAnimator.Play(IDLE_WEST_Anim);
+            fxAnimator.Play(IDLE_WEST_Anim);
         }
 
         //===========| Physics
@@ -240,10 +243,12 @@ public class SwordEnemyHandler : EntityHandler
         if (xInput > 0)
         {
             characterAnimator.Play(RUN_EAST_Anim);
+            fxAnimator.Play(RUN_EAST_Anim);
         }
         else
         {
             characterAnimator.Play(RUN_WEST_Anim);
+            fxAnimator.Play(RUN_WEST_Anim);
         }
 
         //entityPhysics.MoveCharacterPositionPhysics(xInput, yInput);
@@ -293,10 +298,12 @@ public class SwordEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(FALL_EAST_Anim);
+                fxAnimator.Play(FALL_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(FALL_WEST_Anim);
+                fxAnimator.Play(FALL_WEST_Anim);
             }
         }
         else
@@ -304,10 +311,12 @@ public class SwordEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(JUMP_EAST_Anim);
+                fxAnimator.Play(JUMP_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(JUMP_WEST_Anim);
+                fxAnimator.Play(JUMP_WEST_Anim);
             }
         }
 
@@ -346,10 +355,12 @@ public class SwordEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(FALL_EAST_Anim);
+                fxAnimator.Play(FALL_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(FALL_WEST_Anim);
+                fxAnimator.Play(FALL_WEST_Anim);
             }
         }
         else
@@ -357,10 +368,12 @@ public class SwordEnemyHandler : EntityHandler
             if (xInput > 0)
             {
                 characterAnimator.Play(JUMP_EAST_Anim);
+                fxAnimator.Play(JUMP_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(JUMP_WEST_Anim);
+                fxAnimator.Play(JUMP_WEST_Anim);
             }
         }
 
@@ -410,15 +423,19 @@ public class SwordEnemyHandler : EntityHandler
         {
             case TempTexDirection.EAST:
                 characterAnimator.Play(ATTACK_EAST_Anim);
+                fxAnimator.Play(ATTACK_EAST_Anim);
                 break;
             case TempTexDirection.WEST:
                 characterAnimator.Play(ATTACK_WEST_Anim);
+                fxAnimator.Play(ATTACK_WEST_Anim);
                 break;
             case TempTexDirection.NORTH:
                 characterAnimator.Play(ATTACK_NORTH_Anim);
+                fxAnimator.Play(ATTACK_NORTH_Anim);
                 break;
             case TempTexDirection.SOUTH:
                 characterAnimator.Play(ATTACK_SOUTH_Anim);
+                fxAnimator.Play(ATTACK_SOUTH_Anim);
                 break;
         }
 
@@ -478,18 +495,22 @@ public class SwordEnemyHandler : EntityHandler
             {
                 case TempTexDirection.EAST:
                     characterAnimator.Play(READY_EAST_Anim);
+                    fxAnimator.Play(READY_EAST_Anim);
                     BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(-0.75f, -1.0625f, -1f));
                     break;
                 case TempTexDirection.WEST:
                     characterAnimator.Play(READY_WEST_Anim);
+                    fxAnimator.Play(READY_WEST_Anim);
                     BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(1.125f, -1.0625f, -1f));
                     break;
                 case TempTexDirection.NORTH:
                     characterAnimator.Play(READY_NORTH_Anim);
+                    fxAnimator.Play(READY_NORTH_Anim);
                     BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(2.25f, -0.5f, -1f));
                     break;
                 case TempTexDirection.SOUTH:
                     characterAnimator.Play(READY_SOUTH_Anim);
+                    fxAnimator.Play(READY_SOUTH_Anim);
                     BigFlareVFX.DeployFromPool(entityPhysics.ObjectSprite.transform.position + new Vector3(-1.75f, -0.75f, -1f));
                     break;
             }
@@ -528,15 +549,19 @@ public class SwordEnemyHandler : EntityHandler
         {
             case TempTexDirection.EAST:
                 characterAnimator.Play(SWING_EAST_Anim);
+                fxAnimator.Play(SWING_EAST_Anim);
                 break;
             case TempTexDirection.WEST:
                 characterAnimator.Play(SWING_WEST_Anim);
+                fxAnimator.Play(SWING_WEST_Anim);
                 break;
             case TempTexDirection.NORTH:
                 characterAnimator.Play(SWING_NORTH_Anim);
+                fxAnimator.Play(SWING_NORTH_Anim);
                 break;
             case TempTexDirection.SOUTH:
                 characterAnimator.Play(SWING_SOUTH_Anim);
+                fxAnimator.Play(SWING_SOUTH_Anim);
                 break;
         }
         //Physics
@@ -569,12 +594,14 @@ public class SwordEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         characterAnimator.Play(FLINCH_Anim);
+        fxAnimator.Play(FLINCH_Anim);
     }
 
     private void SpawnState()
     {
         //Draw
         characterAnimator.Play(SPAWN_Anim);
+        fxAnimator.Play(SPAWN_Anim);
 
         //Physics
         //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
@@ -598,12 +625,15 @@ public class SwordEnemyHandler : EntityHandler
         {
             case ElementType.VOID:
                 characterAnimator.Play(SHIELDBREAK_VOID);
+                fxAnimator.Play(SHIELDBREAK_VOID);
                 break;
             case ElementType.FIRE:
                 characterAnimator.Play(SHIELDBREAK_FIRE);
+                fxAnimator.Play(SHIELDBREAK_FIRE);
                 break;
             case ElementType.ZAP:
                 characterAnimator.Play(SHIELDBREAK_ZAP);
+                fxAnimator.Play(SHIELDBREAK_ZAP);
                 break;
         }
 
@@ -633,16 +663,19 @@ public class SwordEnemyHandler : EntityHandler
         if (entityPhysics.FellOutOfBounds)
         {
             characterAnimator.Play(DEATH_FALL_Anim);
+            fxAnimator.Play(DEATH_FALL_Anim);
         }
         else
         {
             if (DeathVector.x > 0)
             {
                 characterAnimator.Play(DEATH_EAST_Anim);
+                fxAnimator.Play(DEATH_EAST_Anim);
             }
             else
             {
                 characterAnimator.Play(DEATH_WEST_Anim);
+                fxAnimator.Play(DEATH_WEST_Anim);
             }
             //Physics
             //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));

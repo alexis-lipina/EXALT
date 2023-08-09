@@ -67,6 +67,9 @@ public class CameraAttractor : MonoBehaviour
                 case Axis.y:
                     CurrentCurveValue = (PlayerPhysics.transform.position.y - _activateVolume.transform.position.y) / TriggerSize.y + 0.5f;
                     break;
+                case Axis.z:
+                    CurrentCurveValue = Mathf.InverseLerp(_activateVolume.GetBottomHeight(), _activateVolume.GetTopHeight(), PlayerPhysics.GetObjectElevation());
+                    break;
             }
         }
     }

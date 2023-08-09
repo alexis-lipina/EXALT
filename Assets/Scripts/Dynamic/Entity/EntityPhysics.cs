@@ -47,7 +47,7 @@ public class EntityPhysics : DynamicPhysics
     }
 
     private KeyValuePair<Vector2, EnvironmentPhysics> lastFootHold;
-    private EnvironmentPhysics currentNavEnvironmentObject;
+    public EnvironmentPhysics currentNavEnvironmentObject; // highest object below this physics object
 
     private Vector3 _netForces; // sum of forces on this entity, mostly for attacks that push enemies away. Decreased by a damping value each frame.
     private float _forceDamping = 0.2f;
@@ -65,6 +65,8 @@ public class EntityPhysics : DynamicPhysics
     private float _burnTimeBetweenInflicts = 1.0f;
     private float _burnTimer_Inflicts = 0f;
     private float _burnDuration = 2.5f;
+
+    public static float KILL_PLANE_ELEVATION = -18.0f; // assigned by LevelManager on level load, unique to each level
 
     //private float entityElevation; //replaced with bottomHeight
 
@@ -90,7 +92,7 @@ public class EntityPhysics : DynamicPhysics
     protected virtual void Update()
     {
         MoveCharacterPosition();
-        if (bottomHeight < -18)
+        if (bottomHeight < KILL_PLANE_ELEVATION)
         {
             WarpToPlatform();
         }
@@ -403,7 +405,7 @@ public class EntityPhysics : DynamicPhysics
 
     public virtual void Heal(int amount)
     {
-        Debug.Log("HEALIN");
+        //Debug.Log("HEALIN");
         currentHP += amount;
         if (currentHP > MaxHP) currentHP = MaxHP;
     }

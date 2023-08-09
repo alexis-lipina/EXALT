@@ -34,18 +34,25 @@ public class MovingEnvironment : MonoBehaviour
 
     Vector3 StartingPosition;
 
+    private EnvironmentPhysics environmentPhysics;
+
+    void Awake()
+    {
+        environmentPhysics = GetComponent<EnvironmentPhysics>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        objectHeight = GetComponent<EnvironmentPhysics>().TopHeight - GetComponent<EnvironmentPhysics>().BottomHeight;
+        StartingElevation = GetComponent<EnvironmentPhysics>().BottomHeight;
+        StartingPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
         if (RestPlatformToListen)
         {
             RestPlatformToListen.OnActivated.AddListener(PlayAnim);
         }
-        StartingPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         isPlaying = Cycle;
-        objectHeight = GetComponent<EnvironmentPhysics>().TopHeight - GetComponent<EnvironmentPhysics>().BottomHeight;
-        StartingElevation = GetComponent<EnvironmentPhysics>().BottomHeight;
-        
         foreach (TestPlayerElevationTracker tracker in GetComponentsInChildren<TestPlayerElevationTracker>())
         {
             tracker.SetCanChangeElevation(true);
@@ -76,8 +83,8 @@ public class MovingEnvironment : MonoBehaviour
             GetComponent<EnvironmentPhysics>().BottomHeight = StartingElevation + ZPositionOverTime.Evaluate(Timer / CycleDuration);
             GetComponent<EnvironmentPhysics>().TopHeight = StartingElevation + ZPositionOverTime.Evaluate(Timer / CycleDuration) + objectHeight;
 
-            GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
-            GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
+            environmentPhysics.TopSprite.gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
+            environmentPhysics.FrontSprite.gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
 
             // copied from scalableplatform, forces it to adjust to correct depth. too lazy to integrate in a more optimal way. fuck you
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
@@ -114,13 +121,23 @@ public class MovingEnvironment : MonoBehaviour
         animRateScale = NewRate;
     }
     
-    public void SetToElevation(float TargetZ) // immediately change the Z of the lower part of the object to this value.
+    public void SetToElevation(float TargetZ, bool IsElevationForTop = false) // immediately change the Z of the lower part of the object to this value.
     {
+        if (objectHeight == 0)
+        {
+            objectHeight = GetComponent<EnvironmentPhysics>().TopHeight - GetComponent<EnvironmentPhysics>().BottomHeight;
+        }
+
+        if (IsElevationForTop)
+        {
+            TargetZ -= objectHeight;
+        }
+
         float dz = TargetZ - GetComponent<EnvironmentPhysics>().BottomHeight;
         GetComponent<EnvironmentPhysics>().BottomHeight = TargetZ;
         GetComponent<EnvironmentPhysics>().TopHeight = TargetZ + objectHeight;
 
-        GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
-        GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
+        environmentPhysics.TopSprite.gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
+        environmentPhysics.FrontSprite.gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
     }
 }

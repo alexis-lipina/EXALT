@@ -117,9 +117,9 @@ public class ElevatorArenaManager : MonoBehaviour
             envt.TopHeight = CurrentElevation + 1; // cuz theyre all thickness 1
 
             // top
-            envt.GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition += Vector3.up * ElevatorSpeed * Time.deltaTime;
+            envt.TopSprite.gameObject.transform.localPosition += Vector3.up * ElevatorSpeed * Time.deltaTime;
             // front
-            envt.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition += Vector3.up * ElevatorSpeed * Time.deltaTime;
+            envt.FrontSprite.gameObject.transform.localPosition += Vector3.up * ElevatorSpeed * Time.deltaTime;
         }
 
         if (CurrentElevation > CombatLoop_StartElevation && StopAtLoopPoint)
@@ -128,8 +128,8 @@ public class ElevatorArenaManager : MonoBehaviour
             CombatLoop_CurrentDelta = 0.0f;
             PillarOriginalBottomHeight = IllusoryPillars[0].BottomHeight;
             PillarOriginalTopHeight = IllusoryPillars[0].TopHeight;
-            PillarOriginalSprite0LocalTransform = IllusoryPillars[0].GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition;
-            PillarOriginalSprite1LocalTransform = IllusoryPillars[0].GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition;
+            PillarOriginalSprite0LocalTransform = IllusoryPillars[0].TopSprite.gameObject.transform.localPosition;
+            PillarOriginalSprite1LocalTransform = IllusoryPillars[0].FrontSprite.gameObject.transform.localPosition;
 
             foreach (EnvironmentPhysics platform in LowerFloor)
             {
@@ -157,9 +157,9 @@ public class ElevatorArenaManager : MonoBehaviour
             envt.TopHeight = PillarOriginalTopHeight - CombatLoop_CurrentDelta;
 
             // top
-            envt.GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition = PillarOriginalSprite0LocalTransform - Vector3.up * CombatLoop_CurrentDelta;
+            envt.TopSprite.gameObject.transform.localPosition = PillarOriginalSprite0LocalTransform - Vector3.up * CombatLoop_CurrentDelta;
             // front
-            envt.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition = PillarOriginalSprite1LocalTransform - Vector3.up * CombatLoop_CurrentDelta;
+            envt.FrontSprite.gameObject.transform.localPosition = PillarOriginalSprite1LocalTransform - Vector3.up * CombatLoop_CurrentDelta;
         }
 
         if (CombatLoop_CurrentDelta > CombatLoop_DeltaToLoop)
@@ -173,8 +173,8 @@ public class ElevatorArenaManager : MonoBehaviour
                 {
                     envt.BottomHeight = PillarOriginalBottomHeight;
                     envt.TopHeight = PillarOriginalTopHeight;
-                    envt.GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition = PillarOriginalSprite0LocalTransform;
-                    envt.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition = PillarOriginalSprite1LocalTransform;
+                    envt.TopSprite.gameObject.transform.localPosition = PillarOriginalSprite0LocalTransform;
+                    envt.FrontSprite.gameObject.transform.localPosition = PillarOriginalSprite1LocalTransform;
                 }
             }
         }

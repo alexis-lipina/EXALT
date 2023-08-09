@@ -32,8 +32,8 @@ public class BlockingSlabArrayManager : MonoBehaviour
             SlabSafetyVolumes.Add(array[i].GetComponentInChildren<TriggerVolume>());
             SlabBackWallShadowSprites.Add(array[i].GetComponent<FiringChamberShadowedGradients>().GetBackWallShadow());
         }
-        SlabSprite0LocalTransform = Slabs[0].GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition;
-        SlabSprite1LocalTransform = Slabs[0].GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition;
+        SlabSprite0LocalTransform = Slabs[0].TopSprite.gameObject.transform.localPosition;
+        SlabSprite1LocalTransform = Slabs[0].FrontSprite.gameObject.transform.localPosition;
 
         StartCoroutine(CycleSlabs());
     }
@@ -84,8 +84,8 @@ public class BlockingSlabArrayManager : MonoBehaviour
         {
             Slabs[index].TopHeight = NormalizedElevation * SlabHeight;
             Slabs[index].BottomHeight = NormalizedElevation * SlabHeight - SlabHeight;
-            Slabs[index].GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition = SlabSprite0LocalTransform + Vector3.up * SlabHeight * NormalizedElevation;
-            Slabs[index].GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition = SlabSprite1LocalTransform + Vector3.up * SlabHeight * NormalizedElevation;
+            Slabs[index].TopSprite.gameObject.transform.localPosition = SlabSprite0LocalTransform + Vector3.up * SlabHeight * NormalizedElevation;
+            Slabs[index].FrontSprite.gameObject.transform.localPosition = SlabSprite1LocalTransform + Vector3.up * SlabHeight * NormalizedElevation;
             SlabBackWallShadowSprites[index].transform.localScale = new Vector3(0.125f, 128.0f * (1.0f-NormalizedElevation), 1.0f);
             //SlabBackWallShadowSprites[index].transform.localScale = new Vector3(01f, 0.1f, 0.1f);
             SlabBackWallShadowSprites[index].transform.position = new Vector3(

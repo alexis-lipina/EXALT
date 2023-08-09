@@ -2791,105 +2791,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 470323213}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &110779773
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 110779776}
-  - component: {fileID: 110779775}
-  - component: {fileID: 110779774}
-  m_Layer: 0
-  m_Name: ChangeAttunement_Spritesheet_0
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!95 &110779774
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 110779773}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f992ee2887376104fa22d9602f6cbb50, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!212 &110779775
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 110779773}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d1fbd42d32682f5449dc57b3c727e321, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 8.25, y: 16.25}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
---- !u!4 &110779776
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 110779773}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -158.61368, y: -1.0649719, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 23
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &112794119 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3140105151673136046, guid: da7bb31c46d30024ca198e692321c33d,
@@ -50509,6 +50410,7 @@ MonoBehaviour:
   _pushForceMultiplier: 1
   _maxVelocity: 1
   _shouldDieWhenFall: 1
+  currentNavEnvironmentObject: {fileID: 0}
   _spawner: {fileID: 0}
   _burnParticlesPrefab: {fileID: 0}
 --- !u!61 &1798629021
@@ -65697,6 +65599,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111860871415666
 MonoBehaviour:
@@ -65723,6 +65627,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111860887159948
 MonoBehaviour:
@@ -65749,6 +65655,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111860989238014
 MonoBehaviour:
@@ -65775,6 +65683,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861034469419
 MonoBehaviour:
@@ -65801,6 +65711,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861085877098
 MonoBehaviour:
@@ -65827,6 +65739,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861104603191
 MonoBehaviour:
@@ -65853,6 +65767,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861146357449
 MonoBehaviour:
@@ -65879,6 +65795,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861149779214
 MonoBehaviour:
@@ -65905,6 +65823,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861218178086
 MonoBehaviour:
@@ -65931,6 +65851,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861260454561
 MonoBehaviour:
@@ -65957,6 +65879,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861306326270
 MonoBehaviour:
@@ -65983,6 +65907,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861331739623
 MonoBehaviour:
@@ -66009,6 +65935,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861332480862
 MonoBehaviour:
@@ -66035,6 +65963,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861422221529
 MonoBehaviour:
@@ -66061,6 +65991,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861423560835
 MonoBehaviour:
@@ -66087,6 +66019,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861485630609
 MonoBehaviour:
@@ -66113,6 +66047,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861536161612
 MonoBehaviour:
@@ -66139,6 +66075,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861550117613
 MonoBehaviour:
@@ -66165,6 +66103,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861551338866
 MonoBehaviour:
@@ -66191,6 +66131,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861621901355
 MonoBehaviour:
@@ -66217,6 +66159,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861665571269
 MonoBehaviour:
@@ -66243,6 +66187,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861730561239
 MonoBehaviour:
@@ -66269,6 +66215,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861740307141
 MonoBehaviour:
@@ -66295,6 +66243,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861758091123
 MonoBehaviour:
@@ -66321,6 +66271,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861809557946
 MonoBehaviour:
@@ -66347,6 +66299,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861830750369
 MonoBehaviour:
@@ -66373,6 +66327,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861871240711
 MonoBehaviour:
@@ -66399,6 +66355,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111861962493646
 MonoBehaviour:
@@ -66425,6 +66383,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862025121478
 MonoBehaviour:
@@ -66451,6 +66411,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862037873750
 MonoBehaviour:
@@ -66477,6 +66439,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862066138951
 MonoBehaviour:
@@ -66503,6 +66467,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862070920674
 MonoBehaviour:
@@ -66529,6 +66495,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862095268385
 MonoBehaviour:
@@ -66555,6 +66523,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862103059330
 MonoBehaviour:
@@ -66581,6 +66551,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862194041843
 MonoBehaviour:
@@ -66607,6 +66579,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862217907182
 MonoBehaviour:
@@ -66633,6 +66607,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862245045794
 MonoBehaviour:
@@ -66659,6 +66635,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862293228654
 MonoBehaviour:
@@ -66685,6 +66663,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862342630649
 MonoBehaviour:
@@ -66711,6 +66691,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862344315249
 MonoBehaviour:
@@ -66737,6 +66719,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862399194165
 MonoBehaviour:
@@ -66763,6 +66747,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862468763457
 MonoBehaviour:
@@ -66789,6 +66775,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862489396165
 MonoBehaviour:
@@ -66815,6 +66803,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862564598264
 MonoBehaviour:
@@ -66841,6 +66831,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862612716974
 MonoBehaviour:
@@ -66867,6 +66859,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862759131366
 MonoBehaviour:
@@ -66893,6 +66887,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862871351467
 MonoBehaviour:
@@ -66919,6 +66915,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114111862943746042
 MonoBehaviour:
@@ -66945,6 +66943,8 @@ MonoBehaviour:
   _opacityHeightTolerance: 1
   isSavePoint: 1
   _inheritZCollisionFromScalablePlatform: 0
+  TopSprite: {fileID: 0}
+  FrontSprite: {fileID: 0}
   _isCollapsed: 0
 --- !u!114 &114185845795956496
 MonoBehaviour:
@@ -70288,6 +70288,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7689713314767831524, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerPhysics
+      value: 
+      objectReference: {fileID: 1234480454}
     - target: {fileID: 2433007658933489138, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -70393,11 +70398,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 7689713314767831524, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerPhysics
-      value: 
-      objectReference: {fileID: 1234480454}
     - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: _playerHandler

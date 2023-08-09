@@ -14,11 +14,14 @@ public class SummonblePlatform : MonoBehaviour
     private const float _hiddenElevation = -25.0f;
     private const float _animationDuration = 0.3f;
 
+    private EnvironmentPhysics environmentPhysics;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        _summonedElevation = GetComponent<EnvironmentPhysics>().GetBottomHeight();
+        environmentPhysics = GetComponent<EnvironmentPhysics>();
+        _summonedElevation = environmentPhysics.GetBottomHeight();
         if (!StartSummoned) Disappear();
     }
 
@@ -64,32 +67,29 @@ public class SummonblePlatform : MonoBehaviour
         //Drop
         Debug.Log("Dropping!");
         float opacity = 1.0f;
-        GetComponent<EnvironmentPhysics>()._isCollapsed = true;
+        environmentPhysics._isCollapsed = true;
         float timer = 0.0f;
         float currentElevation = _summonedElevation;
-        float objectHeight = GetComponent<EnvironmentPhysics>().ObjectHeight;
+        float objectHeight = environmentPhysics.ObjectHeight;
 
         while (timer < _animationDuration)
         {
             opacity = _interpolateCurve.Evaluate( (_animationDuration - timer) / _animationDuration);
             currentElevation = Mathf.Lerp(_summonedElevation, _hiddenElevation, 1 - opacity); //opacity basically acts as a normalized version of the timer
 
-            GetComponent<EnvironmentPhysics>().BottomHeight = currentElevation;
-            GetComponent<EnvironmentPhysics>().TopHeight =  currentElevation + objectHeight;
+            environmentPhysics.BottomHeight = currentElevation;
+            environmentPhysics.TopHeight =  currentElevation + objectHeight;
 
-            GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", opacity);
-            GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", opacity);
+            environmentPhysics.TopSprite.material.SetFloat("_Opacity", opacity);
+            environmentPhysics.FrontSprite.material.SetFloat("_Opacity", opacity);
 
-
-            // top
-            GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition = Vector2.up * currentElevation;
-            // front
-            GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition = Vector2.up * (-2 + currentElevation);
+            environmentPhysics.TopSprite.gameObject.transform.localPosition = Vector2.up * currentElevation;
+            environmentPhysics.FrontSprite.gameObject.transform.localPosition = Vector2.up * (-2 + currentElevation);
             timer += Time.deltaTime;
             yield return null;
         }
-        GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", 0);
-        GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", 0);
+        environmentPhysics.TopSprite.material.SetFloat("_Opacity", 0);
+        environmentPhysics.FrontSprite.material.SetFloat("_Opacity", 0);
     }
 
     private IEnumerator SummonCoroutine()
@@ -97,38 +97,38 @@ public class SummonblePlatform : MonoBehaviour
         //Drop
         Debug.Log("Raising!");
         float opacity = 0.0f;
-        GetComponent<EnvironmentPhysics>()._isCollapsed = true;
+        environmentPhysics._isCollapsed = true;
         float timer = 0.0f;
         float currentElevation = _summonedElevation;
-        float objectHeight = GetComponent<EnvironmentPhysics>().ObjectHeight;
+        float objectHeight = environmentPhysics.ObjectHeight;
 
         while (timer < _animationDuration)
         {
             opacity = _interpolateCurve.Evaluate( timer / _animationDuration);
             currentElevation = Mathf.Lerp(_summonedElevation, _hiddenElevation, 1 - opacity); //opacity basically acts as a normalized version of the timer
 
-            GetComponent<EnvironmentPhysics>().BottomHeight = currentElevation;
-            GetComponent<EnvironmentPhysics>().TopHeight = currentElevation + objectHeight;
+            environmentPhysics.BottomHeight = currentElevation;
+            environmentPhysics.TopHeight = currentElevation + objectHeight;
 
-            GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", opacity);
-            GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", opacity);
+            environmentPhysics.TopSprite.material.SetFloat("_Opacity", opacity);
+            environmentPhysics.FrontSprite.material.SetFloat("_Opacity", opacity);
 
             // top
-            GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition = Vector2.up * currentElevation;
+            environmentPhysics.TopSprite.gameObject.transform.localPosition = Vector2.up * currentElevation;
             // front
-            GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition = Vector2.up * (-2 + currentElevation);
+            environmentPhysics.FrontSprite.gameObject.transform.localPosition = Vector2.up * (-2 + currentElevation);
             timer += Time.deltaTime;
             yield return null;
         }
-        GetComponent<EnvironmentPhysics>().BottomHeight = _summonedElevation;
-        GetComponent<EnvironmentPhysics>().TopHeight = _summonedElevation + objectHeight;
+        environmentPhysics.BottomHeight = _summonedElevation;
+        environmentPhysics.TopHeight = _summonedElevation + objectHeight;
 
-        GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", 1);
-        GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", 1);
+        environmentPhysics.TopSprite.material.SetFloat("_Opacity", 1);
+        environmentPhysics.FrontSprite.material.SetFloat("_Opacity", 1);
         // top
-        GetComponentsInChildren<SpriteRenderer>()[0].gameObject.transform.localPosition = Vector2.up * _summonedElevation;
+        environmentPhysics.TopSprite.gameObject.transform.localPosition = Vector2.up * _summonedElevation;
         // front
-        GetComponentsInChildren<SpriteRenderer>()[1].gameObject.transform.localPosition = Vector2.up * (-2 + _summonedElevation);
+        environmentPhysics.FrontSprite.gameObject.transform.localPosition = Vector2.up * (-2 + _summonedElevation);
     }
 
     public bool IsPlayerHere()

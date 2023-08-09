@@ -20,7 +20,17 @@ public class ExitVolume : MonoBehaviour
     {
         if (GetComponent<TriggerVolume>().IsTriggered)
         {
-            FadeTransition.Singleton.FadeToScene(_destination, _doorName);
+            ChangeLevel();
         }
+    }
+
+    public void ChangeLevel()
+    {
+        FadeTransition.Singleton.FadeToScene(_destination, _doorName);
+    }
+
+    public void SetTargetLevel(string newDestination)
+    {
+        _destination = newDestination;
     }
 }

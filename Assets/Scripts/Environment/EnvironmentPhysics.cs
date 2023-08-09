@@ -22,6 +22,9 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected bool _inheritZCollisionFromScalablePlatform = false;
     private float _opacity = 1;
 
+    public SpriteRenderer TopSprite;
+    public SpriteRenderer FrontSprite;
+
     public bool _isCollapsed = false;
 
     public static EntityPhysics _playerPhysics;
@@ -74,12 +77,25 @@ public class EnvironmentPhysics : PhysicsObject
             topHeight = GetComponent<ScalablePlatform>().TopHeight;
         }
         neighborEdges = new List<NavEdge>();
+
+        foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>())
+        {
+            if (renderer.gameObject.name == "Top")
+            {
+                TopSprite = renderer;
+            }
+            else if (renderer.gameObject.name == "Front")
+            {
+                FrontSprite = renderer;
+            }
+        }
+        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
+
     }
 
     void Start()
     {
         //Debug.Log("POSITION BEFORE:" + parent.transform.position.z);
-        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
         //Debug.Log("POSITION OF ME NOW:" + parent.transform.position.z);
         foreach(GameObject neighbor in neighbors)
         {
@@ -147,8 +163,8 @@ public class EnvironmentPhysics : PhysicsObject
                 if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > TopHeight) desiredOpacity = 1f;
                 _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
             }
-            GetComponentsInChildren<SpriteRenderer>()[0].material.SetFloat("_Opacity", _opacity);
-            if (GetComponentsInChildren<SpriteRenderer>().Length > 1) GetComponentsInChildren<SpriteRenderer>()[1].material.SetFloat("_Opacity", _opacity);
+            if (TopSprite) TopSprite.material.SetFloat("_Opacity", _opacity);
+            if (FrontSprite) FrontSprite.material.SetFloat("_Opacity", _opacity);
         }
     }
 

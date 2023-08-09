@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Color depthsColor;
     [SerializeField] private Color heightsColor;
     [SerializeField] private float elevationOffset = 30.0f;
+    [SerializeField] public float killPlaneElevation = -20.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +20,7 @@ public class LevelManager : MonoBehaviour
         Shader.SetGlobalColor("_LowColor", depthsColor);
         Shader.SetGlobalFloat("_MaxElevationOffset", elevationOffset);
         GameObject.Find("Canvas").SetActive(true); // in case its been disabled
+        EntityPhysics.KILL_PLANE_ELEVATION = killPlaneElevation;
 
         //Shader.SetGlobalColor("_HighColor", heightsColor);
         //Shader.SetGlobalColor("_LowColor", depthsColor);

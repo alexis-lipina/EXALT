@@ -1379,7 +1379,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 405039209}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 96, y: -2, z: 0}
+  m_LocalPosition: {x: -32, y: 35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1605504979}
@@ -2272,6 +2272,11 @@ MonoBehaviour:
   _sourceScene: FiringChamber_4
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1001 &892661309
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4503,7 +4508,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -57.5
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalRotation.x
@@ -7455,11 +7460,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48
       objectReference: {fileID: 0}
-    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerHandler
-      value: 
-      objectReference: {fileID: 23052731}
     - target: {fileID: 3196830636154884526, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -7470,6 +7470,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerHandler
+      value: 
+      objectReference: {fileID: 23052731}
     - target: {fileID: 7689713314710873934, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_Color.a

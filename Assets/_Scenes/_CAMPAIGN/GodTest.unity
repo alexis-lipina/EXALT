@@ -1261,6 +1261,9 @@ MonoBehaviour:
   PlayerDetectVolume: {fileID: 1826461398}
   Player: {fileID: 23052731}
   RestDurationToStart: 2
+  IsActivated: 0
+  GlowEffect_Pattern: {fileID: 0}
+  GlowEffect_Aura: {fileID: 0}
   OnActivated:
     m_PersistentCalls:
       m_Calls:
@@ -1324,6 +1327,25 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  DoesPlatformUseActionPress: 0
+  IsActionPressed: 0
+  DoesPlatformUseInputDirection: 0
+  InputDirection: {x: 0, y: 0}
+  OnActionPressed:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnActionReleased:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnDirectionInputReceived:
+    m_PersistentCalls:
+      m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1001 &125587509
@@ -11220,6 +11242,7 @@ MonoBehaviour:
   depthsColor: {r: 1, g: 0, b: 0.36000013, a: 1}
   heightsColor: {r: 1, g: 0, b: 0.6451616, a: 0}
   elevationOffset: 20
+  killPlaneElevation: -20
 --- !u!4 &1886258109
 Transform:
   m_ObjectHideFlags: 0
@@ -12295,6 +12318,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7689713314767831524, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerPhysics
+      value: 
+      objectReference: {fileID: 1611882267}
     - target: {fileID: 2433007658933489138, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12400,11 +12428,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 7689713314767831524, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerPhysics
-      value: 
-      objectReference: {fileID: 1611882267}
     - target: {fileID: 7689713316118793975, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: _playerHandler
@@ -14663,6 +14686,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48
       objectReference: {fileID: 0}
+    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerHandler
+      value: 
+      objectReference: {fileID: 23052731}
     - target: {fileID: 3196830636154884526, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -14673,11 +14701,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerHandler
-      value: 
-      objectReference: {fileID: 23052731}
     - target: {fileID: 7689713314710873934, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_Color.a

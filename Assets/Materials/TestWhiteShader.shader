@@ -108,61 +108,119 @@ Shader "Custom/TestWhiteShader"
 					}
 				}
 
-				// fire pattern
-				/*  [ ] CURRENT PIXEL
-				*   [ ] 1
-				* 	[ ] 2	
-				* 	[ ] 3	
-				* 	[ ] 4	
-				* 	[ ] 5	
-				*/ 
-				/*
-				if (color.a ==  0)
+				//Ichor freezing effect
+				float ichorFreezeAmount = 0.45f;
+				if (ichorFreezeAmount > 0)
 				{
-					float4 p1 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 1));
-					float4 p2 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 2));
-					float4 p3 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 3));
-					float4 p4 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 4));
-					float4 p5 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 5));
-					float4 p6 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 6));
-					float4 p7 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 7));
-					float4 p8 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 8));
+					/*         N3
+					*          N2
+					*          N1
+					* W3 W2 W1[PX]E1 E2 E3
+					*          S1
+					*          S2
+					*          S3
+					*/
+					const float4 n1 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * +1));
+					const float4 n2 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * +2));
+					const float4 n3 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * +3));
+					const float4 n4 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * +4));
+					const float4 n5 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * +5));
 
-					const float p1Weight = 1.0f;
-					const float p2Weight = 0.7f;
-					const float p3Weight = 0.6f;
-					const float p4Weight = 0.5f;
-					const float p5Weight = 0.4f;
-					const float p6Weight = 0.3f;
-					const float p7Weight = 0.2f;
-					const float p8Weight = 0.1f;
+					const float4 s1 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * -1));
+					const float4 s2 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * -2));
+					const float4 s3 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * -3));
+					const float4 s4 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * -4));
+					const float4 s5 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * -5));
 
-					
-					//create "mask value" based on sum of pixel alphas below. if all alphas are 0, will render nothing. 
-					float mask = clamp(
-						p1.a * p1Weight +
-						p2.a * p2Weight +
-						p3.a * p3Weight +
-						p4.a * p4Weight +
-						p5.a * p5Weight
-					, 0.0f, 1.0f);
+					const float4 w1 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * -0, _MainTex_TexelSize.y * +0));
+					const float4 w2 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * -1, _MainTex_TexelSize.y * +0));
+					const float4 w3 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * -2, _MainTex_TexelSize.y * +0));
+					const float4 w4 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * -3, _MainTex_TexelSize.y * +0));
+					const float4 w5 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * -4, _MainTex_TexelSize.y * +0));
 
-					mask = max(p1.a * p1Weight,
-						max(p2.a * p2Weight,
-							max(p3.a * p3Weight,
-								max(p4.a * p4Weight,
-									max(p5.a * p5Weight,
-										max(p6.a * p5Weight, 
-											max(p7.a * p5Weight, 
-												p8.a * p5Weight)))))));
+					const float4 e1 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +0, _MainTex_TexelSize.y * +0));
+					const float4 e2 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +1, _MainTex_TexelSize.y * +0));
+					const float4 e3 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +2, _MainTex_TexelSize.y * +0));
+					const float4 e4 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +3, _MainTex_TexelSize.y * +0));
+					const float4 e5 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +4, _MainTex_TexelSize.y * +0));
 
-					float noisesample = tex2D(_CrystalTex, float2(output.uv.x, abs(fmod(output.uv.y * 6 + _Time.g * -0.5, 1.0f))));
+					const float xScale1 = 1.0f;
+					const float xScale2 = 0.2f;
+					const float xScale3 = 0.2f;
+					const float xScale4 = 0.1f;
+					const float xScale5 = 0.1f;
 
-					return tex2D(_FireGradient, float2(noisesample + mask * 1.8 - 0.8f, 0.5f));
-				}*/
-				//color = tex2D(_CrystalTex, float2(output.uv.x, fmod(output.uv.y * 6 + _Time.g * 0.5, 1.0f)));
+					const float yScale1 = 1.0f;
+					const float yScale2 = 0.7f;
+					const float yScale3 = 0.7f;
+					const float yScale4 = 0.5f;
+					const float yScale5 = 0.5f;
 
-				//return fmod(_Time, 1.0f);
+
+					// READ WHEN POLISHING
+					/*
+					* Grungey noise with lots of different values and grit that looks good at larger scale does
+					* not translate as well to pixel art. you get weird orphan pixels and muddy undefined shapes.
+					* Make the noise textures more clear rectilinear patterns, maybe with slightly different values
+					*
+					* Maybe we dont want this gradienty effect with the kernel since the pixels will be extremely stepped? Chunks of 3?
+					*/
+					float mask = 0;
+					mask =
+						color.a +
+						1.0f - n1.a * yScale1 +
+						1.0f - n2.a * yScale2 +
+						1.0f - n3.a * yScale3 +
+						1.0f - n4.a * yScale4 +
+						1.0f - n5.a * yScale5 +
+						1.0f - s1.a * yScale1 +
+						1.0f - s2.a * yScale2 +
+						1.0f - s3.a * yScale3 +
+						1.0f - s4.a * yScale4 +
+						1.0f - s5.a * yScale5 +
+						1.0f - e1.a * xScale1 +
+						1.0f - e2.a * xScale2 +
+						1.0f - e3.a * xScale3 +
+						1.0f - e4.a * xScale4 +
+						1.0f - e5.a * xScale5 +
+						1.0f - w1.a * xScale1 +
+						1.0f - w2.a * xScale2 +
+						1.0f - w3.a * xScale3 +
+						1.0f - w4.a * xScale4 +
+						1.0f - w5.a * xScale5;
+					mask *= 0.5f;
+
+					mask =
+						//max(color.a,
+						max((1.0f - n1.a) * yScale1,
+						max((1.0f - n2.a) * yScale2,
+						max((1.0f - n3.a) * yScale3,
+						max((1.0f - n4.a) * yScale4,
+						max((1.0f - n5.a) * yScale5,
+						max((1.0f - s1.a) * yScale1,
+						max((1.0f - s2.a) * yScale2,
+						max((1.0f - s3.a) * yScale3,
+						max((1.0f - s4.a) * yScale4,
+						max((1.0f - s5.a) * yScale5,
+						max((1.0f - e1.a) * xScale1,
+						max((1.0f - e2.a) * xScale2,
+						max((1.0f - e3.a) * xScale3,
+						max((1.0f - e4.a) * xScale4,
+						max((1.0f - e5.a) * xScale5,
+						max((1.0f - w1.a) * xScale1,
+						max((1.0f - w2.a) * xScale2,
+						max((1.0f - w3.a) * xScale3,
+						max((1.0f - w4.a) * xScale4,
+							(1.0f - w5.a) * xScale5)))))))))))))))))));
+
+					float noisetexpix = tex2D(_CrystalTex, output.uv);
+					color = color = color * (1 - step(ichorFreezeAmount, noisetexpix)) + float4(1, 1, 0.5f, 1) * step(ichorFreezeAmount, noisetexpix) * color.a;
+					float maskvalue = step(0.5f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
+					//color = color * (1 - maskvalue) + float4(1, 0, 0.5f, 1) * maskvalue * color.a;
+					//return float4(1, 0, 0.5f, maskvalue);
+
+					//return tex2D(_IchorGradient, float2(output.uv.y * 1.0f, 0.5f)) * float4(1, 1, 1, maskvalue);
+				}
 
 				return color;
 			}

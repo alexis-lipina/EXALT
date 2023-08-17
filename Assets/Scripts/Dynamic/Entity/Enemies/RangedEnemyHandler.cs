@@ -12,7 +12,7 @@ public class RangedEnemyHandler : EntityHandler
     [SerializeField] private SpriteRenderer bloodSplatterSprite;
 
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH, FROZEN };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "RangedBot_IdleEast";
@@ -163,6 +163,9 @@ public class RangedEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.DEATH:
                 DeathState();
+                break;
+            case TestEnemyState.FROZEN:
+                FrozenState();
                 break;
             default:
                 Debug.LogError("RangedBot has unimplemented state : " + currentState);
@@ -599,6 +602,22 @@ public class RangedEnemyHandler : EntityHandler
         }
     }
 
+    public override void Freeze()
+    {
+        currentState = TestEnemyState.FROZEN;
+        characterAnimator.speed = 0;
+    }
+
+    public override void Unfreeze()
+    {
+        currentState = TestEnemyState.IDLE; // TODO = break-out anim?
+        characterAnimator.speed = 1.0f;
+    }
+
+    private void FrozenState()
+    {
+        // do nothing...?
+    }
 
     private void DeathState()
     {

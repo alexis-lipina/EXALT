@@ -22,6 +22,7 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool canBeDamaged;
     [SerializeField] private bool explodesOnDeath;
     [SerializeField] private bool doesTracking;
+    [SerializeField] private bool doesSpriteFaceMoveDirection;
     [SerializeField] private Collider2D trackingArea;
     [SerializeField] public int _damageAmount = 1;
     [SerializeField] private float _impactForce = 0.5f;
@@ -82,6 +83,7 @@ public class ProjectilePhysics : DynamicPhysics
     // Original FIELDS - for any field modified when bullet is deflected that needs to be reset when object is returned to pool
     private string _whoToHurt_original;
     private float _speed_original;
+    private LevelManager levelManager;
 
 
 
@@ -97,14 +99,18 @@ public class ProjectilePhysics : DynamicPhysics
         _whoToHurt_original = _whoToHurt;
     }
 
-	
 
-	void Update ()
+
+    void Update()
     {
         _timer += Time.deltaTime;
 
         //physics
         _velocity = Bounce(_velocity);
+        if (doesSpriteFaceMoveDirection)
+        {
+            _objectSprite.transform.right = _velocity.normalized;
+        }
 
         if (doesTracking)
         {
@@ -117,11 +123,11 @@ public class ProjectilePhysics : DynamicPhysics
         MoveCharacterPositionPhysics(_velocity.x, _velocity.y);
         //Debug.Log("Velocity : " + _velocity);
         if (isAffectedByGravity) FreeFall();
-        else _velocity *= 0.9f;
+        //else _velocity *= 0.9f; // commenting this out on 8/4/2023 cuz it seems wrong... but I'm not sure if this'll break something, so....
         //Debug.Log("Elevation : " + bottomHeight);
 
         MoveCharacterPosition();
-        if (bottomHeight < -18 || _timer > _timeToDestroy)
+        if (bottomHeight < EntityPhysics.KILL_PLANE_ELEVATION || _timer > _timeToDestroy) 
         {
             Debug.Log(bulletHandler);
             Debug.Log(bulletHandler.SourceWeapon);
@@ -149,6 +155,7 @@ public class ProjectilePhysics : DynamicPhysics
                 _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
                 other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:_impactForce * Velocity.normalized, type:_damageType);
                 if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
+                else if (_damageType == ElementType.ICHOR) other.gameObject.GetComponent<EntityPhysics>().IchorCorrupt(1);
                 if (!canPenetrate)
                 {
                     Reset();

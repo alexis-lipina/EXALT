@@ -75,7 +75,7 @@ Shader "Custom/TestWhiteShader"
 			float4 frag(vertOutput output) : COLOR
 			{
 				float4 color = tex2D(_MainTex, output.uv);
-
+				return 0;
 				// fire pattern
 				/*  [ ] CURRENT PIXEL
 			 L1 [ ] [ ] 1 [ ] R1
@@ -140,6 +140,7 @@ Shader "Custom/TestWhiteShader"
 
 				//return fmod(_Time, 1.0f);
 
+				// ICHOR FREEZE
 				if (true)
 				{
 					/*         N3

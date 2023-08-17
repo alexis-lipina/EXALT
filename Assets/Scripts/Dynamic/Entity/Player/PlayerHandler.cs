@@ -191,6 +191,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private Sprite Halo_Void;
     [SerializeField] private Sprite Halo_Zap;
     [SerializeField] private Sprite Halo_Fire;
+    [SerializeField] private Sprite Halo_Ichor;
     private bool _jump_hasStartedFalling = false;
 
     private static int NumberOfShatteredHealthBlocks = 0;
@@ -362,8 +363,8 @@ public class PlayerHandler : EntityHandler
             case (PlayerState.CHANGE_STYLE):
                 PlayerChangeStyle();
                 break;
-            case (PlayerState.HEAL):
-                PlayerHeal();
+            /*case (PlayerState.HEAL):
+                PlayerHeal();*/
                 break;
             case (PlayerState.REST):
                 PlayerRest();
@@ -403,6 +404,14 @@ public class PlayerHandler : EntityHandler
             CurrentState = PlayerState.CHANGE_STYLE;
             StateTimer = _changeStyleDuration;
             _newStyle = ElementType.ZAP;
+        }
+        else if (controller.GetButton("ChangeStyle_Ichor") && _currentStyle != ElementType.ICHOR)
+        {
+            //Shader.SetGlobalColor("_MagicColor", new Color(0f, 1f, 0.5f, 1f));
+            //ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0f, 1f, 0.5f));
+            CurrentState = PlayerState.CHANGE_STYLE;
+            StateTimer = _changeStyleDuration;
+            _newStyle = ElementType.ICHOR;
         }
 
     }
@@ -490,10 +499,6 @@ public class PlayerHandler : EntityHandler
             PlayerBlinkTransitionAttempt();
         }
         CheckStyleChange();
-        if (controller.GetButtonDown("Heal"))
-        {
-            PlayerHealTransitionAttempt();
-        }
 
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
@@ -641,10 +646,6 @@ public class PlayerHandler : EntityHandler
         if (controller.GetButtonDown("Blink"))
         {
             PlayerBlinkTransitionAttempt();
-        }
-        if (controller.GetButtonDown("Heal"))
-        {
-            PlayerHealTransitionAttempt();
         }
         CheckStyleChange();
 
@@ -1057,15 +1058,18 @@ public class PlayerHandler : EntityHandler
                     case ElementType.VOID:
                         weaponSprite.transform.right = -aimDirection;
                         weaponSprite.transform.localPosition = weaponSprite.transform.right * 4;
-                        weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f); break;
+                        weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f); 
+                        break;
                     case ElementType.FIRE:
                         weaponSprite.transform.right = aimDirection;
                         weaponSprite.transform.localPosition = new Vector3(0,0,0);
-                        weaponSprite.GetComponent<Animator>().Play("SolFlail_Manifest", 0, 0.0f); break;
+                        weaponSprite.GetComponent<Animator>().Play("SolFlail_Manifest", 0, 0.0f);
                         break;
                     case ElementType.ICHOR:
-                        // TODO
-                        break;
+                        weaponSprite.transform.right = -aimDirection;
+                        weaponSprite.transform.localPosition = weaponSprite.transform.right * 2;
+
+                        weaponSprite.GetComponent<Animator>().Play("IchorBlade_Manifest", 0, 0.0f); break;
                 }
                 
             }
@@ -1120,6 +1124,9 @@ public class PlayerHandler : EntityHandler
                     break;
                 case ElementType.ZAP:
                     PlayerHeavyMelee_Zap();
+                    break;
+                case ElementType.ICHOR:
+                    PlayerHeavyMelee_Ichor();
                     break;
             }
 
@@ -1284,7 +1291,41 @@ public class PlayerHandler : EntityHandler
             }
         }
     }
-    
+
+    private void PlayerHeavyMelee_Ichor()
+    {
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        foreach (Collider2D obj in hitobjects)
+        {
+            EntityPhysics enemyPhysics = obj.GetComponent<EntityPhysics>();
+            if (enemyPhysics && obj.tag == "Enemy")
+            {
+                if (enemyPhysics.GetTopHeight() > entityPhysics.GetBottomHeight() && enemyPhysics.GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
+                    Vibrate(1.0f, 0.3f);
+
+                    ChangeEnergy(1);
+                    Debug.Log("Owch!");
+                    enemyPhysics.Inflict(1, force: aimDirection.normalized * 2.0f, type: ElementType.ICHOR);
+                    enemyPhysics.IchorCorrupt(1);                    
+                }
+            }
+            else if (obj.GetComponent<ProjectilePhysics>())
+            {
+                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                {
+                    Vibrate(1.0f, 0.15f);
+                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
+                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Charged melee attack
     /// </summary>
@@ -1371,6 +1412,9 @@ public class PlayerHandler : EntityHandler
                     break;
                 case ElementType.ZAP:
                     LightRanged_Zap();
+                    break;
+                case ElementType.ICHOR:
+                    LightRanged_Ichor();
                     break;
                 default: break;
             }
@@ -1514,6 +1558,12 @@ public class PlayerHandler : EntityHandler
         //Debug.Log(entityPhysics.transform.position);
         //Debug.Log(endPoint);
     }
+    private void LightRanged_Ichor()
+    {
+        //will rework the ranged attack system and remove "weapons" eventually...
+        SwapWeapon("SOUTH"); //Ichor is south
+        FireBullet();
+    }
 
     /// <summary>
     /// Fires a bullet
@@ -1531,6 +1581,7 @@ public class PlayerHandler : EntityHandler
     #endregion
 
     //---------------------------------------------| Misc
+    /*
     public void PlayerHeal()
     {
         if (StateTimer == heal_duration )
@@ -1582,7 +1633,7 @@ public class PlayerHandler : EntityHandler
         }
 
         StateTimer -= Time.deltaTime;
-    }
+    }*/
 
     private void PlayerChangeStyle()
     {
@@ -1621,9 +1672,17 @@ public class PlayerHandler : EntityHandler
                     _haloSprite.sprite = Halo_Zap;
                     _lightRangedEnergyCost = 1;
                     break;
+                case ElementType.ICHOR:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1.0f, 0.0f, 0.5f));
+                    Vibrate(1f, 0.1f);
+                    _currentStyle = ElementType.ICHOR;
+                    _haloSprite.sprite = Halo_Ichor;
+                    _lightRangedEnergyCost = 1;
+                    break;
                 default:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.2f, 0.1f));
+                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 1.0f, 0.0f, 1f));
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 1.0f, 0.0f));
                     Vibrate(1f, 0.1f);
                     Debug.LogError("HOWDY : Somehow, the player changed style to a nonexistent style!");
                     break;
@@ -1792,18 +1851,9 @@ public class PlayerHandler : EntityHandler
             }
             else
             {
-                //decided to not punish player for buttonmashing 
+                //decided to not punish player for button-mashing 
                 //_blink_hasButtonMashed = true; //fool, you clicked too fast
             }
-        }
-    }
-
-    private void PlayerHealTransitionAttempt()
-    {
-        if (entityPhysics.GetCurrentHealth() < entityPhysics.GetMaxHealth() && CurrentEnergy >= heal_cost)
-        {
-            CurrentState = PlayerState.HEAL;
-            StateTimer = heal_duration;
         }
     }
 
@@ -1853,19 +1903,22 @@ public class PlayerHandler : EntityHandler
                 break;
             case ElementType.VOID:
                 weaponSprite.transform.right = -aimDirection;
-                weaponSprite.transform.localPosition = weaponSprite.transform.right * 4;
+                weaponSprite.transform.localPosition = weaponSprite.transform.right * 3;
                 weaponSprite.gameObject.transform.parent = null;
-
                 weaponSprite.GetComponent<Animator>().Play("RiftScythe_Slash", 0, 0.0f);
                 break;
             case ElementType.FIRE:
                 weaponSprite.transform.right = aimDirection;
                 weaponSprite.gameObject.transform.parent = null;
                 weaponSprite.GetComponent<Animator>().Play("SolFlail_Throw", 0, 0.0f);
-                // TODO
+                // todo : chain stuff
                 break;
             case ElementType.ICHOR:
                 // TODO
+                weaponSprite.transform.right = -aimDirection;
+                weaponSprite.transform.localPosition = weaponSprite.transform.right * 2;
+                weaponSprite.gameObject.transform.parent = null;
+                weaponSprite.GetComponent<Animator>().Play("IchorBlade_Slash", 0, 0.0f);
                 break;
         }
 

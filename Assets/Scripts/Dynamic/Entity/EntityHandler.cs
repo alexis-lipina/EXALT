@@ -61,6 +61,17 @@ public abstract class EntityHandler : MonoBehaviour
     }
 
     public abstract void JustGotHit(Vector2 hitDirection);
+
+    public virtual void Freeze()
+    {
+        // do nothing by default, only does stuff for enemies I think
+    }
+
+    public virtual void Unfreeze()
+    {
+        // do nothing by default, only does stuff for enemies I think
+    }
+
     public virtual void OnDeath()
     {
         GameObject.Destroy(transform.parent);

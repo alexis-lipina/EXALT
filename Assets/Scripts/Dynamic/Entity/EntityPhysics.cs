@@ -66,6 +66,13 @@ public class EntityPhysics : DynamicPhysics
     private float _burnTimer_Inflicts = 0f;
     private float _burnDuration = 2.5f;
 
+    //ichor corruption stuff
+    private int IchorCorruptionAmount = 0;
+    private const int IchorCorruptionToFreeze = 3;
+    private const float IchorFreezeDuration = 3.0f;
+    bool IsFrozen = false;
+    float IchorFreezeTimer = 0.0f;
+
     public static float KILL_PLANE_ELEVATION = -18.0f; // assigned by LevelManager on level load, unique to each level
 
     //private float entityElevation; //replaced with bottomHeight
@@ -119,6 +126,21 @@ public class EntityPhysics : DynamicPhysics
                 _burnTimer_Inflicts = 0f;
                 Destroy(_burnParticles.gameObject);
             }
+        }
+
+        // freeze animation
+        if (IsFrozen)
+        {
+            IchorFreezeTimer += Time.deltaTime;
+            //TODO update shader
+            _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_IchorFreezeBreak", IchorFreezeTimer / IchorFreezeDuration);
+            if (IchorFreezeTimer >= IchorFreezeDuration)
+            {
+                entityHandler.Unfreeze();
+                IsFrozen = false;
+                IchorCorruptionAmount = 0;
+            }
+
         }
     }
 
@@ -401,6 +423,17 @@ public class EntityPhysics : DynamicPhysics
         _burnParticles = Instantiate(_burnParticlesPrefab, ObjectSprite.transform).gameObject;
         _burnTimer = _burnDuration;
         _burnTimer_Inflicts = _burnTimeBetweenInflicts;
+    }
+
+    public virtual void IchorCorrupt(int amountToAdd)
+    {
+        IchorCorruptionAmount += amountToAdd;
+        if (IchorCorruptionAmount >= IchorCorruptionToFreeze)
+        {
+            entityHandler.Freeze();
+            IsFrozen = true;
+            IchorFreezeTimer = 0.0f;
+        }
     }
 
     public virtual void Heal(int amount)

@@ -19,6 +19,8 @@ public abstract class EntityHandler : MonoBehaviour
     protected GameObject _zapPrimeVfx;
     protected bool _isPrimed_Fire = false;
     protected GameObject _firePrimeVfx;
+    protected bool _isPrimed_Ichor = false;
+    protected GameObject _ichorPrimeVfx;
     protected List<ElementType> currentPrimes;
     protected bool _isDetonating = false;
 
@@ -42,13 +44,13 @@ public abstract class EntityHandler : MonoBehaviour
                 return new Color(0.5f, 0.0f, 1.0f, 1f);
             case ElementType.ZAP:
                 return new Color(0.0f, 1.0f, 0.5f, 1f);
+            case ElementType.ICHOR:
+                return new Color(1.0f, 0.0f, 0.5f, 1f);
             default:
                 Debug.LogWarning("GetElementColor() called with type NONE");
                 return new Color(1f, 0.2f, 0.1f, 1f);
         }
     }
-
-
 
     /// <summary>
     /// Contains the state machine switch statement and calls state methods
@@ -62,9 +64,14 @@ public abstract class EntityHandler : MonoBehaviour
 
     public abstract void JustGotHit(Vector2 hitDirection);
 
+    public virtual void UpdateIchorCorrupt()
+    {
+
+    }
     public virtual void Freeze()
     {
         // do nothing by default, only does stuff for enemies I think
+
     }
 
     public virtual void Unfreeze()
@@ -79,7 +86,7 @@ public abstract class EntityHandler : MonoBehaviour
 
     public void PerformDetonations(ElementType elementOfAttack)
     {
-        if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap) || elementOfAttack == ElementType.NONE) return;
+        if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap || _isPrimed_Ichor) || elementOfAttack == ElementType.NONE) return;
 
         // decided against adding detonating attack to prime stack
         /*
@@ -112,6 +119,12 @@ public abstract class EntityHandler : MonoBehaviour
                     //Destroy(_voidPrimeVfx);
                     detonations.Add(ElementType.VOID);
                     break;
+                case ElementType.ICHOR:
+                    Debug.Log("Void Detonation");
+                    _isPrimed_Ichor = false;
+                    //Destroy(_voidPrimeVfx);
+                    detonations.Add(ElementType.ICHOR);
+                    break;
             }
         }
         currentPrimes = new List<ElementType>();
@@ -124,7 +137,7 @@ public abstract class EntityHandler : MonoBehaviour
 
     public void PrimeEnemy(ElementType type)
     {
-        if (_isPrimed_Void && type == ElementType.VOID || _isPrimed_Fire && type == ElementType.FIRE || _isPrimed_Zap && type == ElementType.ZAP) return;
+        if (_isPrimed_Void && type == ElementType.VOID || _isPrimed_Fire && type == ElementType.FIRE || _isPrimed_Zap && type == ElementType.ZAP || _isPrimed_Ichor && type == ElementType.ICHOR) return;
         _primeAudioSource.Play();
         switch (type)
         {
@@ -149,6 +162,13 @@ public abstract class EntityHandler : MonoBehaviour
                 currentPrimes.Add(type);
                 StartCoroutine(PrimeFlash(type));
                 return;
+            case ElementType.ICHOR:
+                _isPrimed_Ichor = true;
+                //_zapPrimeVfx = Instantiate(Resources.Load("Prefabs/VFX/PrimedParticles_Zap", typeof(GameObject)) as GameObject, entityPhysics.ObjectSprite.transform);
+                _ichorPrimeVfx = IchorDetonationHandler.DeployFromPool(entityPhysics);
+                currentPrimes.Add(type);
+                StartCoroutine(PrimeFlash(type));
+                return;
         }
     }
 
@@ -162,6 +182,7 @@ public abstract class EntityHandler : MonoBehaviour
         List<ElementType> orderedDetonations = new List<ElementType>();
 
         if (detonations.Contains(ElementType.VOID)) orderedDetonations.Add(ElementType.VOID);
+        if (detonations.Contains(ElementType.ICHOR)) orderedDetonations.Add(ElementType.ICHOR);
         if (detonations.Contains(ElementType.FIRE)) orderedDetonations.Add(ElementType.FIRE);
         if (detonations.Contains(ElementType.ZAP)) orderedDetonations.Add(ElementType.ZAP);
 
@@ -183,6 +204,10 @@ public abstract class EntityHandler : MonoBehaviour
                 case ElementType.ZAP:
                     _zapPrimeVfx.GetComponent<ZapDetonationHandler>().Detonate();
                     _zapPrimeVfx = null;
+                    break;
+                case ElementType.ICHOR:
+                    _ichorPrimeVfx.GetComponent<IchorDetonationHandler>().Detonate();
+                    _ichorPrimeVfx = null;
                     break;
             }
             //yield return new WaitForSeconds(0.3f); //TIME BETWEEN DETONATIONS

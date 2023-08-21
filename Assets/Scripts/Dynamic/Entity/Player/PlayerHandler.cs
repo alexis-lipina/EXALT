@@ -1067,7 +1067,7 @@ public class PlayerHandler : EntityHandler
                         break;
                     case ElementType.ICHOR:
                         weaponSprite.transform.right = -aimDirection;
-                        weaponSprite.transform.localPosition = weaponSprite.transform.right * 2;
+                        weaponSprite.transform.localPosition = /*weaponSprite.transform.right * 1 +*/ weaponSprite.transform.up * 2;
 
                         weaponSprite.GetComponent<Animator>().Play("IchorBlade_Manifest", 0, 0.0f); break;
                 }
@@ -1916,7 +1916,7 @@ public class PlayerHandler : EntityHandler
             case ElementType.ICHOR:
                 // TODO
                 weaponSprite.transform.right = -aimDirection;
-                weaponSprite.transform.localPosition = weaponSprite.transform.right * 2;
+                weaponSprite.transform.localPosition = /*weaponSprite.transform.right * 1 +*/ weaponSprite.transform.up * 2;
                 weaponSprite.gameObject.transform.parent = null;
                 weaponSprite.GetComponent<Animator>().Play("IchorBlade_Slash", 0, 0.0f);
                 break;

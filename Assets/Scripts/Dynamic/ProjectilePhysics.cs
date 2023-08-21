@@ -20,18 +20,50 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool isAffectedByGravity;
     [SerializeField] private bool canPenetrate;
     [SerializeField] private bool canBeDamaged;
+    [SerializeField] private bool canBeDeflected = true;
     [SerializeField] private bool explodesOnDeath;
     [SerializeField] private bool doesTracking;
+    [SerializeField] public bool isSpeedScaledByProximity = false;
     [SerializeField] private bool doesSpriteFaceMoveDirection;
     [SerializeField] private Collider2D trackingArea;
+    private ProjectileSeeker trackingAreaSeeker;
+    [SerializeField] private float trackingAddedSpeed = 5.0f;
     [SerializeField] public int _damageAmount = 1;
     [SerializeField] private float _impactForce = 0.5f;
     [SerializeField] private ElementType _damageType = ElementType.NONE;
     [SerializeField] private float _zVelocityDamping = 1f;
+    // minimum vertical velocity to give projectile on a bounce
     [SerializeField] private float _zMinimumVelocity = 20f;
     [SerializeField] private AudioSource _deflectSFX;
-    
+    [SerializeField] private Animator ProjectileAnimator;
+    [SerializeField] private string Animator_SpawnStateName;
+    [SerializeField] private string Animator_IdleStateName;
+    [SerializeField] private string Animator_DespawnStateName;
+    [SerializeField] private float Animator_DespawnDuration = 0.0f;
 
+
+
+    private bool _isCurrentlyTracking = false;
+    private bool IsCurrentlyTracking
+    {
+        get
+        {
+            return _isCurrentlyTracking;
+        }
+        set
+        {
+            if (_isCurrentlyTracking && !value)
+            {
+                _isCurrentlyTracking = value;
+                //speed -= trackingAddedSpeed;
+            }
+            else if (!_isCurrentlyTracking && value)
+            {
+                _isCurrentlyTracking = value;
+                //speed += trackingAddedSpeed;
+            }
+        }
+    }
 
 
     public bool CanBounce
@@ -84,6 +116,7 @@ public class ProjectilePhysics : DynamicPhysics
     private string _whoToHurt_original;
     private float _speed_original;
     private LevelManager levelManager;
+    private List<EntityPhysics> AlreadyDamagedTargets;
 
 
 
@@ -92,11 +125,16 @@ public class ProjectilePhysics : DynamicPhysics
         base.Awake();
         EntitiesTouched = new List<PhysicsObject>();
         _targetsTouched = new Dictionary<EntityPhysics, bool>();
+        AlreadyDamagedTargets = new List<EntityPhysics>();
         _timer = 0f;
 
         // Set original Fields
         _speed_original = speed;
         _whoToHurt_original = _whoToHurt;
+        if (trackingArea)
+        {
+            trackingAreaSeeker = trackingArea.GetComponent<ProjectileSeeker>();
+        }
     }
 
 
@@ -104,6 +142,7 @@ public class ProjectilePhysics : DynamicPhysics
     void Update()
     {
         _timer += Time.deltaTime;
+        topHeight = bottomHeight + _objectHeight;
 
         //physics
         _velocity = Bounce(_velocity);
@@ -129,11 +168,11 @@ public class ProjectilePhysics : DynamicPhysics
         MoveCharacterPosition();
         if (bottomHeight < EntityPhysics.KILL_PLANE_ELEVATION || _timer > _timeToDestroy) 
         {
-            Debug.Log(bulletHandler);
-            Debug.Log(bulletHandler.SourceWeapon);
+            //Debug.Log(bulletHandler);
+            //Debug.Log(bulletHandler.SourceWeapon);
             //bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID()); //"deletes" if out of bounds
-            transform.parent.gameObject.SetActive(false);
-            Reset();
+            //transform.parent.gameObject.SetActive(false);
+            Despawn();
         }
     }
 
@@ -152,18 +191,10 @@ public class ProjectilePhysics : DynamicPhysics
 
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
-                _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:_impactForce * Velocity.normalized, type:_damageType);
-                if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
-                else if (_damageType == ElementType.ICHOR) other.gameObject.GetComponent<EntityPhysics>().IchorCorrupt(1);
+                ApplyImpactEffect(other.gameObject.GetComponent<EntityPhysics>());
                 if (!canPenetrate)
                 {
-                    Reset();
-                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-                    transform.position = new Vector3(-999, -999, transform.position.z);
-                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
-                    //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
-                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                    Despawn();
                 }
             }
             else
@@ -176,17 +207,10 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
-                _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: _impactForce * Velocity.normalized, type: _damageType);
-                if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
+                ApplyImpactEffect(other.gameObject.GetComponent<EntityPhysics>());
                 if (!canPenetrate)
                 {
-                    Reset();
-                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-                    transform.position = new Vector3(-999, -999, transform.position.z);
-                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
-                    //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
-                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                    Despawn();
                 }
             }
             else
@@ -208,17 +232,10 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (!_targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] && other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight) //if has not been hit and is overlapping
             {
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force:Velocity.normalized * _impactForce, type:_damageType);
-                if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
-                _targetsTouched[other.gameObject.GetComponent<EntityPhysics>()] = true;
+                ApplyImpactEffect(other.gameObject.GetComponent<EntityPhysics>());
                 if (!canPenetrate)
                 {
-                    Reset();
-                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-                    transform.position = new Vector3(-999, -999, transform.position.z);
-                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
-
-                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                    Despawn();
                 }
             }
         }
@@ -226,17 +243,10 @@ public class ProjectilePhysics : DynamicPhysics
         {
             if (other.gameObject.GetComponent<EntityPhysics>().GetBottomHeight() < topHeight && other.gameObject.GetComponent<EntityPhysics>().GetTopHeight() > bottomHeight)//enemy hit
             {
-                _targetsTouched.Add(other.gameObject.GetComponent<EntityPhysics>(), true);
-                other.gameObject.GetComponent<EntityPhysics>().Inflict(_damageAmount, force: _impactForce * Velocity.normalized, type: _damageType);
-                if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
+                ApplyImpactEffect(other.gameObject.GetComponent<EntityPhysics>());
                 if (!canPenetrate)
                 {
-                    Reset();
-                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-                    transform.position = new Vector3(-999, -999, transform.position.z);
-                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
-                    //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
-                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                    Despawn();
                 }
             }
             else
@@ -258,7 +268,24 @@ public class ProjectilePhysics : DynamicPhysics
         }
     }
 
-    
+    void ApplyImpactEffect(EntityPhysics other)
+    {
+        if (AlreadyDamagedTargets.Contains(other))
+        {
+            return;
+        }
+        if (_damageAmount > 0)
+        {
+            other.Inflict(_damageAmount, force: Velocity.normalized * _impactForce, type: _damageType);
+            if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
+            else if (_damageType == ElementType.ICHOR) other.gameObject.GetComponent<EntityPhysics>().IchorCorrupt(1);
+        }
+        else 
+        {
+            other.Heal(1);
+        }
+        AlreadyDamagedTargets.Add(other);
+    }
 
 
     //==========================================|  SPECIAL PHYSICS
@@ -386,12 +413,16 @@ public class ProjectilePhysics : DynamicPhysics
     private Vector2 Seek(Vector2 currentVelocity)
     {
         Vector2 desiredVelocity = Vector2.zero;
+        IsCurrentlyTracking = false;
+
         //searches through objects within range
-        foreach (EntityPhysics other in trackingArea.GetComponent<ProjectileSeeker>().trackedTargets)
+        foreach (EntityPhysics other in trackingAreaSeeker.trackedTargets)
         {
-            if (other.tag == "Enemy")
+            if (other.tag == "Enemy" && _whoToHurt == "ENEMY")
             {
-                Debug.Log("ENEMY");
+
+                IsCurrentlyTracking = true;
+                
                 desiredVelocity = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
                 //make the force applied inversely proportional to distance
                 desiredVelocity = desiredVelocity.normalized * (1 / (desiredVelocity.magnitude * 2f) );
@@ -400,8 +431,19 @@ public class ProjectilePhysics : DynamicPhysics
                 float currentZ = (GetBottomHeight() + GetTopHeight()) / 2.0f;
                 ZVelocity = ( desiredZ - currentZ );
             }
-        }
+            else if (other.tag == "Friend" && _whoToHurt == "FRIEND")
+            {
+                IsCurrentlyTracking = true;
+                desiredVelocity = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
+                //make the force applied inversely proportional to distance
+                desiredVelocity = desiredVelocity.normalized * (1 / (desiredVelocity.magnitude * 2f));
+                //Z tracking
+                float desiredZ = (other.GetBottomHeight() + other.GetTopHeight()) / 2.0f;
+                float currentZ = (GetBottomHeight() + GetTopHeight()) / 2.0f;
+                ZVelocity = (desiredZ - currentZ);
+            }
 
+        }
 
         currentVelocity += desiredVelocity;
         
@@ -433,11 +475,44 @@ public class ProjectilePhysics : DynamicPhysics
 
     }
 
+    public void Despawn()
+    {
+        if (ProjectileAnimator)
+        {
+            ProjectileAnimator.Play(Animator_DespawnStateName);
+        }
+        StartCoroutine(PlayDespawnAndReset(Animator_DespawnDuration));
+    }
+
+    public void Spawn()
+    {
+        if (ProjectileAnimator)
+        {
+            ProjectileAnimator.Play(Animator_SpawnStateName);
+        }
+    }
+
+    private IEnumerator PlayDespawnAndReset(float duration)
+    {
+        float timer = 0; 
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+        transform.position = new Vector3(-999, -999, transform.position.z);
+        ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+        //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+        if (bulletHandler.SourceWeapon) bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+        Reset();
+    }
+
     //==========================================| OBJECT POOLING
 
-    /// <summary>
-    /// Should only be called when object is "removed" and returned to pool.
-    /// </summary>
+        /// <summary>
+        /// Should only be called when object is "removed" and returned to pool.
+        /// </summary>
     public override void Reset()
     {
         _velocity = Vector2.zero;
@@ -448,9 +523,10 @@ public class ProjectilePhysics : DynamicPhysics
         _timer = 0f;
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
         ZVelocity = 0f;
-        if (trackingArea) trackingArea.GetComponent<ProjectileSeeker>().trackedTargets = new List<EntityPhysics>();
+        if (trackingArea && trackingAreaSeeker) trackingAreaSeeker.trackedTargets = new List<EntityPhysics>();
         _whoToHurt = _whoToHurt_original;
         speed = _speed_original;
+        AlreadyDamagedTargets.Clear();
 
         //trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
         //transform.position = new Vector3(-999, -999, transform.position.z);

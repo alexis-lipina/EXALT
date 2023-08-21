@@ -75,7 +75,7 @@ Shader "Custom/TestWhiteShader"
 			float4 frag(vertOutput output) : COLOR
 			{
 				float4 color = tex2D(_MainTex, output.uv);
-				return 0;
+				//return 0;
 				// fire pattern
 				/*  [ ] CURRENT PIXEL
 			 L1 [ ] [ ] 1 [ ] R1
@@ -87,7 +87,8 @@ Shader "Custom/TestWhiteShader"
 				* 	[ ] 7
 				* 	[ ] 8
 				*/
-				if (color.a == 0 && false)
+				// FIRE
+				if (color.a == 0 && _FireAmount > 0)
 				{
 					float4 p1 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 1));
 					float4 p2 = tex2D(_MainTex, output.uv - fixed2(0, _MainTex_TexelSize.y * 2));
@@ -141,7 +142,7 @@ Shader "Custom/TestWhiteShader"
 				//return fmod(_Time, 1.0f);
 
 				// ICHOR FREEZE
-				if (true)
+				if (_CrystallizationAmount >= 1.0f)
 				{
 					/*         N3
 					*          N2
@@ -243,11 +244,11 @@ Shader "Custom/TestWhiteShader"
 						max(w3.a * xScale3,
 						max(w4.a * xScale4,
 						w5.a * xScale5))))))))))))))))))));
-
+					//return float4(output.uv.x, output.uv.y, 0, 1);
 					float maskvalue = step(1.0f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
 					return float4(1, 0, 0.5f, maskvalue);
 
-					return tex2D(_IchorGradient, float2(output.uv.y * 1.0f, 0.5f)) * float4(1, 1, 1, maskvalue);
+					//return tex2D(_IchorGradient, float2(output.uv.y * 1.0f, 0.5f)) * float4(1, 1, 1, maskvalue);
 					//return tex2D(_IchorGradient, float2(noisesample + mask * 1.8 - 0.8f, 0.5f)); step(1.0f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
 				}
 

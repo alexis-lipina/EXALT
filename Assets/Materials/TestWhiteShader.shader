@@ -109,8 +109,8 @@ Shader "Custom/TestWhiteShader"
 				}
 
 				//Ichor freezing effect
-				float ichorFreezeAmount = 0.45f;
-				if (ichorFreezeAmount > 0)
+				float ichorFreezeAmount = 1.0f - clamp(0.0f, 1.0f, _CrystallizationAmount);
+				if (ichorFreezeAmount >= 0)
 				{
 					/*         N3
 					*          N2
@@ -144,17 +144,17 @@ Shader "Custom/TestWhiteShader"
 					const float4 e4 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +3, _MainTex_TexelSize.y * +0));
 					const float4 e5 = tex2D(_MainTex, output.uv + fixed2(_MainTex_TexelSize.x * +4, _MainTex_TexelSize.y * +0));
 
-					const float xScale1 = 1.0f;
-					const float xScale2 = 0.2f;
-					const float xScale3 = 0.2f;
-					const float xScale4 = 0.1f;
+					const float xScale1 = 0.8f;
+					const float xScale2 = 0.6f;
+					const float xScale3 = 0.4f;
+					const float xScale4 = 0.2f;
 					const float xScale5 = 0.1f;
 
-					const float yScale1 = 1.0f;
-					const float yScale2 = 0.7f;
-					const float yScale3 = 0.7f;
-					const float yScale4 = 0.5f;
-					const float yScale5 = 0.5f;
+					const float yScale1 = 0.8f;
+					const float yScale2 = 0.6f;
+					const float yScale3 = 0.4f;
+					const float yScale4 = 0.2f;
+					const float yScale5 = 0.1f;
 
 
 					// READ WHEN POLISHING
@@ -213,13 +213,19 @@ Shader "Custom/TestWhiteShader"
 						max((1.0f - w4.a) * xScale4,
 							(1.0f - w5.a) * xScale5)))))))))))))))))));
 
+					mask = step(0.5, color.a) * mask;
 					float noisetexpix = tex2D(_CrystalTex, output.uv);
-					color = color = color * (1 - step(ichorFreezeAmount, noisetexpix)) + float4(1, 1, 0.5f, 1) * step(ichorFreezeAmount, noisetexpix) * color.a;
-					float maskvalue = step(0.5f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
+					// 'mask' is effectively distance from the edge
+
+					// draw solid ichor color if mask exceeds ichorFreezeAmount. Otherwise, draw original color
+					color = color * (1 - step(ichorFreezeAmount, mask)) + float4(1, 0, 0.5f, color.a) * (step(ichorFreezeAmount, mask));
+					//color = color * (1 - step(ichorFreezeAmount, noisetexpix)) + float4(1, 1, 0.5f, 1) * step(ichorFreezeAmount, noisetexpix) * color.a;
+					//float maskvalue = step(0.5f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
 					//color = color * (1 - maskvalue) + float4(1, 0, 0.5f, 1) * maskvalue * color.a;
 					//return float4(1, 0, 0.5f, maskvalue);
 
 					//return tex2D(_IchorGradient, float2(output.uv.y * 1.0f, 0.5f)) * float4(1, 1, 1, maskvalue);
+					//if (ichorFreezeAmount == 0.0f) color = float4(1, 0, 0.5f, color.a);
 				}
 
 				return color;

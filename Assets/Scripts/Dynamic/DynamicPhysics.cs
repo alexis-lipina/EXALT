@@ -18,6 +18,10 @@ public class DynamicPhysics : PhysicsObject
 
     public const float MAX_Z_VELOCITY_MAGNITUDE = 120f;
     protected Rigidbody2D PlayerRigidBody;
+    public float GetSpriteZOffset()
+    {
+        return _spriteZOffset;
+    }    
 
 
     public Dictionary<GameObject, KeyValuePair<float, float>> TerrainTouching; //each element of terrain touching the ***collider***

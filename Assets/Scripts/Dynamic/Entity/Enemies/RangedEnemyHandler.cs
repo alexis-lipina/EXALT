@@ -10,9 +10,10 @@ public class RangedEnemyHandler : EntityHandler
     [SerializeField] private bool isCompanion;
     [SerializeField] private PathfindingAI _pathfindingAi;
     [SerializeField] private SpriteRenderer bloodSplatterSprite;
+    [SerializeField] private Transform _ichorHeartPrefab;
 
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH, FROZEN };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH, FROZEN, SHATTER };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "RangedBot_IdleEast";
@@ -49,15 +50,14 @@ public class RangedEnemyHandler : EntityHandler
 
     const string DEATH_WEST_Anim = "RangedBot_DeathWest";
     const string DEATH_EAST_Anim = "RangedBot_DeathEast";
+    const string DEATH_SHATTER_Anim = "DeathShatter";
 
     const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
     const float SPAWN_DURATION = 0.66f;
     const float SHIELDBREAK_DURATION = 0.66f;
     const float DEATH_DURATION = 1.3f;
-
-
-
+    const float DEATH_FALL_DURATION = 0.666f;
 
 
     private enum TempTexDirection
@@ -166,6 +166,9 @@ public class RangedEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.FROZEN:
                 FrozenState();
+                break;
+            case TestEnemyState.SHATTER:
+                ShatterState();
                 break;
             default:
                 Debug.LogError("RangedBot has unimplemented state : " + currentState);
@@ -602,16 +605,42 @@ public class RangedEnemyHandler : EntityHandler
         }
     }
 
+    public override void UpdateIchorCorrupt()
+    {
+        float amt = 0.0f;
+        switch (entityPhysics.IchorCorruptionAmount)
+        {
+            case 0:
+                amt = 0.0f;
+                break;
+            case 1:
+                amt = 0.4f;
+                break;
+            case 2:
+                amt = 0.9f;
+                break;
+            default:
+                amt = 1.0f;
+                break;
+        }
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CrystallizationAmount", amt);
+    }
+
+
     public override void Freeze()
     {
         currentState = TestEnemyState.FROZEN;
+        fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_CrystallizationAmount", 1.0f);
         characterAnimator.speed = 0;
+        fxAnimator.speed = 0;
     }
 
     public override void Unfreeze()
     {
         currentState = TestEnemyState.IDLE; // TODO = break-out anim?
+        fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_CrystallizationAmount", 0.0f);
         characterAnimator.speed = 1.0f;
+        fxAnimator.speed = 0;
     }
 
     private void FrozenState()
@@ -642,6 +671,18 @@ public class RangedEnemyHandler : EntityHandler
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
         DeathVector *= 0.95f;
+    }
+
+    private void ShatterState()
+    {
+        characterAnimator.Play(DEATH_SHATTER_Anim);
+        fxAnimator.Play(DEATH_SHATTER_Anim);
+        //Physics
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        //Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(DeathVector);
+        //entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        //entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
+        //DeathVector *= 0.5f;
     }
 
     //==========================| SHIELD MANAGEMENT
@@ -691,25 +732,50 @@ public class RangedEnemyHandler : EntityHandler
 
     public override void OnDeath()
     {
-        if (_isDetonating) return;
+        if (_isDetonating || entityPhysics.IsDead) return;
         //Destroy(gameObject.transform.parent.gameObject);
-        StartCoroutine(PlayDeathAnim());
+        if (entityPhysics.IsFrozen) // frozen
+        {
+            Transform heart = Instantiate(_ichorHeartPrefab);
+            ProjectilePhysics heartPhys = heart.GetComponentInChildren<ProjectilePhysics>();
+            heartPhys.transform.position = entityPhysics.transform.position;
+            heartPhys.SetObjectElevation(entityPhysics.GetObjectElevation() + 1.0f);
+            entityPhysics.Unfreeze();
+            StartCoroutine(PlayDeathAnim(isShatter: true));
+        }
+        else
+        {
+            StartCoroutine(PlayDeathAnim(isShatter: false));
+
+        }
+        entityPhysics.IsDead = true;
     }
 
-    private IEnumerator PlayDeathAnim()
+    private IEnumerator PlayDeathAnim(bool isShatter)
     {
-        currentState = TestEnemyState.DEATH;
-        StartCoroutine(PlayBloodSplatter());
-        yield return new WaitForSeconds(DEATH_DURATION);
+        currentState = isShatter ? TestEnemyState.SHATTER : TestEnemyState.DEATH;
+        if (GetEntityPhysics().FellOutOfBounds)
+        {
+            Camera.main.GetComponent<CameraScript>().Jolt(2.0f, Vector2.down);
+            yield return new WaitForSeconds(0.05f);
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.75f, 0.125f);
+            yield return new WaitForSeconds(DEATH_FALL_DURATION - 0.05f);
+        }
+        else
+        {
+            if (!isShatter) StartCoroutine(PlayBloodSplatter());
+            yield return new WaitForSeconds(DEATH_DURATION);
+        }
         //destroy VFX
         if (_zapPrimeVfx != null) Destroy(_zapPrimeVfx);
         if (_voidPrimeVfx != null) Destroy(_voidPrimeVfx);
         if (_firePrimeVfx != null) Destroy(_firePrimeVfx);
+        if (_ichorPrimeVfx != null) Destroy(_ichorPrimeVfx);
 
 
         if (entityPhysics._spawner)
         {
-            Debug.Log("Returning enemy to pool");
+            Debug.Log("Returning melee enemy to pool");
             entityPhysics._spawner.ReturnToPool(transform.parent.gameObject.GetInstanceID());
         }
         else

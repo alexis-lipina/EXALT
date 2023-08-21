@@ -67,10 +67,10 @@ public class EntityPhysics : DynamicPhysics
     private float _burnDuration = 2.5f;
 
     //ichor corruption stuff
-    private int IchorCorruptionAmount = 0;
+    public int IchorCorruptionAmount = 0;
     private const int IchorCorruptionToFreeze = 3;
     private const float IchorFreezeDuration = 3.0f;
-    bool IsFrozen = false;
+    public bool IsFrozen = false;
     float IchorFreezeTimer = 0.0f;
 
     public static float KILL_PLANE_ELEVATION = -18.0f; // assigned by LevelManager on level load, unique to each level
@@ -136,12 +136,25 @@ public class EntityPhysics : DynamicPhysics
             _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_IchorFreezeBreak", IchorFreezeTimer / IchorFreezeDuration);
             if (IchorFreezeTimer >= IchorFreezeDuration)
             {
-                entityHandler.Unfreeze();
-                IsFrozen = false;
-                IchorCorruptionAmount = 0;
+                Unfreeze();
             }
 
         }
+    }
+
+    public void Freeze()
+    {
+        entityHandler.Freeze();
+        IsFrozen = true;
+        IchorFreezeTimer = 0.0f;
+    }
+
+    public void Unfreeze()
+    {
+        entityHandler.Unfreeze();
+        IsFrozen = false;
+        IchorCorruptionAmount = 0;
+        entityHandler.UpdateIchorCorrupt();
     }
 
     /// <summary>
@@ -411,6 +424,11 @@ public class EntityPhysics : DynamicPhysics
         }
     }
     
+    public void SimpleInflict()
+    {
+        Inflict(1);
+    }
+    
 
     public virtual void Burn()
     {
@@ -427,12 +445,11 @@ public class EntityPhysics : DynamicPhysics
 
     public virtual void IchorCorrupt(int amountToAdd)
     {
-        IchorCorruptionAmount += amountToAdd;
+        IchorCorruptionAmount = Mathf.Clamp(IchorCorruptionAmount + amountToAdd, 0, 3);
+        entityHandler.UpdateIchorCorrupt();
         if (IchorCorruptionAmount >= IchorCorruptionToFreeze)
         {
-            entityHandler.Freeze();
-            IsFrozen = true;
-            IchorFreezeTimer = 0.0f;
+            Freeze();
         }
     }
 

@@ -38,6 +38,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private FadeTransition _fadeTransition;
     [SerializeField] private RectTransform _gameplayUI;
     [SerializeField] private SpriteRenderer _haloSprite;
+    [SerializeField] private ProjectilePhysics SolFlailProjectile; // god. this fucking game
+    [SerializeField] private LineRenderer SolFlailChain;
     private int _currentEnergy;
 
     public int MaxEnergy { get { return _maxEnergy; } }
@@ -89,6 +91,7 @@ public class PlayerHandler : EntityHandler
     private FaceDirection previousFaceDirection;
     
     private bool hasSwung;
+    private bool bHasHeavyMeleeInflicted = false; // used to ensure heavy melees only flash hitbox once
 
     //=================| NEW COMBAT STUFF
     //state times
@@ -106,11 +109,44 @@ public class PlayerHandler : EntityHandler
 
     // heavy melee
     private const float time_heavyMelee = 0.3f;
-    private Vector2 heavymelee_hitbox = new Vector2(8, 4);
     private float _lengthOfHeavyMeleeAnimation;
-    private const float HEAVYMELEE_VOID_FORCE = 5.0f;
-    private const float HEAVYMELEE_ZAP_FORCE = 2.0f;
-    private const float HEAVYMELEE_FIRE_FORCE = 2.0f;
+
+    private Vector2 heavymelee_hitbox = new Vector2(8, 4); // old combo system that was ok but not as cool
+    private Vector2 heavymelee_ichor_hitbox = new Vector2(14, 10);
+    
+    // position relative to player the attack hits
+    private Vector2 HEAVYMELEE_ICHOR_HITBOXOFFSET = new Vector2(3,0);
+    // force the attacks apply to enemies hit by them
+    private const float HEAVYMELEE_ICHOR_FORCE = 2.0f;
+    // time after attack cast when the hitbox flashes
+    private const float HEAVYMELEE_ICHOR_INFLICTTIME = 0.1f;
+
+    //private const float HEAVYMELEE_SOL_INFLICTTIME = 0.1f;
+    private const float HEAVYMELEE_SOL_MAXTRAVELTIME = 0.2f;
+    private const float HEAVYMELEE_SOL_RETURNTIME = 1.0f;
+    private const float HEAVYMELEE_SOL_FORCE = 2.0f;
+    private const float HEAVYMELEE_SOL_MAXVELOCITY = 150.0f;
+    private const float HEAVYMELEE_SOL_RETURNACCELERATION = 15.0f;
+    private const float HEAVYMELEE_SOL_ORBITRADIUS = 2.5f;
+    private const float HEAVYMELEE_SOL_ORBITPERIOD = 0.5f;
+    private const float HEAVYMELEE_SOL_APPEARDURATION = 0.2f;
+    private const float HEAVYMELEE_SOL_VANISHDURATION = 0.2f;
+    private Vector2 HEAVYMELEE_SOL_HITBOX_DETONATION = new Vector2(8, 6);
+    [SerializeField] private AnimationCurve HEAVYMELEE_SOL_VELOCITY_OVER_TIME_NORMALIZED;
+    private Coroutine CurrentSolFlailCoroutine; // either the orbit, or the melee
+    private Coroutine CurrentSolFlailSpawnDespawnCoroutine; // If the spawn or despawn animations are playing, this stores them
+    private bool bIsSolFlailAttackCoroutineRunning;
+
+    private const float HEAVYMELEE_RIFT_FORCE = 5.0f;
+    private const float HEAVYMELEE_RIFT_INFLICTTIME = 0.1f;
+    private const float HEAVYMELEE_RIFT_RADIUS = 6.0f;
+
+
+    private Vector2 HEAVYMELEE_STORM_HITBOXSIZE = new Vector2(16, 4);
+    private Vector2 HEAVYMELEE_STORM_HITBOXOFFSET = new Vector2(7, 0);
+    private const float HEAVYMELEE_STORM_INFLICTTIME = 0.1f;
+    private const float HEAVYMELEE_STORM_FORCE = 2.0f;
+
 
     //Charge Stuff
     private const float time_Charge = 1.45f; //total time before player is charged up
@@ -587,16 +623,21 @@ public class PlayerHandler : EntityHandler
         // track aimDirection vector
         UpdateAimDirection();
         
-        LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+        LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, 
+                characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, 
+                characterSprite.transform.position.z + aimDirection.normalized.y), 
+            Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
         /*
         LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.x, characterSprite.transform.position.y + aimDirection.y, characterSprite.transform.position.z + aimDirection.y), Quaternion.identity);
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
         */
-        HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+        HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, 
+                characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, 
+                characterSprite.transform.position.z + aimDirection.normalized.y), 
+            Quaternion.identity);
         HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
 
-        //Debug.Log("Player Running");
         //------------------------------------------------| MOVE
 
         Vector2 vec = entityPhysics.MoveAvoidEntities(direction);
@@ -911,7 +952,9 @@ public class PlayerHandler : EntityHandler
                 }
                 else if (obj.GetComponent<ProjectilePhysics>())
                 {
-                    if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                    if (obj.GetComponent<ProjectilePhysics>().canBeDeflected && 
+                        obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && 
+                        obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                     {
                         Vibrate(1.0f, 0.15f);
                         obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
@@ -1027,9 +1070,15 @@ public class PlayerHandler : EntityHandler
                 //allow adjusting direction of motion/attack
                 UpdateAimDirection();
 
-                LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.z + aimDirection.normalized.y), 
+                    Quaternion.identity);
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
-                HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.z + aimDirection.normalized.y), 
+                    Quaternion.identity);
                 HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
             }
             else if (_hasHitAttackAgain)
@@ -1041,9 +1090,15 @@ public class PlayerHandler : EntityHandler
                 //allow adjusting direction of motion/attack
                 UpdateAimDirection();
 
-                LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                LightMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * lightmelee_hitbox.x / 2.0f,
+                    characterSprite.transform.position.y + aimDirection.normalized.y * lightmelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.z + aimDirection.normalized.y), 
+                    Quaternion.identity);
                 LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
-                HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
+                HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, 
+                    characterSprite.transform.position.z + aimDirection.normalized.y), 
+                    Quaternion.identity);
                 HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
                 
                 weaponSprite.enabled = true;
@@ -1057,13 +1112,13 @@ public class PlayerHandler : EntityHandler
                         break;
                     case ElementType.VOID:
                         weaponSprite.transform.right = -aimDirection;
-                        weaponSprite.transform.localPosition = weaponSprite.transform.right * 4;
+                        weaponSprite.transform.localPosition = weaponSprite.transform.right * 3;
                         weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f); 
                         break;
                     case ElementType.FIRE:
-                        weaponSprite.transform.right = aimDirection;
-                        weaponSprite.transform.localPosition = new Vector3(0,0,0);
-                        weaponSprite.GetComponent<Animator>().Play("SolFlail_Manifest", 0, 0.0f);
+                        if (bIsSolFlailAttackCoroutineRunning) StopCoroutine(CurrentSolFlailCoroutine);
+                        CurrentSolFlailCoroutine = StartCoroutine(SolFlailOrbit(bIsSolFlailAttackCoroutineRunning));
+                        bIsSolFlailAttackCoroutineRunning = false;
                         break;
                     case ElementType.ICHOR:
                         weaponSprite.transform.right = -aimDirection;
@@ -1085,7 +1140,9 @@ public class PlayerHandler : EntityHandler
                         weaponSprite.GetComponent<Animator>().Play("RiftScythe_Vanish");
                         break;
                     case ElementType.FIRE:
-                        weaponSprite.GetComponent<Animator>().Play("SolFlail_Vanish");
+                        //weaponSprite.GetComponent<Animator>().Play("SolFlail_Vanish");
+                        if (CurrentSolFlailSpawnDespawnCoroutine != null) StopCoroutine(CurrentSolFlailSpawnDespawnCoroutine);
+                        CurrentSolFlailSpawnDespawnCoroutine = StartCoroutine(SolFlailVanish());
                         break;
                     case ElementType.ICHOR:
                         weaponSprite.GetComponent<Animator>().Play("IchorBlade_Vanish");
@@ -1098,6 +1155,87 @@ public class PlayerHandler : EntityHandler
             }
         }
     }
+
+    // Should be called by the 2nd light melee in a combo. Makes the sol flail orbit the player. Should work even if sol flail hasnt fully returned to player position yet
+    private IEnumerator SolFlailOrbit(bool bInterruptingAttackAnim)
+    {
+        float AngleFromStart = 0.0f;
+        float SolChainCurrentWidth = 0.0f;
+        if (!bInterruptingAttackAnim)
+        {
+            StartCoroutine(SolFlailAppear());
+        }
+
+        //weaponSprite.transform.right = aimDirection;
+        //weaponSprite.transform.localPosition = new Vector3(0, 0, 0);
+        //weaponSprite.GetComponent<Animator>().Play("SolFlail_Manifest", 0, 0.0f);
+
+
+        SolFlailProjectile.Speed = 0;
+        SolFlailProjectile.canBeDeflected = false;
+
+        // start to right of player
+        Vector2 targetposition = entityPhysics.transform.position + LightMeleeSprite.transform.right * HEAVYMELEE_SOL_ORBITRADIUS * (bInterruptingAttackAnim ? 2f : 1f);
+        while (true)
+        {
+            if (bInterruptingAttackAnim)
+            {
+                SolFlailProjectile.transform.position = Vector2.Lerp(SolFlailProjectile.transform.position, targetposition, 0.2f);
+            }
+            else
+            {
+                SolFlailProjectile.transform.position = targetposition;
+            }
+            SolFlailChain.SetPosition(0, entityPhysics.ObjectSprite.transform.position);
+            SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
+
+            AngleFromStart += Time.deltaTime * 360 / HEAVYMELEE_SOL_ORBITPERIOD;
+            targetposition = entityPhysics.transform.position + Quaternion.AngleAxis(AngleFromStart, Vector3.back) * LightMeleeSprite.transform.right * HEAVYMELEE_SOL_ORBITRADIUS * (bInterruptingAttackAnim ? 2f : 1f); // wider orbit radius for returning flail looks better
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    // Vanish coroutine, should be played on top of the orbit coroutine
+    private IEnumerator SolFlailAppear()
+    {
+        SolFlailProjectile.transform.parent.gameObject.SetActive(true);
+        SolFlailProjectile.ObjectSprite.transform.position = entityPhysics.ObjectSprite.transform.position; // this line resolves an issue with a one-frame appearance of the flail head elsewhere
+        SolFlailProjectile.SetObjectElevation(entityPhysics.GetObjectElevation() + 1.0f);
+        SolFlailProjectile.transform.position = entityPhysics.transform.position;
+        SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Manifest");
+        SolFlailChain.enabled = true;
+        float timer = 0;
+        while (timer < HEAVYMELEE_SOL_APPEARDURATION)
+        {
+            SolFlailChain.endWidth = timer / HEAVYMELEE_SOL_APPEARDURATION;
+            SolFlailChain.startWidth = timer / HEAVYMELEE_SOL_APPEARDURATION;
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        SolFlailChain.endWidth = 1;
+        SolFlailChain.startWidth = 1;
+    }
+
+    // Vanish coroutine, should be played on top of the orbit coroutine
+    private IEnumerator SolFlailVanish()
+    {
+        SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Vanish");
+        float timer = 0;
+        while (timer < HEAVYMELEE_SOL_VANISHDURATION)
+        {
+            SolFlailChain.endWidth = 1 - timer / HEAVYMELEE_SOL_VANISHDURATION;
+            SolFlailChain.startWidth = 1 - timer / HEAVYMELEE_SOL_VANISHDURATION;
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        SolFlailChain.endWidth = 0;
+        SolFlailChain.startWidth = 0;
+        SolFlailProjectile.transform.parent.gameObject.SetActive(false);
+        StopCoroutine(CurrentSolFlailCoroutine); // stops the loop coroutine 
+    }
+
+
+
     /// <summary>
     /// Combo attack
     /// </summary>
@@ -1107,7 +1245,6 @@ public class PlayerHandler : EntityHandler
         {
             _audioSource.Play();
             Vibrate( 0.8f, 0.1f);
-            //ChangeEnergy(1);
             StartCoroutine(PlayHeavyAttack(false));
 
             //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
@@ -1117,16 +1254,18 @@ public class PlayerHandler : EntityHandler
             switch (_currentStyle)
             {
                 case ElementType.FIRE:
-                    PlayerHeavyMelee_Fire();
+                    if (CurrentSolFlailCoroutine != null) { StopCoroutine(CurrentSolFlailCoroutine); }
+                    if (CurrentSolFlailSpawnDespawnCoroutine != null) StopCoroutine(CurrentSolFlailSpawnDespawnCoroutine);
+                    CurrentSolFlailCoroutine = StartCoroutine(PlayerHeavyMelee_Fire());
                     break;
                 case ElementType.VOID:
-                    PlayerHeavyMelee_Void();
+                    StartCoroutine(PlayerHeavyMelee_Rift());
                     break;
                 case ElementType.ZAP:
                     PlayerHeavyMelee_Zap();
                     break;
                 case ElementType.ICHOR:
-                    PlayerHeavyMelee_Ichor();
+                    StartCoroutine(PlayerHeavyMelee_Ichor());
                     break;
             }
 
@@ -1183,9 +1322,8 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerHeavyMelee_Zap()
     {
-        
-        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * HEAVYMELEE_STORM_HITBOXOFFSET.x;
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, HEAVYMELEE_STORM_HITBOXSIZE, Vector2.SignedAngle(Vector2.right, thrustDirection));
         Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
         foreach (Collider2D obj in hitobjects)
         {
@@ -1214,7 +1352,9 @@ public class PlayerHandler : EntityHandler
             }
             else if (obj.GetComponent<ProjectilePhysics>())
             {
-                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                if (obj.GetComponent<ProjectilePhysics>().canBeDeflected &&
+                    obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && 
+                    obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                 {
                     Vibrate(1.0f, 0.15f);
                     obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
@@ -1225,11 +1365,55 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerHeavyMelee_Fire()
+    IEnumerator PlayerHeavyMelee_Fire()
     {
-        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
-        Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        bIsSolFlailAttackCoroutineRunning = true;
+        /*
+         * PROPOSED BEHAVIOR:
+         * Start with flail launching forward in direction of attack, dragging small hitbox
+         * If the hitbox hits an enemy OR hits the maximum distance, ball fucking explodes
+         * After short duration, ball retracts (to player? to floating hilt?)
+         * 
+         */
+        float timer = 0.0f;
+        bool HasHitEnemy = false;
+        SolFlailProjectile.SetObjectElevation(entityPhysics.GetObjectElevation() + 1.0f);
+        //SolFlailProjectile.transform.position = entityPhysics.transform.position;
+        SolFlailProjectile.Velocity = thrustDirection;
+        //SolFlailChain.positionCount = 2;
+        //SolFlailChain.SetWidth(1.0f, 1.0f);
+        //SolFlailChain.enabled = true;
+        SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Embiggen");
+
+
+
+        while (!HasHitEnemy && timer < HEAVYMELEE_SOL_MAXTRAVELTIME)
+        {
+            // velocity should prob ramp up to some value real fast. maybe make a float curve for this?
+            SolFlailProjectile.Speed = HEAVYMELEE_SOL_MAXVELOCITY * HEAVYMELEE_SOL_VELOCITY_OVER_TIME_NORMALIZED.Evaluate(timer / HEAVYMELEE_SOL_MAXTRAVELTIME);
+            SolFlailChain.SetPosition(0, entityPhysics.ObjectSprite.transform.position);
+            SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
+            SolFlailChain.endWidth = 1;
+            SolFlailChain.startWidth = 1;
+            // hitbox check
+            Collider2D[] flailTouchedEntities = Physics2D.OverlapBoxAll(SolFlailProjectile.transform.position, new Vector2(2,2), 0.0f);
+            foreach (Collider2D obj in flailTouchedEntities)
+            {
+                if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
+                {
+                    HasHitEnemy = true;
+                    break;
+                }   
+            }
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+        }
+
+        // detonate
+        SolFlailProjectile.Velocity = Vector2.zero;
+
+        SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Explode");
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(SolFlailProjectile.transform.position, HEAVYMELEE_SOL_HITBOX_DETONATION, 0.0f);
         foreach (Collider2D obj in hitobjects)
         {
             if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
@@ -1241,47 +1425,79 @@ public class PlayerHandler : EntityHandler
                     Vibrate( 1.0f, 0.3f);
 
                     ChangeEnergy(1);
-                    Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized*2.0f, type:ElementType.FIRE);
+                    obj.GetComponent<EntityPhysics>().Inflict(2, force:aimDirection.normalized*2.0f, type:ElementType.FIRE);
                     obj.GetComponent<EntityPhysics>().Burn();
                 }
             }
-            else if (obj.GetComponent<ProjectilePhysics>())
-            {
-                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
-                {
-                    Vibrate(1.0f, 0.15f);
-                    obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
-                    FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
-                    FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
-                }
-            }
         }
+        timer = 0.0f;
+        while (timer < 0.1f)
+        {
+            SolFlailChain.SetPosition(0, entityPhysics.ObjectSprite.transform.position);
+            SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        // recall
+        timer = 0.0f;
+        while (timer < HEAVYMELEE_SOL_RETURNTIME)
+        {
+            Vector2 vecToPlayer = entityPhysics.transform.position - SolFlailProjectile.transform.position;
+            if (vecToPlayer.magnitude < 2.0f)
+            {
+                break;
+            }
+            SolFlailProjectile.Velocity = vecToPlayer;
+            SolFlailProjectile.Speed = Mathf.Pow(timer*6.0f, 2) * HEAVYMELEE_SOL_RETURNACCELERATION;
+            SolFlailChain.SetPosition(0, entityPhysics.ObjectSprite.transform.position);
+            SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+        }
+
+        SolFlailProjectile.Speed = 1.0f;
+        SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Vanish");
+
+        timer = 0;
+        while (timer < 0.1f)
+        {
+            SolFlailChain.SetWidth(1 - timer / 0.1f, 1 - timer / 0.1f);
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+        }
+        SolFlailProjectile.transform.parent.gameObject.SetActive(false);
+        SolFlailChain.enabled = false;
+        bIsSolFlailAttackCoroutineRunning = false;
     }
 
-    private void PlayerHeavyMelee_Void()
+    private IEnumerator PlayerHeavyMelee_Rift()
     {
-        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
-        Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        yield return new WaitForSeconds(HEAVYMELEE_RIFT_INFLICTTIME);
+
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position;
+        Collider2D[] hitobjects = Physics2D.OverlapCircleAll(hitboxpos, HEAVYMELEE_RIFT_RADIUS);
+        //Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
         foreach (Collider2D obj in hitobjects)
         {
             if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
             {
-                if (obj.GetComponent<EntityPhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<EntityPhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                EntityPhysics enemyPhys = obj.GetComponent<EntityPhysics>();
+                if (enemyPhys.GetTopHeight() > entityPhysics.GetBottomHeight() && enemyPhys.GetBottomHeight() < entityPhysics.GetTopHeight())
                 {
-                    //FollowingCamera.GetComponent<CameraScript>().Jolt(0.2f, aimDirection);
                     FollowingCamera.GetComponent<CameraScript>().Shake(0.5f, 10, 0.01f);
                     Vibrate( 1.0f, 0.3f);
 
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized * 3.0f, type:ElementType.VOID);
+                    enemyPhys.Inflict(1, force: Quaternion.AngleAxis(60.0f, Vector3.forward) * (enemyPhys.transform.position - entityPhysics.transform.position).normalized * HEAVYMELEE_RIFT_FORCE, type:ElementType.VOID);
                 }
             }
             else if (obj.GetComponent<ProjectilePhysics>())
             {
-                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                if (obj.GetComponent<ProjectilePhysics>().canBeDeflected && 
+                    obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && 
+                    obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                 {
                     Vibrate(1.0f, 0.15f);
                     obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
@@ -1292,11 +1508,15 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    private void PlayerHeavyMelee_Ichor()
+    private IEnumerator PlayerHeavyMelee_Ichor()
     {
-        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (heavymelee_hitbox.x / 2.0f);
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        yield return new WaitForSeconds(HEAVYMELEE_ICHOR_INFLICTTIME);
+
+        Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * HEAVYMELEE_ICHOR_HITBOXOFFSET;
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_ichor_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
         Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        Debug.DrawLine(hitboxpos + thrustDirection * heavymelee_ichor_hitbox.x * 0.5f, hitboxpos - thrustDirection * heavymelee_ichor_hitbox.x * 0.5f, Color.cyan, 3.0f);
+        Debug.DrawLine(hitboxpos + Vector2.right * heavymelee_ichor_hitbox.y * 0.5f, hitboxpos + Vector2.left * heavymelee_ichor_hitbox.y * 0.5f, Color.red, 3.0f);
         foreach (Collider2D obj in hitobjects)
         {
             EntityPhysics enemyPhysics = obj.GetComponent<EntityPhysics>();
@@ -1315,7 +1535,9 @@ public class PlayerHandler : EntityHandler
             }
             else if (obj.GetComponent<ProjectilePhysics>())
             {
-                if (obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
+                if (obj.GetComponent<ProjectilePhysics>().canBeDeflected && 
+                    obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && 
+                    obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                 {
                     Vibrate(1.0f, 0.15f);
                     obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
@@ -1910,7 +2132,7 @@ public class PlayerHandler : EntityHandler
             case ElementType.FIRE:
                 weaponSprite.transform.right = aimDirection;
                 weaponSprite.gameObject.transform.parent = null;
-                weaponSprite.GetComponent<Animator>().Play("SolFlail_Throw", 0, 0.0f);
+                //weaponSprite.GetComponent<Animator>().Play("SolFlail_Throw", 0, 0.0f);
                 // todo : chain stuff
                 break;
             case ElementType.ICHOR:
@@ -1923,13 +2145,13 @@ public class PlayerHandler : EntityHandler
         }
 
         //Debug.Log("POW!");
-        HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
-        HeavyMeleeSprite.GetComponent<SpriteRenderer>().flipX = flip;
-        HeavyMeleeSprite.GetComponent<Animator>().PlayInFixedTime(0);
+        //HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = true;
+        //HeavyMeleeSprite.GetComponent<SpriteRenderer>().flipX = flip;
+        //HeavyMeleeSprite.GetComponent<Animator>().PlayInFixedTime(0);
 
         //HeavyMeleeSprite.GetComponent<Animator>().Play("HeavyMeleeSwing!!!!!");
         yield return new WaitForSeconds(_lengthOfHeavyMeleeAnimation);
-        HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
+        //HeavyMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
     }
 
 

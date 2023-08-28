@@ -791,7 +791,15 @@ public class SwordEnemyHandler : EntityHandler
 
     private void FrozenState()
     {
-        // do nothing...?
+        //===========| Physics
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
+        entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.FreeFall();
+        }
     }
 
     //==========================| DEATH MANAGEMENT

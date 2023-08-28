@@ -7468,6 +7468,53 @@ PrefabInstance:
       objectReference: {fileID: 1335249272}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+--- !u!1 &283102892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 283102894}
+  - component: {fileID: 283102893}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &283102893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283102892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 641ba65e4e95eb84dadf4ec16d0d435d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthsColor: {r: 0.13452476, g: 0, b: 0.5188679, a: 0}
+  heightsColor: {r: 0.3254717, g: 0.8722296, b: 1, a: 0}
+  elevationOffset: 30
+  killPlaneElevation: -20
+--- !u!4 &283102894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283102892}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -35.67949, y: 16.576538, z: -997.5099}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 23
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &287418612
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -50413,6 +50460,8 @@ MonoBehaviour:
   currentNavEnvironmentObject: {fileID: 0}
   _spawner: {fileID: 0}
   _burnParticlesPrefab: {fileID: 0}
+  IchorCorruptionAmount: 0
+  IsFrozen: 0
 --- !u!61 &1798629021
 BoxCollider2D:
   m_ObjectHideFlags: 0

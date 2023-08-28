@@ -20,7 +20,7 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private bool isAffectedByGravity;
     [SerializeField] private bool canPenetrate;
     [SerializeField] private bool canBeDamaged;
-    [SerializeField] private bool canBeDeflected = true;
+    [SerializeField] public bool canBeDeflected = true;
     [SerializeField] private bool explodesOnDeath;
     [SerializeField] private bool doesTracking;
     [SerializeField] public bool isSpeedScaledByProximity = false;
@@ -40,6 +40,7 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private string Animator_IdleStateName;
     [SerializeField] private string Animator_DespawnStateName;
     [SerializeField] private float Animator_DespawnDuration = 0.0f;
+    [SerializeField] private bool _isPooled = true;
 
 
 
@@ -64,7 +65,11 @@ public class ProjectilePhysics : DynamicPhysics
             }
         }
     }
-
+    public float Speed
+    {
+        get { return speed; }
+        set { speed = value; }
+    }
 
     public bool CanBounce
     {
@@ -82,6 +87,7 @@ public class ProjectilePhysics : DynamicPhysics
     {
         get { return canBeDamaged; }
     }
+
     public ElementType GetElement()
     {
         return _damageType; 
@@ -181,7 +187,6 @@ public class ProjectilePhysics : DynamicPhysics
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        //Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
         {
             TerrainTouching.Add(other.gameObject, other.gameObject.GetComponent<EnvironmentPhysics>().getHeightData());
@@ -222,7 +227,6 @@ public class ProjectilePhysics : DynamicPhysics
 
     void OnTriggerStay2D(Collider2D other)
     {
-
         if (other.gameObject.tag == "Environment" && !TerrainTouching.ContainsKey(other.gameObject))
         {
             Debug.Log("This should never happen. ");
@@ -297,7 +301,6 @@ public class ProjectilePhysics : DynamicPhysics
     /// <returns >The final velocity of the projectile after bouncing has been performed if necessary.</returns>
     public Vector2 Bounce(Vector2 currentvelocity)
     {
-
         //if (!IsCollidingWithEnvironment()) return currentvelocity;
 
 
@@ -312,11 +315,14 @@ public class ProjectilePhysics : DynamicPhysics
                 if (!canBounce) //if unable to bounce, d e l e t
                 {
                     Reset();
-                    if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-                    transform.position = new Vector3(-999, -999, transform.position.z);
-                    ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
-                    //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
-                    bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                    if (_isPooled)
+                    {
+                        if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+                        transform.position = new Vector3(-999, -999, transform.position.z);
+                        ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+                        //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+                        bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+                    }
                 }
 
 
@@ -494,18 +500,21 @@ public class ProjectilePhysics : DynamicPhysics
 
     private IEnumerator PlayDespawnAndReset(float duration)
     {
-        float timer = 0; 
-        while (timer < duration)
+        if (_isPooled)
         {
-            timer += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
+            float timer = 0;
+            while (timer < duration)
+            {
+                timer += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+            transform.position = new Vector3(-999, -999, transform.position.z);
+            ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
+            //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
+            if (bulletHandler.SourceWeapon) bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
+            Reset();
         }
-        if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-        transform.position = new Vector3(-999, -999, transform.position.z);
-        ObjectSprite.transform.position = new Vector3(-999, -999, ObjectSprite.transform.position.z);
-        //transform.parent.position = new Vector3(-999, -999, transform.parent.position.z);
-        if (bulletHandler.SourceWeapon) bulletHandler.SourceWeapon.ReturnToPool(GetComponent<Transform>().parent.gameObject.GetInstanceID());
-        Reset();
     }
 
     //==========================================| OBJECT POOLING
@@ -515,6 +524,7 @@ public class ProjectilePhysics : DynamicPhysics
         /// </summary>
     public override void Reset()
     {
+        if (!_isPooled) return;
         _velocity = Vector2.zero;
         TerrainTouching = new Dictionary<GameObject, KeyValuePair<float, float>>();
         TerrainTouched.Clear();

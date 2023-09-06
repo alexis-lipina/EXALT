@@ -61,6 +61,7 @@ Shader "Custom/TestWhiteShader"
 			float _Outline;
 			float4 _OutlineColor;
 			float4 _MainTex_TexelSize;
+			float _IchorFreezeBreak;
 
 			sampler2D _CrystalTex;
 			float _CrystallizationAmount;
@@ -219,6 +220,7 @@ Shader "Custom/TestWhiteShader"
 
 					// draw solid ichor color if mask exceeds ichorFreezeAmount. Otherwise, draw original color
 					color = color * (1 - step(ichorFreezeAmount, mask)) + float4(1, 0, 0.5f, color.a) * (step(ichorFreezeAmount, mask));
+					color += color.a * 1/*step(0.75f, noisetexpix)*/ * _IchorFreezeBreak;
 					//color = color * (1 - step(ichorFreezeAmount, noisetexpix)) + float4(1, 1, 0.5f, 1) * step(ichorFreezeAmount, noisetexpix) * color.a;
 					//float maskvalue = step(0.5f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
 					//color = color * (1 - maskvalue) + float4(1, 0, 0.5f, 1) * maskvalue * color.a;

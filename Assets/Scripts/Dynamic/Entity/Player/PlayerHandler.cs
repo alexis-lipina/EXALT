@@ -75,7 +75,7 @@ public class PlayerHandler : EntityHandler
     const string FALL_WEST_Anim = "Anim_PlayerFallWest";
     const string STYLE_CHANGE_Anim = "Change_Attunement";
     const string DEATH_WEST_Anim = "PlayerDeath_West";
-    const string HEAL_ANIM = "ChangeAttunement_Anim"; //TODO : have a different animation for this my dude
+    //const string HEAL_ANIM = "ChangeAttunement_Anim"; //TODO : have a different animation for this my dude // dont fucking misgender me
 
     private const float AttackMovementSpeed = 0.6f;
 
@@ -112,16 +112,19 @@ public class PlayerHandler : EntityHandler
     private float _lengthOfHeavyMeleeAnimation;
 
     private Vector2 heavymelee_hitbox = new Vector2(8, 4); // old combo system that was ok but not as cool
-    private Vector2 heavymelee_ichor_hitbox = new Vector2(14, 10);
-    
-    // position relative to player the attack hits
-    private Vector2 HEAVYMELEE_ICHOR_HITBOXOFFSET = new Vector2(3,0);
-    // force the attacks apply to enemies hit by them
-    private const float HEAVYMELEE_ICHOR_FORCE = 2.0f;
-    // time after attack cast when the hitbox flashes
-    private const float HEAVYMELEE_ICHOR_INFLICTTIME = 0.1f;
 
+
+    private const int HEAVYMELEE_ICHOR_DAMAGE = 3;
+    private Vector2 HEAVYMELEE_ICHOR_HITBOX = new Vector2(14, 10);
+    private Vector2 HEAVYMELEE_ICHOR_HITBOXOFFSET = new Vector2(3,0);
+    private const float HEAVYMELEE_ICHOR_FORCE = 2.0f;
+    
+    private const float HEAVYMELEE_ICHOR_INFLICTTIME = 0.1f;    // time after attack cast when the hitbox flashes
+    private const float HEAVYMELEE_ICHOR_HITSTOP = 0.2f;
+
+    // sol does solid damage over time, but should also feel really weighty. Hard to land a shot, but when you do, oomph.
     //private const float HEAVYMELEE_SOL_INFLICTTIME = 0.1f;
+    private const int HEAVYMELEE_SOL_DAMAGE = 2;
     private const float HEAVYMELEE_SOL_MAXTRAVELTIME = 0.2f;
     private const float HEAVYMELEE_SOL_RETURNTIME = 1.0f;
     private const float HEAVYMELEE_SOL_FORCE = 2.0f;
@@ -137,11 +140,14 @@ public class PlayerHandler : EntityHandler
     private Coroutine CurrentSolFlailSpawnDespawnCoroutine; // If the spawn or despawn animations are playing, this stores them
     private bool bIsSolFlailAttackCoroutineRunning;
 
+    // rift is all about shoving ppl around, clearing the area around you. knockback is the big boon of this one
+    private const int HEAVYMELEE_RIFT_DAMAGE = 2;
     private const float HEAVYMELEE_RIFT_FORCE = 5.0f;
     private const float HEAVYMELEE_RIFT_INFLICTTIME = 0.1f;
     private const float HEAVYMELEE_RIFT_RADIUS = 6.0f;
 
-
+    // storm lets you hit deep with melees and do chain lightning, which is really good damage
+    private const int HEAVYMELEE_STORM_DAMAGE = 2;
     private Vector2 HEAVYMELEE_STORM_HITBOXSIZE = new Vector2(16, 4);
     private Vector2 HEAVYMELEE_STORM_HITBOXOFFSET = new Vector2(7, 0);
     private const float HEAVYMELEE_STORM_INFLICTTIME = 0.1f;
@@ -149,10 +155,10 @@ public class PlayerHandler : EntityHandler
 
 
     //Charge Stuff
-    private const float time_Charge = 1.45f; //total time before player is charged up
-    private const float time_ChargeLight = .5f;
-    private const float time_ChargeMedium = .5f;
-    private const float time_ChargeTransition = 0.25f; //how long is the entire transition animation, anyway?
+    //private const float time_Charge = 1.45f; //total time before player is charged up
+    //private const float time_ChargeLight = .5f;
+    //private const float time_ChargeMedium = .5f;
+    //private const float time_ChargeTransition = 0.25f; //how long is the entire transition animation, anyway?
 
     //Burst Stuff
     private float _burstDuration = .75f;
@@ -169,8 +175,8 @@ public class PlayerHandler : EntityHandler
     private const float _chargedRangedZapMaxDistance = 50f;
 
     // Change Style 
-    private const float _changeStyleDuration = 0.7125f;//0.95f;
-    private const float _changeStyleColorChangeTime = 0.3f;//0.4f;
+    private const float _changeStyleDuration = 0.875f;//0.7125f;//0.95f;
+    private const float _changeStyleColorChangeTime = 0.67f;//0.4f;
     private bool _changeStyle_HasChanged = false;
 
     // Taking damage
@@ -1347,7 +1353,7 @@ public class PlayerHandler : EntityHandler
                     node.GetComponent<LightningChainNode>().Run();
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(1, force:aimDirection.normalized*2.0f, type:ElementType.ZAP); 
+                    obj.GetComponent<EntityPhysics>().Inflict(HEAVYMELEE_STORM_DAMAGE, force:aimDirection.normalized* HEAVYMELEE_STORM_FORCE, type:ElementType.ZAP); 
                 }
             }
             else if (obj.GetComponent<ProjectilePhysics>())
@@ -1379,13 +1385,11 @@ public class PlayerHandler : EntityHandler
         bool HasHitEnemy = false;
         SolFlailProjectile.SetObjectElevation(entityPhysics.GetObjectElevation() + 1.0f);
         //SolFlailProjectile.transform.position = entityPhysics.transform.position;
-        SolFlailProjectile.Velocity = thrustDirection;
+        SolFlailProjectile.Velocity = Quaternion.AngleAxis(9.0f, Vector3.back) * thrustDirection ;
         //SolFlailChain.positionCount = 2;
         //SolFlailChain.SetWidth(1.0f, 1.0f);
         //SolFlailChain.enabled = true;
         SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Embiggen");
-
-
 
         while (!HasHitEnemy && timer < HEAVYMELEE_SOL_MAXTRAVELTIME)
         {
@@ -1396,7 +1400,7 @@ public class PlayerHandler : EntityHandler
             SolFlailChain.endWidth = 1;
             SolFlailChain.startWidth = 1;
             // hitbox check
-            Collider2D[] flailTouchedEntities = Physics2D.OverlapBoxAll(SolFlailProjectile.transform.position, new Vector2(2,2), 0.0f);
+            Collider2D[] flailTouchedEntities = Physics2D.OverlapBoxAll(SolFlailProjectile.transform.position, new Vector2(3,3), 0.0f);
             foreach (Collider2D obj in flailTouchedEntities)
             {
                 if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
@@ -1425,7 +1429,7 @@ public class PlayerHandler : EntityHandler
                     Vibrate( 1.0f, 0.3f);
 
                     ChangeEnergy(1);
-                    obj.GetComponent<EntityPhysics>().Inflict(2, force:aimDirection.normalized*2.0f, type:ElementType.FIRE);
+                    obj.GetComponent<EntityPhysics>().Inflict(HEAVYMELEE_SOL_DAMAGE, force:aimDirection.normalized*HEAVYMELEE_SOL_FORCE, type:ElementType.FIRE);
                     obj.GetComponent<EntityPhysics>().Burn();
                 }
             }
@@ -1490,7 +1494,7 @@ public class PlayerHandler : EntityHandler
 
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    enemyPhys.Inflict(1, force: Quaternion.AngleAxis(60.0f, Vector3.forward) * (enemyPhys.transform.position - entityPhysics.transform.position).normalized * HEAVYMELEE_RIFT_FORCE, type:ElementType.VOID);
+                    enemyPhys.Inflict(HEAVYMELEE_RIFT_DAMAGE, force: Quaternion.AngleAxis(60.0f, Vector3.forward) * (enemyPhys.transform.position - entityPhysics.transform.position).normalized * HEAVYMELEE_RIFT_FORCE, type:ElementType.VOID);
                 }
             }
             else if (obj.GetComponent<ProjectilePhysics>())
@@ -1513,10 +1517,10 @@ public class PlayerHandler : EntityHandler
         yield return new WaitForSeconds(HEAVYMELEE_ICHOR_INFLICTTIME);
 
         Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * HEAVYMELEE_ICHOR_HITBOXOFFSET;
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, heavymelee_ichor_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, HEAVYMELEE_ICHOR_HITBOX, Vector2.SignedAngle(Vector2.right, thrustDirection));
         Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
-        Debug.DrawLine(hitboxpos + thrustDirection * heavymelee_ichor_hitbox.x * 0.5f, hitboxpos - thrustDirection * heavymelee_ichor_hitbox.x * 0.5f, Color.cyan, 3.0f);
-        Debug.DrawLine(hitboxpos + Vector2.right * heavymelee_ichor_hitbox.y * 0.5f, hitboxpos + Vector2.left * heavymelee_ichor_hitbox.y * 0.5f, Color.red, 3.0f);
+        Debug.DrawLine(hitboxpos + thrustDirection * HEAVYMELEE_ICHOR_HITBOX.x * 0.5f, hitboxpos - thrustDirection * HEAVYMELEE_ICHOR_HITBOX.x * 0.5f, Color.cyan, 3.0f);
+        Debug.DrawLine(hitboxpos + Vector2.right * HEAVYMELEE_ICHOR_HITBOX.y * 0.5f, hitboxpos + Vector2.left * HEAVYMELEE_ICHOR_HITBOX.y * 0.5f, Color.red, 3.0f);
         foreach (Collider2D obj in hitobjects)
         {
             EntityPhysics enemyPhysics = obj.GetComponent<EntityPhysics>();
@@ -1529,7 +1533,7 @@ public class PlayerHandler : EntityHandler
 
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    enemyPhysics.Inflict(1, force: aimDirection.normalized * 2.0f, type: ElementType.ICHOR);
+                    enemyPhysics.Inflict(HEAVYMELEE_ICHOR_DAMAGE, force: aimDirection.normalized * HEAVYMELEE_ICHOR_FORCE, type: ElementType.ICHOR);
                     enemyPhysics.IchorCorrupt(1);                    
                 }
             }
@@ -1866,41 +1870,54 @@ public class PlayerHandler : EntityHandler
         if (StateTimer < _changeStyleColorChangeTime && !_changeStyle_HasChanged)
         {
             _changeStyle_HasChanged = true;
+            weaponSprite.transform.position = entityPhysics.ObjectSprite.transform.position + new Vector3(0.375f, -0.375f, 1.0f);
             switch (_newStyle)
             {
+                case ElementType.ICHOR:
+                    Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 1);
+                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1.0f, 0.0f, 0.5f));
+                    Vibrate(1f, 0.1f);
+                    _currentStyle = ElementType.ICHOR;
+                    _haloSprite.sprite = Halo_Ichor;
+                    _lightRangedEnergyCost = 1;
+                    weaponSprite.GetComponent<Animator>().Play("IchorBlade_Summon", 0, 0.0f);
+                    weaponSprite.transform.right = Vector3.right;
+                    break;
                 case ElementType.FIRE:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0.0f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.FIRE;
                     SwapWeapon("WEST");
                     _haloSprite.sprite = Halo_Fire;
                     _lightRangedEnergyCost = 2;
+                    weaponSprite.GetComponent<Animator>().Play("SolFlail_Summon", 0, 0.0f);
+                    weaponSprite.transform.right = Vector3.right;
                     break;
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 3);
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0.0f, 1.0f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.VOID;
                     SwapWeapon("NORTH");
                     _haloSprite.sprite = Halo_Void;
                     _lightRangedEnergyCost = 2;
+                    weaponSprite.GetComponent<Animator>().Play("RiftScythe_Summon", 0, 0.0f);
+                    weaponSprite.transform.right = Vector3.right;
                     break;
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
                     ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ZAP;
                     _haloSprite.sprite = Halo_Zap;
                     _lightRangedEnergyCost = 1;
-                    break;
-                case ElementType.ICHOR:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1.0f, 0.0f, 0.5f));
-                    Vibrate(1f, 0.1f);
-                    _currentStyle = ElementType.ICHOR;
-                    _haloSprite.sprite = Halo_Ichor;
-                    _lightRangedEnergyCost = 1;
+                    weaponSprite.GetComponent<Animator>().Play("StormSpear_Summon", 0, 0.0f);
+                    weaponSprite.transform.right = Vector3.right;
                     break;
                 default:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 1.0f, 0.0f, 1f));

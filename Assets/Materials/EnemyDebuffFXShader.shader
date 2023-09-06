@@ -67,6 +67,8 @@ Shader "Custom/TestWhiteShader"
 			sampler2D _CrystalTex;
 			float _CrystallizationAmount;
 			sampler2D _IchorGradient;
+			float _IchorFreezeBreak;
+
 
 			sampler2D _FireTex;
 			float _FireAmount;
@@ -133,7 +135,9 @@ Shader "Custom/TestWhiteShader"
 													max(l1.a * l1Weight,
 														r1.a * r1Weight)))))))));
 
-					float noisesample = tex2D(_CrystalTex, float2(output.uv.x, abs(fmod(output.uv.y * 6 + _Time.g * -0.5, 1.0f))));
+					mask *= pow(_FireAmount * 3.0f, 0.4f);
+
+					float noisesample = tex2D(_FireTex, float2(output.uv.x, abs(fmod(output.uv.y * 6 + _Time.g * -0.5, 1.0f))));
 
 					return tex2D(_FireGradient, float2(noisesample + mask * 1.8 - 0.8f, 0.5f));
 				}
@@ -246,7 +250,8 @@ Shader "Custom/TestWhiteShader"
 						w5.a * xScale5))))))))))))))))))));
 					//return float4(output.uv.x, output.uv.y, 0, 1);
 					float maskvalue = step(1.0f, mask + tex2D(_CrystalTex, output.uv) * 0.99);
-					return float4(1, 0, 0.5f, maskvalue);
+					float2 offsetuv = float2(fmod(output.uv.x + 0.1f, 1.0f), fmod(output.uv.y + 0.2f, 1.0f));
+					return float4(1, 0, 0.5f, maskvalue) + step(0.5f, tex2D(_FireTex, output.uv)) * _IchorFreezeBreak * maskvalue;
 
 					//return tex2D(_IchorGradient, float2(output.uv.y * 1.0f, 0.5f)) * float4(1, 1, 1, maskvalue);
 					//return tex2D(_IchorGradient, float2(noisesample + mask * 1.8 - 0.8f, 0.5f)); step(1.0f, mask + tex2D(_CrystalTex, output.uv) * 0.99);

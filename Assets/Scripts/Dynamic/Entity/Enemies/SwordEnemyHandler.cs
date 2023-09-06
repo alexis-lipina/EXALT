@@ -121,6 +121,8 @@ public class SwordEnemyHandler : EntityHandler
         wasJustHit = false;
         jumpPressed = false;
         attackPressed = false;
+        fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_FireAmount", entityPhysics.GetNormalizedBurnTimer());
+        fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_IchorFreezeBreak", entityPhysics.GetNormalizedFreezeTimer());
 
         //Debug.Log("Enemy Elevation : " + GetEntityPhysics().GetBottomHeight());
     }

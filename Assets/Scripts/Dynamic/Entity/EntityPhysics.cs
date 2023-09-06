@@ -85,6 +85,14 @@ public class EntityPhysics : DynamicPhysics
         get { return navManager; }
     }
 
+    public float GetNormalizedBurnTimer()
+    {
+        return _burnTimer / _burnDuration;
+    }
+    public float GetNormalizedFreezeTimer()
+    {
+        return IchorFreezeTimer / IchorFreezeDuration;
+    }
 
 
     override protected void Awake()
@@ -124,7 +132,7 @@ public class EntityPhysics : DynamicPhysics
             {
                 _burnTimer = 0f;
                 _burnTimer_Inflicts = 0f;
-                Destroy(_burnParticles.gameObject);
+                //Destroy(_burnParticles.gameObject);
             }
         }
 
@@ -137,6 +145,7 @@ public class EntityPhysics : DynamicPhysics
             if (IchorFreezeTimer >= IchorFreezeDuration)
             {
                 Unfreeze();
+                _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_IchorFreezeBreak", 0);
             }
 
         }
@@ -438,7 +447,7 @@ public class EntityPhysics : DynamicPhysics
             return;
         }
 
-        _burnParticles = Instantiate(_burnParticlesPrefab, ObjectSprite.transform).gameObject;
+        //_burnParticles = Instantiate(_burnParticlesPrefab, ObjectSprite.transform).gameObject;
         _burnTimer = _burnDuration;
         _burnTimer_Inflicts = _burnTimeBetweenInflicts;
     }

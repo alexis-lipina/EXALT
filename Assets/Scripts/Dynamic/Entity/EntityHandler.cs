@@ -84,6 +84,11 @@ public abstract class EntityHandler : MonoBehaviour
         GameObject.Destroy(transform.parent);
     }
 
+    public virtual void Stagger()
+    {
+
+    }
+
     public void PerformDetonations(ElementType elementOfAttack)
     {
         if (!(_isPrimed_Fire || _isPrimed_Void || _isPrimed_Zap || _isPrimed_Ichor) || elementOfAttack == ElementType.NONE) return;
@@ -210,6 +215,7 @@ public abstract class EntityHandler : MonoBehaviour
                     _ichorPrimeVfx = null;
                     break;
             }
+            Stagger();
             //yield return new WaitForSeconds(0.3f); //TIME BETWEEN DETONATIONS
             yield return new WaitForSeconds(Random.Range(0.22f, 0.38f)); //TIME BETWEEN DETONATIONS
         }

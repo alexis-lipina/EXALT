@@ -14,7 +14,7 @@ public class SwordEnemyHandler : EntityHandler
     [SerializeField] private Transform _ichorHeartPrefab;
 
 
-    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH, FROZEN, SHATTER };
+    enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH, FROZEN, SHATTER, STAGGER };
     private TestEnemyState currentState;
 
     const string IDLE_EAST_Anim = "SwordEnemy_IdleEast";
@@ -56,6 +56,9 @@ public class SwordEnemyHandler : EntityHandler
 
     const string DEATH_SHATTER_Anim = "DeathShatter";
 
+    const string STAGGER_WEST_Anim = "SwordEnemy_StaggerWest";
+    const string STAGGER_EAST_Anim = "SwordEnemy_StaggerEast";
+
     const float WINDUP_DURATION = 0.33f; //duration of the windup before the swing
     const float FOLLOWTHROUGH_DURATION = 0.33f; //duration of the follow through after the swing
 
@@ -63,6 +66,7 @@ public class SwordEnemyHandler : EntityHandler
     const float SHIELDBREAK_DURATION = 0.66f;
     const float DEATH_DURATION = 1.3f;
     const float DEATH_FALL_DURATION = 0.666f;
+    const float STAGGER_DURATION = 1.0f;
 
 
 
@@ -177,6 +181,9 @@ public class SwordEnemyHandler : EntityHandler
                 break;
             case TestEnemyState.SHATTER:
                 ShatterState();
+                break;
+            case TestEnemyState.STAGGER:
+                StaggerState();
                 break;
             default:
                 Debug.LogError("State " + currentState + "not implemented in state machine!");
@@ -706,6 +713,55 @@ public class SwordEnemyHandler : EntityHandler
         //entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         //entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
         //DeathVector *= 0.5f;
+    }
+
+    public override void Stagger()
+    {
+        if (currentState == TestEnemyState.FROZEN) return;
+        stateTimer = STAGGER_DURATION;
+        currentState = TestEnemyState.STAGGER;
+
+        //Vector2 tempDir = new Vector2(xInput, yInput).normalized;
+        Vector2 tempDir = DeathVector;
+
+        if (tempDir.x < 0.0f)
+        {
+            tempDirection = TempTexDirection.EAST;
+            characterAnimator.Play(STAGGER_EAST_Anim, 0, 0.0f);
+            fxAnimator.Play(STAGGER_EAST_Anim, 0, 0.0f);
+        }
+        else
+        {
+            tempDirection = TempTexDirection.WEST;
+            characterAnimator.Play(STAGGER_WEST_Anim, 0, 0.0f);
+            fxAnimator.Play(STAGGER_WEST_Anim, 0, 0.0f);
+        }
+    }
+
+    private void StaggerState()
+    {
+        Vector2 movementVector = entityPhysics.MoveAvoidEntities(new Vector2(0, 0));
+        entityPhysics.MoveCharacterPositionPhysics(movementVector.x, movementVector.y);
+
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            //entityPhysics.ZVelocity = 0;
+            entityPhysics.FreeFall();
+        }
+        else
+        {
+            entityPhysics.SavePosition();
+            entityPhysics.SetObjectElevation(maxheight);
+        }
+
+        stateTimer -= Time.deltaTime;
+        if (stateTimer < 0)
+        {
+            currentState = TestEnemyState.RUN;
+        }
     }
 
     public void SetAttackPressed(bool value)

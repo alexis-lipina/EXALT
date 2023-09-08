@@ -166,6 +166,11 @@ public class EntityPhysics : DynamicPhysics
         entityHandler.UpdateIchorCorrupt();
     }
 
+    public void Stagger()
+    {
+        entityHandler.Stagger();
+    }
+
     /// <summary>
     /// Makes sure EntitiesTouched is kept up to date
     /// </summary>

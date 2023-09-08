@@ -964,7 +964,6 @@ public class PlayerHandler : EntityHandler
                     {
                         Vibrate(1.0f, 0.15f);
                         obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
-                        obj.GetComponent<ProjectilePhysics>()._damageAmount = obj.GetComponent<ProjectilePhysics>()._damageAmount + 1;
                         FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
                     }
@@ -1353,7 +1352,8 @@ public class PlayerHandler : EntityHandler
                     node.GetComponent<LightningChainNode>().Run();
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
-                    obj.GetComponent<EntityPhysics>().Inflict(HEAVYMELEE_STORM_DAMAGE, force:aimDirection.normalized* HEAVYMELEE_STORM_FORCE, type:ElementType.ZAP); 
+                    obj.GetComponent<EntityPhysics>().Inflict(HEAVYMELEE_STORM_DAMAGE, force:aimDirection.normalized* HEAVYMELEE_STORM_FORCE, type:ElementType.ZAP);
+                    obj.GetComponent<EntityPhysics>().Stagger();
                 }
             }
             else if (obj.GetComponent<ProjectilePhysics>())
@@ -1431,6 +1431,7 @@ public class PlayerHandler : EntityHandler
                     ChangeEnergy(1);
                     obj.GetComponent<EntityPhysics>().Inflict(HEAVYMELEE_SOL_DAMAGE, force:aimDirection.normalized*HEAVYMELEE_SOL_FORCE, type:ElementType.FIRE);
                     obj.GetComponent<EntityPhysics>().Burn();
+                    obj.GetComponent<EntityPhysics>().Stagger();
                 }
             }
         }
@@ -1495,6 +1496,7 @@ public class PlayerHandler : EntityHandler
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
                     enemyPhys.Inflict(HEAVYMELEE_RIFT_DAMAGE, force: Quaternion.AngleAxis(60.0f, Vector3.forward) * (enemyPhys.transform.position - entityPhysics.transform.position).normalized * HEAVYMELEE_RIFT_FORCE, type:ElementType.VOID);
+                    obj.GetComponent<EntityPhysics>().Stagger();
                 }
             }
             else if (obj.GetComponent<ProjectilePhysics>())
@@ -1534,6 +1536,7 @@ public class PlayerHandler : EntityHandler
                     ChangeEnergy(1);
                     Debug.Log("Owch!");
                     enemyPhysics.Inflict(HEAVYMELEE_ICHOR_DAMAGE, force: aimDirection.normalized * HEAVYMELEE_ICHOR_FORCE, type: ElementType.ICHOR);
+                    obj.GetComponent<EntityPhysics>().Stagger();
                     enemyPhysics.IchorCorrupt(1);                    
                 }
             }

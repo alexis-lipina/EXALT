@@ -860,6 +860,14 @@ public class SwordEnemyHandler : EntityHandler
         }
     }
 
+    public override void Flinch()
+    {
+        if (currentState == TestEnemyState.READY)
+        {
+            stateTimer = 0.01f;
+        }
+    }
+
     //==========================| DEATH MANAGEMENT
 
     public override void OnDeath()

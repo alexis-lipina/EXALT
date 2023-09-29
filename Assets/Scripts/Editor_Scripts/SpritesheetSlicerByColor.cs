@@ -9,7 +9,6 @@ using UnityEditorInternal;
 public class SpritesheetSlicerByColor
 {
     [MenuItem("Assets/Slice_By_Color")]
-    // Start is called before the first frame update
     private static void SliceByColor()
     {
         //find all the rectangles by color

@@ -12025,7 +12025,7 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: d5c2385b9feec1a4a9d2161b1fda261b, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -12033,7 +12033,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 547ae5d10d966394296a5c1e3c780243, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a0bf102ee3d1685488ac30550f31094d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -12054,6 +12054,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaffa59da0d7e2444a3c44c39f9af4f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GradientTex_Ichor: {fileID: 2800000, guid: 8d305eb3490605341baf0b489e09419d, type: 3}
+  GradientTex_Sol: {fileID: 2800000, guid: f5c2b2f208494b7469e44509407a7cd2, type: 3}
+  GradientTex_Rift: {fileID: 2800000, guid: 1f8275c011b272f4297c4e79be735067, type: 3}
+  GradientTex_Storm: {fileID: 2800000, guid: 7a81cff7acfc4dc4096f747ac4a36c9b, type: 3}
+  FlashIntensityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 12.454986
+      outSlope: 12.454986
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.06116208
+    - serializedVersion: 3
+      time: 0.2
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7696114109499256750
 GameObject:
   m_ObjectHideFlags: 0
@@ -12218,9 +12255,12 @@ MonoBehaviour:
   spriteVoid_Gamepad: {fileID: 21300000, guid: 27f283326ef2a1342b1943db0efa899b, type: 3}
   spriteZap_Gamepad: {fileID: 21300002, guid: 27f283326ef2a1342b1943db0efa899b, type: 3}
   spriteFire_Gamepad: {fileID: 21300004, guid: 27f283326ef2a1342b1943db0efa899b, type: 3}
+  spriteIchor_Gamepad: {fileID: 21300006, guid: 27f283326ef2a1342b1943db0efa899b,
+    type: 3}
   spriteVoid_KBM: {fileID: 21300002, guid: ab0fd167b934f0c49a7a388ec156bb0e, type: 3}
   spriteZap_KBM: {fileID: 21300004, guid: ab0fd167b934f0c49a7a388ec156bb0e, type: 3}
   spriteFire_KBM: {fileID: 21300000, guid: ab0fd167b934f0c49a7a388ec156bb0e, type: 3}
+  spriteIchor_KBM: {fileID: 21300006, guid: ab0fd167b934f0c49a7a388ec156bb0e, type: 3}
   _playerHandler: {fileID: 0}
 --- !u!1 &7712223376020625417
 GameObject:

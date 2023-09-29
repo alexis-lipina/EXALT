@@ -73,7 +73,14 @@ public class FadeTransition : MonoBehaviour
                 WaitTimer -= 0.01f;
             }
         }
-        
+        else
+        {
+            // menus
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            Time.timeScale = 1.0f;
+        }
+
 
 
         float opacity = 1f;

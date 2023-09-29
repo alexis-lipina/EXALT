@@ -12,6 +12,12 @@ public class ScreenFlash : MonoBehaviour
     private Coroutine _hitPauseCoroutine = null;
     private float _hitPauseTimer;
 
+    [SerializeField] private Texture2D GradientTex_Ichor;
+    [SerializeField] private Texture2D GradientTex_Sol;
+    [SerializeField] private Texture2D GradientTex_Rift;
+    [SerializeField] private Texture2D GradientTex_Storm;
+    [SerializeField] private AnimationCurve FlashIntensityCurve;
+
 
     private void Awake()
     {
@@ -23,6 +29,7 @@ public class ScreenFlash : MonoBehaviour
         {
             Destroy(this);
         }
+        GetComponent<Image>().color = new Color(1, 1, 1, 0);
     }
 
     /// <summary>
@@ -30,18 +37,22 @@ public class ScreenFlash : MonoBehaviour
     /// </summary>
     /// <param name="opacity">Starting opacity</param>
     /// <param name="decayRate">Amount to deprecate opacity by every 10 milliseconds.</param>
-    public void PlayFlash(float opacity, float decayRate)
+    public void PlayFlash(float maxIntensity, float duration)
     {
-        PlayFlash(opacity, decayRate, Color.white);
+        PlayFlash(maxIntensity, duration, Color.white);
     }
 
-    public void PlayFlash(float opacity, float decayRate, Color color)
+    public void PlayFlash(float maxIntensity, float duration, Color color, ElementType element = ElementType.NONE)
     {
+        if (!AccessibilityOptionsSingleton.GetInstance().IsFlashingEnabled)
+        {
+            return;
+        }
         if (_flashCoroutine != null)
         {
             StopCoroutine(_flashCoroutine);
         }
-        _flashCoroutine = StartCoroutine(Flash(opacity, decayRate, color));
+        _flashCoroutine = StartCoroutine(Flash(maxIntensity, duration, color, element));
     }
 
     public void PlayHitPause(float duration)
@@ -71,18 +82,40 @@ public class ScreenFlash : MonoBehaviour
         _hitPauseCoroutine = null;
     }
 
-    IEnumerator Flash(float opacity, float decayRate, Color color)
+    IEnumerator Flash(float maxIntensity, float duration, Color color, ElementType element = ElementType.NONE)
     {
-        if (AccessibilityOptionsSingleton.GetInstance().IsFlashingEnabled)
+        if (element != ElementType.NONE)
         {
-            while (opacity > 0)
+            switch (element)
             {
-                color.a = opacity;
-                GetComponent<Image>().color = color;
-                opacity -= decayRate;
-                yield return new WaitForSeconds(0.01f);
+                case ElementType.ICHOR:
+                    GetComponent<Image>().material.SetTexture("_ElementGradient", GradientTex_Ichor);
+                    break;
+                case ElementType.FIRE:
+                    GetComponent<Image>().material.SetTexture("_ElementGradient", GradientTex_Sol);
+                    break;
+                case ElementType.VOID:
+                    GetComponent<Image>().material.SetTexture("_ElementGradient", GradientTex_Rift);
+                    break;
+                case ElementType.ZAP:
+                    GetComponent<Image>().material.SetTexture("_ElementGradient", GradientTex_Storm);
+                    break;
             }
-            GetComponent<Image>().color = new Color(1, 1, 1, 0);
+            GetComponent<Image>().color = Color.white;
         }
+        else 
+        {
+            GetComponent<Image>().color = color;
+        }
+
+        float timer = 0.0f;
+        while (timer < duration)
+        {
+            color.a = FlashIntensityCurve.Evaluate(timer / duration) * maxIntensity;
+            GetComponent<Image>().color = color;
+            timer += 0.01f;
+            yield return new WaitForSeconds(0.01f);
+        }
+        GetComponent<Image>().color = new Color(1, 1, 1, 0);
     }
 }

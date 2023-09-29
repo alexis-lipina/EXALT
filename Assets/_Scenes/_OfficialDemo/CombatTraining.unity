@@ -2694,6 +2694,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _destination: MainMenu
+  _doorName: 
 --- !u!114 &147801392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2706,12 +2707,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: -20
   _startBottomHeight: 20
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
+  ChildTriggers: []
 --- !u!61 &147801393
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5764,11 +5773,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -6832,12 +6841,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: 100
   _startBottomHeight: -20
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
+  ChildTriggers: []
 --- !u!61 &322924550
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8836,11 +8853,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -10535,11 +10552,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -12461,11 +12478,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -12577,6 +12594,53 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &717008636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 717008638}
+  - component: {fileID: 717008637}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &717008637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 717008636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 641ba65e4e95eb84dadf4ec16d0d435d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  depthsColor: {r: 0.13452476, g: 0, b: 0.5188679, a: 0}
+  heightsColor: {r: 0.3254717, g: 0.8722296, b: 1, a: 0}
+  elevationOffset: 30
+  killPlaneElevation: -20
+--- !u!4 &717008638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 717008636}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -35.67949, y: 16.576538, z: -997.5099}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 17
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &718925343
 GameObject:
   m_ObjectHideFlags: 0
@@ -13535,12 +13599,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: 100
   _startBottomHeight: -20
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
+  ChildTriggers: []
 --- !u!61 &780655923
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -14719,11 +14791,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -15769,11 +15841,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -17050,13 +17122,13 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
@@ -17350,12 +17422,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: 100
   _startBottomHeight: -20
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
+  ChildTriggers: []
 --- !u!61 &1041464177
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -19184,11 +19264,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -23410,6 +23490,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: CAMERA
       objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0.14150941
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2483427670111390353, guid: d6992525f44238a4b8a4a9eaee44f7cc,
         type: 3}
       propertyPath: _playerPhysics
@@ -23474,26 +23574,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0.14150941
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.a
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6992525f44238a4b8a4a9eaee44f7cc, type: 3}
@@ -27017,12 +27097,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c6d0335ee0e85f438e44293d8872337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bottomHeight: 0
+  topHeight: 0
   _startTopHeight: 100
   _startBottomHeight: -20
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
+  On3DOverlapEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   _touchingObjects: []
+  ChildTriggers: []
 --- !u!61 &1608407977
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -29620,11 +29708,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -30932,11 +31020,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -31416,11 +31504,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -35193,13 +35281,13 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
@@ -46396,11 +46484,11 @@ PrefabInstance:
       propertyPath: _inheritZCollisionFromScalablePlatform
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1812943315370356, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
+    - target: {fileID: 1038716758428050, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}

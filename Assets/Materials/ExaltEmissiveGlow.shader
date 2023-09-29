@@ -52,6 +52,8 @@
 			{
 				float4 color = tex2D(_MainTex, output.uv);
 				color *= output.color * 2;
+				//color *= float4(1, 1, 1, _Opacity);
+				color *= _Opacity; // this way opacity over 1 lets it bloom harder
 				return color;
 			}
 			ENDCG

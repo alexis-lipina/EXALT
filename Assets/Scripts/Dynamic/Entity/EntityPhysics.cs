@@ -412,6 +412,7 @@ public class EntityPhysics : DynamicPhysics
     public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
         if (isInvincible || _isDead) return;
+        entityHandler.Flinch();
 
         entityHandler.PerformDetonations(type);
 
@@ -446,6 +447,13 @@ public class EntityPhysics : DynamicPhysics
 
     public virtual void Burn()
     {
+        if (entityHandler.GetShield() != ElementType.NONE) //early return if enemy has shield
+        {
+            //TODO : do somethin to show deflection
+            StartCoroutine(ShieldBlockFlash());
+            return;
+        }
+
         if (_burnTimer > 0) //refresh timer if still ticking
         {
             _burnTimer = _burnDuration;
@@ -459,6 +467,13 @@ public class EntityPhysics : DynamicPhysics
 
     public virtual void IchorCorrupt(int amountToAdd)
     {
+        if (entityHandler.GetShield() != ElementType.NONE) //early return if enemy has shield
+        {
+            //TODO : do somethin to show deflection
+            StartCoroutine(ShieldBlockFlash());
+            return;
+        }
+
         IchorCorruptionAmount = Mathf.Clamp(IchorCorruptionAmount + amountToAdd, 0, 3);
         entityHandler.UpdateIchorCorrupt();
         if (IchorCorruptionAmount >= IchorCorruptionToFreeze)
@@ -472,6 +487,10 @@ public class EntityPhysics : DynamicPhysics
         //Debug.Log("HEALIN");
         currentHP += amount;
         if (currentHP > MaxHP) currentHP = MaxHP;
+        if (entityHandler is PlayerHandler)
+        {
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.15f, Color.white, ElementType.ICHOR);
+        }
     }
 
     

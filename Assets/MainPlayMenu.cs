@@ -24,7 +24,7 @@ public class MainPlayMenu : MonoBehaviour
 
     public void DemoStoryButtonPressed()
     {
-        SceneManager.LoadScene("WarpPlatform");
+        SceneManager.LoadScene("CampaignStart");
     }
 
     public void OnBackToMainMenuPressed()

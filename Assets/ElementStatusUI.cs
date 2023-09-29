@@ -8,9 +8,11 @@ public class ElementStatusUI : MonoBehaviour
     [SerializeField] private Sprite spriteVoid_Gamepad;
     [SerializeField] private Sprite spriteZap_Gamepad;
     [SerializeField] private Sprite spriteFire_Gamepad;
+    [SerializeField] private Sprite spriteIchor_Gamepad;
     [SerializeField] private Sprite spriteVoid_KBM;
     [SerializeField] private Sprite spriteZap_KBM;
     [SerializeField] private Sprite spriteFire_KBM;
+    [SerializeField] private Sprite spriteIchor_KBM;
     [SerializeField] private PlayerHandler _playerHandler;
     private ElementType _currentElement = ElementType.ZAP;
     private bool _isUsingMouse = false;
@@ -67,6 +69,16 @@ public class ElementStatusUI : MonoBehaviour
                     else
                     {
                         GetComponent<Image>().sprite = spriteZap_Gamepad;
+                    }
+                    break;
+                case ElementType.ICHOR:
+                    if (_isUsingMouse)
+                    {
+                        GetComponent<Image>().sprite = spriteIchor_KBM;
+                    }
+                    else
+                    {
+                        GetComponent<Image>().sprite = spriteIchor_Gamepad;
                     }
                     break;
             }

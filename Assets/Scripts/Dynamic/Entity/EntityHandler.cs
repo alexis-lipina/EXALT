@@ -86,7 +86,12 @@ public abstract class EntityHandler : MonoBehaviour
 
     public virtual void Stagger()
     {
+        // big dramatic reaction to being hit
+    }
 
+    public virtual void Flinch()
+    {
+        // very small reaction to being hit
     }
 
     public void PerformDetonations(ElementType elementOfAttack)

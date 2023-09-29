@@ -4906,6 +4906,40 @@ MonoBehaviour:
   Animator_DespawnStateName: IchorHeart_Despawn
   Animator_DespawnDuration: 0.5
   _isPooled: 1
+  GlowSprite: {fileID: 7437230955095868667}
+  GlowDespawnAlphaAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 53.054623
+      outSlope: 53.054623
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.114019014
+    - serializedVersion: 3
+      time: 0.055297308
+      value: 4.387875
+      inSlope: -14.822655
+      outSlope: -14.822655
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.0448188
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0.040716887
+      outSlope: 0.040716887
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.19464606
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _whoToHurt: FRIEND
   _timeToDestroy: 20
 --- !u!82 &82092737103430188
@@ -5375,7 +5409,7 @@ Transform:
   m_GameObject: {fileID: 2543844165094043522}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1}
-  m_LocalScale: {x: 3, y: 6, z: 1}
+  m_LocalScale: {x: 4, y: 8, z: 1}
   m_Children: []
   m_Father: {fileID: 4984849262988784}
   m_RootOrder: 0
@@ -5397,7 +5431,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0556e3a0e5f8e5b479b50b1ecd6a2cf6, type: 2}
+  - {fileID: 2100000, guid: ad503458cebcd634aa32504ead1c4a47, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5417,8 +5451,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: fb75943877fbfb64ab75ff53edddf48f, type: 3}
-  m_Color: {r: 1, g: 0, b: 0.5019608, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 0870a3863cf5947488cd181d5c46911a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

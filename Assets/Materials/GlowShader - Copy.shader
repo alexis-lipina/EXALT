@@ -1,17 +1,12 @@
-﻿Shader "Custom/GlowShader"
+﻿/// <summary>
+/// Glow shader for generic, single-color glows
+/// </summary>
+Shader "Custom/GlowShader"
 {
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
 		_Opacity("Opacity", Float) = 1
-		/*
-	    _HighColor("High Color", Color) = (0.0, 0.0, 0.0, 1.0)
-		_LowColor("Low Color", Color) = (1.0, 1.0, 1.0, 1.0)
-
-		_PlatformElevation("Elevation", Float) = 0
-		_PlayerElevation("Player Elevation", Float) = 0
-		_MaxElevationOffset("Max Difference in Height between player and solid color", Float) = 30.0
-		*/
 	}
 
 	SubShader
@@ -58,7 +53,6 @@
 			{
 				float4 color = tex2D(_MainTex, output.uv);
 				color.a = color.a * _Opacity;
-
 				return color;
 			}
 			ENDCG

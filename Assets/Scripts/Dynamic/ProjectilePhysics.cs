@@ -41,7 +41,11 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private string Animator_DespawnStateName;
     [SerializeField] private float Animator_DespawnDuration = 0.0f;
     [SerializeField] private bool _isPooled = true;
-
+    [Space(10)]
+    [SerializeField] public SpriteRenderer GlowSprite; // all projectiles should have an emissive glow sprite
+    [SerializeField] private AnimationCurve GlowDespawnAlphaAnimationCurve;
+    [SerializeField] private AnimationCurve GlowDespawnScaleAnimationCurve;
+    private Vector3 DefaultGlowScale;
 
 
     private bool _isCurrentlyTracking = false;
@@ -109,6 +113,8 @@ public class ProjectilePhysics : DynamicPhysics
     private Vector2 _velocity; //purely direction
     [SerializeField] private float _timeToDestroy = 10f;
     private float _timer;
+    private bool bIsDespawning = false;
+
     public Vector2 Velocity
     {
         set { _velocity = value.normalized; }
@@ -123,6 +129,13 @@ public class ProjectilePhysics : DynamicPhysics
     private float _speed_original;
     private LevelManager levelManager;
     private List<EntityPhysics> AlreadyDamagedTargets;
+    public bool HasHitEnemy
+    {
+        get
+        {
+            return AlreadyDamagedTargets.Count > 0;
+        }
+    }
 
 
 
@@ -133,6 +146,7 @@ public class ProjectilePhysics : DynamicPhysics
         _targetsTouched = new Dictionary<EntityPhysics, bool>();
         AlreadyDamagedTargets = new List<EntityPhysics>();
         _timer = 0f;
+        DefaultGlowScale = GlowSprite.transform.localScale;
 
         // Set original Fields
         _speed_original = speed;
@@ -140,6 +154,21 @@ public class ProjectilePhysics : DynamicPhysics
         if (trackingArea)
         {
             trackingAreaSeeker = trackingArea.GetComponent<ProjectileSeeker>();
+        }
+        switch (_damageType)
+        {
+            case ElementType.ICHOR:
+                GlowSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 1);
+                break;
+            case ElementType.FIRE:
+                GlowSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
+                break;
+            case ElementType.VOID:
+                GlowSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 3);
+                break;
+            case ElementType.ZAP:
+                GlowSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
+                break;
         }
     }
 
@@ -283,6 +312,7 @@ public class ProjectilePhysics : DynamicPhysics
             other.Inflict(_damageAmount, force: Velocity.normalized * _impactForce, type: _damageType);
             if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
             else if (_damageType == ElementType.ICHOR) other.gameObject.GetComponent<EntityPhysics>().IchorCorrupt(1);
+            else if (_damageType == ElementType.VOID) other.Stagger(); // might want all to stagger? idk
         }
         else 
         {
@@ -420,6 +450,8 @@ public class ProjectilePhysics : DynamicPhysics
     {
         Vector2 desiredVelocity = Vector2.zero;
         IsCurrentlyTracking = false;
+        //float NearestTargetDistance = 1000.0f;
+        float proximityScalar = 0.0f; // 0...1, 1 = on top of enemy, 0 = far from / no enemy
 
         //searches through objects within range
         foreach (EntityPhysics other in trackingAreaSeeker.trackedTargets)
@@ -429,13 +461,17 @@ public class ProjectilePhysics : DynamicPhysics
 
                 IsCurrentlyTracking = true;
                 
-                desiredVelocity = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
+                Vector2 positiondifferential = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
                 //make the force applied inversely proportional to distance
-                desiredVelocity = desiredVelocity.normalized * (1 / (desiredVelocity.magnitude * 2f) );
+                desiredVelocity = positiondifferential.normalized * (1 / (positiondifferential.magnitude * 2f) );
                 //Z tracking
                 float desiredZ = (other.GetBottomHeight() + other.GetTopHeight()) / 2.0f;
                 float currentZ = (GetBottomHeight() + GetTopHeight()) / 2.0f;
-                ZVelocity = ( desiredZ - currentZ );
+                if (isSpeedScaledByProximity)
+                {
+                    proximityScalar = Mathf.Max(proximityScalar, 1 - positiondifferential.magnitude / trackingAreaSeeker.GetComponent<CircleCollider2D>().radius);
+                }
+                if (speed > 0) ZVelocity = ( desiredZ - currentZ );
             }
             else if (other.tag == "Friend" && _whoToHurt == "FRIEND")
             {
@@ -446,14 +482,16 @@ public class ProjectilePhysics : DynamicPhysics
                 //Z tracking
                 float desiredZ = (other.GetBottomHeight() + other.GetTopHeight()) / 2.0f;
                 float currentZ = (GetBottomHeight() + GetTopHeight()) / 2.0f;
-                ZVelocity = (desiredZ - currentZ);
+                if (speed > 0) ZVelocity = (desiredZ - currentZ); 
             }
-
         }
 
-        currentVelocity += desiredVelocity;
-        
-        return currentVelocity.normalized;
+        //currentVelocity += desiredVelocity;
+        currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, Mathf.Sqrt(proximityScalar)); // modulates direction 
+
+        float trackingScalar = 1 + trackingAddedSpeed * proximityScalar; // modulates speed
+
+        return currentVelocity.normalized * trackingScalar;
     }
     //==========================================| ENTITY COLLISION
 
@@ -483,6 +521,8 @@ public class ProjectilePhysics : DynamicPhysics
 
     public void Despawn()
     {
+        if (bIsDespawning) return;
+        bIsDespawning = true;
         if (ProjectileAnimator)
         {
             ProjectileAnimator.Play(Animator_DespawnStateName);
@@ -496,16 +536,37 @@ public class ProjectilePhysics : DynamicPhysics
         {
             ProjectileAnimator.Play(Animator_SpawnStateName);
         }
+        foreach (var trail in GlowSprite.transform.GetComponentsInChildren<TrailRenderer>())
+        {
+            trail.Clear();
+        }
+        //StartCoroutine(ClearTrails());
+    }
+
+    // need to do this cuz theres a one frame delay in the repositioning of the sprite    
+    private IEnumerator ClearTrails()
+    {
+        yield return new WaitForEndOfFrame();
+        foreach (var trail in GlowSprite.transform.GetComponentsInChildren<TrailRenderer>())
+        {
+            trail.Clear();
+        }
     }
 
     private IEnumerator PlayDespawnAndReset(float duration)
     {
+        speed = 0;
+        ZVelocity = 0;
         if (_isPooled)
         {
             float timer = 0;
             while (timer < duration)
             {
                 timer += Time.deltaTime;
+                GlowSprite.material.SetFloat("_Opacity", GlowDespawnAlphaAnimationCurve.Evaluate(timer / duration));
+                GlowSprite.transform.localScale = Vector3.one * GlowDespawnScaleAnimationCurve.Evaluate(timer / duration);
+                speed = 0;
+                ZVelocity = 0;
                 yield return new WaitForEndOfFrame();
             }
             if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
@@ -537,12 +598,15 @@ public class ProjectilePhysics : DynamicPhysics
         _whoToHurt = _whoToHurt_original;
         speed = _speed_original;
         AlreadyDamagedTargets.Clear();
+        GlowSprite.material.SetFloat("_Opacity", 1.0f);
+        GlowSprite.transform.localScale = DefaultGlowScale;
+        bIsDespawning = false;
 
         //trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
         //transform.position = new Vector3(-999, -999, transform.position.z);
 
     }
-    
-    
+
+
 
 }

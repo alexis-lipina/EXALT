@@ -134,8 +134,12 @@ public class PlayerHandler : EntityHandler
     private const float HEAVYMELEE_SOL_ORBITPERIOD = 0.5f;
     private const float HEAVYMELEE_SOL_APPEARDURATION = 0.2f;
     private const float HEAVYMELEE_SOL_VANISHDURATION = 0.2f;
+    private const float HEAVYMELEE_SOL_AIMASSIST_RADIUS = 6.0f;
+    private const float HEAVYMELEE_SOL_AIMASSIST_DISTANCE = 16.0f;
     private Vector2 HEAVYMELEE_SOL_HITBOX_DETONATION = new Vector2(8, 6);
     [SerializeField] private AnimationCurve HEAVYMELEE_SOL_VELOCITY_OVER_TIME_NORMALIZED;
+    [SerializeField] private AnimationCurve HEAVYMELEE_SOL_IMPACTBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_SOL_RECALLBRIGHTNESSCURVE;
     private Coroutine CurrentSolFlailCoroutine; // either the orbit, or the melee
     private Coroutine CurrentSolFlailSpawnDespawnCoroutine; // If the spawn or despawn animations are playing, this stores them
     private bool bIsSolFlailAttackCoroutineRunning;
@@ -144,7 +148,7 @@ public class PlayerHandler : EntityHandler
     private const int HEAVYMELEE_RIFT_DAMAGE = 2;
     private const float HEAVYMELEE_RIFT_FORCE = 5.0f;
     private const float HEAVYMELEE_RIFT_INFLICTTIME = 0.1f;
-    private const float HEAVYMELEE_RIFT_RADIUS = 6.0f;
+    private const float HEAVYMELEE_RIFT_RADIUS = 7.0f;
 
     // storm lets you hit deep with melees and do chain lightning, which is really good damage
     private const int HEAVYMELEE_STORM_DAMAGE = 2;
@@ -152,7 +156,11 @@ public class PlayerHandler : EntityHandler
     private Vector2 HEAVYMELEE_STORM_HITBOXOFFSET = new Vector2(7, 0);
     private const float HEAVYMELEE_STORM_INFLICTTIME = 0.1f;
     private const float HEAVYMELEE_STORM_FORCE = 2.0f;
+    private const float HEAVYMELEE_STORM_AIMASSIST_RADIUS = 4.0f;
+    private const float HEAVYMELEE_STORM_AIMASSIST_DISTANCE = 16.0f;
 
+    private const float DEFLECT_AIMASSIST_RADIUS = 4.0f;
+    private const float DEFLECT_AIMASSIST_DISTANCE = 30.0f;
 
     //Charge Stuff
     //private const float time_Charge = 1.45f; //total time before player is charged up
@@ -169,6 +177,10 @@ public class PlayerHandler : EntityHandler
     //Light Ranged 
     private const float _lightRangedDuration = 0.25f;
     private int _lightRangedEnergyCost = 2;
+
+    private const float RANGED_ICHOR_AIMASSIST_RADIUS = 6.0f;
+    private const float RANGED_ICHOR_AIMASSIST_DISTANCE = 40.0f;
+
 
     //Light Ranged Zap Attack
     private const float _lightRangedZapMaxDistance = 30f;
@@ -197,10 +209,8 @@ public class PlayerHandler : EntityHandler
     private Player controller;
 
     //=====================| BLINK
-    private const float BLINK_TIME_PUNISH = 0.4f;
-    private const float BLINK_TIME_PRO = 0.2f;
+    private const float BLINK_COOLDOWN = 0.2f;
     private float _blinkTimer = 0f; //time since last blink
-    private bool _blink_hasButtonMashed = false;
     private bool _hasAlreadyBlinkedInMidAir = false;
 
     //=====================| HEAL
@@ -285,6 +295,7 @@ public class PlayerHandler : EntityHandler
         _gameplayUI.parent.gameObject.SetActive(true); // if I put this at the bottom it just... doesnt execute???
         _gameplayUI.gameObject.SetActive(true);
         weaponSprite.enabled = false;
+        SolFlailProjectile.transform.parent.gameObject.SetActive(false);
         //weaponSprite.transform.right = new Vector3(0, 1, 0);
 
         entityPhysics.SetMaxHealth(5 - NumberOfShatteredHealthBlocks);
@@ -315,6 +326,7 @@ public class PlayerHandler : EntityHandler
         _currentStyle = ElementType.ZAP;
         Shader.SetGlobalColor("_MagicColor",  new Color(0.0f, 1f, 0.5f, 1f));
         if (_currentStyle == ElementType.ZAP) _lightRangedEnergyCost = 1;
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
         Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
         Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
     }
@@ -880,7 +892,6 @@ public class PlayerHandler : EntityHandler
         Vector2 blinkDirection = AccessibilityOptionsSingleton.GetInstance().IsBlinkInDirectionOfMotion ? aimDirection : new Vector2(xInput, yInput);
         TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         FollowingCamera.GetComponent<CameraScript>().Jolt(1f, blinkDirection);
-        ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.2f, 0.05f);
         //Vibrate( .5f, 0.05f);
         Vibrate(.5f, 0.05f);
 
@@ -892,6 +903,7 @@ public class PlayerHandler : EntityHandler
             {
                 hit.transform.GetComponent<EntityPhysics>().Handler.PrimeEnemy(_currentStyle);
                 Vibrate( 1f, 0.1f);
+                ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.3f, 0.05f, Color.white, _currentStyle);
             }
         }
 
@@ -904,7 +916,6 @@ public class PlayerHandler : EntityHandler
 
         //setup timer
         _blinkTimer = 0f;
-        _blink_hasButtonMashed = false;
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         CurrentState = PlayerState.JUMP;
@@ -963,7 +974,7 @@ public class PlayerHandler : EntityHandler
                         obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                     {
                         Vibrate(1.0f, 0.15f);
-                        obj.GetComponent<ProjectilePhysics>().PlayerRedirect(aimDirection, "ENEMY", 60f);
+                        obj.GetComponent<ProjectilePhysics>().PlayerRedirect(AimAssist(DEFLECT_AIMASSIST_DISTANCE, DEFLECT_AIMASSIST_DISTANCE), "ENEMY", 60f);
                         FollowingCamera.GetComponent<CameraScript>().Jolt(2f, aimDirection * -1f);
                         FollowingCamera.GetComponent<CameraScript>().Shake(0.2f, 10, 0.02f);
                     }
@@ -1036,16 +1047,7 @@ public class PlayerHandler : EntityHandler
         //Button press check for combo chaining
         if (controller.GetButtonDown("Melee"))
         {
-            if (StateTimer > _timeToComboReady) //penalize player for hitting button too fast
-            {
-                // combo penalty not clear enough
-                //_hitComboBeforeReady = true;
-            }
-            else
-            {
-                _hasHitAttackAgain = true;
-                //Debug.Log("Woo!");
-            }
+            _hasHitAttackAgain = true;
         }
 
         //State Switching
@@ -1205,6 +1207,7 @@ public class PlayerHandler : EntityHandler
     {
         SolFlailProjectile.transform.parent.gameObject.SetActive(true);
         SolFlailProjectile.ObjectSprite.transform.position = entityPhysics.ObjectSprite.transform.position; // this line resolves an issue with a one-frame appearance of the flail head elsewhere
+        SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", 0.0f);
         SolFlailProjectile.SetObjectElevation(entityPhysics.GetObjectElevation() + 1.0f);
         SolFlailProjectile.transform.position = entityPhysics.transform.position;
         SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Manifest");
@@ -1214,11 +1217,13 @@ public class PlayerHandler : EntityHandler
         {
             SolFlailChain.endWidth = timer / HEAVYMELEE_SOL_APPEARDURATION;
             SolFlailChain.startWidth = timer / HEAVYMELEE_SOL_APPEARDURATION;
+            SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", timer / HEAVYMELEE_SOL_APPEARDURATION);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         SolFlailChain.endWidth = 1;
         SolFlailChain.startWidth = 1;
+        SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", 1.0f);
     }
 
     // Vanish coroutine, should be played on top of the orbit coroutine
@@ -1230,12 +1235,14 @@ public class PlayerHandler : EntityHandler
         {
             SolFlailChain.endWidth = 1 - timer / HEAVYMELEE_SOL_VANISHDURATION;
             SolFlailChain.startWidth = 1 - timer / HEAVYMELEE_SOL_VANISHDURATION;
+            SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", 1 - timer / HEAVYMELEE_SOL_VANISHDURATION);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         SolFlailChain.endWidth = 0;
         SolFlailChain.startWidth = 0;
         SolFlailProjectile.transform.parent.gameObject.SetActive(false);
+        SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", 0.0f);
         StopCoroutine(CurrentSolFlailCoroutine); // stops the loop coroutine 
     }
 
@@ -1327,6 +1334,8 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerHeavyMelee_Zap()
     {
+        thrustDirection = AimAssist(HEAVYMELEE_STORM_AIMASSIST_RADIUS, HEAVYMELEE_STORM_AIMASSIST_DISTANCE);
+
         Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * HEAVYMELEE_STORM_HITBOXOFFSET.x;
         Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, HEAVYMELEE_STORM_HITBOXSIZE, Vector2.SignedAngle(Vector2.right, thrustDirection));
         Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
@@ -1385,7 +1394,7 @@ public class PlayerHandler : EntityHandler
         bool HasHitEnemy = false;
         SolFlailProjectile.SetObjectElevation(entityPhysics.GetObjectElevation() + 1.0f);
         //SolFlailProjectile.transform.position = entityPhysics.transform.position;
-        SolFlailProjectile.Velocity = Quaternion.AngleAxis(9.0f, Vector3.back) * thrustDirection ;
+        SolFlailProjectile.Velocity = Quaternion.AngleAxis(9.0f, Vector3.back) * AimAssist(HEAVYMELEE_SOL_AIMASSIST_RADIUS, HEAVYMELEE_SOL_AIMASSIST_DISTANCE);
         //SolFlailChain.positionCount = 2;
         //SolFlailChain.SetWidth(1.0f, 1.0f);
         //SolFlailChain.enabled = true;
@@ -1399,6 +1408,7 @@ public class PlayerHandler : EntityHandler
             SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
             SolFlailChain.endWidth = 1;
             SolFlailChain.startWidth = 1;
+            SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", timer / HEAVYMELEE_SOL_MAXTRAVELTIME * 5.0f + 1);
             // hitbox check
             Collider2D[] flailTouchedEntities = Physics2D.OverlapBoxAll(SolFlailProjectile.transform.position, new Vector2(3,3), 0.0f);
             foreach (Collider2D obj in flailTouchedEntities)
@@ -1436,11 +1446,14 @@ public class PlayerHandler : EntityHandler
             }
         }
         timer = 0.0f;
+        Vector3 originalFlailScale = SolFlailProjectile.GlowSprite.transform.localScale;
         while (timer < 0.1f)
         {
             SolFlailChain.SetPosition(0, entityPhysics.ObjectSprite.transform.position);
             SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
             timer += Time.deltaTime;
+            SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", HEAVYMELEE_SOL_IMPACTBRIGHTNESSCURVE.Evaluate(timer / 0.1f));
+            SolFlailProjectile.GlowSprite.transform.localScale = originalFlailScale + Vector3.one * HEAVYMELEE_SOL_IMPACTBRIGHTNESSCURVE.Evaluate(timer / 0.1f);
             yield return new WaitForEndOfFrame();
         }
 
@@ -1457,10 +1470,14 @@ public class PlayerHandler : EntityHandler
             SolFlailProjectile.Speed = Mathf.Pow(timer*6.0f, 2) * HEAVYMELEE_SOL_RETURNACCELERATION;
             SolFlailChain.SetPosition(0, entityPhysics.ObjectSprite.transform.position);
             SolFlailChain.SetPosition(1, SolFlailProjectile.ObjectSprite.transform.position);
+            SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", HEAVYMELEE_SOL_RECALLBRIGHTNESSCURVE.Evaluate(timer / HEAVYMELEE_SOL_RETURNTIME));
+            SolFlailProjectile.GlowSprite.transform.localScale = originalFlailScale + Vector3.one * HEAVYMELEE_SOL_RECALLBRIGHTNESSCURVE.Evaluate(timer / HEAVYMELEE_SOL_RETURNTIME);
+
             yield return new WaitForEndOfFrame();
             timer += Time.deltaTime;
         }
-
+        SolFlailProjectile.GlowSprite.transform.localScale = originalFlailScale;
+        SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", 1.0f);
         SolFlailProjectile.Speed = 1.0f;
         SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Vanish");
 
@@ -1791,6 +1808,7 @@ public class PlayerHandler : EntityHandler
     {
         //will rework the ranged attack system and remove "weapons" eventually...
         SwapWeapon("SOUTH"); //Ichor is south
+        aimDirection = AimAssist(RANGED_ICHOR_AIMASSIST_RADIUS, RANGED_ICHOR_AIMASSIST_DISTANCE);
         FireBullet();
     }
 
@@ -1805,6 +1823,8 @@ public class PlayerHandler : EntityHandler
         //tempBullet.GetComponentInChildren<EntityPhysics>().NavManager = entityPhysics.NavManager;
         tempBullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
         tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().ObjectSprite.transform.position = entityPhysics.ObjectSprite.transform.position;
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().Spawn();
     }
 
     #endregion
@@ -1873,13 +1893,14 @@ public class PlayerHandler : EntityHandler
         if (StateTimer < _changeStyleColorChangeTime && !_changeStyle_HasChanged)
         {
             _changeStyle_HasChanged = true;
+            weaponSprite.enabled = true;
             weaponSprite.transform.position = entityPhysics.ObjectSprite.transform.position + new Vector3(0.375f, -0.375f, 1.0f);
+            ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.2f, Color.white, _newStyle);
             switch (_newStyle)
             {
                 case ElementType.ICHOR:
                     Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 1);
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1.0f, 0.0f, 0.5f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ICHOR;
                     _haloSprite.sprite = Halo_Ichor;
@@ -1890,7 +1911,6 @@ public class PlayerHandler : EntityHandler
                 case ElementType.FIRE:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(1f, 0.5f, 0.0f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.FIRE;
                     SwapWeapon("WEST");
@@ -1902,7 +1922,6 @@ public class PlayerHandler : EntityHandler
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 3);
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 0.0f, 1.0f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.VOID;
                     SwapWeapon("NORTH");
@@ -1914,7 +1933,6 @@ public class PlayerHandler : EntityHandler
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
-                    ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.0f, 1.0f, 0.5f));
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ZAP;
                     _haloSprite.sprite = Halo_Zap;
@@ -1931,6 +1949,39 @@ public class PlayerHandler : EntityHandler
             }
         }
 
+        // early cancellation
+        if (StateTimer < 0.5f)
+        {
+            if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2)
+            {
+                //Debug.Log("IDLE -> RUN");
+                CurrentState = PlayerState.RUN;
+                _changeStyle_HasChanged = false;
+            }
+            if (controller.GetButtonDown("Jump"))
+            {
+                //Debug.Log("IDLE -> JUMP");
+                Vibrate(.5f, 0.05f);
+                entityPhysics.ZVelocity = JumpImpulse;
+                CurrentState = PlayerState.JUMP;
+                _changeStyle_HasChanged = false;
+            }
+
+            if (controller.GetButtonDown("Melee"))
+            {
+                hasSwung = false;
+                //Debug.Log("IDLE -> ATTACK");
+                StateTimer = time_lightMelee;
+                CurrentState = PlayerState.LIGHT_MELEE;
+                _changeStyle_HasChanged = false;
+            }
+
+            if (controller.GetButton("RangedAttack"))
+            {
+                PlayerLightRangedTransitionAttempt();
+                _changeStyle_HasChanged = false;
+            }
+        }
 
         if ( StateTimer < 0 /*|| ( !controller.GetButton("ChangeStyle_Fire") && !controller.GetButton("ChangeStyle_Void") && !controller.GetButton("ChangeStyle_Zap") )*/ )
         { 
@@ -1942,7 +1993,6 @@ public class PlayerHandler : EntityHandler
             PlayerBlinkTransitionAttempt();
             _changeStyle_HasChanged = false;
         }
-
     }
 
     private void PlayerRest()
@@ -2076,27 +2126,11 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerBlinkTransitionAttempt()
     {
-        if (_blink_hasButtonMashed) //use punishment timer
+        if (_blinkTimer > BLINK_COOLDOWN)
         {
-            if (_blinkTimer > BLINK_TIME_PUNISH)
-            {
-                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
-                CurrentState = PlayerState.BLINK;
-            }
-        }
-        else
-        {
-            if (_blinkTimer > BLINK_TIME_PRO)
-            {
-                if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
-                CurrentState = PlayerState.BLINK;
-            }
-            else
-            {
-                //decided to not punish player for button-mashing 
-                //_blink_hasButtonMashed = true; //fool, you clicked too fast
-            }
-        }
+            if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
+            CurrentState = PlayerState.BLINK;
+        }        
     }
 
     //==================================================================================| MISC
@@ -2112,7 +2146,6 @@ public class PlayerHandler : EntityHandler
         ScreenFlash.InstanceOfScreenFlash.PlayHitPause(0.15f);
         StartCoroutine(VibrateDecay(1f, 0.025f));
         entityPhysics.PlayInvincibilityFrames(0.4f);
-        //_healthBar.UpdateBar((int)entityPhysics.GetCurrentHealth());
     }
 
     public override void OnDeath()
@@ -2140,7 +2173,7 @@ public class PlayerHandler : EntityHandler
         {
             case ElementType.ZAP:
                 weaponSprite.gameObject.transform.parent = null;
-                weaponSprite.transform.right = aimDirection;
+                weaponSprite.transform.right = AimAssist(HEAVYMELEE_STORM_AIMASSIST_RADIUS, HEAVYMELEE_STORM_AIMASSIST_DISTANCE);
                 weaponSprite.GetComponent<Animator>().Play("StormSpear_Stab", 0, 0.0f);
                 break;
             case ElementType.VOID:
@@ -2314,6 +2347,35 @@ public class PlayerHandler : EntityHandler
 
     public Vector2 GetLookDirection()
     {
+        return aimDirection;
+    }
+    public Vector2 AimAssist(float radius, float distance)
+    {
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection * radius, radius: radius, aimDirection, distance);
+        float projectileElevation = entityPhysics.GetBottomHeight() + _projectileStartHeight;
+        float shortestDistance = float.MaxValue;
+        Vector2 endPoint = Vector2.zero;
+        for (int i = 0; i < hits.Length; i++)
+        {
+            //check if is target entity
+            //check to see if projectile z is within z bounds of physicsobject
+            //check to see if distance to target is shorter than shortestDistance
+
+            if (!hits[i].collider.GetComponent<EntityPhysics>()) //can object be collided with
+            {
+                continue;
+            }
+            PhysicsObject other = hits[i].collider.GetComponent<PhysicsObject>();
+            if (other.GetBottomHeight() < projectileElevation && other.GetTopHeight() > projectileElevation) //is projectile height within z bounds of object
+            {
+                if (other.tag != "Enemy") continue; //changed to reflect new circlecast
+                if (hits[i].distance < shortestDistance)
+                {
+                    return (other.transform.position - entityPhysics.transform.position).normalized;
+                }
+            }
+        }
+
         return aimDirection;
     }
 }

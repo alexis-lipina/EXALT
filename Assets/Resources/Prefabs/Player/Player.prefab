@@ -1709,6 +1709,72 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  HEAVYMELEE_SOL_IMPACTBRIGHTNESSCURVE:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 19.324091
+      outSlope: 19.324091
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.06792453
+    - serializedVersion: 3
+      time: 0.1024459
+      value: 5.673082
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.10703361
+      outWeight: 0.26358092
+    - serializedVersion: 3
+      time: 1
+      value: 3
+      inSlope: -9.713217
+      outSlope: -9.713217
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.061269373
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  HEAVYMELEE_SOL_RECALLBRIGHTNESSCURVE:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 3
+      inSlope: -9.965183
+      outSlope: -9.965183
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33635268
+    - serializedVersion: 3
+      time: 0.33820856
+      value: 1.4613978
+      inSlope: -1.3465325
+      outSlope: -1.3465325
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.5545676
+      outWeight: 0.19787501
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   JumpImpulse: 40
   JumpHeldGravity: -100
   JumpFallGravity: -300

@@ -80,9 +80,10 @@ public class EnvironmentSpritemapGenerator
             SelectedSpritesheetRegions.Add(new RectInt(objectBottomLeftCornerPosition, rectSizePixels));
         }
         byte[] data = newSpritemapTex.EncodeToPNG();
-        string filePath = Application.dataPath + "/Art/GeneratedTextures/" + "TemporaryName.png";
+        string assetPath = "/Art/GeneratedTextures/" + "TemporaryName.png";
+        string filePath = Application.dataPath +  assetPath;
         File.WriteAllBytes(filePath, data);
-        EditorPrefs.SetString("ExaltTopSpritesheetPath", filePath);
+        EditorPrefs.SetString("ExaltTopSpritesheetPath", "Assets" + assetPath);
         AssetDatabase.Refresh();
     }
 

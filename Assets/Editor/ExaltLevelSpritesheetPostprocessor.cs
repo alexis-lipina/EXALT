@@ -2,44 +2,80 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
 {
     void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
     {
-        Debug.Log("Sprites: " + sprites.Length);
-        Debug.Log(EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList.Count);
+        string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
+        if (assetImporter.assetPath != filePath)
+        {
+            return;
+        }
+
+        if (sprites.Length != EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count || sprites.Length != EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList.Count)
+        {
+            Debug.LogError("Mismatch between number of sprites and number of regions!");
+            return;
+        }
+
+        for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
+        {
+            EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite.sprite = sprites[i];
+        }
     }
 
     void OnPostprocessTexture(Texture2D texture)
     {
         return;
-        Debug.Log("Texture2D: (" + texture.width + "x" + texture.height + ")");
         string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
-        //Debug.Log(EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList.Count);
-
-        if (AssetDatabase.GetAssetPath(texture) != filePath)
+        if (assetImporter.assetPath != filePath)
         {
             return;
         }
 
         // --- split into subregions
         List<SpriteMetaData> newSpriteMetaData = new List<SpriteMetaData>();
-        Texture2D spritesheet = (Texture2D)Selection.activeObject;
-        TextureImporter importer = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(spritesheet)) as TextureImporter;
-        importer.spriteImportMode = SpriteImportMode.Multiple;
-        importer.spritePixelsPerUnit = 16;
-        importer.SaveAndReimport();
+        TextureImporter texImporter = assetImporter as TextureImporter;
 
-        for (int i = 0; i < SelectedSpritesheetRegions.Count; i++)
+        for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
         {
             SpriteMetaData smd = new SpriteMetaData();
-            smd.rect = new Rect(SelectedSpritesheetRegions[i].min, SelectedSpritesheetRegions[i].size);
+            smd.rect = new Rect(EnvironmentSpritemapGenerator.SelectedSpritesheetRegions[i].min, EnvironmentSpritemapGenerator.SelectedSpritesheetRegions[i].size);
             smd.pivot = new Vector2(0.5f, 0.5f);
             smd.name = i + "";
             newSpriteMetaData.Add(smd);
         }
-        importer.spritesheet = newSpriteMetaData.ToArray();
+        texImporter.spritesheet = newSpriteMetaData.ToArray();
         AssetDatabase.Refresh();
     }
+
+    void OnPreprocessTexture()
+    {
+        TextureImporter importer = assetImporter as TextureImporter;
+        importer.spritePixelsPerUnit = 16;
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
+
+        string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
+        if (importer.assetPath == filePath)
+        {
+            importer.spriteImportMode = SpriteImportMode.Multiple;
+            importer.isReadable = true;
+
+
+            List<SpriteMetaData> newSpriteMetaData = new List<SpriteMetaData>();
+            for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
+            {
+                SpriteMetaData smd = new SpriteMetaData();
+                smd.rect = new Rect(EnvironmentSpritemapGenerator.SelectedSpritesheetRegions[i].min, EnvironmentSpritemapGenerator.SelectedSpritesheetRegions[i].size);
+                smd.pivot = new Vector2(0.5f, 0.5f);
+                smd.name = i + "";
+                newSpriteMetaData.Add(smd);
+            }
+            importer.spritesheet = newSpriteMetaData.ToArray();
+            //AssetDatabase.Refresh();
+        }
+    }
+
 }

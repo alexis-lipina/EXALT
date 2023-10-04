@@ -16,6 +16,16 @@ public class PhysicsObject : MonoBehaviour
 
     [SerializeField] protected float bottomHeight;
     [SerializeField] protected float topHeight;
+    private BoxCollider2D _objectCollider;
+    public BoxCollider2D ObjectCollider
+    {
+        get
+        {
+            if (!_objectCollider) _objectCollider = GetComponent<BoxCollider2D>();
+            return _objectCollider;
+        }
+    }
+
 
 	
     public float GetTopHeight()

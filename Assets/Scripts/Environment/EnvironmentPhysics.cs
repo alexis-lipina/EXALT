@@ -22,8 +22,43 @@ public class EnvironmentPhysics : PhysicsObject
     [SerializeField] protected bool _inheritZCollisionFromScalablePlatform = false;
     private float _opacity = 1;
 
-    public SpriteRenderer TopSprite;
-    public SpriteRenderer FrontSprite;
+    private SpriteRenderer _topSprite;
+    private SpriteRenderer _frontSprite;
+
+    public SpriteRenderer TopSprite
+    {
+        get
+        {
+            if (!_topSprite)
+            {
+                foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (renderer.gameObject.name == "Top")
+                    {
+                        _topSprite = renderer;
+                    }
+                }
+            }
+            return _topSprite;
+        }
+    }
+    public SpriteRenderer FrontSprite
+    {
+        get
+        {
+            if (!_frontSprite)
+            {
+                foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (renderer.gameObject.name == "Front")
+                    {
+                        _frontSprite = renderer;
+                    }
+                }
+            }
+            return _frontSprite;
+        }
+    }
 
     public bool _isCollapsed = false;
 
@@ -77,18 +112,6 @@ public class EnvironmentPhysics : PhysicsObject
             topHeight = GetComponent<ScalablePlatform>().TopHeight;
         }
         neighborEdges = new List<NavEdge>();
-
-        foreach (SpriteRenderer renderer in GetComponentsInChildren<SpriteRenderer>())
-        {
-            if (renderer.gameObject.name == "Top")
-            {
-                TopSprite = renderer;
-            }
-            else if (renderer.gameObject.name == "Front")
-            {
-                FrontSprite = renderer;
-            }
-        }
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.y + gameObject.GetComponent<BoxCollider2D>().offset.y + gameObject.GetComponent<BoxCollider2D>().size.y / 2);
 
     }

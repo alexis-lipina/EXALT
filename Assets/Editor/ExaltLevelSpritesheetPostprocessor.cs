@@ -6,24 +6,12 @@ using System.Linq;
 
 public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
 {
+    //private static Sprite[] HeldSprites;
+
     void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
     {
-        string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
-        if (assetImporter.assetPath != filePath)
-        {
-            return;
-        }
+        EditorApplication.update += UpdateSceneDelayed;
 
-        if (sprites.Length != EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count || sprites.Length != EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList.Count)
-        {
-            Debug.LogError("Mismatch between number of sprites and number of regions!");
-            return;
-        }
-
-        for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
-        {
-            EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite.sprite = sprites[i];
-        }
     }
 
     void OnPostprocessTexture(Texture2D texture)
@@ -55,6 +43,8 @@ public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
     {
         TextureImporter importer = assetImporter as TextureImporter;
         importer.spritePixelsPerUnit = 16;
+        importer.maxTextureSize = 8192;
+        importer.filterMode = FilterMode.Point;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
 
         string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
@@ -78,4 +68,30 @@ public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
         }
     }
 
+    void UpdateSceneDelayed()
+    {
+        string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
+        if (assetImporter.assetPath != filePath)
+        {
+            EditorApplication.update -= UpdateSceneDelayed;
+            return;
+        }
+
+        Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(filePath).OfType<Sprite>().ToArray();
+
+        if (sprites.Length != EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count || sprites.Length != EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList.Count)
+        {
+            Debug.LogError("Mismatch between number of sprites and number of regions!");
+            //EditorApplication.update -= UpdateSceneDelayed;
+            return;
+        }
+
+
+        for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
+        {
+            Undo.RecordObject(EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite, "Assign spritesheet sprite to environment physics top sprite");
+            EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite.sprite = sprites[i];
+        }
+        EditorApplication.update -= UpdateSceneDelayed;
+    }
 }

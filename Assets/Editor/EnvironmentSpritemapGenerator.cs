@@ -24,6 +24,8 @@ public class EnvironmentSpritemapGenerator
         //List<EnvironmentPhysics> envtPhysicsList = new List<EnvironmentPhysics>();
         SelectedEnvtPhysicsList.Clear();
         SelectedSpritesheetRegions.Clear();
+        bool errorOccurred = false;
+
         foreach (GameObject obj in Selection.objects)
         {
             EnvironmentPhysics envtPhys = obj.GetComponent<EnvironmentPhysics>();
@@ -43,6 +45,7 @@ public class EnvironmentSpritemapGenerator
         if (!Mathf.Approximately(texWidthPixels, (int)texWidthPixels) || !Mathf.Approximately(texHeightPixels, (int)texHeightPixels))
         {
             Debug.LogError("Envt Spritemap Exporter Error! The bounds of the selected objects do NOT form a clean integer number of pixels");
+            errorOccurred = true;
             return;
         }
 
@@ -62,7 +65,7 @@ public class EnvironmentSpritemapGenerator
             ColorToEnvironment.Add(thisRectColor, phys);
 
             Vector2Int objectBottomLeftCornerPosition = GetPixelPosition(phys.ObjectCollider.bounds.min, TextureWorldspaceBoundingRect);
-            Vector2Int rectSizePixels = new Vector2Int((int)(phys.ObjectCollider.bounds.size.x * 16), (int)(phys.ObjectCollider.bounds.size.y * 16));
+            Vector2Int rectSizePixels = new Vector2Int(Mathf.RoundToInt(phys.ObjectCollider.bounds.size.x * 16), Mathf.RoundToInt(phys.ObjectCollider.bounds.size.y * 16)); // fuck unity
             int colorArraySize = rectSizePixels.x * rectSizePixels.y;
 
             Color[] colors = new Color[colorArraySize];
@@ -74,16 +77,34 @@ public class EnvironmentSpritemapGenerator
             {
                 // alert! overlap! bad!!!
                 Debug.LogError("SPRITEMAP GENERATOR ERROR : Rect overlap detected with environment object : " + phys.gameObject.name);
-                return;
+                errorOccurred = true;
             }
             newSpritemapTex.SetPixels(objectBottomLeftCornerPosition.x, objectBottomLeftCornerPosition.y, rectSizePixels.x, rectSizePixels.y, colors);
             SelectedSpritesheetRegions.Add(new RectInt(objectBottomLeftCornerPosition, rectSizePixels));
         }
+
+        // make folder for scene if missing
+        string folderRelativePath = "/Art/_FinalCampaign/" + SelectedEnvtPhysicsList[0].gameObject.scene.name;
+        string folderAbsolutePath = Application.dataPath + "/Art/_FinalCampaign/" + SelectedEnvtPhysicsList[0].gameObject.scene.name;
+        if (!AssetDatabase.IsValidFolder($"Assets{folderRelativePath}"))
+        {
+            AssetDatabase.CreateFolder("Assets/Art/_FinalCampaign", SelectedEnvtPhysicsList[0].gameObject.scene.name);
+        }
+
+        // get a filename that wont conflict
+        string fileName = SelectedEnvtPhysicsList[0].gameObject.scene.name + "_Top.png";
+        int increment = 0;
+        while (File.Exists(folderAbsolutePath + "/" + fileName))
+        {
+            fileName = fileName.Split('.')[0] + "_" + increment + ".png";
+            increment++;
+        }
+        string fileRelativePath = "/Art/_FinalCampaign/" + SelectedEnvtPhysicsList[0].gameObject.scene.name + "/" + fileName;
+        string fileAbsolutePath = folderAbsolutePath + "/" + fileName;
         byte[] data = newSpritemapTex.EncodeToPNG();
-        string assetPath = "/Art/GeneratedTextures/" + "TemporaryName.png";
-        string filePath = Application.dataPath +  assetPath;
-        File.WriteAllBytes(filePath, data);
-        EditorPrefs.SetString("ExaltTopSpritesheetPath", "Assets" + assetPath);
+        File.WriteAllBytes(fileAbsolutePath, data);
+        if (errorOccurred) return; // dont kick off import stuff if it fucked up
+        EditorPrefs.SetString("ExaltTopSpritesheetPath", "Assets" + fileRelativePath);
         AssetDatabase.Refresh();
     }
 
@@ -121,7 +142,8 @@ public class EnvironmentSpritemapGenerator
     [MenuItem("EXALT Tools/Assign Subsprites to Objects")]
     public static void SplitAndAssign()
     {
-        Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(Selection.activeObject)).OfType<Sprite>().ToArray();
+        string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+        Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
 
         for (int i = 0; i < SelectedSpritesheetRegions.Count; i++)
         {
@@ -167,6 +189,8 @@ public class EnvironmentSpritemapGenerator
 
         if (!Mathf.Approximately(x, (int)x) || !Mathf.Approximately(y, (int)y))
         {
+            x = Mathf.RoundToInt(x);
+            y = Mathf.RoundToInt(y); // fuck unity. fucking floating point shit I swear to god.
             Debug.LogError("Envt Spritemap Exporter Error! The bounds of an environment object do not produce clean pixel coordinates!");
         }
 

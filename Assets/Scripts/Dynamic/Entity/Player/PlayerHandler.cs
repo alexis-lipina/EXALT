@@ -20,6 +20,7 @@ public class PlayerHandler : EntityHandler
     //[SerializeField] private InputHandler _inputHandler;
     [SerializeField] private GameObject characterSprite;
     [SerializeField] private SpriteRenderer weaponSprite;
+    [SerializeField] private SpriteRenderer weaponGlowSprite;
     [SerializeField] private GameObject FollowingCamera;
     [SerializeField] private GameObject LightMeleeSprite;
     [SerializeField] private GameObject HeavyMeleeSprite;
@@ -96,7 +97,6 @@ public class PlayerHandler : EntityHandler
     //=================| NEW COMBAT STUFF
     //state times
     private const float time_lightMelee = 0.25f; //duration of state
-    //private const float time_to_combo = 0.2f;
     private bool _hasHitAttackAgain = false; //used for combo chaining 
     private bool _readyForThirdHit = false; //true during second attack, if player hits x again changes to heavy attack
     private float _lengthOfLightMeleeAnimation;
@@ -110,6 +110,7 @@ public class PlayerHandler : EntityHandler
     // heavy melee
     private const float time_heavyMelee = 0.3f;
     private float _lengthOfHeavyMeleeAnimation;
+    private Coroutine CurrentWeaponGlowCoroutine; 
 
     private Vector2 heavymelee_hitbox = new Vector2(8, 4); // old combo system that was ok but not as cool
 
@@ -118,12 +119,16 @@ public class PlayerHandler : EntityHandler
     private Vector2 HEAVYMELEE_ICHOR_HITBOX = new Vector2(14, 10);
     private Vector2 HEAVYMELEE_ICHOR_HITBOXOFFSET = new Vector2(3,0);
     private const float HEAVYMELEE_ICHOR_FORCE = 2.0f;
-    
     private const float HEAVYMELEE_ICHOR_INFLICTTIME = 0.1f;    // time after attack cast when the hitbox flashes
     private const float HEAVYMELEE_ICHOR_HITSTOP = 0.2f;
+    [SerializeField] private AnimationCurve HEAVYMELEE_ICHOR_ATTACKBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_ICHOR_SUMMONBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_ICHOR_READYBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_ICHOR_VANISHBRIGHTNESSCURVE;
+    [SerializeField] private Sprite HEAVYMELEE_ICHOR_GLOWSPRITE;
+
 
     // sol does solid damage over time, but should also feel really weighty. Hard to land a shot, but when you do, oomph.
-    //private const float HEAVYMELEE_SOL_INFLICTTIME = 0.1f;
     private const int HEAVYMELEE_SOL_DAMAGE = 2;
     private const float HEAVYMELEE_SOL_MAXTRAVELTIME = 0.2f;
     private const float HEAVYMELEE_SOL_RETURNTIME = 1.0f;
@@ -140,6 +145,10 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private AnimationCurve HEAVYMELEE_SOL_VELOCITY_OVER_TIME_NORMALIZED;
     [SerializeField] private AnimationCurve HEAVYMELEE_SOL_IMPACTBRIGHTNESSCURVE;
     [SerializeField] private AnimationCurve HEAVYMELEE_SOL_RECALLBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_SOL_SUMMONBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_SOL_READYBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_SOL_VANISHBRIGHTNESSCURVE;
+    [SerializeField] private Sprite HEAVYMELEE_SOL_GLOWSPRITE;
     private Coroutine CurrentSolFlailCoroutine; // either the orbit, or the melee
     private Coroutine CurrentSolFlailSpawnDespawnCoroutine; // If the spawn or despawn animations are playing, this stores them
     private bool bIsSolFlailAttackCoroutineRunning;
@@ -149,6 +158,11 @@ public class PlayerHandler : EntityHandler
     private const float HEAVYMELEE_RIFT_FORCE = 5.0f;
     private const float HEAVYMELEE_RIFT_INFLICTTIME = 0.1f;
     private const float HEAVYMELEE_RIFT_RADIUS = 7.0f;
+    [SerializeField] private AnimationCurve HEAVYMELEE_RIFT_ATTACKBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_RIFT_SUMMONBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_RIFT_READYBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_RIFT_VANISHBRIGHTNESSCURVE;
+    [SerializeField] private Sprite HEAVYMELEE_RIFT_GLOWSPRITE;
 
     // storm lets you hit deep with melees and do chain lightning, which is really good damage
     private const int HEAVYMELEE_STORM_DAMAGE = 2;
@@ -158,6 +172,11 @@ public class PlayerHandler : EntityHandler
     private const float HEAVYMELEE_STORM_FORCE = 2.0f;
     private const float HEAVYMELEE_STORM_AIMASSIST_RADIUS = 4.0f;
     private const float HEAVYMELEE_STORM_AIMASSIST_DISTANCE = 16.0f;
+    [SerializeField] private AnimationCurve HEAVYMELEE_STORM_ATTACKBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_STORM_SUMMONBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_STORM_READYBRIGHTNESSCURVE;
+    [SerializeField] private AnimationCurve HEAVYMELEE_STORM_VANISHBRIGHTNESSCURVE;
+    [SerializeField] private Sprite HEAVYMELEE_STORM_GLOWSPRITE;
 
     private const float DEFLECT_AIMASSIST_RADIUS = 4.0f;
     private const float DEFLECT_AIMASSIST_DISTANCE = 30.0f;
@@ -295,6 +314,7 @@ public class PlayerHandler : EntityHandler
         _gameplayUI.parent.gameObject.SetActive(true); // if I put this at the bottom it just... doesnt execute???
         _gameplayUI.gameObject.SetActive(true);
         weaponSprite.enabled = false;
+        weaponGlowSprite.enabled = false;
         SolFlailProjectile.transform.parent.gameObject.SetActive(false);
         //weaponSprite.transform.right = new Vector3(0, 1, 0);
 
@@ -322,10 +342,12 @@ public class PlayerHandler : EntityHandler
         _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
 
-        //SwapWeapon("NORTH");
+        // TODO : Element should persist across scenes, default ichor if anything
         _currentStyle = ElementType.ZAP;
         Shader.SetGlobalColor("_MagicColor",  new Color(0.0f, 1f, 0.5f, 1f));
         if (_currentStyle == ElementType.ZAP) _lightRangedEnergyCost = 1;
+        weaponGlowSprite.material.SetFloat("_CurrentElement", 4);
+        weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
         Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
         Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
@@ -373,6 +395,8 @@ public class PlayerHandler : EntityHandler
         //Change fighting style
 
         UpdateAimDirection();
+
+        //weaponSprite.gameObject.transform.position = new Vector3(weaponSprite.gameObject.transform.position.x, weaponSprite.gameObject.transform.position.y, weaponSprite.gameObject.transform.position.y + entityPhysics.GetObjectElevation());
     }
 
     protected override void ExecuteState()
@@ -1109,18 +1133,23 @@ public class PlayerHandler : EntityHandler
                 HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
                 
                 weaponSprite.enabled = true;
+                weaponGlowSprite.enabled = true;
                 weaponSprite.gameObject.transform.parent = characterSprite.gameObject.transform;
                 switch (_currentStyle)
                 {
                     case ElementType.ZAP:
                         weaponSprite.transform.right = aimDirection;
-                        weaponSprite.transform.localPosition = new Vector3(0, 0, 0);
+                        weaponSprite.transform.localPosition = new Vector3(0, 0, -3);
                         weaponSprite.GetComponent<Animator>().Play("StormSpear_Manifest", 0, 0.0f);
+                        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_READYBRIGHTNESSCURVE));
                         break;
                     case ElementType.VOID:
                         weaponSprite.transform.right = -aimDirection;
                         weaponSprite.transform.localPosition = weaponSprite.transform.right * 3;
-                        weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f); 
+                        weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f);
+                        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_READYBRIGHTNESSCURVE));
                         break;
                     case ElementType.FIRE:
                         if (bIsSolFlailAttackCoroutineRunning) StopCoroutine(CurrentSolFlailCoroutine);
@@ -1130,21 +1159,28 @@ public class PlayerHandler : EntityHandler
                     case ElementType.ICHOR:
                         weaponSprite.transform.right = -aimDirection;
                         weaponSprite.transform.localPosition = /*weaponSprite.transform.right * 1 +*/ weaponSprite.transform.up * 2;
-
-                        weaponSprite.GetComponent<Animator>().Play("IchorBlade_Manifest", 0, 0.0f); break;
+                        weaponSprite.GetComponent<Animator>().Play("IchorBlade_Manifest", 0, 0.0f);
+                        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_READYBRIGHTNESSCURVE));
+                        break;
                 }
                 
             }
-            else
+            else if (_readyForThirdHit)
             {
                 LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
                 switch (_currentStyle)
                 {
                     case ElementType.ZAP:
                         weaponSprite.GetComponent<Animator>().Play("StormSpear_Vanish");
+                        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_VANISHBRIGHTNESSCURVE));
+
                         break;
                     case ElementType.VOID:
                         weaponSprite.GetComponent<Animator>().Play("RiftScythe_Vanish");
+                        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_VANISHBRIGHTNESSCURVE));
                         break;
                     case ElementType.FIRE:
                         //weaponSprite.GetComponent<Animator>().Play("SolFlail_Vanish");
@@ -1153,8 +1189,18 @@ public class PlayerHandler : EntityHandler
                         break;
                     case ElementType.ICHOR:
                         weaponSprite.GetComponent<Animator>().Play("IchorBlade_Vanish");
+                        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_VANISHBRIGHTNESSCURVE));
                         break;
                 }
+                _hasHitAttackAgain = false;
+                CurrentState = PlayerState.RUN;
+                hitEnemies.Clear();
+                _readyForThirdHit = false;
+            }
+            else
+            {
+                LightMeleeSprite.GetComponent<SpriteRenderer>().enabled = false;
                 _hasHitAttackAgain = false;
                 CurrentState = PlayerState.RUN;
                 hitEnemies.Clear();
@@ -1339,6 +1385,8 @@ public class PlayerHandler : EntityHandler
         Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * HEAVYMELEE_STORM_HITBOXOFFSET.x;
         Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, HEAVYMELEE_STORM_HITBOXSIZE, Vector2.SignedAngle(Vector2.right, thrustDirection));
         Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
+        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_ATTACKBRIGHTNESSCURVE));
         foreach (Collider2D obj in hitobjects)
         {
             if (obj.GetComponent<EntityPhysics>() && obj.tag == "Enemy")
@@ -1499,6 +1547,8 @@ public class PlayerHandler : EntityHandler
 
         Vector2 hitboxpos = (Vector2)entityPhysics.transform.position;
         Collider2D[] hitobjects = Physics2D.OverlapCircleAll(hitboxpos, HEAVYMELEE_RIFT_RADIUS);
+        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_ATTACKBRIGHTNESSCURVE));
         //Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
         foreach (Collider2D obj in hitobjects)
         {
@@ -1533,6 +1583,9 @@ public class PlayerHandler : EntityHandler
 
     private IEnumerator PlayerHeavyMelee_Ichor()
     {
+        if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+        CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_ATTACKBRIGHTNESSCURVE));
+
         yield return new WaitForSeconds(HEAVYMELEE_ICHOR_INFLICTTIME);
 
         Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * HEAVYMELEE_ICHOR_HITBOXOFFSET;
@@ -1540,6 +1593,7 @@ public class PlayerHandler : EntityHandler
         Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
         Debug.DrawLine(hitboxpos + thrustDirection * HEAVYMELEE_ICHOR_HITBOX.x * 0.5f, hitboxpos - thrustDirection * HEAVYMELEE_ICHOR_HITBOX.x * 0.5f, Color.cyan, 3.0f);
         Debug.DrawLine(hitboxpos + Vector2.right * HEAVYMELEE_ICHOR_HITBOX.y * 0.5f, hitboxpos + Vector2.left * HEAVYMELEE_ICHOR_HITBOX.y * 0.5f, Color.red, 3.0f);
+
         foreach (Collider2D obj in hitobjects)
         {
             EntityPhysics enemyPhysics = obj.GetComponent<EntityPhysics>();
@@ -1894,6 +1948,7 @@ public class PlayerHandler : EntityHandler
         {
             _changeStyle_HasChanged = true;
             weaponSprite.enabled = true;
+            weaponGlowSprite.enabled = true;
             weaponSprite.transform.position = entityPhysics.ObjectSprite.transform.position + new Vector3(0.375f, -0.375f, 1.0f);
             ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.2f, Color.white, _newStyle);
             switch (_newStyle)
@@ -1907,10 +1962,14 @@ public class PlayerHandler : EntityHandler
                     _lightRangedEnergyCost = 1;
                     weaponSprite.GetComponent<Animator>().Play("IchorBlade_Summon", 0, 0.0f);
                     weaponSprite.transform.right = Vector3.right;
+                    if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                    CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_SUMMONBRIGHTNESSCURVE));
+                    weaponGlowSprite.material.SetFloat("_CurrentElement", 1);
+                    weaponGlowSprite.sprite = HEAVYMELEE_ICHOR_GLOWSPRITE;
                     break;
                 case ElementType.FIRE:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
-                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);                    
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.FIRE;
                     SwapWeapon("WEST");
@@ -1918,6 +1977,10 @@ public class PlayerHandler : EntityHandler
                     _lightRangedEnergyCost = 2;
                     weaponSprite.GetComponent<Animator>().Play("SolFlail_Summon", 0, 0.0f);
                     weaponSprite.transform.right = Vector3.right;
+                    if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                    CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_SOL_SUMMONBRIGHTNESSCURVE));
+                    weaponGlowSprite.material.SetFloat("_CurrentElement", 2);
+                    weaponGlowSprite.sprite = HEAVYMELEE_SOL_GLOWSPRITE;
                     break;
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
@@ -1929,6 +1992,10 @@ public class PlayerHandler : EntityHandler
                     _lightRangedEnergyCost = 2;
                     weaponSprite.GetComponent<Animator>().Play("RiftScythe_Summon", 0, 0.0f);
                     weaponSprite.transform.right = Vector3.right;
+                    if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                    CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_SUMMONBRIGHTNESSCURVE));
+                    weaponGlowSprite.material.SetFloat("_CurrentElement", 3);
+                    weaponGlowSprite.sprite = HEAVYMELEE_RIFT_GLOWSPRITE;
                     break;
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
@@ -1939,6 +2006,10 @@ public class PlayerHandler : EntityHandler
                     _lightRangedEnergyCost = 1;
                     weaponSprite.GetComponent<Animator>().Play("StormSpear_Summon", 0, 0.0f);
                     weaponSprite.transform.right = Vector3.right;
+                    if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                    CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_SUMMONBRIGHTNESSCURVE));
+                    weaponGlowSprite.material.SetFloat("_CurrentElement", 4);
+                    weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
                     break;
                 default:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 1.0f, 0.0f, 1f));
@@ -2377,5 +2448,18 @@ public class PlayerHandler : EntityHandler
         }
 
         return aimDirection;
+    }
+    
+    private IEnumerator PlayWeaponSpriteGlow(AnimationCurve glowcurve)
+    {
+        float duration = glowcurve.keys[glowcurve.length - 1].time;
+        float timer = duration;
+        while (timer > 0.0f)
+        {
+            weaponGlowSprite.material.SetFloat("_Opacity", glowcurve.Evaluate(1 - timer / duration));
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        weaponGlowSprite.material.SetFloat("_Opacity", glowcurve.Evaluate(glowcurve.keys[glowcurve.length - 1].time));
     }
 }

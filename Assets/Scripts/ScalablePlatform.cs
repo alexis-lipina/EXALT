@@ -190,6 +190,10 @@ public class ScalablePlatform : MonoBehaviour {
             addNearbyEnvironmentAsNeighbors = false;
             OnValidate();
         }
+        Shader.SetGlobalFloat("_TopSpriteRect", 0);
+        Shader.SetGlobalFloat("_BottomSpriteRect", 1);
+        //GetComponent<EnvironmentPhysics>().BottomHeight = BottomHeight;
+        //GetComponent<EnvironmentPhysics>().TopHeight = TopHeight;
         #endregion
     }
 }

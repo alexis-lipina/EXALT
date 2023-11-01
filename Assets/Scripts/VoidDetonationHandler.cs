@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class VoidDetonationHandler : ProjectionHandler
 {
-    private const float DETONATION_DURATION = 0.1875f;
+    //private const float DETONATION_DURATION = 0.1875f;
+    private const float DETONATION_DURATION = 0.25f;
+
+    [SerializeField] private SpriteRenderer AnimationSprite;
+    [SerializeField] private SpriteRenderer SuckGlowSprite;
+    [SerializeField] private AnimationCurve SuckGlowCurve;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -68,7 +73,8 @@ public class VoidDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
+        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
+        SuckGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
     }
 
     private void OnEnable()
@@ -124,15 +130,27 @@ public class VoidDetonationHandler : ProjectionHandler
 
     IEnumerator PlayAnimation()
     {
-        GetComponentInChildren<SpriteRenderer>().enabled = true;
-        GetComponentInChildren<Animator>().Play("VoidDetonation");
-        GetComponentInChildren<Animator>().transform.position += new Vector3(0, 0, 9);
-        _projection.SetColor(Color.black);
-        yield return new WaitForSeconds(0.02f);
-        _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        AnimationSprite.enabled = true;
+        SuckGlowSprite.enabled = true;
+        AnimationSprite.GetComponent<Animator>().Play("VoidDetonation", 0, 0);
+        SuckGlowSprite.GetComponent<Animator>().Play("Void_Suck", 0, 0);
 
+        GetComponentInChildren<Animator>().transform.position += new Vector3(0, 0, 9);
+        //_projection.SetColor(Color.black);
+        //yield return new WaitForSeconds(0.02f);
+        //_projection.SetColor(Color.white);
+        //yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
+        float timer = DETONATION_DURATION;
+        while (timer > 0)
+        {
+            SuckGlowSprite.material.SetFloat("_Opacity", SuckGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION)));
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+
+        AnimationSprite.enabled = false;
+        SuckGlowSprite.enabled = false;
         GetComponentInChildren<Animator>().Play("VoidDetonationIdle");
 
         gameObject.SetActive(false);

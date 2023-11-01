@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class IchorDetonationHandler : ProjectionHandler
 {
-    private const float DETONATION_DURATION = 0.3f;
+    private const float DETONATION_DURATION = 0.6f;
+
+    [SerializeField] private SpriteRenderer AnimationSprite;
+    [SerializeField] private SpriteRenderer RadialGlowSprite;
+    [SerializeField] private SpriteRenderer StarGlowSprite;
+    [SerializeField] private AnimationCurve StarGlowCurve;
+    [SerializeField] private AnimationCurve RadialGlowCurve;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -64,7 +70,9 @@ public class IchorDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        RadialGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        StarGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
     }
 
     private void OnEnable()
@@ -112,14 +120,30 @@ public class IchorDetonationHandler : ProjectionHandler
     IEnumerator PlayAnimation()
     {
         GetComponentInChildren<SpriteRenderer>().enabled = true;
-        GetComponentInChildren<Animator>().Play("IchorDetonation");
-        _projection.SetColor(Color.black);
-        yield return new WaitForSeconds(0.02f);
+        AnimationSprite.enabled = true;
+        RadialGlowSprite.enabled = true;
+        StarGlowSprite.enabled = true;
+        AnimationSprite.GetComponent<Animator>().Play("IchorDetonation", 0, 0);
+        RadialGlowSprite.GetComponent<Animator>().Play("Ichor_Radial", 0, 0);
+        StarGlowSprite.GetComponent<Animator>().Play("Ichor_Star", 0, 0);
+        //_projection.SetColor(Color.black);
+        //yield return new WaitForSeconds(0.02f);
         //GetComponentInChildren<SpriteRenderer>().enabled = false;
-        _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        //_projection.SetColor(Color.white);
+        //yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
 
+        float timer = DETONATION_DURATION;
+        while (timer > 0)
+        {
+            RadialGlowSprite.material.SetFloat("_Opacity", RadialGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION)));
+            StarGlowSprite.material.SetFloat("_Opacity", StarGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION)));
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        AnimationSprite.enabled = false;
+        RadialGlowSprite.enabled = false;
+        StarGlowSprite.enabled = false;
         /*
         float opacity = 1f;
         while (opacity > 0)

@@ -15,8 +15,8 @@ public class EnvironmentSpritemapGenerator
     public static List<EnvironmentPhysics> SelectedEnvtPhysicsList = new List<EnvironmentPhysics>();
     public static List<RectInt> SelectedSpritesheetRegions = new List<RectInt>();
 
-    [MenuItem("EXALT Tools/Generate Environment Spritemap from Selection")]
-    private static void GenerateSpritemapFromSelection()
+    [MenuItem("EXALT Tools/Generate Environment TOP Spritemap from Selection")]
+    private static void GenerateTopSpritemapFromSelection()
     {
         // initialize our list of envt objects
         Vector2 minPos = new Vector2(float.MaxValue, float.MaxValue);
@@ -108,6 +108,92 @@ public class EnvironmentSpritemapGenerator
         AssetDatabase.Refresh();
     }
 
+    [MenuItem("EXALT Tools/Generate Environment FRONT Spritemap from Selection")]
+    private static void GenerateFrontSpritemapFromSelection()
+    {
+        // initialize our list of envt objects
+        Vector2 minPos = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 maxPos = new Vector2(float.MinValue, float.MinValue);
+        //List<EnvironmentPhysics> envtPhysicsList = new List<EnvironmentPhysics>();
+        SelectedEnvtPhysicsList.Clear();
+        SelectedSpritesheetRegions.Clear();
+        bool errorOccurred = false;
+
+        foreach (GameObject obj in Selection.objects)
+        {
+            EnvironmentPhysics envtPhys = obj.GetComponent<EnvironmentPhysics>();
+            if (!envtPhys)
+            {
+                Debug.LogError("Whoa!! Found a GameObject with no EnvironmentPhysics when trying to export an environment spritemap!");
+                return;
+            }
+
+            SelectedEnvtPhysicsList.Add(envtPhys);
+            minPos = Vector2.Min(minPos, new Vector2(envtPhys.ObjectCollider.bounds.min.x, envtPhys.BottomHeight + envtPhys.ObjectCollider.bounds.min.y));
+            maxPos = Vector2.Max(maxPos, new Vector2(envtPhys.ObjectCollider.bounds.max.x, envtPhys.TopHeight + envtPhys.ObjectCollider.bounds.min.y));
+        }
+        int texWidthPixels = Mathf.RoundToInt((maxPos.x - minPos.x) * 16);
+        int texHeightPixels = Mathf.RoundToInt((maxPos.y - minPos.y) * 16);
+
+        Texture2D newSpritemapTex = new Texture2D(texWidthPixels, texHeightPixels, TextureFormat.RGBA32, false);
+        Rect TextureWorldspaceBoundingRect = new Rect(minPos, new Vector2(texWidthPixels, texHeightPixels));
+
+        // start drawing those rectangles
+        Dictionary<Color, EnvironmentPhysics> ColorToEnvironment = new Dictionary<Color, EnvironmentPhysics>();
+        Color thisRectColor = Color.red;
+        SelectedSpritesheetRegions.Clear();
+        foreach (EnvironmentPhysics phys in SelectedEnvtPhysicsList)
+        {
+            while (ColorToEnvironment.ContainsKey(thisRectColor)) // keep trying to get a new color that isn't already used
+            {
+                thisRectColor = new Color(Random.Range(0, 255) / 255.0f, Random.Range(0, 255) / 255.0f, Random.Range(0, 255) / 255.0f);
+            }
+            ColorToEnvironment.Add(thisRectColor, phys);
+
+            Vector2Int objectBottomLeftCornerPosition = GetPixelPosition(new Vector2(phys.ObjectCollider.bounds.min.x, phys.BottomHeight + phys.ObjectCollider.bounds.min.y), TextureWorldspaceBoundingRect);
+            Vector2Int rectSizePixels = new Vector2Int(Mathf.RoundToInt(phys.ObjectCollider.bounds.size.x * 16), Mathf.RoundToInt(phys.ObjectHeight * 16)); // fuck unity
+            int colorArraySize = rectSizePixels.x * rectSizePixels.y;
+
+            Color[] colors = new Color[colorArraySize];
+            for (int i = 0; i < colorArraySize; i++)
+            {
+                colors[i] = thisRectColor;
+            }
+            if (IsRectOverlapping(new RectInt(objectBottomLeftCornerPosition, rectSizePixels)))
+            {
+                // alert! overlap! bad!!!
+                Debug.LogError("SPRITEMAP GENERATOR ERROR : Rect overlap detected with environment object : " + phys.gameObject.name);
+                errorOccurred = true;
+            }
+            newSpritemapTex.SetPixels(objectBottomLeftCornerPosition.x, objectBottomLeftCornerPosition.y, rectSizePixels.x, rectSizePixels.y, colors);
+            SelectedSpritesheetRegions.Add(new RectInt(objectBottomLeftCornerPosition, rectSizePixels));
+        }
+
+        // make folder for scene if missing
+        string folderRelativePath = "/Art/_FinalCampaign/" + SelectedEnvtPhysicsList[0].gameObject.scene.name;
+        string folderAbsolutePath = Application.dataPath + "/Art/_FinalCampaign/" + SelectedEnvtPhysicsList[0].gameObject.scene.name;
+        if (!AssetDatabase.IsValidFolder($"Assets{folderRelativePath}"))
+        {
+            AssetDatabase.CreateFolder("Assets/Art/_FinalCampaign", SelectedEnvtPhysicsList[0].gameObject.scene.name);
+        }
+
+        // get a filename that wont conflict
+        string fileName = SelectedEnvtPhysicsList[0].gameObject.scene.name + "_Front.png";
+        int increment = 0;
+        while (File.Exists(folderAbsolutePath + "/" + fileName))
+        {
+            fileName = fileName.Split('.')[0] + "_" + increment + ".png";
+            increment++;
+        }
+        string fileRelativePath = "/Art/_FinalCampaign/" + SelectedEnvtPhysicsList[0].gameObject.scene.name + "/" + fileName;
+        string fileAbsolutePath = folderAbsolutePath + "/" + fileName;
+        byte[] data = newSpritemapTex.EncodeToPNG();
+        File.WriteAllBytes(fileAbsolutePath, data);
+        if (errorOccurred) return; // dont kick off import stuff if it fucked up
+        EditorPrefs.SetString("ExaltFrontSpritesheetPath", "Assets" + fileRelativePath);
+        AssetDatabase.Refresh();
+    }
+
     /// <summary>
     /// Should be done on the spritesheet immediately after
     /// </summary>
@@ -116,6 +202,7 @@ public class EnvironmentSpritemapGenerator
     public static void SplitSpritemap()
     {
         // --- split into subregions
+        /*
         List<SpriteMetaData> newSpriteMetaData = new List<SpriteMetaData>();
         Texture2D spritesheet = (Texture2D)Selection.activeObject;
         TextureImporter importer = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(spritesheet)) as TextureImporter;
@@ -132,7 +219,7 @@ public class EnvironmentSpritemapGenerator
             newSpriteMetaData.Add(smd);
         }
         importer.spritesheet = newSpriteMetaData.ToArray();
-        AssetDatabase.Refresh();
+        AssetDatabase.Refresh();*/
     }
 
     /// <summary>
@@ -142,6 +229,7 @@ public class EnvironmentSpritemapGenerator
     [MenuItem("EXALT Tools/Assign Subsprites to Objects")]
     public static void SplitAndAssign()
     {
+        /*
         string path = AssetDatabase.GetAssetPath(Selection.activeObject);
         Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
 
@@ -150,12 +238,27 @@ public class EnvironmentSpritemapGenerator
             if (!SelectedEnvtPhysicsList[i] || !sprites[i]) break;
             SelectedEnvtPhysicsList[i].TopSprite.sprite = sprites[i]; /// TODO = left off here. TopSprite is set in Start(). Make this something that's lazy loaded
         }
+        */
     }
 
     // --- VALIDATION METHODS
 
-    [MenuItem("EXALT Tools/Generate Environment Spritemap from Selection", true)]
+    [MenuItem("EXALT Tools/Generate Environment TOP Spritemap from Selection", true)]
     private static bool CanGenerateSpritemap()
+    {
+        foreach (Object obj in Selection.objects)
+        {
+            if (!(obj is GameObject)) return false;
+            if (!((GameObject)obj).GetComponent<EnvironmentPhysics>())
+            {
+                return false;
+            }
+        }
+        return Selection.objects.Length > 0;
+    }
+
+    [MenuItem("EXALT Tools/Generate Environment FRONT Spritemap from Selection", true)]
+    private static bool CanGenerateFrontSpritemap()
     {
         foreach (Object obj in Selection.objects)
         {

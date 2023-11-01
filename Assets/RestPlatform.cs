@@ -28,6 +28,14 @@ public class RestPlatform : MonoBehaviour
     public UnityEvent OnActionReleased;
     public UnityEvent OnDirectionInputReceived;
 
+    //normalized charge / hold amount, which we will use a bunch probably
+    public float ChargeRate = 1.0f; // when held
+    public float DecayRate = 1.0f; // when not held
+    public float CurrentChargeAmount = 0.0f;
+    public bool StaysFullCharge = false;
+    public UnityEvent OnChargeAmountChanged;
+
+
     // Update is called once per frame
     void Update()
     {
@@ -36,6 +44,16 @@ public class RestPlatform : MonoBehaviour
             GlowEffect_Pattern.material.SetFloat("_GlowLevel", currentGlowAmount);
             GlowEffect_Aura.material.SetFloat("_GlowLevel", currentGlowAmount);
             currentGlowAmount = Mathf.Lerp(currentGlowAmount, targetGlowAmount, 0.2f);
+        }
+        if (IsActionPressed && CurrentChargeAmount != 1.0f)
+        {
+            CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount + ChargeRate);
+            OnChargeAmountChanged.Invoke();
+        }
+        else if (!IsActionPressed && CurrentChargeAmount != 0.0f)
+        {
+            CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount - DecayRate);
+            OnChargeAmountChanged.Invoke();
         }
         /*
         if (PlayerDetectVolume.IsTriggered)

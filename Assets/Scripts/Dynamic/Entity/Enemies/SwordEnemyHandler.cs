@@ -718,6 +718,7 @@ public class SwordEnemyHandler : EntityHandler
     public override void Stagger()
     {
         if (currentState == TestEnemyState.FROZEN) return;
+        if (currentState == TestEnemyState.DEATH) return;
         stateTimer = STAGGER_DURATION;
         currentState = TestEnemyState.STAGGER;
 
@@ -833,6 +834,7 @@ public class SwordEnemyHandler : EntityHandler
 
     public override void Freeze()
     {
+        if (currentState == TestEnemyState.DEATH) return;
         currentState = TestEnemyState.FROZEN;
         fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_CrystallizationAmount", 1.0f);
         characterAnimator.speed = 0;

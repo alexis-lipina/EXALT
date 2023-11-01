@@ -148,6 +148,7 @@ public abstract class EntityHandler : MonoBehaviour
     public void PrimeEnemy(ElementType type)
     {
         if (_isPrimed_Void && type == ElementType.VOID || _isPrimed_Fire && type == ElementType.FIRE || _isPrimed_Zap && type == ElementType.ZAP || _isPrimed_Ichor && type == ElementType.ICHOR) return;
+        if (entityPhysics.GetCurrentHealth() <= 0) return;
         _primeAudioSource.Play();
         switch (type)
         {

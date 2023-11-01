@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class ZapDetonationHandler : ProjectionHandler
 {
-    private const float DETONATION_DURATION = 0.3f;
+    private const float DETONATION_DURATION = 0.5f;
+
+    [SerializeField] private SpriteRenderer AnimationSprite;
+    [SerializeField] private SpriteRenderer ColumnGlowSprite;
+    [SerializeField] private AnimationCurve ColumnGlowCurve;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -64,7 +68,9 @@ public class ZapDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        ColumnGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        ColumnGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset() + 8, pos.y);
     }
 
     private void OnEnable()
@@ -111,14 +117,22 @@ public class ZapDetonationHandler : ProjectionHandler
 
     IEnumerator PlayAnimation()
     {
-        GetComponentInChildren<SpriteRenderer>().enabled = true;
-        GetComponentInChildren<Animator>().Play("ZapDetonation_V2");
-        _projection.SetColor(Color.black);
-        yield return new WaitForSeconds(0.02f);
-        //GetComponentInChildren<SpriteRenderer>().enabled = false;
-        _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        _projection.SetOpacity(0.0f);
+
+        AnimationSprite.enabled = true;
+        ColumnGlowSprite.enabled = true;
+        AnimationSprite.GetComponent<Animator>().Play("ZapDetonation_V2");
+        ColumnGlowSprite.GetComponent<Animator>().Play("Storm_Column");
+        float timer = DETONATION_DURATION;
+        while (timer > 0)
+        {
+            ColumnGlowSprite.material.SetFloat("_Opacity", ColumnGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION)));
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        AnimationSprite.enabled = false;
+        ColumnGlowSprite.enabled = false;
+
 
         /*
         float opacity = 1f;

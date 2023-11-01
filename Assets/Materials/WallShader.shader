@@ -60,6 +60,8 @@ Shader "Custom/WallShader"
 			float _TopElevation;
 			float _BottomElevation;
 			float _MaxElevationOffset;
+			float _TopSpriteRect;
+			float _BottomSpriteRect;
 
 			float _Opacity;
 
@@ -73,7 +75,10 @@ Shader "Custom/WallShader"
 				float top_diff = _TopElevation - _PlayerElevation;
 				float bottom_diff = _BottomElevation - _PlayerElevation;
 				
-				float ratio = lerp(top_diff, bottom_diff, 1-output.uv.y);
+				float adjusted_uv_y = (output.uv.y - _TopSpriteRect) / (_BottomSpriteRect - _TopSpriteRect);
+				//adjusted_uv_y = 0.5;
+
+				float ratio = lerp(top_diff, bottom_diff, 1-adjusted_uv_y);
 
 				ratio = ratio / _MaxElevationOffset;
 

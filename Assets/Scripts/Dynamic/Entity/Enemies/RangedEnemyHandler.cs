@@ -11,6 +11,8 @@ public class RangedEnemyHandler : EntityHandler
     [SerializeField] private PathfindingAI _pathfindingAi;
     [SerializeField] private SpriteRenderer bloodSplatterSprite;
     [SerializeField] private Transform _ichorHeartPrefab;
+    [SerializeField] protected SpriteRenderer VFXGlowSprite; // for when this character needs to have a glow emissive effect on them
+
 
 
     enum TestEnemyState { IDLE, RUN, FALL, JUMP, READY, SWING, ATTACK, FLINCH, SPAWN, SHIELDBREAK, DEATH, FROZEN, SHATTER, STAGGER };
@@ -123,7 +125,10 @@ public class RangedEnemyHandler : EntityHandler
         jumpPressed = false;
         attackPressed = false;
         fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_FireAmount", entityPhysics.GetNormalizedBurnTimer());
-        fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_IchorFreezeBreak", entityPhysics.GetNormalizedFreezeTimer());
+        VFXGlowSprite.material.SetFloat("_Opacity", Mathf.Sqrt(entityPhysics.GetNormalizedBurnTimer())); // for when this character needs to have a glow emissive effect on them
+        VFXGlowSprite.material.SetFloat("_CurrentElement", 2); // for when this character needs to have a glow emmissive effect on them
+
+        fxAnimator.GetComponent<SpriteRenderer>().material.SetFloat("_IchorFreezeBreak", entityPhysics.GetNormalizedFreezeTimer()); 
     }
 
     public override void SetXYAnalogInput(float x, float y)
@@ -707,6 +712,7 @@ public class RangedEnemyHandler : EntityHandler
     public override void Stagger()
     {
         if (currentState == TestEnemyState.FROZEN) return;
+        if (currentState == TestEnemyState.DEATH) return;
         stateTimer = STAGGER_DURATION;
         currentState = TestEnemyState.STAGGER;
 

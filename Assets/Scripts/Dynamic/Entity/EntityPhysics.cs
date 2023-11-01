@@ -412,7 +412,6 @@ public class EntityPhysics : DynamicPhysics
     public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
         if (isInvincible || _isDead) return;
-        entityHandler.Flinch();
 
         entityHandler.PerformDetonations(type);
 
@@ -435,7 +434,12 @@ public class EntityPhysics : DynamicPhysics
         if (currentHP > 0)
         {
             Debug.Log("Playing damage flash");
+            entityHandler.Flinch();
             StartCoroutine(TakeDamageFlash(force.normalized));
+        }
+        if (currentHP <= 0)
+        {
+            _burnTimer = 0.0f;
         }
     }
     
@@ -447,6 +451,7 @@ public class EntityPhysics : DynamicPhysics
 
     public virtual void Burn()
     {
+        if (GetCurrentHealth() == 0) return;
         if (entityHandler.GetShield() != ElementType.NONE) //early return if enemy has shield
         {
             //TODO : do somethin to show deflection

@@ -8,39 +8,25 @@ public class TestPlayerElevationTracker : MonoBehaviour
     [SerializeField] private EnvironmentPhysics _environmentPhysics;
     [SerializeField] private bool _trueIfPlatformFalseIfWall;
     [SerializeField] private bool _canChangeElevation = false;
+    private SpriteRenderer spriteRenderer;
     private float _lerpedPlayerHeight;
+    private Material mat;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
-        _lerpedPlayerHeight = _playerPhysics.GetObjectElevation();
-        if (_trueIfPlatformFalseIfWall)
-        {
-            //platform
-
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
-
-            //changes field for all instances
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
-        }
-        else
-        {
-            //wall
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
-
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
-        }
+        UpdateShader();
     }
 
     public void UpdateShader()
     {
+        if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
+
         if (_trueIfPlatformFalseIfWall)
         {
             //platform
 
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
+            GetComponent<SpriteRenderer>().material.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
 
             //changes field for all instances
             //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
@@ -48,11 +34,10 @@ public class TestPlayerElevationTracker : MonoBehaviour
         else
         {
             //wall
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
-
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
+            GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
+            GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
+            GetComponent<SpriteRenderer>().material.SetFloat("_TopSpriteRect", spriteRenderer.sprite.rect.yMin / spriteRenderer.sprite.texture.height);
+            GetComponent<SpriteRenderer>().material.SetFloat("_BottomSpriteRect", spriteRenderer.sprite.rect.yMax / spriteRenderer.sprite.texture.height);
         }
     }
 
@@ -65,38 +50,4 @@ public class TestPlayerElevationTracker : MonoBehaviour
     {
         _canChangeElevation = canchange;
     }
-
-    /*
-    // Update is called once per frame
-    void Update ()
-    {
-        
-        
-        _lerpedPlayerHeight = Mathf.Lerp( _lerpedPlayerHeight, _playerPhysics.GetObjectElevation(), 0.1f);
-        gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlayerElevation", _lerpedPlayerHeight);
-       
-        //Shader.SetGlobalFloat("_PlayerElevation", _lerpedPlayerHeight);
-        //Shader.SetGlobalFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
-        //Shader.SetGlobalFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-        //Shader.SetGlobalFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
-        if (_trueIfPlatformFalseIfWall)
-        {
-            //platform
-
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
-
-            //changes field for all instances
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_PlatformElevation", _environmentPhysics.GetTopHeight());
-        }
-        else
-        {
-            //wall
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-            gameObject.GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
-
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_TopElevation", _environmentPhysics.GetTopHeight());
-            //gameObject.GetComponent<SpriteRenderer>().sharedMaterial.SetFloat("_BottomElevation", _environmentPhysics.GetBottomHeight());
-        }
-    }
-    */
 }

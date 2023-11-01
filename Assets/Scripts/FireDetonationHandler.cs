@@ -4,7 +4,14 @@ using UnityEngine;
 
 public class FireDetonationHandler : ProjectionHandler
 {
-    private const float DETONATION_DURATION = 0.333f;
+    [SerializeField] private SpriteRenderer AnimationSprite;
+    [SerializeField] private SpriteRenderer RadialGlowSprite;
+    [SerializeField] private SpriteRenderer StarGlowSprite;
+    [SerializeField] private AnimationCurve StarGlowCurve;
+    [SerializeField] private AnimationCurve RadialGlowCurve;
+
+
+    private const float DETONATION_DURATION = 1.0f;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -72,7 +79,9 @@ public class FireDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        GetComponentInChildren<SpriteRenderer>().transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
+        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
+        RadialGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
+        StarGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
     }
 
     private void OnEnable()
@@ -109,7 +118,6 @@ public class FireDetonationHandler : ProjectionHandler
             MoveTo(_sourceEnemy.transform.position);
             _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         }
-
     }
 
     /// <summary>
@@ -160,13 +168,30 @@ public class FireDetonationHandler : ProjectionHandler
 
     IEnumerator PlayAnimation()
     {
-        GetComponentInChildren<SpriteRenderer>().enabled = true;
-        GetComponentInChildren<Animator>().Play("FireDetonation");
-        _projection.SetColor(Color.black);
-        yield return new WaitForSeconds(0.02f);
-        _projection.SetColor(Color.white);
-        yield return new WaitForSeconds(DETONATION_DURATION - 0.02f);
-        GetComponentInChildren<SpriteRenderer>().enabled = false;
+        AnimationSprite.enabled = true;
+        RadialGlowSprite.enabled = true;
+        StarGlowSprite.enabled = true;
+        GetComponentInChildren<Animator>().Play("FireDetonation", 0, 0);
+        RadialGlowSprite.GetComponent<Animator>().Play("Sol_Ball", 0, 0); // controls size
+        StarGlowSprite.GetComponent<Animator>().Play("Sol_Star", 0, 0);
+        //_projection.SetColor(Color.black);
+        //yield return new WaitForSeconds(0.02f);
+        //_projection.SetColor(Color.white);
+        float timer = DETONATION_DURATION;
+        while (timer > 0)
+        {
+            float radialglow = RadialGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION));
+            float starglow = StarGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION));
+            RadialGlowSprite.material.SetFloat("_Opacity", RadialGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION)));
+            StarGlowSprite.material.SetFloat("_Opacity", StarGlowCurve.Evaluate(1 - (timer / DETONATION_DURATION)));
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        //yield return new WaitForSeconds(DETONATION_DURATION);
+        AnimationSprite.enabled = false;
+        RadialGlowSprite.enabled = false;
+        StarGlowSprite.enabled = false;
 
         GetComponentInChildren<Animator>().Play("FireDetonation_Idle");
 

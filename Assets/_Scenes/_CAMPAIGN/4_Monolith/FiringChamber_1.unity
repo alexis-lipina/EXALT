@@ -160,7 +160,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -674,7 +674,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4290,7 +4290,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7528,7 +7528,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9047,6 +9047,11 @@ MonoBehaviour:
   _sourceScene: CornerRoom_1
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!4 &941447456 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -9113,7 +9118,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9530,7 +9535,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10483,7 +10488,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -15692,7 +15697,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16128,7 +16133,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16191,6 +16196,7 @@ MonoBehaviour:
   depthsColor: {r: 0, g: 0.38117123, b: 0.5, a: 1}
   heightsColor: {r: 1, g: 0, b: 0.49803922, a: 0}
   elevationOffset: 30
+  killPlaneElevation: -20
 --- !u!4 &1886258109
 Transform:
   m_ObjectHideFlags: 0
@@ -16651,7 +16657,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52947632426df454084581b077596bc9, type: 2}
+  - {fileID: 2100000, guid: 757a88a80a6191d4a94bf6f20a277db3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -17551,6 +17557,11 @@ MonoBehaviour:
   _sourceScene: CornerRoom_2
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &2087001810
 GameObject:
   m_ObjectHideFlags: 0

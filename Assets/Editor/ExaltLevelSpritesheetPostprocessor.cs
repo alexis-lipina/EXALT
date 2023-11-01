@@ -10,13 +10,19 @@ public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
 
     void OnPostprocessSprites(Texture2D texture, Sprite[] sprites)
     {
+        string topFilePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
+        string frontFilePath = EditorPrefs.GetString("ExaltFrontSpritesheetPath");
+        if (assetImporter.assetPath != frontFilePath && assetImporter.assetPath != topFilePath)
+        {
+            return;
+        }
         EditorApplication.update += UpdateSceneDelayed;
-
     }
 
     void OnPostprocessTexture(Texture2D texture)
     {
         return;
+        /*
         string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
         if (assetImporter.assetPath != filePath)
         {
@@ -36,23 +42,27 @@ public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
             newSpriteMetaData.Add(smd);
         }
         texImporter.spritesheet = newSpriteMetaData.ToArray();
-        AssetDatabase.Refresh();
+        AssetDatabase.Refresh();*/
     }
 
     void OnPreprocessTexture()
     {
         TextureImporter importer = assetImporter as TextureImporter;
-        importer.spritePixelsPerUnit = 16;
-        importer.maxTextureSize = 8192;
-        importer.filterMode = FilterMode.Point;
-        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        if (importer.spritePixelsPerUnit == 100)
+        {
+            // first import
+            importer.spritePixelsPerUnit = 16;
+            importer.maxTextureSize = 8192;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+        }
 
-        string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
-        if (importer.assetPath == filePath)
+        string topFilePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
+        string frontFilePath = EditorPrefs.GetString("ExaltFrontSpritesheetPath");
+        if (importer.assetPath == topFilePath || importer.assetPath == frontFilePath)
         {
             importer.spriteImportMode = SpriteImportMode.Multiple;
             importer.isReadable = true;
-
 
             List<SpriteMetaData> newSpriteMetaData = new List<SpriteMetaData>();
             for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
@@ -64,34 +74,50 @@ public class ExaltLevelSpritesheetPostprocessor : AssetPostprocessor
                 newSpriteMetaData.Add(smd);
             }
             importer.spritesheet = newSpriteMetaData.ToArray();
+            return;
             //AssetDatabase.Refresh();
         }
     }
 
     void UpdateSceneDelayed()
     {
-        string filePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
-        if (assetImporter.assetPath != filePath)
+        string topFilePath = EditorPrefs.GetString("ExaltTopSpritesheetPath");
+        string frontFilePath = EditorPrefs.GetString("ExaltFrontSpritesheetPath");
+
+        if (assetImporter.assetPath != topFilePath && assetImporter.assetPath != frontFilePath)
         {
             EditorApplication.update -= UpdateSceneDelayed;
             return;
         }
 
-        Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(filePath).OfType<Sprite>().ToArray();
+        Sprite[] sprites = AssetDatabase.LoadAllAssetsAtPath(assetImporter.assetPath).OfType<Sprite>().ToArray();
 
         if (sprites.Length != EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count || sprites.Length != EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList.Count)
         {
-            Debug.LogError("Mismatch between number of sprites and number of regions!");
+            Debug.LogError("Mismatch between number of sprites and number of objects!");
             //EditorApplication.update -= UpdateSceneDelayed;
             return;
         }
 
-
-        for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
+        if (topFilePath == assetImporter.assetPath)
         {
-            Undo.RecordObject(EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite, "Assign spritesheet sprite to environment physics top sprite");
-            EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite.sprite = sprites[i];
+            for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
+            {
+                Undo.RecordObject(EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite, "Assign spritesheet sprite to environment physics top sprite");
+                EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].TopSprite.sprite = sprites[i];
+            }
+            EditorApplication.update -= UpdateSceneDelayed;
+            EditorPrefs.SetString("ExaltTopSpritesheetPath", "");
         }
-        EditorApplication.update -= UpdateSceneDelayed;
+        else if (frontFilePath == assetImporter.assetPath)
+        {
+            for (int i = 0; i < EnvironmentSpritemapGenerator.SelectedSpritesheetRegions.Count; i++)
+            {
+                Undo.RecordObject(EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].FrontSprite, "Assign spritesheet sprite to environment physics front sprite");
+                EnvironmentSpritemapGenerator.SelectedEnvtPhysicsList[i].FrontSprite.sprite = sprites[i];
+            }
+            EditorApplication.update -= UpdateSceneDelayed;
+            EditorPrefs.SetString("ExaltFrontSpritesheetPath", "");
+        }
     }
 }

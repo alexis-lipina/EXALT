@@ -15,14 +15,14 @@ public class CampaignSaveSingleton/* : MonoBehaviour*/
         // if can load file, load it - otherwise, create default and save it to disk
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + DATA_PATH))
         {
-            Debug.Log("Reading from existing campaign save data at " + Application.persistentDataPath + "/" + DATA_PATH);
+            //Debug.Log("Reading from existing campaign save data at " + Application.persistentDataPath + "/" + DATA_PATH);
             StreamReader reader = new StreamReader(Application.persistentDataPath + DATA_PATH);
             _data = JsonUtility.FromJson<CampaignSaveData>(reader.ReadToEnd());
             reader.Close();
         }
         else
         {
-            Debug.Log("No current campaign save file - writing new one and setting up default");
+            //Debug.Log("No current campaign save file - writing new one and setting up default");
             _data = new CampaignSaveData();
             System.IO.File.WriteAllText(Application.persistentDataPath + "/" + DATA_PATH, (JsonUtility.ToJson(_data)));
         }

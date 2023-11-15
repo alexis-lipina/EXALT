@@ -2133,12 +2133,14 @@ public class PlayerHandler : EntityHandler
                     {
                         CurrentRestPlatform.OnActionPressed.Invoke();
                         CurrentRestPlatform.SetTargetGlowAmount(1.0f);
+                        CurrentRestPlatform.IsActionPressed = true;
                         Debug.Log("Rest platform PRESSED!");
                     }
                     if (controller.GetButtonUp("Melee"))
                     {
                         CurrentRestPlatform.OnActionReleased.Invoke();
                         CurrentRestPlatform.SetTargetGlowAmount(0.5f);
+                        CurrentRestPlatform.IsActionPressed = false;
                     }
                 }
                 if (CurrentRestPlatform.DoesPlatformUseInputDirection)

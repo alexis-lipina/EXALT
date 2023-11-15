@@ -31,7 +31,7 @@ public class EntityPhysics : DynamicPhysics
     [SerializeField] private float _maxVelocity = 8f;
     [SerializeField] private bool _shouldDieWhenFall = true;
 
-    protected int currentHP;
+    [SerializeField] protected int currentHP;
     private bool hasBeenHit;
     private bool isInvincible = false;
     private bool _fellOutOfBounds = false;
@@ -58,9 +58,6 @@ public class EntityPhysics : DynamicPhysics
 
     public EnemySpawner _spawner;
 
-    //burn stuff
-    [SerializeField] private Transform _burnParticlesPrefab;
-    private GameObject _burnParticles;
     private float _burnTimer = 0f;
     private float _burnTimeBetweenInflicts = 1.0f;
     private float _burnTimer_Inflicts = 0f;
@@ -132,7 +129,6 @@ public class EntityPhysics : DynamicPhysics
             {
                 _burnTimer = 0f;
                 _burnTimer_Inflicts = 0f;
-                //Destroy(_burnParticles.gameObject);
             }
         }
 
@@ -465,7 +461,6 @@ public class EntityPhysics : DynamicPhysics
             return;
         }
 
-        //_burnParticles = Instantiate(_burnParticlesPrefab, ObjectSprite.transform).gameObject;
         _burnTimer = _burnDuration;
         _burnTimer_Inflicts = _burnTimeBetweenInflicts;
     }

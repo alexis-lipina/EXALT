@@ -47,12 +47,12 @@ public class RestPlatform : MonoBehaviour
         }
         if (IsActionPressed && CurrentChargeAmount != 1.0f)
         {
-            CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount + ChargeRate);
+            CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount + ChargeRate * Time.deltaTime);
             OnChargeAmountChanged.Invoke();
         }
         else if (!IsActionPressed && CurrentChargeAmount != 0.0f)
         {
-            CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount - DecayRate);
+            CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount - DecayRate * Time.deltaTime);
             OnChargeAmountChanged.Invoke();
         }
         /*

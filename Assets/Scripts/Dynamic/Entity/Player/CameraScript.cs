@@ -17,6 +17,8 @@ public class CameraScript : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private bool _isUsingCursor;
     private Vector2 _cursorWorldPos;
+    private Camera _camera;
+    [SerializeField] AnimationCurve _cameraSizeChangeEaseCurve;
 
     private List<CameraAttractor> _currentAttractors;
 
@@ -56,6 +58,7 @@ public class CameraScript : MonoBehaviour
     {
         controller = ReInput.players.GetPlayer(0);
         _currentAttractors = new List<CameraAttractor>();
+        _camera = GetComponent<Camera>();
     }
 
     void Update()
@@ -63,6 +66,7 @@ public class CameraScript : MonoBehaviour
         Vector3 targetPosition = UpdateTargetPosition();
         foreach (CameraAttractor attractor in _currentAttractors)
         {
+            if (!attractor) continue;
             targetPosition = (targetPosition + attractor.transform.position * attractor.PullMagnitude) / (attractor.PullMagnitude + 1f);
         }
 
@@ -162,8 +166,32 @@ public class CameraScript : MonoBehaviour
     {
         _isUsingCursor = true;
         _cursorWorldPos = position;
-
     }
 
+    public void SmoothToSizeSimple(float TargetSize)
+    {
+        SmoothToSize(TargetSize, 1.0f);
+    }
+
+    public void SmoothToSize(float newSize, float duration)
+    {
+        StopAllCoroutines();
+        StartCoroutine(SmoothToSizeCoroutine(newSize, duration));
+    }
+
+    IEnumerator SmoothToSizeCoroutine(float newSize, float duration)
+    {
+        newSize *= 16.875f;
+        float timer = 0.0f;
+        float oldSize = _camera.orthographicSize;
+        while (timer < duration)
+        {
+            _camera.orthographicSize = Mathf.Lerp(oldSize, newSize, _cameraSizeChangeEaseCurve.Evaluate(timer / duration));
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        _camera.orthographicSize = newSize;
+
+    }
 }
 

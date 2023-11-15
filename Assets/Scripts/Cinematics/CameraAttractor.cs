@@ -73,4 +73,8 @@ public class CameraAttractor : MonoBehaviour
             }
         }
     }
+    public void SetPullMagnitude(float value)
+    {
+        _pullMagnitude = value;
+    }
 }

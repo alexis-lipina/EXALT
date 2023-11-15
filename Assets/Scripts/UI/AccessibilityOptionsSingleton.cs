@@ -18,14 +18,14 @@ public class AccessibilityOptionsSingleton
         // if can load file, load it - otherwise, create default and save it to disk
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + DATA_PATH))
         {
-            Debug.Log("Reading from existing accessibility options data");
+            //Debug.Log("Reading from existing accessibility options data");
             StreamReader reader = new StreamReader(Application.persistentDataPath + "/" + DATA_PATH);
             _data = JsonUtility.FromJson<AccessibilityOptionsData>(reader.ReadToEnd());
             reader.Close();
         }
         else
         {
-            Debug.Log("No current accessibility options file - writing new one and setting up default");
+            //Debug.Log("No current accessibility options file - writing new one and setting up default");
             _data = new AccessibilityOptionsData();
             System.IO.File.WriteAllText(Application.persistentDataPath + "/" + DATA_PATH, (JsonUtility.ToJson(_data)));
         }

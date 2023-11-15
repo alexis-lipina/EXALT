@@ -246,7 +246,7 @@ public class ZapFXController : MonoBehaviour
         _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
         */
 
-        _soundEffect.Play();
+        if (_soundEffect) _soundEffect.Play();
 
         _coreBolt.GetComponent<MeshRenderer>().enabled = true;
         _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
@@ -270,6 +270,28 @@ public class ZapFXController : MonoBehaviour
 
         yield return new WaitForSeconds(duration * 0.5f);
 
+        _coreBolt.GetComponent<MeshRenderer>().enabled = false;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
+    }
+
+    public void SetThickness(float coreThickness, float outlineThickness)
+    {
+        _coreBolt.LineThickness = coreThickness;
+        _outlineBolt.LineThickness = outlineThickness;
+        _coreBolt.UpdateLineMesh();
+        _outlineBolt.UpdateLineMesh();
+    }
+
+    public void ShowBolt()
+    {
+        StopAllCoroutines();
+        _coreBolt.GetComponent<MeshRenderer>().enabled = true;
+        _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
+        _coreBolt.UpdateLineMesh();
+        _outlineBolt.UpdateLineMesh();
+    }
+    public void HideBolt()
+    {
         _coreBolt.GetComponent<MeshRenderer>().enabled = false;
         _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
     }

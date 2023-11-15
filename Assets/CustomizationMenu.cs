@@ -19,7 +19,7 @@ public class CustomizationMenu : MonoBehaviour
         // if can load file, load it - otherwise, create default and save it to disk
         if (System.IO.File.Exists(Application.persistentDataPath + "ExaltPalettes") && !forceOverwrite)
         {
-            Debug.Log("Reading from existing accessibility options data");
+            //Debug.Log("Reading from existing accessibility options data");
             StreamReader reader = new StreamReader(Application.persistentDataPath + "ExaltPalettes");
             PaletteOptions = JsonUtility.FromJson<CustomizationOptionsDataArray>(reader.ReadToEnd());
             reader.Close();
@@ -33,7 +33,7 @@ public class CustomizationMenu : MonoBehaviour
 
     private static void GenerateFile()
     {
-        Debug.Log("No current customization options file - writing new one and setting up default");
+        //Debug.Log("No current customization options file - writing new one and setting up default");
         PaletteOptions = new CustomizationOptionsDataArray();
 
         List<CustomizationOptionsDataElement> elementList = new List<CustomizationOptionsDataElement>();

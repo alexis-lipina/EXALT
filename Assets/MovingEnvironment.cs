@@ -34,7 +34,7 @@ public class MovingEnvironment : MonoBehaviour
 
     Vector3 StartingPosition;
 
-    private EnvironmentPhysics environmentPhysics;
+    public EnvironmentPhysics environmentPhysics;
 
     void Awake()
     {
@@ -139,5 +139,14 @@ public class MovingEnvironment : MonoBehaviour
 
         environmentPhysics.TopSprite.gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
         environmentPhysics.FrontSprite.gameObject.transform.localPosition += new Vector3(0.0f, dz, 0.0f);
+    }
+
+    public void AddElevationOffset(float offset)
+    {
+        GetComponent<EnvironmentPhysics>().BottomHeight += offset;
+        GetComponent<EnvironmentPhysics>().TopHeight += offset;
+
+        environmentPhysics.TopSprite.gameObject.transform.localPosition += new Vector3(0.0f, offset, 0.0f);
+        environmentPhysics.FrontSprite.gameObject.transform.localPosition += new Vector3(0.0f, offset, 0.0f);
     }
 }

@@ -14,6 +14,7 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] float CrystalHailDuration = 8.0f;
     [SerializeField] float SmallLaserCooldown = 3.0f;
     private bool bIsBossDoingSomething = false; // prevents the boss from doing multiple things at a time like a local AOE and also a volley, which probs would suck
+    private Vector2 CenterPosition;
 
     [Space(10)]
     [Header("Superlaser")]
@@ -78,14 +79,30 @@ public class FinalBossFragment : EntityHandler
 
     private Coroutine _superlaserCoroutine;
 
+    private Vector2 WanderPosition;
+    [SerializeField] private Vector2 WanderAreaSize;
+    [SerializeField] private float WanderAcceleration = 7.0f;
+    [SerializeField] private float WanderMaxSpeed = 10.0f;
+    [SerializeField] private float WanderTargetSwitchDelay = 4.0f;
+    private float WanderTimer = 0.0f;
 
+    [Space(10)]
+    [Header("Hail")]
+    [SerializeField] Transform HailPrefab;
+    [SerializeField] float HailDuration = 8.0f;
+    [SerializeField] AnimationCurve HailDelayOverDuration;
+    [SerializeField] Vector2 HailArea;
+    [SerializeField] float TargetedHailRadius;
+    [SerializeField] AnimationCurve TargetedHailDelayOverDuration;
+    bool bIsHailing = false;
+    
     // Start is called before the first frame update
     void Start()
     {
         OrderOfPhases = new List<FragmentPhase>();
-        OrderOfPhases.Add(FragmentPhase.LOWER_SPEARS);
-        OrderOfPhases.Add(FragmentPhase.SPAWN_ENEMIES);
-        //OrderOfPhases.Add(FragmentPhase.CRYSTAL_HAIL);
+        //OrderOfPhases.Add(FragmentPhase.LOWER_SPEARS);
+        //OrderOfPhases.Add(FragmentPhase.SPAWN_ENEMIES);
+        OrderOfPhases.Add(FragmentPhase.CRYSTAL_HAIL);
         OrderOfPhases.Add(FragmentPhase.SUPERLASER);
         _player = GameObject.FindObjectOfType<PlayerHandler>();
         _mainEnvironmentObjectCollider = _mainEnvironmentObject.GetComponent<BoxCollider2D>();
@@ -100,6 +117,8 @@ public class FinalBossFragment : EntityHandler
         currentPrimes = new List<ElementType>();
         SpearProjectileWeapon = (Weapon)ScriptableObject.CreateInstance("BossSpearLauncher");
         SpearProjectileWeapon.PopulateBulletPool();
+        CurrentPhase = OrderOfPhases[0];
+        CenterPosition = SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position;
     }
 
     // Update is called once per frame
@@ -108,6 +127,28 @@ public class FinalBossFragment : EntityHandler
         //ExecuteState();
         _phaseTimer += Time.deltaTime;
         ExecutePhase();
+    }
+    void ExecutePhase()
+    {
+        switch (CurrentPhase)
+        {
+            case FragmentPhase.LOWER_SPEARS:
+                //lower boss to ground, chase player on the ground, fire projectiles intermittently
+                if (IsRaised) StartCoroutine(RaiseOrLower(false, 1.0f));
+                if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
+                ProximityLaserAOE();
+                //ChasePlayer();
+                Wander();
+                break;
+            case FragmentPhase.CRYSTAL_HAIL:
+                if (!bIsHailing) StartCoroutine(HailPlayer());
+                break;
+            case FragmentPhase.SUPERLASER:
+                State_Superlaser();
+                break;
+            default:
+                break;
+        }
     }
 
     void State_Inactive() // before boss fight starts, where this object should be controlled by other stuff going on probably
@@ -127,20 +168,9 @@ public class FinalBossFragment : EntityHandler
     void ChasePlayer() // follow the player, try to kill them
     {
         Vector2 offset = _player.GetEntityPhysics().transform.position - entityPhysics.transform.position;
-        /*
-        if (CurrentPhase == FragmentPhase.SUPERLASER)
-        {
-            offset = SuperlaserRestPlatform.GetComponent<BoxCollider2D>().bounds.center - entityPhysics.transform.position;
-        }*/
         if (Mathf.Abs(offset.x) < 8.0f && Mathf.Abs(offset.y) < 6.0f)
         {
-            /*
-            if (CurrentPhase == FragmentPhase.SUPERLASER)
-            {
-                CurrentState = FragmentState.SUPERLASER;
-                return;
-            }
-            else*/
+
             {
                 if (bReadyToAttack && !bIsBossDoingSomething)
                 {
@@ -160,9 +190,36 @@ public class FinalBossFragment : EntityHandler
         }
         MoveLateral(PreviousVelocity * Time.deltaTime);
     }
-    void State_Firing()
+
+    void ProximityLaserAOE()
     {
-        
+        Vector2 offset = _player.GetEntityPhysics().transform.position - entityPhysics.transform.position;
+        if (Mathf.Abs(offset.x) < 8.0f && Mathf.Abs(offset.y) < 6.0f)
+        {
+            if (bReadyToAttack && !bIsBossDoingSomething)
+            {
+                StartCoroutine(FireSmallLaser(CurrentPhase == FragmentPhase.LOWER_SPEARS ? AOEDelay_SpearPhase : SmallLaserCooldown));
+            }
+        }
+    }
+
+    void Wander()
+    {
+        Vector2 offset = WanderPosition - (Vector2)entityPhysics.transform.position;
+        if (offset.sqrMagnitude < 1 || WanderPosition.sqrMagnitude == 0 || WanderTimer > WanderTargetSwitchDelay) // get new random point
+        {
+            WanderTimer = 0.0f;
+            WanderPosition = CenterPosition + new Vector2(Random.Range(-1.0f, 1.0f) * WanderAreaSize.x, Random.Range(-1.0f, 1.0f) * WanderAreaSize.y);
+        }
+        offset.Normalize();
+        PreviousVelocity += offset * WanderAcceleration * Time.deltaTime;
+        if (PreviousVelocity.magnitude > WanderMaxSpeed)
+        {
+            PreviousVelocity.Normalize();
+            PreviousVelocity *= WanderMaxSpeed;
+        }
+        MoveLateral(PreviousVelocity * Time.deltaTime);
+        WanderTimer += Time.deltaTime;
     }
 
     void State_Superlaser()
@@ -497,6 +554,53 @@ public class FinalBossFragment : EntityHandler
         bVolleyReady = true;
     }
 
+    IEnumerator HailRandom()
+    {
+        bIsHailing = true;
+        float timer = 0.0f;
+        while (timer < HailDuration)
+        {
+            float currentDelay = HailDelayOverDuration.Evaluate(timer / HailDuration);
+            Transform newHail = Instantiate(HailPrefab);
+            newHail.position = CenterPosition + new Vector2(Random.Range(-1.0f, 1.0f) * HailArea.x, Random.Range(-1.0f, 1.0f) * HailArea.y);
+            timer += currentDelay;
+            yield return new WaitForSeconds(currentDelay);
+        }
+        bIsHailing = false;
+    }
+
+    IEnumerator HailPlayer()
+    {
+        bIsHailing = true;
+        float timer = 0.0f;
+        while (timer < HailDuration)
+        {
+            Vector3 hailPosition = (Quaternion.Euler(0f, 0f, Random.Range(-180f, 180f)) * Vector3.right * Random.Range(0.0f, TargetedHailRadius));
+            hailPosition.y *= 0.75f;
+            hailPosition += _player.GetEntityPhysics().transform.position;
+            Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hailPosition, new Vector2(0.2f,0.2f), 0);
+            bool hitEnvironment = false;
+            foreach (Collider2D hit in hitobjects)
+            {
+                if (hit.transform.gameObject.tag == "Environment")
+                {
+                    hitEnvironment = true;
+                    break;
+                }
+            }
+            float currentDelay = TargetedHailDelayOverDuration.Evaluate(timer / HailDuration);
+            timer += currentDelay;
+            if (hitEnvironment)
+            {
+                Transform newHail = Instantiate(HailPrefab);
+                newHail.position = _player.GetEntityPhysics().transform.position + (Quaternion.Euler(0f, 0f, Random.Range(-180f, 180f)) * Vector3.right * Random.Range(0.0f, TargetedHailRadius));
+                newHail.GetComponent<HailShard>().playerPhys = _player.GetEntityPhysics();
+            }            
+            yield return new WaitForSeconds(currentDelay);
+        }
+        bIsHailing = false;
+    }
+
     IEnumerator ChangePhaseAfterDuration(float duration)
     {
         yield return new WaitForSeconds(duration);
@@ -528,18 +632,7 @@ public class FinalBossFragment : EntityHandler
         }
     }
 
-    void ExecutePhase()
-    {
-        switch (CurrentPhase)
-        {
-            case FragmentPhase.LOWER_SPEARS:
-                //lower boss to ground, chase player on the ground, fire projectiles intermittently
-                if (IsRaised) StartCoroutine(RaiseOrLower(false, 1.0f));
-                if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
-                ChasePlayer();
-                break;
-        }
-    }
+    
 
     public override void SetXYAnalogInput(float x, float y)
     {

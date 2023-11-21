@@ -41,6 +41,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private SpriteRenderer _haloSprite;
     [SerializeField] private ProjectilePhysics SolFlailProjectile; // god. this fucking game
     [SerializeField] private LineRenderer SolFlailChain;
+    [SerializeField] private SpriteRenderer EyeGlowSprite;
+
     private int _currentEnergy;
 
     public int MaxEnergy { get { return _maxEnergy; } }
@@ -349,6 +351,7 @@ public class PlayerHandler : EntityHandler
         weaponGlowSprite.material.SetFloat("_CurrentElement", 4);
         weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
+        EyeGlowSprite.material.SetFloat("_CurrentElement", 4);
         Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
         Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
     }
@@ -1956,6 +1959,7 @@ public class PlayerHandler : EntityHandler
                 case ElementType.ICHOR:
                     Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 1);
+                    EyeGlowSprite.material.SetFloat("_CurrentElement", 1);
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ICHOR;
                     _haloSprite.sprite = Halo_Ichor;
@@ -1969,7 +1973,8 @@ public class PlayerHandler : EntityHandler
                     break;
                 case ElementType.FIRE:
                     Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
-                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);                    
+                    entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
+                    EyeGlowSprite.material.SetFloat("_CurrentElement", 2);
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.FIRE;
                     SwapWeapon("WEST");
@@ -1985,6 +1990,7 @@ public class PlayerHandler : EntityHandler
                 case ElementType.VOID:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 3);
+                    EyeGlowSprite.material.SetFloat("_CurrentElement", 3);
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.VOID;
                     SwapWeapon("NORTH");
@@ -2000,6 +2006,7 @@ public class PlayerHandler : EntityHandler
                 case ElementType.ZAP:
                     Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
                     entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
+                    EyeGlowSprite.material.SetFloat("_CurrentElement", 4);
                     Vibrate(1f, 0.1f);
                     _currentStyle = ElementType.ZAP;
                     _haloSprite.sprite = Halo_Zap;
@@ -2081,16 +2088,17 @@ public class PlayerHandler : EntityHandler
         else if (isStanding && StateTimer > 0) // transition OUT OF rest state
         {
             characterAnimator.Play("PlayerRestStanding");
-            if (CurrentRestPlatform)
+            if (CurrentRestPlatform && CurrentRestPlatform.IsActivated)
             {
                 CurrentRestPlatform.OnDeactivated.Invoke();
                 CurrentRestPlatform.IsActivated = false;
+                CurrentRestPlatform.IsActionPressed = false;
             }
         }
         else if (!isStanding)
         {
             characterAnimator.Play("PlayerRestLoop");
-            if (_rest_recover_health_timer < 0)
+            if (_rest_recover_health_timer < 0 && entityPhysics.GetCurrentHealth() < entityPhysics.GetMaxHealth())
             {
                 entityPhysics.Heal(1);
                 _rest_recover_health_timer = _rest_recover_health_duration;

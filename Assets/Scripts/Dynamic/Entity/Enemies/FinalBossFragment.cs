@@ -60,7 +60,7 @@ public class FinalBossFragment : EntityHandler
 
 
 
-    enum FragmentPhase { LOWER_SPEARS, SPAWN_ENEMIES, CRYSTAL_HAIL, SUPERLASER }; //phases are sequenced & describe a small encounter with the boss.
+    enum FragmentPhase { ORBITING, LOWER_SPEARS, SPAWN_ENEMIES, CRYSTAL_HAIL, SUPERLASER }; //phases are sequenced & describe a small encounter with the boss.
     enum FragmentState { INACTIVE, IDLE, CHASE, FIRING, SUPERLASER, DEATH };
     private FragmentPhase CurrentPhase;
     private FragmentState CurrentState;
@@ -95,17 +95,22 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] float TargetedHailRadius;
     [SerializeField] AnimationCurve TargetedHailDelayOverDuration;
     bool bIsHailing = false;
-    
+
+
+    [SerializeField] private float DescentDuration = 4.0f;
+    [SerializeField] private AnimationCurve DescentCurve;
+
     // Start is called before the first frame update
     void Start()
     {
         OrderOfPhases = new List<FragmentPhase>();
-        //OrderOfPhases.Add(FragmentPhase.LOWER_SPEARS);
+        OrderOfPhases.Add(FragmentPhase.ORBITING);
+        OrderOfPhases.Add(FragmentPhase.LOWER_SPEARS);
         //OrderOfPhases.Add(FragmentPhase.SPAWN_ENEMIES);
-        OrderOfPhases.Add(FragmentPhase.CRYSTAL_HAIL);
-        OrderOfPhases.Add(FragmentPhase.SUPERLASER);
+        //OrderOfPhases.Add(FragmentPhase.CRYSTAL_HAIL);
+        //OrderOfPhases.Add(FragmentPhase.SUPERLASER);
         _player = GameObject.FindObjectOfType<PlayerHandler>();
-        _mainEnvironmentObjectCollider = _mainEnvironmentObject.GetComponent<BoxCollider2D>();
+        //_mainEnvironmentObjectCollider = _mainEnvironmentObject.GetComponent<BoxCollider2D>();
         CurrentState = FragmentState.IDLE;
         foreach (var rend in TEMP_SmallLaserVFX)
         {
@@ -119,6 +124,7 @@ public class FinalBossFragment : EntityHandler
         SpearProjectileWeapon.PopulateBulletPool();
         CurrentPhase = OrderOfPhases[0];
         CenterPosition = SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position;
+        SetElevation(RaisedElevation);
     }
 
     // Update is called once per frame
@@ -127,6 +133,10 @@ public class FinalBossFragment : EntityHandler
         //ExecuteState();
         _phaseTimer += Time.deltaTime;
         ExecutePhase();
+        if (entityPhysics.GetCurrentHealth() <= 0)
+        {
+            StartCoroutine(Death());
+        }
     }
     void ExecutePhase()
     {
@@ -333,8 +343,14 @@ public class FinalBossFragment : EntityHandler
         bool bIsComplete = true;
         switch (CurrentPhase)
         {
+            case FragmentPhase.ORBITING:
+                if (!IsLowered && IsRaised)
+                {
+                    bIsComplete = false;
+                }
+                break;
             case FragmentPhase.LOWER_SPEARS:
-                if (_phaseTimer < CrystalHailDuration || true)
+                if (_phaseTimer < CrystalHailDuration && false)
                 {
                     bIsComplete = false;
                 }
@@ -379,7 +395,7 @@ public class FinalBossFragment : EntityHandler
         bReadyToAttack = false;
         bIsBossDoingSomething = true;
         AttackFlash.Play("BigFlare", 0, 0);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7f);
 
         foreach (var rend in TEMP_SmallLaserVFX)
         {
@@ -441,6 +457,8 @@ public class FinalBossFragment : EntityHandler
 
         //StopCoroutine(_superlaserCoroutine);
         yield return new WaitForSeconds(0.2f);
+
+        _player.ShatterHealth();
 
         Destroy(gameObject);
     }
@@ -604,6 +622,30 @@ public class FinalBossFragment : EntityHandler
     IEnumerator ChangePhaseAfterDuration(float duration)
     {
         yield return new WaitForSeconds(duration);
+    }
+
+    public void Descend()
+    {
+        StartCoroutine(DescendToFightPlayer(DescentDuration));
+    }
+
+    IEnumerator DescendToFightPlayer( float duration)
+    {
+        float newElevation = LoweredElevation;
+        IsRaised = false;
+        IsLowered = false;
+        float progress = 0.0f;
+        float oldElevation = entityPhysics.GetObjectElevation();
+        while (progress < 1.0f)
+        {
+            SetElevation(Mathf.Lerp(oldElevation, newElevation, DescentCurve.Evaluate(progress)));
+            progress += Time.deltaTime / duration;
+            yield return new WaitForEndOfFrame();
+        }
+        SetElevation(newElevation);
+        IsRaised = false;
+        IsLowered = true;
+        CheckPhaseComplete();
     }
 
     protected override void ExecuteState()

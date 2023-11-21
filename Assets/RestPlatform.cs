@@ -34,6 +34,7 @@ public class RestPlatform : MonoBehaviour
     public float CurrentChargeAmount = 0.0f;
     public bool StaysFullCharge = false;
     public UnityEvent OnChargeAmountChanged;
+    public UnityEvent OnFullyCharged;
 
 
     // Update is called once per frame
@@ -49,6 +50,10 @@ public class RestPlatform : MonoBehaviour
         {
             CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount + ChargeRate * Time.deltaTime);
             OnChargeAmountChanged.Invoke();
+            if (CurrentChargeAmount == 1.0f)
+            {
+                OnFullyCharged.Invoke();
+            }
         }
         else if (!IsActionPressed && CurrentChargeAmount != 0.0f)
         {

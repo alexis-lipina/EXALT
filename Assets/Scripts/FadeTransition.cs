@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class FadeTransition : MonoBehaviour
 {
     public static FadeTransition Singleton;
+    public static Color FadeColor;
     private bool _hasBeganToExit = false;
     
     private void Awake()
@@ -18,6 +19,12 @@ public class FadeTransition : MonoBehaviour
     void Start()
     {
         StartCoroutine( FadeInTransition() );
+    }
+
+    public void SetFadeColor(string commaSpliceColor)
+    {
+        string[] rgba = commaSpliceColor.Split(',');
+        FadeColor = new Color(float.Parse(rgba[0]), float.Parse(rgba[1]), float.Parse(rgba[2]), float.Parse(rgba[3]));
     }
 
     public void FadeToScene(string levelName, string doorName)
@@ -42,7 +49,9 @@ public class FadeTransition : MonoBehaviour
     {
         Time.timeScale = 0.0f; // prevents things from happening during loading, like player falling
         _hasBeganToExit = false;
-        GetComponent<Image>().color = new Color(0, 0, 0, 1);
+        Color transitionColor = FadeColor;
+        transitionColor.a = 1.0f;
+        GetComponent<Image>().color = transitionColor;
 
         // wait for a moment to ensure scene load
         PlayerHandler player = FindObjectOfType<PlayerHandler>();
@@ -83,27 +92,28 @@ public class FadeTransition : MonoBehaviour
 
 
 
-        float opacity = 1f;
-        while (opacity > 0)
+        while (transitionColor.a > 0)
         {
             yield return new WaitForSeconds(0.01f);
-            GetComponent<Image>().color = new Color(0, 0, 0, opacity);
-            opacity -= 0.02f * rate;
+            GetComponent<Image>().color = transitionColor;
+            transitionColor.a -= 0.02f * rate;
         }
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
     }
 
     private IEnumerator FadeOutTransition(string sceneName, string doorName, float rate = 2f)
     {
-        GetComponent<Image>().color = new Color(0, 0, 0, 0);
-        float opacity = 0f;
-        while (opacity < 1)
+        Color transitionColor = FadeColor;
+        transitionColor.a = 0.0f;
+        GetComponent<Image>().color = transitionColor;
+        while (transitionColor.a < 1)
         {
             yield return new WaitForSeconds(0.01f);
-            GetComponent<Image>().color = new Color(0, 0, 0, opacity);
-            opacity += 0.02f * rate;
+            GetComponent<Image>().color = transitionColor;
+            transitionColor.a += 0.02f * rate;
         }
-        GetComponent<Image>().color = new Color(0, 0, 0, 1);
+        transitionColor.a = 1.0f;
+        GetComponent<Image>().color = transitionColor;
         PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         PlayerHandler.PREVIOUS_SCENE_DOOR = doorName;
         SceneManager.LoadScene(sceneName);

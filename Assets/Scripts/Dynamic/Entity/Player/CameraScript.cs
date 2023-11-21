@@ -175,7 +175,7 @@ public class CameraScript : MonoBehaviour
 
     public void SmoothToSize(float newSize, float duration)
     {
-        StopAllCoroutines();
+        //StopAllCoroutines();
         StartCoroutine(SmoothToSizeCoroutine(newSize, duration));
     }
 

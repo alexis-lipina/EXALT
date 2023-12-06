@@ -24,6 +24,11 @@ public class FinalBossCore : EntityHandler
     private bool bReadyToAttack = true;
     [SerializeField] private float SmallLaserCooldown = 4.0f;
 
+    [Space(10)]
+    [SerializeField] float flinchDuration = 4.0f;
+    [SerializeField] Sprite normalSprite;
+    [SerializeField] Sprite flinchSprite;
+
 
     [Space(10)]
     [Header("Storm VFX")] // ALL vfx that occur when you charge the lightning bolt to destroy this guy
@@ -38,7 +43,7 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltDurationOverCharge;
 
-    enum FinalBossState { CHASE, SUPERWEAPON }
+    enum FinalBossState { CHASE, SUPERWEAPON, FLINCH }
     private FinalBossState CurrentState;
     private PlayerHandler _player;
 
@@ -75,6 +80,9 @@ public class FinalBossCore : EntityHandler
                 break;
             case FinalBossState.SUPERWEAPON:
                 State_Superlaser();
+                break;
+            case FinalBossState.FLINCH:
+                State_Flinch();
                 break;
         }
     }
@@ -139,7 +147,7 @@ public class FinalBossCore : EntityHandler
             if (OrbitingFragments.Count > 0)
             {
                 DropFragment();
-                CurrentState = FinalBossState.CHASE;
+                CurrentState = FinalBossState.FLINCH;
                 _superlaserCharge = 0.0f;
             }
             else 
@@ -168,6 +176,11 @@ public class FinalBossCore : EntityHandler
             PreviousVelocity *= MaxSpeed;
         }
         entityPhysics.MoveWithCollision(PreviousVelocity.x * Time.deltaTime, PreviousVelocity.y * Time.deltaTime);
+    }
+
+    void State_Flinch()
+    {
+        StartCoroutine(DoFlinch());
     }
 
     void ProximityLaserAOE()
@@ -332,5 +345,18 @@ public class FinalBossCore : EntityHandler
             timeOffset += orbitRate * Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    IEnumerator DoFlinch()
+    {
+        foreach (var rend in LaserVFX)
+        {
+            rend.enabled = false;
+        }
+        GetComponent<Animation>().Stop();
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = flinchSprite;
+        yield return new WaitForSeconds(flinchDuration);
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = normalSprite;
+        CurrentState = FinalBossState.CHASE;
     }
 }

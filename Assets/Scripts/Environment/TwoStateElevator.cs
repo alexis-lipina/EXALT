@@ -10,12 +10,15 @@ public class TwoStateElevator : MonoBehaviour
     [SerializeField] float RideDuration = 4.0f;
     [SerializeField] List<MovingEnvironment> ElevatorPlatforms;
 
-    enum TwoStateElevatorState { GoingUp, GoingDown, AtTopFloor, AtBottomFloor};
+    public enum TwoStateElevatorState { GoingUp, GoingDown, AtTopFloor, AtBottomFloor};
 
     [SerializeField] TwoStateElevatorState CurrentState;
     float NormalizedProgress = 0.0f;
 
-
+    public TwoStateElevatorState GetState()
+    {
+        return CurrentState;
+    }
 
     // Start is called before the first frame update
     void Start()

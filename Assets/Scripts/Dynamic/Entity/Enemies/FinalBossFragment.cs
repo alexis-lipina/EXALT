@@ -18,12 +18,10 @@ public class FinalBossFragment : EntityHandler
 
     [Space(10)]
     [Header("Superlaser")]
-    [SerializeField] SpriteRenderer SuperlaserProjection;
     //[SerializeField] AnimationCurve ;
 
     [Space(10)]
     [Header("Storm VFX")] // ALL vfx that occur when you charge the lightning bolt to destroy this guy
-    [SerializeField] SpriteRenderer StormProjection;
     [SerializeField] ZapFXController TopLightningBolt;
     [SerializeField] GameObject TopBoltZapPoint; // point on the crystal that should be hit with the zap
     [SerializeField] ZapFXController BottomLightningBolt;
@@ -100,6 +98,8 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] private float DescentDuration = 4.0f;
     [SerializeField] private AnimationCurve DescentCurve;
 
+    [SerializeField] private SpriteRenderer WeakeningSprite;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -116,8 +116,6 @@ public class FinalBossFragment : EntityHandler
         {
             rend.enabled = false;
         }
-        SuperlaserProjection.material.SetFloat("_Opacity", 0);
-        StormProjection.material.SetFloat("_Opacity", 0);
         AttackFlash.GetComponent<SpriteRenderer>().enabled = false;
         currentPrimes = new List<ElementType>();
         SpearProjectileWeapon = (Weapon)ScriptableObject.CreateInstance("BossSpearLauncher");
@@ -133,6 +131,9 @@ public class FinalBossFragment : EntityHandler
         //ExecuteState();
         _phaseTimer += Time.deltaTime;
         ExecutePhase();
+
+        WeakeningSprite.material.SetFloat("_FadeInMask", (1 - ( entityPhysics.GetCurrentHealth() / (float)entityPhysics.GetMaxHealth())) * 0.5f);
+
         if (entityPhysics.GetCurrentHealth() <= 0)
         {
             StartCoroutine(Death());
@@ -260,7 +261,6 @@ public class FinalBossFragment : EntityHandler
             StartCoroutine(LightningBuildupVFX());
         }
         _superlaserCharge += _superlaserChargeRate * Time.deltaTime;
-        SuperlaserProjection.material.SetFloat("_Opacity", _superlaserCharge);
 
         if (SuperlaserRestPlatform.CurrentChargeAmount == 1.0f) // you win!
         {
@@ -485,8 +485,6 @@ public class FinalBossFragment : EntityHandler
                         StartCoroutine(RandomFlashRandomBolt(RandomAmbientLightningBolts[i], TopBoltZapPoint.transform.position + new Vector3(i * 26 - 39, 26, 0)));
                     }
                 }
-                
-                StormProjection.material.SetFloat("_Opacity", currentChargeAmount);
             }
             yield return new WaitForEndOfFrame();
         }

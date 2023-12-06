@@ -58,7 +58,7 @@ public class PlayerHandler : EntityHandler
     //[SerializeField] private UIHealthBar _healthBar;
     [SerializeField] private PlayerHealthBarHandler _healthBar;
     
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST, DEAD};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST, DEAD, COLLAPSE, STAND_FROM_COLLAPSE};
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -211,6 +211,9 @@ public class PlayerHandler : EntityHandler
     private const float _changeStyleDuration = 0.875f;//0.7125f;//0.95f;
     private const float _changeStyleColorChangeTime = 0.67f;//0.4f;
     private bool _changeStyle_HasChanged = false;
+
+    // Collapse
+    private const float COLLAPSE_STAND_DURATION = 1.0f;
 
     // Taking damage
     private Vector2 _lastHitDirection = Vector2.right;
@@ -451,6 +454,12 @@ public class PlayerHandler : EntityHandler
                 PlayerRest();
                 break;
             case (PlayerState.DEAD):
+                break;
+            case PlayerState.COLLAPSE:
+                Player_Collapsed();
+                break;
+            case PlayerState.STAND_FROM_COLLAPSE:
+                Player_StandingFromCollapsed();
                 break;
             default:
                 throw new Exception("Unhandled player state");
@@ -2191,6 +2200,37 @@ public class PlayerHandler : EntityHandler
         #endregion
 
     }
+
+    private void Player_Collapsed()
+    {
+        entityPhysics.SnapToFloor();
+        entityPhysics.MoveAvoidEntities(Vector2.zero);
+        // player is forced into collapse animation, stays there until allowed back
+        if (StateTimer == 0.0f)
+        {
+            characterAnimator.Play("PlayerCollapse");
+        }
+        StateTimer += Time.deltaTime;
+
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        entityPhysics.SetObjectElevation(maxheight);
+    }
+
+    private void Player_StandingFromCollapsed()
+    {
+        entityPhysics.SnapToFloor();
+        entityPhysics.MoveAvoidEntities(Vector2.zero);
+        if (StateTimer == 0.0f)
+        {
+            characterAnimator.Play("PlayerStandFromCollapse");
+        }
+        if (StateTimer > COLLAPSE_STAND_DURATION)
+        {
+            CurrentState = PlayerState.IDLE;
+        }
+        StateTimer += Time.deltaTime;
+    }
+
     //================================================================================| TRANSITIONS
 
     private void PlayerLightRangedTransitionAttempt()
@@ -2459,7 +2499,18 @@ public class PlayerHandler : EntityHandler
 
         return aimDirection;
     }
-    
+
+    public void CollapsePlayer()
+    {
+        StateTimer = 0.0f;
+        CurrentState = PlayerState.COLLAPSE;
+    }
+
+    public void StandFromCollapsePlayer()
+    {
+        StateTimer = 0.0f;
+        CurrentState = PlayerState.STAND_FROM_COLLAPSE;
+    }    
     private IEnumerator PlayWeaponSpriteGlow(AnimationCurve glowcurve)
     {
         float duration = glowcurve.keys[glowcurve.length - 1].time;

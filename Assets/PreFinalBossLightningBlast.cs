@@ -12,24 +12,27 @@ public class PreFinalBossLightningBlast : MonoBehaviour
     [SerializeField] List<ZapFXController> LightningBolts_Far;
     [SerializeField] AnimationCurve BoltThicknessModifierOverCharge;
     [SerializeField] AnimationCurve BoltFrequencyOverCharge;
+    [SerializeField] AnimationCurve FlashScaleOverCharge;
+    [SerializeField] AnimationCurve AmbientGlowOverTime;
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltGlowOverTime;
-
-
+    [SerializeField] private List<SpriteRenderer> GlowGradientSprites;
+    
+    private float charge = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(RunVFX());
-        foreach (var sadf in GetComponentsInChildren<SpriteRenderer>())
-        {
-            sadf.enabled = false;
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        charge = ControllingRestPlatform.CurrentChargeAmount;
+        foreach (SpriteRenderer sprite in GlowGradientSprites)
+        {
+            sprite.material.SetFloat("_Opacity", AmbientGlowOverTime.Evaluate(charge));
+        }
     }
 
     IEnumerator RunVFX()
@@ -37,7 +40,7 @@ public class PreFinalBossLightningBlast : MonoBehaviour
 
         while (true)
         {
-            float charge = ControllingRestPlatform.CurrentChargeAmount;
+            //float charge = ControllingRestPlatform.CurrentChargeAmount;
 
             ZapFXController bolt = null;
             float boltOffset = 0f;
@@ -56,21 +59,27 @@ public class PreFinalBossLightningBlast : MonoBehaviour
                     boltOffset = 7.5f;
                     break;
             }
-            bolt.SetupLine(Vector3.zero, new Vector3(0, -boltOffset, 0));
+            bolt.SetupLine(Vector3.zero, new Vector3(0, -boltOffset * BoltDistanceOverCharge.Evaluate(charge), 0)); // change distance of bolt over charge
+            bolt.SetThickness(BoltThicknessModifierOverCharge.Evaluate(charge), BoltThicknessModifierOverCharge.Evaluate(charge) + 0.125f);
             bolt.Play(0.2f);
             StartCoroutine(PulseLightningGlow(bolt.GetComponentInChildren<SpriteRenderer>(), 0.5f));
-            /*
-            Bolt.SetThickness(BoltThicknessModifierOverCharge.Evaluate(charge), BoltSizeOverCharge.Evaluate(currentChargeAmount) * 2.0f);
-            Bolt.SetupLine(StartPosition, Vector3.Lerp(StartPosition, EndPosition, BoltDistanceOverCharge.Evaluate(currentChargeAmount)));
-            Bolt.Play(BoltDurationOverCharge.Evaluate(currentChargeAmount));*/
+            
+            //bolt.SetThickness(BoltThicknessModifierOverCharge.Evaluate(charge), BoltSizeOverCharge.Evaluate(currentChargeAmount) * 2.0f);
+            //bolt.SetupLine(StartPosition, Vector3.Lerp(StartPosition, EndPosition, BoltDistanceOverCharge.Evaluate(currentChargeAmount)));
+            //bolt.Play(BoltDurationOverCharge.Evaluate(currentChargeAmount));
             //yield return new WaitForSeconds(Random.Range(0.8f, 1.2f) * BoltDelayOverCharge.Evaluate(currentChargeAmount));
-            yield return new WaitForSeconds(Random.Range(0.0f, 0.6f));
+            yield return new WaitForSeconds(Random.Range(0.0f, 0.6f) / BoltFrequencyOverCharge.Evaluate(charge));
         }
     }
 
     IEnumerator PulseLightningGlow(SpriteRenderer sprite, float duration)
     {
         sprite.enabled = true;
+
+        float scaleModifier = FlashScaleOverCharge.Evaluate(charge);
+
+        sprite.transform.localScale *= scaleModifier;
+
         float timer = 0.0f;
         while (timer < duration)
         {
@@ -78,6 +87,7 @@ public class PreFinalBossLightningBlast : MonoBehaviour
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+        sprite.transform.localScale /= scaleModifier;
         sprite.enabled = false;
     }
 }

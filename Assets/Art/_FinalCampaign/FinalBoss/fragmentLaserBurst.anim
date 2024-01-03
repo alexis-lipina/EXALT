@@ -1,0 +1,1135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!74 &7400000
+AnimationClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: fragmentLaserBurst
+  serializedVersion: 6
+  m_Legacy: 1
+  m_Compressed: 0
+  m_UseHighQualityCurve: 1
+  m_RotationCurves: []
+  m_CompressedRotationCurves: []
+  m_EulerCurves: []
+  m_PositionCurves: []
+  m_ScaleCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.85
+        value: {x: 0, y: 0, z: 1}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.8833333
+        value: {x: 0.5062487, y: 0, z: 1}
+        inSlope: {x: 33.972294, y: 0, z: 0}
+        outSlope: {x: 33.972294, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.96666664
+        value: {x: 9.87384, y: 10, z: 1}
+        inSlope: {x: 213.33337, y: 205.71428, z: 0}
+        outSlope: {x: 213.33337, y: 205.71428, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 1
+        value: {x: 32, y: 24, z: 1}
+        inSlope: {x: 1442.4519, y: 556.497, z: 0}
+        outSlope: {x: -512.42584, y: -368.5616, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.15267478, y: 0.3380296, z: 0.33333334}
+        outWeight: {x: 0.09232654, y: 0.11351762, z: 0.33333334}
+      - serializedVersion: 3
+        time: 1.0333333
+        value: {x: 0, y: 0, z: 1}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    path: BossEntityPhysics/SquareImpact
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 1
+        value: {x: 32, y: 24, z: 1}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 2
+        value: {x: 1.6, y: 1.2, z: 1}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    path: BossEntityPhysics/RadialImpactGlow
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: {x: 0, y: 0.019423723, z: 0}
+        inSlope: {x: 229.4872, y: 50.06819, z: 0}
+        outSlope: {x: 229.4872, y: 50.06819, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.11339744, y: 0.11047275, z: 0.33333334}
+        outWeight: {x: 0.15441035, y: 0.07013202, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.15
+        value: {x: 10.664063, y: 6.687949, z: 0}
+        inSlope: {x: -10.8771925, y: 17.850262, z: 0}
+        outSlope: {x: -10.8771925, y: 17.850262, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.41419142, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.09440575, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.21666667
+        value: {x: 9.859591, y: 6.191063, z: 0}
+        inSlope: {x: -13.020902, y: -36.90404, z: 0}
+        outSlope: {x: -13.020902, y: -36.90404, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.11941562, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.9
+        value: {x: 12.884527, y: 8.573879, z: 0}
+        inSlope: {x: 46.67864, y: 33.59964, z: 0}
+        outSlope: {x: 46.67864, y: 33.59964, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.22730097, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.68152887, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.9166667
+        value: {x: 13.690014, y: 9.727099, z: 0}
+        inSlope: {x: 49.993958, y: 103.68976, z: 0}
+        outSlope: {x: 49.993958, y: 103.68976, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.06953196, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.5234723, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 1
+        value: {x: 40, y: 30, z: 0}
+        inSlope: {x: 964.8931, y: 355.44485, z: 0}
+        outSlope: {x: -232.28917, y: -167.00156, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.17326708, y: 0.37819898, z: 0.33333334}
+        outWeight: {x: 0.33415785, y: 0.4175507, z: 0.33333334}
+      - serializedVersion: 3
+        time: 1.1166667
+        value: {x: 4.916893, y: 0.64193344, z: 0}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.07863643, y: 0.07643313, z: 0.33333334}
+      - serializedVersion: 3
+        time: 2
+        value: {x: 0, y: 0, z: 0}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 1, y: 1, z: 0.33333334}
+        outWeight: {x: 0.18105632, y: 0.18964197, z: 0.33333334}
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    path: BossFragmentCharSprite/BigLensFlare
+  m_FloatCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 16.149744
+        outSlope: 16.149744
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.11908287
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.39710245
+        inSlope: -2.1068451
+        outSlope: -2.1068451
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.3007426
+        outWeight: 0.06559405
+      - serializedVersion: 3
+        time: 0.8666667
+        value: 0.32436103
+        inSlope: 0.72984946
+        outSlope: 0.72984946
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07538259
+        outWeight: 0.6138612
+      - serializedVersion: 3
+        time: 1
+        value: 2.5068817
+        inSlope: 37.20898
+        outSlope: -11.641509
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.12066812
+        outWeight: 0.09554134
+      - serializedVersion: 3
+        time: 1.3333334
+        value: 0.5290799
+        inSlope: -1.8067939
+        outSlope: -1.8067939
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.112898074
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._Opacity
+    path: BossEntityPhysics/ColumnGlow
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.01931274
+        inSlope: 5.9935145
+        outSlope: 5.9935145
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.06874937
+      - serializedVersion: 3
+        time: 0.16666667
+        value: 0.6659033
+        inSlope: -2.7619479
+        outSlope: -2.7619479
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.08895421
+      - serializedVersion: 3
+        time: 0.7
+        value: 0.3524151
+        inSlope: 0.28756523
+        outSlope: 0.28756523
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1127784
+        outWeight: 0.2878904
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 0.9965726
+        inSlope: 8.518724
+        outSlope: 8.518724
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 2.5343952
+        inSlope: 29.473259
+        outSlope: -5.6011906
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.25247532
+        outWeight: 0.086434245
+      - serializedVersion: 3
+        time: 1.1666666
+        value: 0.36357605
+        inSlope: -1.6730778
+        outSlope: -1.6730778
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.24546804
+        outWeight: 0.0878982
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.09396041
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._Opacity
+    path: BossEntityPhysics/RadialImpactGlow
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 65.7346
+        outSlope: 65.7346
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.018201739
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.8083401
+        inSlope: -1.6437892
+        outSlope: -1.6437892
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.10490656
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 1.8594975
+        inSlope: 2.1606724
+        outSlope: 2.1606724
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07771603
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.05
+        value: 2.7424927
+        inSlope: -6.834617
+        outSlope: -6.834617
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.070201345
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._RippleIntensity
+    path: BossFragmentCharSprite
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -13.748256
+        outSlope: -13.748256
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.12139195
+      - serializedVersion: 3
+        time: 0.18333334
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0333333
+        value: 0.2
+        inSlope: 0.08789498
+        outSlope: 0.08789498
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07612232
+      - serializedVersion: 3
+        time: 2
+        value: 0.5
+        inSlope: 0.031186016
+        outSlope: 0.031186016
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.08251412
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._RipplePosition
+    path: BossFragmentCharSprite
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -10.742663
+        outSlope: -10.742663
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.10672765
+      - serializedVersion: 3
+        time: 0.18333334
+        value: 0.25
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 1
+        inSlope: 2.142857
+        outSlope: 2.142857
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0333333
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._RippleWidth
+    path: BossFragmentCharSprite
+    classID: 212
+    script: {fileID: 0}
+  m_PPtrCurves: []
+  m_SampleRate: 60
+  m_WrapMode: 1
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_ClipBindingConstant:
+    genericBindings: []
+    pptrCurveMapping: []
+  m_AnimationClipSettings:
+    serializedVersion: 2
+    m_AdditiveReferencePoseClip: {fileID: 0}
+    m_AdditiveReferencePoseTime: 0
+    m_StartTime: 0
+    m_StopTime: 2
+    m_OrientationOffsetY: 0
+    m_Level: 0
+    m_CycleOffset: 0
+    m_HasAdditiveReferencePose: 0
+    m_LoopTime: 1
+    m_LoopBlend: 0
+    m_LoopBlendOrientation: 0
+    m_LoopBlendPositionY: 0
+    m_LoopBlendPositionXZ: 0
+    m_KeepOriginalOrientation: 0
+    m_KeepOriginalPositionY: 1
+    m_KeepOriginalPositionXZ: 0
+    m_HeightFromFeet: 0
+    m_Mirror: 0
+  m_EditorCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 16.149744
+        outSlope: 16.149744
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.11908287
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.39710245
+        inSlope: -2.1068451
+        outSlope: -2.1068451
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.3007426
+        outWeight: 0.06559405
+      - serializedVersion: 3
+        time: 0.8666667
+        value: 0.32436103
+        inSlope: 0.72984946
+        outSlope: 0.72984946
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07538259
+        outWeight: 0.6138612
+      - serializedVersion: 3
+        time: 1
+        value: 2.5068817
+        inSlope: 37.20898
+        outSlope: -11.641509
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.12066812
+        outWeight: 0.09554134
+      - serializedVersion: 3
+        time: 1.3333334
+        value: 0.5290799
+        inSlope: -1.8067939
+        outSlope: -1.8067939
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.112898074
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._Opacity
+    path: BossEntityPhysics/ColumnGlow
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.85
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.96666664
+        value: 9.87384
+        inSlope: 213.33337
+        outSlope: 213.33337
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 32
+        inSlope: 1442.4519
+        outSlope: -512.42584
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.15267478
+        outWeight: 0.09232654
+      - serializedVersion: 3
+        time: 1.0333333
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.x
+    path: BossEntityPhysics/SquareImpact
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.8833333
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.96666664
+        value: 10
+        inSlope: 205.71428
+        outSlope: 205.71428
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 24
+        inSlope: 556.497
+        outSlope: -368.5616
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.3380296
+        outWeight: 0.11351762
+      - serializedVersion: 3
+        time: 1.0333333
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.y
+    path: BossEntityPhysics/SquareImpact
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 1
+        value: 32
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
+        value: 1.6
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.x
+    path: BossEntityPhysics/RadialImpactGlow
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 1
+        value: 24
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
+        value: 1.2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.y
+    path: BossEntityPhysics/RadialImpactGlow
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.01931274
+        inSlope: 5.9935145
+        outSlope: 5.9935145
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.06874937
+      - serializedVersion: 3
+        time: 0.16666667
+        value: 0.6659033
+        inSlope: -2.7619479
+        outSlope: -2.7619479
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.08895421
+      - serializedVersion: 3
+        time: 0.7
+        value: 0.3524151
+        inSlope: 0.28756523
+        outSlope: 0.28756523
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1127784
+        outWeight: 0.2878904
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 0.9965726
+        inSlope: 8.518724
+        outSlope: 8.518724
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 2.5343952
+        inSlope: 29.473259
+        outSlope: -5.6011906
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.25247532
+        outWeight: 0.086434245
+      - serializedVersion: 3
+        time: 1.1666666
+        value: 0.36357605
+        inSlope: -1.6730778
+        outSlope: -1.6730778
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.24546804
+        outWeight: 0.0878982
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.09396041
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._Opacity
+    path: BossEntityPhysics/RadialImpactGlow
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 65.7346
+        outSlope: 65.7346
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.018201739
+      - serializedVersion: 3
+        time: 0.2
+        value: 0.8083401
+        inSlope: -1.6437892
+        outSlope: -1.6437892
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.10490656
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 1.8594975
+        inSlope: 2.1606724
+        outSlope: 2.1606724
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07771603
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.05
+        value: 2.7424927
+        inSlope: -6.834617
+        outSlope: -6.834617
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.070201345
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._RippleIntensity
+    path: BossFragmentCharSprite
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -13.748256
+        outSlope: -13.748256
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.12139195
+      - serializedVersion: 3
+        time: 0.18333334
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0333333
+        value: 0.2
+        inSlope: 0.08789498
+        outSlope: 0.08789498
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07612232
+      - serializedVersion: 3
+        time: 2
+        value: 0.5
+        inSlope: 0.031186016
+        outSlope: 0.031186016
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.08251412
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._RipplePosition
+    path: BossFragmentCharSprite
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -10.742663
+        outSlope: -10.742663
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.10672765
+      - serializedVersion: 3
+        time: 0.18333334
+        value: 0.25
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 1
+        inSlope: 2.142857
+        outSlope: 2.142857
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 2
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0333333
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._RippleWidth
+    path: BossFragmentCharSprite
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 229.4872
+        outSlope: 229.4872
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11339744
+        outWeight: 0.15441035
+      - serializedVersion: 3
+        time: 0.15
+        value: 10.664063
+        inSlope: -10.8771925
+        outSlope: -10.8771925
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.41419142
+        outWeight: 0.09440575
+      - serializedVersion: 3
+        time: 0.9166667
+        value: 13.690014
+        inSlope: 49.993958
+        outSlope: 49.993958
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.06953196
+        outWeight: 0.5234723
+      - serializedVersion: 3
+        time: 1
+        value: 40
+        inSlope: 964.8931
+        outSlope: -232.28917
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.17326708
+        outWeight: 0.33415785
+      - serializedVersion: 3
+        time: 1.1166667
+        value: 4.916893
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07863643
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.18105632
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.x
+    path: BossFragmentCharSprite/BigLensFlare
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.019423723
+        inSlope: 50.06819
+        outSlope: 50.06819
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.11047275
+        outWeight: 0.07013202
+      - serializedVersion: 3
+        time: 0.21666667
+        value: 6.191063
+        inSlope: -36.90404
+        outSlope: -36.90404
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.11941562
+      - serializedVersion: 3
+        time: 0.9
+        value: 8.573879
+        inSlope: 33.59964
+        outSlope: 33.59964
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.22730097
+        outWeight: 0.68152887
+      - serializedVersion: 3
+        time: 1
+        value: 30
+        inSlope: 355.44485
+        outSlope: -167.00156
+        tangentMode: 1
+        weightedMode: 0
+        inWeight: 0.37819898
+        outWeight: 0.4175507
+      - serializedVersion: 3
+        time: 1.1166667
+        value: 0.64193344
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07643313
+      - serializedVersion: 3
+        time: 2
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.18964197
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.y
+    path: BossFragmentCharSprite/BigLensFlare
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalScale.z
+    path: BossFragmentCharSprite/BigLensFlare
+    classID: 4
+    script: {fileID: 0}
+  m_EulerEditorCurves: []
+  m_HasGenericRootTransform: 0
+  m_HasMotionFloatCurves: 0
+  m_Events: []

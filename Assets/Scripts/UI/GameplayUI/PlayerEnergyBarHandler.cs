@@ -10,6 +10,7 @@ public class PlayerEnergyBarHandler : MonoBehaviour
     [SerializeField] private Sprite _onSprite_Zap;
     [SerializeField] private Sprite _onSprite_Void;
     [SerializeField] private Sprite _onSprite_Fire;
+    [SerializeField] private Sprite _onSprite_Ichor;
     [SerializeField] private Sprite _offSprite;
     [SerializeField] private Sprite _flashSprite;
     [SerializeField] private Sprite _flareSprite;
@@ -36,6 +37,8 @@ public class PlayerEnergyBarHandler : MonoBehaviour
                 return _onSprite_Void;
             case ElementType.ZAP:
                 return _onSprite_Zap;
+            case ElementType.ICHOR:
+                return _onSprite_Ichor;
             default:
                 return _onSprite_Zap;
         }
@@ -46,7 +49,14 @@ public class PlayerEnergyBarHandler : MonoBehaviour
     {
 
         //fade in/out for combat
-        if (_playerHandler.TimeSinceCombat > TimeToFadeOut)
+        if ( _playerHandler.ForceUIVisible)
+        {
+            foreach (Image segment in _energyBarSegments)
+            {
+                segment.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            }
+        }
+        else if (_playerHandler.TimeSinceCombat > TimeToFadeOut)
         {
             const float lerpRate = 1.0f;
             float newSegmentAlpha = Mathf.Lerp(1.0f, 0.0f, (_playerHandler.TimeSinceCombat - TimeToFadeOut) * lerpRate);

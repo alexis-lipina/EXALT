@@ -128,6 +128,50 @@ public class HintTextManager : MonoBehaviour
         StartCoroutine(FadeOut());
     }
 
+    public void HardSetHintText(string textLineOne, string textLineTwo)
+    {
+        ChangeHintText(textLineOne, textLineTwo);
+    }
+
+    public void TrickleInHintTextWords(string textLineOne, string textLineTwo, float[] delays)
+    {
+        StartCoroutine(StampInHintText(textLineOne, textLineTwo, delays));
+    }
+
+    private IEnumerator StampInHintText(string textLineOne, string textLineTwo, float[] delays)
+    {
+        string[] rowOne = textLineOne.Split(' ');
+        string[] rowTwo = textLineTwo.Split(' ');
+
+        string builtLineOne = "";
+        string builtLineTwo = "";
+
+        for (int i = 0; i < rowOne.Length; i++)
+        {
+            builtLineOne += rowOne[i];
+            ChangeHintText(FillWithSpaces(builtLineOne, textLineOne), "");
+            if (i != rowOne.Length - 1) builtLineOne += " ";
+            yield return new WaitForSeconds(delays[i]);
+        }
+
+        for (int i = 0; i < rowTwo.Length; i++)
+        {
+            builtLineTwo += rowTwo[i];
+            ChangeHintText(builtLineOne, FillWithSpaces(builtLineTwo, textLineTwo));
+            if (i != rowTwo.Length - 1) builtLineTwo += " ";
+            yield return new WaitForSeconds(delays[rowOne.Length + i]);
+        }
+    }
+
+    private string FillWithSpaces(string substring, string originalstring)
+    {
+        for (int i = 0; i < originalstring.Length - substring.Length; i++)
+        {
+            substring += "_";
+        }
+        return substring;
+    }
+
     /// <summary>
     /// Changes text displayed, should be done while everything is fully hidden
     /// </summary>
@@ -219,6 +263,10 @@ public class HintTextManager : MonoBehaviour
         {
             characterSprite = _fontMapping["]"];
         }
+        else if (character == '_')
+        {
+            characterSprite = _fontMapping["SPACE"];
+        }
         else if (_inputEncoder.ContainsValue(character))
         {
             foreach (KeyValuePair<string, char> entry in _inputEncoder)
@@ -309,6 +357,9 @@ public class HintTextManager : MonoBehaviour
                     case "VOID":
                         CurrentFontColor = PlayerHandler.GetElementColor(ElementType.VOID);
                         //CurrentFontColor = new Color(0.7f, 0.3f, 1.0f, 1.0f);
+                        break;
+                    case "ICHOR":
+                        CurrentFontColor = PlayerHandler.GetElementColor(ElementType.ICHOR);
                         break;
                     case "WHITE":
                         CurrentFontColor = Color.white;

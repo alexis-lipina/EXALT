@@ -22,12 +22,16 @@ public class FinalBossCore : EntityHandler
 
     // small laser
     private bool bReadyToAttack = true;
+    //[SerializeField] private float SmallLaserWindupDuration = 1.0f;
+    //[SerializeField] private AnimationCurve SmallLaser_ShaderRippleElevationCurve;
+    //[SerializeField] private AnimationCurve SmallLaser_ShaderRippleWidthCurve;
+    //[SerializeField] private AnimationCurve SmallLaser_ShaderRippleWidthCurve;
     [SerializeField] private float SmallLaserCooldown = 4.0f;
 
     [Space(10)]
     [SerializeField] float flinchDuration = 4.0f;
     [SerializeField] Sprite normalSprite;
-    [SerializeField] Sprite flinchSprite;
+    //[SerializeField] Sprite flinchSprite;
 
 
     [Space(10)]
@@ -42,6 +46,8 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private AnimationCurve BoltSizeOverCharge;
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltDurationOverCharge;
+
+    [SerializeField] TriggerVolume BossCameraVolume;
 
     enum FinalBossState { CHASE, SUPERWEAPON, FLINCH }
     private FinalBossState CurrentState;
@@ -64,6 +70,9 @@ public class FinalBossCore : EntityHandler
     void Update()
     {
         ExecuteState();
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", entityPhysics.GetTopHeight());
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", entityPhysics.GetBottomHeight());
+        BossCameraVolume.transform.position = entityPhysics.transform.position;
     }
 
     protected override void ExecuteState()
@@ -354,9 +363,9 @@ public class FinalBossCore : EntityHandler
             rend.enabled = false;
         }
         GetComponent<Animation>().Stop();
-        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = flinchSprite;
+        //entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = flinchSprite;
         yield return new WaitForSeconds(flinchDuration);
-        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = normalSprite;
+        //entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = normalSprite;
         CurrentState = FinalBossState.CHASE;
     }
 }

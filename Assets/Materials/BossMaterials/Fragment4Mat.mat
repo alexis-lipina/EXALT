@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Fragment4Mat
+  m_Shader: {fileID: 4800000, guid: 67505c944fa54fd4caafd662bdbf4f4c, type: 3}
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _DepthTex:
+        m_Texture: {fileID: 2800000, guid: ec6ee3885f5c10941b4ad9df2b8c5059, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 5e123ed4a4de54b47a237673382da482, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: 3df8b0409c6119547b0b033fb413dcb6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShinyTex:
+        m_Texture: {fileID: 2800000, guid: 43f82e325fb1723458bbc289542ce685, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BottomElevation: 0
+    - _Opacity: 1
+    - _RippleIntensity: 1
+    - _RipplePosition: 0.5
+    - _RippleWidth: 0.2
+    - _TopElevation: 0
+    m_Colors: []

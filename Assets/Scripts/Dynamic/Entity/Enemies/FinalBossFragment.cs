@@ -389,21 +389,26 @@ public class FinalBossFragment : EntityHandler
     IEnumerator FireSmallLaser(float Cooldown)
     {
         Debug.Log("SMALL LASERING!");
+        GetComponent<Animation>().Play("fragmentLaserBurst");
+        foreach (var rend in TEMP_SmallLaserVFX)
+        {
+            rend.enabled = true;
+        }
 
         //flash lens flare, other vfx
         AttackFlash.GetComponent<SpriteRenderer>().enabled = true;
         bReadyToAttack = false;
         bIsBossDoingSomething = true;
         AttackFlash.Play("BigFlare", 0, 0);
-        yield return new WaitForSeconds(0.7f);
-
+        yield return new WaitForSeconds(1.0f);
+        /*
         foreach (var rend in TEMP_SmallLaserVFX)
         {
             rend.enabled = true;
-        }
+        }*/
 
         // flash damage area, deal damage
-        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(entityPhysics.transform.position, new Vector2(16, 12), 0);
+        Collider2D[] hitobjects = Physics2D.OverlapBoxAll(entityPhysics.transform.position, new Vector2(24, 18), 0);
         foreach (Collider2D hit in hitobjects)
         {
             EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
@@ -415,7 +420,7 @@ public class FinalBossFragment : EntityHandler
         }
         AttackFlash.GetComponent<SpriteRenderer>().enabled = false;
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1.0f);
         foreach (var rend in TEMP_SmallLaserVFX)
         {
             rend.enabled = false;

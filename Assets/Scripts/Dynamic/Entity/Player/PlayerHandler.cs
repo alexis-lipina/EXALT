@@ -54,6 +54,8 @@ public class PlayerHandler : EntityHandler
     private Animator characterAnimator;
     private PlayerInventory inventory;
 
+    public ElementType OvertakenElement = ElementType.NONE; // if the player is suffused with a single element, this is the element they're hit with
+
 
     //[SerializeField] private UIHealthBar _healthBar;
     [SerializeField] private PlayerHealthBarHandler _healthBar;
@@ -273,8 +275,11 @@ public class PlayerHandler : EntityHandler
     private static int NumberOfShatteredHealthBlocks = 0;
 
     public float TimeSinceCombat = 0.0f;
+    public bool ForceUIVisible = false;
 
     public RestPlatform CurrentRestPlatform; // if player is currently interacting with a rest platform, this is it
+
+    public bool BlockInput = false;
 
     public ElementType GetStyle()
     {
@@ -471,6 +476,8 @@ public class PlayerHandler : EntityHandler
     /// </summary>
     private void CheckStyleChange()
     {
+        if (OvertakenElement != ElementType.NONE) return; // don't allow style changes if it's overtaken. Maybe have some visual indicator that you can't?
+
         if (controller.GetButton("ChangeStyle_Fire") && _currentStyle != ElementType.FIRE)
         {
             //Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
@@ -554,42 +561,46 @@ public class PlayerHandler : EntityHandler
         HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
 
         //------------------------------------------------| STATE CHANGE
-        if (controller.GetButton("Rest"))
+        if (!BlockInput)
         {
-            StateTimer = rest_kneel_duration;
-            CurrentState = PlayerState.REST;
-        }
-        if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2) 
-        {
-            //Debug.Log("IDLE -> RUN");
-            CurrentState = PlayerState.RUN;
-        }
-        if (controller.GetButtonDown("Jump"))
-        {
-            //Debug.Log("IDLE -> JUMP");
-            Vibrate( .5f, 0.05f);
-            entityPhysics.ZVelocity = JumpImpulse;
-            CurrentState = PlayerState.JUMP;
-        }
+            if (controller.GetButton("Rest"))
+            {
+                StateTimer = rest_kneel_duration;
+                CurrentState = PlayerState.REST;
+            }
+            if (Mathf.Abs(xInput) > 0.2 || Mathf.Abs(yInput) > 0.2)
+            {
+                //Debug.Log("IDLE -> RUN");
+                CurrentState = PlayerState.RUN;
+            }
+            if (controller.GetButtonDown("Jump"))
+            {
+                //Debug.Log("IDLE -> JUMP");
+                Vibrate(.5f, 0.05f);
+                entityPhysics.ZVelocity = JumpImpulse;
+                CurrentState = PlayerState.JUMP;
+            }
 
-        if (controller.GetButtonDown("Melee"))
-        {
-            hasSwung = false;
-            //Debug.Log("IDLE -> ATTACK");
-            StateTimer = time_lightMelee;
-            CurrentState = PlayerState.LIGHT_MELEE;
-        }
+            if (controller.GetButtonDown("Melee"))
+            {
+                hasSwung = false;
+                //Debug.Log("IDLE -> ATTACK");
+                StateTimer = time_lightMelee;
+                CurrentState = PlayerState.LIGHT_MELEE;
+            }
 
-        if (controller.GetButton("RangedAttack"))
-        {
-            PlayerLightRangedTransitionAttempt();
+            if (controller.GetButton("RangedAttack"))
+            {
+                PlayerLightRangedTransitionAttempt();
+            }
+            if (controller.GetButtonDown("Blink"))
+            {
+                PlayerBlinkTransitionAttempt();
+            }
+            CheckStyleChange();
         }
-        if (controller.GetButtonDown("Blink"))
-        {
-            PlayerBlinkTransitionAttempt();
-        }
-        CheckStyleChange();
-
+        
+        //gravity
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
         {
@@ -600,7 +611,7 @@ public class PlayerHandler : EntityHandler
         {
             entityPhysics.SetObjectElevation(maxheight);
         }
-        
+
     }
 
     private void PlayerRun()
@@ -609,6 +620,7 @@ public class PlayerHandler : EntityHandler
         //Face Direction Determination
         Vector2 direction = controller.GetAxis2DRaw("MoveHorizontal", "MoveVertical");
         if (direction.sqrMagnitude > 1) direction.Normalize(); //prevents going too fast on KB
+        if (BlockInput) direction = Vector2.zero;
         if (direction.sqrMagnitude > 0.01f)
         {
             if (Vector2.Angle(new Vector2(1, 0), direction) < 60)
@@ -2384,8 +2396,6 @@ public class PlayerHandler : EntityHandler
                 //Debug.Log("Changing aim!");
             }
         }
-       
-
     }
 
     public void UpdateMousePosition(Vector2 mpos)
@@ -2510,7 +2520,86 @@ public class PlayerHandler : EntityHandler
     {
         StateTimer = 0.0f;
         CurrentState = PlayerState.STAND_FROM_COLLAPSE;
-    }    
+    }
+
+    public void OvertakeElement(ElementType newElement) // Forces player into one element
+    {
+        OvertakenElement = newElement;
+        switch (newElement)
+        {
+            case ElementType.ICHOR:
+                Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 1);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 1);
+                Vibrate(1f, 0.1f);
+                _currentStyle = ElementType.ICHOR;
+                _haloSprite.sprite = Halo_Ichor;
+                _lightRangedEnergyCost = 1;
+                weaponSprite.GetComponent<Animator>().Play("IchorBlade_Summon", 0, 0.0f);
+                weaponSprite.transform.right = Vector3.right;
+                if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_SUMMONBRIGHTNESSCURVE));
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 1);
+                weaponGlowSprite.sprite = HEAVYMELEE_ICHOR_GLOWSPRITE;
+                break;
+            case ElementType.ZAP:
+                Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 4);
+                Vibrate(1f, 0.1f);
+                _currentStyle = ElementType.ZAP;
+                _haloSprite.sprite = Halo_Zap;
+                _lightRangedEnergyCost = 1;
+                weaponSprite.GetComponent<Animator>().Play("StormSpear_Summon", 0, 0.0f);
+                weaponSprite.transform.right = Vector3.right;
+                if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_SUMMONBRIGHTNESSCURVE));
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 4);
+                weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
+                break; 
+                /*
+            case ElementType.FIRE:
+                Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 2);
+                Vibrate(1f, 0.1f);
+                _currentStyle = ElementType.FIRE;
+                SwapWeapon("WEST");
+                _haloSprite.sprite = Halo_Fire;
+                _lightRangedEnergyCost = 2;
+                weaponSprite.GetComponent<Animator>().Play("SolFlail_Summon", 0, 0.0f);
+                weaponSprite.transform.right = Vector3.right;
+                if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_SOL_SUMMONBRIGHTNESSCURVE));
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 2);
+                weaponGlowSprite.sprite = HEAVYMELEE_SOL_GLOWSPRITE;
+                break;
+            case ElementType.VOID:
+                Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 3);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 3);
+                Vibrate(1f, 0.1f);
+                _currentStyle = ElementType.VOID;
+                SwapWeapon("NORTH");
+                _haloSprite.sprite = Halo_Void;
+                _lightRangedEnergyCost = 2;
+                weaponSprite.GetComponent<Animator>().Play("RiftScythe_Summon", 0, 0.0f);
+                weaponSprite.transform.right = Vector3.right;
+                if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
+                CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_SUMMONBRIGHTNESSCURVE));
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 3);
+                weaponGlowSprite.sprite = HEAVYMELEE_RIFT_GLOWSPRITE;
+                break;*/
+            default:
+                Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 1.0f, 0.0f, 1f));
+                ScreenFlash.InstanceOfScreenFlash.PlayFlash(.5f, .1f, new Color(0.5f, 1.0f, 0.0f));
+                Vibrate(1f, 0.1f);
+                Debug.LogError("HOWDY : Somehow, the player changed style to a nonexistent style!");
+                break;
+        }
+
+    }
+
     private IEnumerator PlayWeaponSpriteGlow(AnimationCurve glowcurve)
     {
         float duration = glowcurve.keys[glowcurve.length - 1].time;

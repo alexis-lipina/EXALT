@@ -13,6 +13,10 @@ public class ElementStatusUI : MonoBehaviour
     [SerializeField] private Sprite spriteZap_KBM;
     [SerializeField] private Sprite spriteFire_KBM;
     [SerializeField] private Sprite spriteIchor_KBM;
+    [SerializeField] private Sprite spriteIchorOvertaken_KBM;
+    [SerializeField] private Sprite spriteIchorOvertaken_Gamepad;
+    [SerializeField] private Sprite spriteStormOvertaken_KBM;
+    [SerializeField] private Sprite spriteStormOvertaken_Gamepad;
     [SerializeField] private PlayerHandler _playerHandler;
     private ElementType _currentElement = ElementType.ZAP;
     private bool _isUsingMouse = false;
@@ -23,7 +27,12 @@ public class ElementStatusUI : MonoBehaviour
     void Update()
     {
         //fade in/out for combat
-        if (_playerHandler.TimeSinceCombat > TimeToFadeOut)
+        if (_playerHandler.ForceUIVisible)
+        {
+            GetComponent<Image>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+        }
+        else if (_playerHandler.TimeSinceCombat > TimeToFadeOut)
         {
             const float lerpRate = 1.0f;
             float newAlpha = Mathf.Lerp(1.0f, 0.0f, ((_playerHandler).TimeSinceCombat - TimeToFadeOut) * lerpRate);
@@ -32,6 +41,32 @@ public class ElementStatusUI : MonoBehaviour
         else
         {
             GetComponent<Image>().color = new Color(1.0f, 1.0f, 1.0f, Mathf.Lerp(GetComponent<Image>().color.a, 1.0f, 0.2f));
+        }
+        if (_playerHandler.OvertakenElement != ElementType.NONE)
+        {
+            switch (_playerHandler.OvertakenElement)
+            {
+                case ElementType.ICHOR:
+                    if (_isUsingMouse)
+                    {
+                        GetComponent<Image>().sprite = spriteIchorOvertaken_KBM;
+                    }
+                    else
+                    {
+                        GetComponent<Image>().sprite = spriteIchorOvertaken_Gamepad;
+                    }
+                    break;
+                case ElementType.ZAP:
+                    if (_isUsingMouse)
+                    {
+                        GetComponent<Image>().sprite = spriteStormOvertaken_KBM;
+                    }
+                    else
+                    {
+                        GetComponent<Image>().sprite = spriteStormOvertaken_Gamepad;
+                    }
+                    break;
+            }
         }
 
         if (_playerHandler.GetElementalAttunement() != _currentElement || _isUsingMouse != _playerHandler.IsUsingMouse)

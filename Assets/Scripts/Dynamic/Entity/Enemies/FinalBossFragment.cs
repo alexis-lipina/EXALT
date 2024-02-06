@@ -52,11 +52,7 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] float AOEDelay_SpearPhase; 
     bool bVolleyReady = true;
 
-
-
     // TODO : particle system?
-
-
 
     enum FragmentPhase { ORBITING, LOWER_SPEARS, SPAWN_ENEMIES, CRYSTAL_HAIL, SUPERLASER }; //phases are sequenced & describe a small encounter with the boss.
     enum FragmentState { INACTIVE, IDLE, CHASE, FIRING, SUPERLASER, DEATH };
@@ -70,7 +66,6 @@ public class FinalBossFragment : EntityHandler
 
     private float _superlaserCharge = 0.0f;
     private float _superlaserChargeRate = 0.125f; // superlasers per second
-    private List<FragmentPhase> OrderOfPhases;
 
     private float _phaseTimer = 0.0f;
     private bool bReadyToAttack = true;
@@ -100,12 +95,28 @@ public class FinalBossFragment : EntityHandler
 
     [SerializeField] private SpriteRenderer WeakeningSprite;
 
+    [SerializeField] private List<FragmentPhase> OrderOfPhases;
+
+
+    [Space(10)]
+    [Header("Death")]
+    [SerializeField] FragmentDeathShatterController deathShatterController;
+    [SerializeField] FragmentDeathShatterController healthBarShatterController;
+    [SerializeField] Texture2D PP_ShatterTex_Mask;
+    [SerializeField] Texture2D PP_ShatterTex_MaskWhite;
+    [SerializeField] GameObject ShatterHealthSystem;
+    [SerializeField] GameObject ShatterHealthBarBlock;
+    [SerializeField] Sprite ShatterHealthBarNewTexture;
+    bool bIsDead = false;
+    private CameraScript _camera;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        OrderOfPhases = new List<FragmentPhase>();
-        OrderOfPhases.Add(FragmentPhase.ORBITING);
-        OrderOfPhases.Add(FragmentPhase.LOWER_SPEARS);
+        //OrderOfPhases = new List<FragmentPhase>();
+        //OrderOfPhases.Add(FragmentPhase.ORBITING);
+        //OrderOfPhases.Add(FragmentPhase.LOWER_SPEARS);
         //OrderOfPhases.Add(FragmentPhase.SPAWN_ENEMIES);
         //OrderOfPhases.Add(FragmentPhase.CRYSTAL_HAIL);
         //OrderOfPhases.Add(FragmentPhase.SUPERLASER);
@@ -123,6 +134,11 @@ public class FinalBossFragment : EntityHandler
         CurrentPhase = OrderOfPhases[0];
         CenterPosition = SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position;
         SetElevation(RaisedElevation);
+        _camera = FindObjectOfType<CameraScript>();
+        if (healthBarShatterController)
+        {
+            //healthBarShatterController.gameObject.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -134,7 +150,7 @@ public class FinalBossFragment : EntityHandler
 
         WeakeningSprite.material.SetFloat("_FadeInMask", (1 - ( entityPhysics.GetCurrentHealth() / (float)entityPhysics.GetMaxHealth())) * 0.5f);
 
-        if (entityPhysics.GetCurrentHealth() <= 0)
+        if (entityPhysics.GetCurrentHealth() <= 0 && !bIsDead)
         {
             StartCoroutine(Death());
         }
@@ -453,17 +469,51 @@ public class FinalBossFragment : EntityHandler
     // everything that should happen when the boss is killed by the lightning strike, starting the moment the killing blow strikes it
     IEnumerator Death()
     {
+        /*
         TopLightningBolt.SetThickness(1.0f, 1.125f);
         TopLightningBolt.SetupLine(TopBoltZapPoint.transform.position + new Vector3(0, 26, 0), TopBoltZapPoint.transform.position);
         BottomLightningBolt.SetThickness(1.0f, 1.125f);
         BottomLightningBolt.SetupLine(_player.GetEntityPhysics().ObjectSprite.transform.position, BottomBoltZapPoint.transform.position);
         TopLightningBolt.ShowBolt();
         BottomLightningBolt.ShowBolt();
-
+        */
         //StopCoroutine(_superlaserCoroutine);
-        yield return new WaitForSeconds(0.2f);
+        bIsDead = true;
+        if (!deathShatterController) Destroy(gameObject);
+        
+
+
+        deathShatterController.gameObject.SetActive(true);
+        deathShatterController.transform.position = new Vector3(deathShatterController.transform.position.x, deathShatterController.transform.position.y, _camera.transform.position.z + 2);
+        deathShatterController.Shatter(DeathVector);
+
+
+        ShatterHealthSystem.gameObject.SetActive(true);
+        ShatterHealthSystem.transform.position = new Vector3(healthBarShatterController.transform.parent.position.x, healthBarShatterController.transform.parent.position.y, _camera.transform.position.z + 1);
+        ShatterHealthBarBlock.GetComponent<SpriteRenderer>().sprite = ShatterHealthBarNewTexture;
+        ShatterHealthBarBlock.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f); // new texture is twice as big so
+        
+        healthBarShatterController.gameObject.SetActive(true);
+        healthBarShatterController.Shatter(DeathVector);
+
+        _camera.SetPostProcessParam("_ShatterMaskTex", PP_ShatterTex_MaskWhite);
+
+
+
+        _player.ForceHideUI();
+        Time.timeScale = 0.0f;
+        yield return new WaitForSecondsRealtime(3.0f);
+        Time.timeScale = 1.0f;
+        _player.ForceShowUI();
+
+        //yield return new WaitForSeconds(0.2f);
 
         _player.ShatterHealth();
+
+        _camera.SetPostProcessParam("_ShatterMaskTex", PP_ShatterTex_Mask);
+
+        healthBarShatterController.gameObject.SetActive(false);
+        ShatterHealthSystem.gameObject.SetActive(false);
 
         Destroy(gameObject);
     }
@@ -688,5 +738,8 @@ public class FinalBossFragment : EntityHandler
     public override void JustGotHit(Vector2 hitDirection)
     {
         // idk
+        //stateTimer = 1.0f;
+        //wasJustHit = true;
+        DeathVector = hitDirection;
     }
 }

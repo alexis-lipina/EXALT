@@ -65,7 +65,7 @@ public class CameraSizeChangeVolume : MonoBehaviour
                 DampedSizeValue = Mathf.SmoothDamp(DampedSizeValue, value, ref CurrentVelocity, LerpRate, 2.0f);
             }
 
-            camera.GetComponent<Camera>().orthographicSize = DefaultCameraSize * SizeChange.Evaluate(DampedSizeValue);
+            camera.SetCameraSizeImmediate(SizeChange.Evaluate(DampedSizeValue));
         }
         else
         {

@@ -11,7 +11,7 @@ public class PlayerHealthBarHandler : MonoBehaviour
     [SerializeField] private Sprite _offSprite;
     [SerializeField] private Sprite _flashSprite;
     [SerializeField] private Sprite _darkSprite;
-    [SerializeField] private Sprite _shatterSprite;
+    [SerializeField] private List<Sprite> _shatterSprites; // rightmost
 
     private int _currentPlayerHealth = 5;
     private int _numberOfShatteredHealthCells = 0;
@@ -117,7 +117,7 @@ public class PlayerHealthBarHandler : MonoBehaviour
             }
             else
             {
-                _healthBarSegments[i].sprite = _shatterSprite;
+                _healthBarSegments[i].sprite = _shatterSprites[i];
                 _healthBarSegments[i].color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
             }
         }

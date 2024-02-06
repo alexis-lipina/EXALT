@@ -47,7 +47,6 @@ public class PlayerEnergyBarHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //fade in/out for combat
         if ( _playerHandler.ForceUIVisible)
         {

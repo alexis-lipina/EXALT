@@ -75,12 +75,16 @@
 
 			float _Opacity;
 
+			// hit flash
+			float _MaskOn;
+			half4 _MaskColor;
+
 			// https://www.desmos.com/calculator/1yakozvmbd
 			float DepthRipple(float depthpixel) // clamps a negative abs value graph to 0..1 range
 			{
 				float temptime = (_SinTime.a + 1) / 2.0f;
 				//_RipplePosition = temptime;
-				return clamp(_RippleIntensity - abs(2 * _RippleIntensity * (_RipplePosition - depthpixel) / _RippleWidth), 0.0f, 1.0f);
+				return clamp(_RippleIntensity - abs(2 * _RippleIntensity * (_RipplePosition - depthpixel) / _RippleWidth), 0.0f, 2.0f);
 			}
 
 			//right now just a regular gradient from top to bottom
@@ -95,7 +99,8 @@
 				color *= 0.5;
 				color *= depthRippleValue * float4(1.0f, 0.0f, 1.0f, 1.0f) + 0.5f;
 				color += float4(0.2, 0.0, 0.1, 1); // baseline bg color
-				color += tex2D(_SparkleTex, (output.pos * 0.001f + _WorldSpaceCameraPos.xy * 0.02f + unity_ObjectToWorld._m03_m13_m23 * 0.03) * float2(4, 2)) * depthRippleValue * 2;
+				//color += tex2D(_SparkleTex, (output.pos * 0.001f + _WorldSpaceCameraPos.xy * 0.02f + unity_ObjectToWorld._m03_m13_m23 * 0.03) * float2(4, 2)) * depthRippleValue * 2;
+				color += max(0, depthRippleValue - 1);
 				color = pow(color, depthRippleValue + 1);
 
 				color = lerp(color, mainTexColor, tex2D(_MaskTex, output.uv));
@@ -135,6 +140,8 @@
 				//color.a = _Opacity; //change this in the future so that half-transparent pixels dont get screwed up
 
 				color.a = src_opacity * _Opacity;
+
+				color = color * (1 - _MaskOn) + _MaskColor * _MaskOn;
 
 				return color;
 			}

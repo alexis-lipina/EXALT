@@ -26,6 +26,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] private GameObject HeavyMeleeSprite;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioSource _blinkAudioSource;
+    /*[SerializeField]*/ private AudioSource _weaponAudioSource; // just pulling this from weapon gameobect
     [SerializeField] private CursorHandler _cursor;
     [SerializeField] private bool _isUsingCursor; //TEMPORARY
     [SerializeField] private float _projectileStartHeight;
@@ -281,6 +282,26 @@ public class PlayerHandler : EntityHandler
 
     public bool BlockInput = false;
 
+    [Space(10)]
+    [SerializeField] List<AudioClip> SFX_LightSlashes;
+    [SerializeField] AudioClip SFX_IchorBlade_Slash;
+    [SerializeField] AudioClip SFX_IchorBlade_Summon;
+    [SerializeField] AudioClip SFX_IchorBlade_Vanish;
+
+    [SerializeField] AudioClip SFX_StormSpear_Slash;
+    [SerializeField] AudioClip SFX_StormSpear_Summon;
+    [SerializeField] AudioClip SFX_StormSpear_Vanish;
+
+    [SerializeField] AudioClip SFX_RiftScythe_Slash;
+    [SerializeField] AudioClip SFX_RiftScythe_Summon;
+    [SerializeField] AudioClip SFX_RiftScythe_Vanish;
+
+    [SerializeField] AudioClip SFX_SolFlail_Throw;
+    [SerializeField] AudioClip SFX_SolFlail_Hit;
+    [SerializeField] AudioClip SFX_SolFlail_Summon;
+    [SerializeField] AudioClip SFX_SolFlail_Vanish;
+    [SerializeField] AudioClip SFX_SolFlail_Catch;
+
     public ElementType GetStyle()
     {
         return _currentStyle;
@@ -324,6 +345,7 @@ public class PlayerHandler : EntityHandler
         _gameplayUI.parent.gameObject.SetActive(true); // if I put this at the bottom it just... doesnt execute???
         _gameplayUI.gameObject.SetActive(true);
         weaponSprite.enabled = false;
+        _weaponAudioSource = weaponSprite.GetComponent<AudioSource>();
         weaponGlowSprite.enabled = false;
         SolFlailProjectile.transform.parent.gameObject.SetActive(false);
         //weaponSprite.transform.right = new Vector3(0, 1, 0);
@@ -987,6 +1009,7 @@ public class PlayerHandler : EntityHandler
         if (StateTimer == time_lightMelee)
         {
             //Play SFX
+            _audioSource.clip = SFX_LightSlashes[UnityEngine.Random.Range(0, SFX_LightSlashes.Count)];
             _audioSource.Play();
             Vibrate( 0.5f, 0.1f);
 
@@ -1165,6 +1188,8 @@ public class PlayerHandler : EntityHandler
                         weaponSprite.transform.right = aimDirection;
                         weaponSprite.transform.localPosition = new Vector3(0, 0, -3);
                         weaponSprite.GetComponent<Animator>().Play("StormSpear_Manifest", 0, 0.0f);
+                        _weaponAudioSource.clip = SFX_StormSpear_Summon;
+                        _weaponAudioSource.Play();
                         if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
                         CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_READYBRIGHTNESSCURVE));
                         break;
@@ -1172,18 +1197,24 @@ public class PlayerHandler : EntityHandler
                         weaponSprite.transform.right = -aimDirection;
                         weaponSprite.transform.localPosition = weaponSprite.transform.right * 3;
                         weaponSprite.GetComponent<Animator>().Play("RiftScythe_Manifest", 0, 0.0f);
+                        _weaponAudioSource.clip = SFX_RiftScythe_Summon;
+                        _weaponAudioSource.Play();
                         if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
                         CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_READYBRIGHTNESSCURVE));
                         break;
                     case ElementType.FIRE:
                         if (bIsSolFlailAttackCoroutineRunning) StopCoroutine(CurrentSolFlailCoroutine);
                         CurrentSolFlailCoroutine = StartCoroutine(SolFlailOrbit(bIsSolFlailAttackCoroutineRunning));
+                        _weaponAudioSource.clip = SFX_SolFlail_Summon;
+                        _weaponAudioSource.Play();
                         bIsSolFlailAttackCoroutineRunning = false;
                         break;
                     case ElementType.ICHOR:
                         weaponSprite.transform.right = -aimDirection;
                         weaponSprite.transform.localPosition = /*weaponSprite.transform.right * 1 +*/ weaponSprite.transform.up * 2;
                         weaponSprite.GetComponent<Animator>().Play("IchorBlade_Manifest", 0, 0.0f);
+                        _weaponAudioSource.clip = SFX_IchorBlade_Summon;
+                        _weaponAudioSource.Play();
                         if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
                         CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_READYBRIGHTNESSCURVE));
                         break;
@@ -1199,22 +1230,30 @@ public class PlayerHandler : EntityHandler
                         weaponSprite.GetComponent<Animator>().Play("StormSpear_Vanish");
                         if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
                         CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_STORM_VANISHBRIGHTNESSCURVE));
+                        _weaponAudioSource.clip = SFX_StormSpear_Vanish;
+                        _weaponAudioSource.Play();
 
                         break;
                     case ElementType.VOID:
                         weaponSprite.GetComponent<Animator>().Play("RiftScythe_Vanish");
                         if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
                         CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_RIFT_VANISHBRIGHTNESSCURVE));
+                        _weaponAudioSource.clip = SFX_RiftScythe_Vanish;
+                        _weaponAudioSource.Play();
                         break;
                     case ElementType.FIRE:
                         //weaponSprite.GetComponent<Animator>().Play("SolFlail_Vanish");
                         if (CurrentSolFlailSpawnDespawnCoroutine != null) StopCoroutine(CurrentSolFlailSpawnDespawnCoroutine);
                         CurrentSolFlailSpawnDespawnCoroutine = StartCoroutine(SolFlailVanish());
+                        _weaponAudioSource.clip = SFX_SolFlail_Vanish;
+                        _weaponAudioSource.Play();
                         break;
                     case ElementType.ICHOR:
                         weaponSprite.GetComponent<Animator>().Play("IchorBlade_Vanish");
                         if (CurrentWeaponGlowCoroutine != null) StopCoroutine(CurrentWeaponGlowCoroutine);
                         CurrentWeaponGlowCoroutine = StartCoroutine(PlayWeaponSpriteGlow(HEAVYMELEE_ICHOR_VANISHBRIGHTNESSCURVE));
+                        _weaponAudioSource.clip = SFX_IchorBlade_Vanish;
+                        _weaponAudioSource.Play();
                         break;
                 }
                 _hasHitAttackAgain = false;
@@ -1339,15 +1378,23 @@ public class PlayerHandler : EntityHandler
                     if (CurrentSolFlailCoroutine != null) { StopCoroutine(CurrentSolFlailCoroutine); }
                     if (CurrentSolFlailSpawnDespawnCoroutine != null) StopCoroutine(CurrentSolFlailSpawnDespawnCoroutine);
                     CurrentSolFlailCoroutine = StartCoroutine(PlayerHeavyMelee_Fire());
+                    _weaponAudioSource.clip = SFX_SolFlail_Throw;
+                    _weaponAudioSource.Play();
                     break;
                 case ElementType.VOID:
                     StartCoroutine(PlayerHeavyMelee_Rift());
+                    _weaponAudioSource.clip = SFX_RiftScythe_Slash;
+                    _weaponAudioSource.Play();
                     break;
                 case ElementType.ZAP:
                     PlayerHeavyMelee_Zap();
+                    _weaponAudioSource.clip = SFX_StormSpear_Slash;
+                    _weaponAudioSource.Play();
                     break;
                 case ElementType.ICHOR:
                     StartCoroutine(PlayerHeavyMelee_Ichor());
+                    _weaponAudioSource.clip = SFX_IchorBlade_Slash;
+                    _weaponAudioSource.Play();
                     break;
             }
 
@@ -1497,7 +1544,8 @@ public class PlayerHandler : EntityHandler
 
         // detonate
         SolFlailProjectile.Velocity = Vector2.zero;
-
+        _weaponAudioSource.clip = SFX_SolFlail_Hit;
+        _weaponAudioSource.Play();
         SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Explode");
         Collider2D[] hitobjects = Physics2D.OverlapBoxAll(SolFlailProjectile.transform.position, HEAVYMELEE_SOL_HITBOX_DETONATION, 0.0f);
         foreach (Collider2D obj in hitobjects)
@@ -1552,6 +1600,8 @@ public class PlayerHandler : EntityHandler
         SolFlailProjectile.GlowSprite.material.SetFloat("_Opacity", 1.0f);
         SolFlailProjectile.Speed = 1.0f;
         SolFlailProjectile.ObjectSprite.GetComponent<Animator>().Play("SolFlailBall_Vanish");
+        _weaponAudioSource.clip = SFX_SolFlail_Catch;
+        _weaponAudioSource.Play();
 
         timer = 0;
         while (timer < 0.1f)
@@ -2611,5 +2661,14 @@ public class PlayerHandler : EntityHandler
             yield return new WaitForEndOfFrame();
         }
         weaponGlowSprite.material.SetFloat("_Opacity", glowcurve.Evaluate(glowcurve.keys[glowcurve.length - 1].time));
+    }
+
+    public void ForceHideUI()
+    {
+        _healthBar.transform.parent.gameObject.SetActive(false);
+    }
+    public void ForceShowUI()
+    {
+        _healthBar.transform.parent.gameObject.SetActive(true);
     }
 }

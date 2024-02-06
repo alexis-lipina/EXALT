@@ -53,6 +53,10 @@ public class FinalBossCore : EntityHandler
     private FinalBossState CurrentState;
     private PlayerHandler _player;
 
+    [Space(10)]
+    [Header("AUDIO")]
+    [SerializeField] private AudioClip _superlaserAudioClip;
+
 
     // Start is called before the first frame update
     void Start()
@@ -158,6 +162,7 @@ public class FinalBossCore : EntityHandler
                 DropFragment();
                 CurrentState = FinalBossState.FLINCH;
                 _superlaserCharge = 0.0f;
+                _primeAudioSource.Stop();
             }
             else 
             {
@@ -251,6 +256,8 @@ public class FinalBossCore : EntityHandler
         {
             rend.enabled = true;
         }
+        _primeAudioSource.clip = _superlaserAudioClip;
+        _primeAudioSource.Play();
         GetComponent<Animation>().Play("testsuperlaser");
         AttackFlash.GetComponent<SpriteRenderer>().enabled = false;
 

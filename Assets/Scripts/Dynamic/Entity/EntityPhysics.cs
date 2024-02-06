@@ -32,6 +32,8 @@ public class EntityPhysics : DynamicPhysics
     [SerializeField] private bool _shouldDieWhenFall = true;
 
     [SerializeField] protected int currentHP;
+    [SerializeField] protected List<AudioClip> HitSounds;
+
     private bool hasBeenHit;
     private bool isInvincible = false;
     private bool _fellOutOfBounds = false;
@@ -421,6 +423,7 @@ public class EntityPhysics : DynamicPhysics
         MoveWithCollision(force.x * _pushForceMultiplier, force.y * _pushForceMultiplier); //TODO : HEY UHHHH THIS DOESNT DO ANYTHING IF THEYRE MOVING ALREADY I DONT THINK
         _netForces += (Vector3)(force);
 
+        GetComponent<AudioSource>().clip = HitSounds[UnityEngine.Random.Range(0, HitSounds.Count)];
         GetComponent<AudioSource>().Play();
         hasBeenHit = true;
         currentHP -= damage;
@@ -547,7 +550,7 @@ public class EntityPhysics : DynamicPhysics
     IEnumerator TakeDamageFlash(Vector2 hitDirection)
     {
         _objectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1);
-        for (float i = 0; i < 2; i++)
+        for (float i = 0; i < 1; i++)
         {
             //characterSprite.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
             _objectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", new Color(1, 1, 1, 1));

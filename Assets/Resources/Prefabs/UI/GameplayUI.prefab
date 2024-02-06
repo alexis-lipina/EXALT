@@ -10088,7 +10088,12 @@ MonoBehaviour:
   _offSprite: {fileID: 21300000, guid: 4f60e4dfd3cc8384c85d4e559e4de603, type: 3}
   _flashSprite: {fileID: 21300000, guid: 68072bac54d7c1f4fb13adcf2c3d5b59, type: 3}
   _darkSprite: {fileID: 21300000, guid: 3f26a8b34527fe243b40975c6b884f17, type: 3}
-  _shatterSprite: {fileID: 21300000, guid: 7096d9fd40b75c44fa3bc7bdadb888c2, type: 3}
+  _shatterSprites:
+  - {fileID: 21300000, guid: 8740dbedd9ecc1849a67df69211e85ca, type: 3}
+  - {fileID: 21300000, guid: 5457592186db8874caf14b512f3d0107, type: 3}
+  - {fileID: 21300000, guid: 8cac3c34b2136014e8cc50369cc1b521, type: 3}
+  - {fileID: 21300000, guid: 9aef08b3f37b21e498c6567b7ced09fd, type: 3}
+  - {fileID: 21300000, guid: 5f75a77f5a8b4664fac602339d1b71dc, type: 3}
 --- !u!114 &7689713314767831531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11639,6 +11644,7 @@ MonoBehaviour:
   _onSprite_Zap: {fileID: 21300000, guid: 1cdf02a59f76a174bac6c9028b3ccec9, type: 3}
   _onSprite_Void: {fileID: 21300000, guid: 4ede181eb996099468bde87971ca7ab4, type: 3}
   _onSprite_Fire: {fileID: 21300000, guid: 275f7000d49d77c4dac505257e0c25d3, type: 3}
+  _onSprite_Ichor: {fileID: 0}
   _offSprite: {fileID: 21300000, guid: 246979e73411783479586b2116da04f5, type: 3}
   _flashSprite: {fileID: 21300000, guid: 4196363045144fb4783cad77a266cb7a, type: 3}
   _flareSprite: {fileID: 21300000, guid: 384471d8f2edd6942ada4f33228cd8b0, type: 3}

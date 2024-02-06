@@ -19,6 +19,7 @@ public class CameraScript : MonoBehaviour
     private Vector2 _cursorWorldPos;
     private Camera _camera;
     [SerializeField] AnimationCurve _cameraSizeChangeEaseCurve;
+    [SerializeField] List<Material> _postProcessMaterials;
 
     private List<CameraAttractor> _currentAttractors;
 
@@ -27,6 +28,13 @@ public class CameraScript : MonoBehaviour
     {
         get { return _isUsingCursor; }
         set { _isUsingCursor = value; }
+    }
+
+    public void SetCameraSizeImmediate(float newSize)
+    {
+        gameObject.transform.localScale = Vector3.one * newSize;
+        newSize *= 16.875f;
+        _camera.orthographicSize = newSize;
     }
 
     public void AddAttractor(CameraAttractor attractor)
@@ -181,17 +189,37 @@ public class CameraScript : MonoBehaviour
 
     IEnumerator SmoothToSizeCoroutine(float newSize, float duration)
     {
+        float scale = newSize;
         newSize *= 16.875f;
         float timer = 0.0f;
         float oldSize = _camera.orthographicSize;
         while (timer < duration)
         {
-            _camera.orthographicSize = Mathf.Lerp(oldSize, newSize, _cameraSizeChangeEaseCurve.Evaluate(timer / duration));
+            float currentNewSize = Mathf.Lerp(oldSize, newSize, _cameraSizeChangeEaseCurve.Evaluate(timer / duration));
+            _camera.orthographicSize = currentNewSize;
+            gameObject.transform.localScale = new Vector3(1, 1, 1) * scale;
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
-        _camera.orthographicSize = newSize;
+        _camera.orthographicSize = newSize; 
+        gameObject.transform.localScale = new Vector3(1, 1, 1) * scale;
+    }
 
+    private void OnRenderImage(RenderTexture source, RenderTexture destination)
+    {
+        foreach (Material ppm in _postProcessMaterials)
+        {
+            Graphics.Blit(source, destination, ppm);
+        }
+        //Graphics.Blit(source, destination);
+    }
+
+    public void SetPostProcessParam(string param, Texture2D tex)
+    {
+        foreach (Material ppm in _postProcessMaterials)
+        {
+            ppm.SetTexture(param, tex);
+        }
     }
 }
 

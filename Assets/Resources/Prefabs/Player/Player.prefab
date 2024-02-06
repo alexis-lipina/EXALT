@@ -796,6 +796,7 @@ GameObject:
   - component: {fileID: 114767209249802744}
   - component: {fileID: 114891063356589102}
   - component: {fileID: 1234480458}
+  - component: {fileID: 6774801964921011801}
   m_Layer: 0
   m_Name: PlayerPhysics
   m_TagString: Friend
@@ -1009,6 +1010,14 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!81 &6774801964921011801
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006813112817124}
+  m_Enabled: 1
 --- !u!1 &1363139249498860
 GameObject:
   m_ObjectHideFlags: 0
@@ -1669,6 +1678,7 @@ MonoBehaviour:
   SolFlailProjectile: {fileID: 7048135809966991374}
   SolFlailChain: {fileID: 390654371467178886}
   EyeGlowSprite: {fileID: 8578319593494433800}
+  OvertakenElement: 4
   _healthBar: {fileID: 0}
   HEAVYMELEE_ICHOR_ATTACKBRIGHTNESSCURVE:
     serializedVersion: 2
@@ -2326,7 +2336,37 @@ MonoBehaviour:
   Halo_Fire: {fileID: 21300000, guid: 41e697c916627e447aa54f590f60b455, type: 3}
   Halo_Ichor: {fileID: 0}
   TimeSinceCombat: 0
+  ForceUIVisible: 0
   CurrentRestPlatform: {fileID: 0}
+  BlockInput: 0
+  SFX_LightSlashes:
+  - {fileID: 8300000, guid: c57ffb472612b0645bd6fe4a018779f3, type: 3}
+  - {fileID: 8300000, guid: 1c6bf8fa3521d5b409a93e1a55a1eeaf, type: 3}
+  - {fileID: 8300000, guid: d64e00dff54002042a3067ff5f42c97e, type: 3}
+  - {fileID: 8300000, guid: 6cda83c300c4c114489ab53f53b9126a, type: 3}
+  SFX_IchorBlade_Slash: {fileID: 8300000, guid: 6fbbe32c087f9704ca000c28a35d58c5,
+    type: 3}
+  SFX_IchorBlade_Summon: {fileID: 8300000, guid: 27074516204e74a4895e1620a6389ec2,
+    type: 3}
+  SFX_IchorBlade_Vanish: {fileID: 8300000, guid: 2997255b4d307c24e852a54fa0ec40d4,
+    type: 3}
+  SFX_StormSpear_Slash: {fileID: 8300000, guid: d56e9caf7ec01124086b57d936819a20,
+    type: 3}
+  SFX_StormSpear_Summon: {fileID: 8300000, guid: 2683824dcfb34e443b6240f44b8e4e3d,
+    type: 3}
+  SFX_StormSpear_Vanish: {fileID: 8300000, guid: 5c39e35df8db9b349875b629eaafc7c2,
+    type: 3}
+  SFX_RiftScythe_Slash: {fileID: 8300000, guid: 4a43e83dd104cea41a8c31c4adf27826,
+    type: 3}
+  SFX_RiftScythe_Summon: {fileID: 8300000, guid: 79858e62c5a973947a326858f747773a,
+    type: 3}
+  SFX_RiftScythe_Vanish: {fileID: 8300000, guid: af58c21be8793c042aa3e083351f484b,
+    type: 3}
+  SFX_SolFlail_Throw: {fileID: 8300000, guid: 919c353f56b6a404c94333c5289ae1ff, type: 3}
+  SFX_SolFlail_Hit: {fileID: 8300000, guid: 1075d805f55c7b547ba8c14700089aeb, type: 3}
+  SFX_SolFlail_Summon: {fileID: 8300000, guid: 0f62e5b56ba521b41b47ebe3ddc86ff7, type: 3}
+  SFX_SolFlail_Vanish: {fileID: 8300000, guid: a9e7f5cf707651840878a3fa8d5dcc80, type: 3}
+  SFX_SolFlail_Catch: {fileID: 8300000, guid: c821333237ed66c4e8e993f0e25d0ed0, type: 3}
 --- !u!114 &114281109244806438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3446,6 +3486,7 @@ GameObject:
   - component: {fileID: 2771880511490467988}
   - component: {fileID: 7495474030339215897}
   - component: {fileID: 2556432002164346710}
+  - component: {fileID: 2924124754342365339}
   m_Layer: 0
   m_Name: MeleeWeapon
   m_TagString: Untagged
@@ -3535,6 +3576,102 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!82 &2924124754342365339
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7276573346507657712}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &8333048090233874804
 GameObject:
   m_ObjectHideFlags: 0

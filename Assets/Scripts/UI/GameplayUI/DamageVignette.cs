@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class DamageVignette : MonoBehaviour
 {
     [SerializeField] private EntityPhysics playerPhysics;
+    [SerializeField] private AudioMixerGroup duckableSFXMixer;
     private PlayerHandler _playerHandler;
     private int previousHealth;
     private Coroutine currentCoroutine;
@@ -35,6 +37,7 @@ public class DamageVignette : MonoBehaviour
                     StopCoroutine(currentCoroutine);
                 }
                 currentCoroutine = StartCoroutine(MildPulse());
+                duckableSFXMixer.audioMixer.SetFloat("LowHPLowpass", 3000);
             }
             else if (playerPhysics.GetCurrentHealth() == 1)
             {
@@ -43,6 +46,8 @@ public class DamageVignette : MonoBehaviour
                     StopCoroutine(currentCoroutine);
                 }
                 currentCoroutine = StartCoroutine(MajorPulse());
+                duckableSFXMixer.audioMixer.SetFloat("LowHPLowpass", 1000);
+                //duckableSFXMixer.FindMatchingGroups("")[0].audioMixer.
             }
             else
             {
@@ -51,6 +56,7 @@ public class DamageVignette : MonoBehaviour
                     StopCoroutine(currentCoroutine);
                 }
                 GetComponent<Image>().color = new Color(1, 1, 1, 0f);
+                duckableSFXMixer.audioMixer.SetFloat("LowHPLowpass", 100000);
             }
         }
         previousHealth = playerPhysics.GetCurrentHealth();
@@ -66,15 +72,15 @@ public class DamageVignette : MonoBehaviour
         {
             StartCoroutine(_playerHandler.VibrateDecay(0.05f, 0.1f));          // ba
             _heartBeat.Play();
-            yield return ExponentialDecayOpacity(0.28f, 0.45f, 0.15f, 0.5f);   
+            yield return ExponentialDecayOpacity(0.28f, 0.45f, 0.1f, 0.5f);   
 
-            yield return ExponentialDecayOpacity(0.45f, 0.28f, 0.1f, 0.3f);    // -
+            yield return ExponentialDecayOpacity(0.45f, 0.28f, 0.15f, 0.3f);    // -
 
             StartCoroutine(_playerHandler.VibrateDecay(0.05f, 0.05f));         // bum
             _heartBeat.Play();
             yield return ExponentialDecayOpacity(0.28f, 0.45f, 0.15f, 0.5f);   
 
-            yield return ExponentialDecayOpacity(0.45f, 0.28f, 0.5f, 0.1f);    // ...
+            yield return ExponentialDecayOpacity(0.45f, 0.28f, 1.2f, 0.1f);    // ...
         }
     }
 
@@ -85,15 +91,15 @@ public class DamageVignette : MonoBehaviour
         {
             StartCoroutine(_playerHandler.VibrateDecay(0.3f, 0.05f));      // ba
             _heartBeat.Play();
-            yield return ExponentialDecayOpacity(0.6f, 0.8f, 0.1f, 0.5f);  
+            yield return ExponentialDecayOpacity(0.6f, 0.8f, 0.05f, 0.5f);  
 
-            yield return ExponentialDecayOpacity(0.8f, 0.6f, 0.1f, 0.3f);  // -
+            yield return ExponentialDecayOpacity(0.8f, 0.6f, 0.15f, 0.3f);  // -
 
             StartCoroutine(_playerHandler.VibrateDecay(0.3f, 0.01f));      // bum
             _heartBeat.Play();
-            yield return ExponentialDecayOpacity(0.6f, 0.8f, 0.1f, 0.5f);  
+            yield return ExponentialDecayOpacity(0.6f, 1.0f, 0.1f, 0.5f);  
 
-            yield return ExponentialDecayOpacity(0.8f, 0.6f, 0.4f, 0.1f);  // ...
+            yield return ExponentialDecayOpacity(1.0f, 0.6f, 0.6f, 0.1f);  // ...
 
         }
     }

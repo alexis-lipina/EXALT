@@ -422,9 +422,6 @@ public class EntityPhysics : DynamicPhysics
 
         MoveWithCollision(force.x * _pushForceMultiplier, force.y * _pushForceMultiplier); //TODO : HEY UHHHH THIS DOESNT DO ANYTHING IF THEYRE MOVING ALREADY I DONT THINK
         _netForces += (Vector3)(force);
-
-        GetComponent<AudioSource>().clip = HitSounds[UnityEngine.Random.Range(0, HitSounds.Count)];
-        GetComponent<AudioSource>().Play();
         hasBeenHit = true;
         currentHP -= damage;
         entityHandler.JustGotHit(force);
@@ -435,6 +432,8 @@ public class EntityPhysics : DynamicPhysics
             Debug.Log("Playing damage flash");
             entityHandler.Flinch();
             StartCoroutine(TakeDamageFlash(force.normalized));
+            GetComponent<AudioSource>().clip = HitSounds[UnityEngine.Random.Range(0, HitSounds.Count)];
+            GetComponent<AudioSource>().Play();
         }
         if (currentHP <= 0)
         {

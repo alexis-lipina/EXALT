@@ -302,6 +302,8 @@ public class PlayerHandler : EntityHandler
     [SerializeField] AudioClip SFX_SolFlail_Vanish;
     [SerializeField] AudioClip SFX_SolFlail_Catch;
 
+    [SerializeField] AudioClip SFX_Death;
+
     public ElementType GetStyle()
     {
         return _currentStyle;
@@ -2481,19 +2483,21 @@ public class PlayerHandler : EntityHandler
     {
         Debug.Log("Playing death");
         // flash that black + white final slam, freeze time for a moment
+        _audioSource.clip = SFX_Death;
+        _audioSource.Play();
         _deathFlash.SetBlammoDirection(killingBlowDirection);
         _deathFlash.transform.position = new Vector3(characterSprite.transform.position.x, characterSprite.transform.position.y, FollowingCamera.transform.position.z + 2.0f);
         SpriteRenderer[] renderers = _deathFlash.GetComponentsInChildren<SpriteRenderer>();
         for (int i = 0; i < renderers.Length; i++)
         {
-            if (renderers[i].name != "Background") renderers[i].enabled = true;
+            /*if (renderers[i].name != "Background")*/ renderers[i].enabled = true;
         }
 
         _gameplayUI.GetComponent<CanvasGroup>().alpha = 0.0f; // Disable visibility game ui for a moment 
 
         yield return new WaitForEndOfFrame();
         Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(0.25f);
+        yield return new WaitForSecondsRealtime(1.0f);
 
         Time.timeScale = 0.5f; // -------------| RESUME TIME |--------------
 

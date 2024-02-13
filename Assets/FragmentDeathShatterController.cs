@@ -28,7 +28,7 @@ public class FragmentDeathShatterController : MonoBehaviour
 
     private void OnValidate()
     {
-        ShatterInternal();
+        //ShatterInternal();
 
     }
 

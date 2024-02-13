@@ -111,6 +111,11 @@ public class FinalBossFragment : EntityHandler
     private CameraScript _camera;
 
 
+    [Space(10)]
+    [SerializeField] AudioClip ProjectileSummonSFX;
+    [SerializeField] AudioClip ProjectileLaunchSFX;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -610,6 +615,8 @@ public class FinalBossFragment : EntityHandler
             VolleySpears.Add(SpearProjectileWeapon.FireBullet(dirBulletToPlayer).GetComponentInChildren<ProjectilePhysics>());
             VolleySpears[i].transform.position = bulletPosition;
             VolleySpears[i].SetObjectElevation(entityPhysics.GetObjectElevation());
+            VolleySpears[i].GetComponent<AudioSource>().clip = ProjectileSummonSFX;
+            VolleySpears[i].GetComponent<AudioSource>().Play();
 
             yield return new WaitForSeconds(VolleySpawnDelay);
         }
@@ -617,6 +624,8 @@ public class FinalBossFragment : EntityHandler
         for (int i = 0; i < SpearsPerVolley; i++)
         {
             Vector2 dir = _player.GetEntityPhysics().transform.position - entityPhysics.transform.position;
+            VolleySpears[i].GetComponent<AudioSource>().clip = ProjectileLaunchSFX;
+            VolleySpears[i].GetComponent<AudioSource>().Play();
             VolleySpears[i].Speed = SpearSpeed;
             yield return new WaitForSeconds(VolleyFireDelay);
         }

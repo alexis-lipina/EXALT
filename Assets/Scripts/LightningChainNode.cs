@@ -31,6 +31,9 @@ public class LightningChainNode : MonoBehaviour
         gameObject.SetActive(true);
         if (_pooledNodes == null) _pooledNodes = new List<GameObject>();
 
+        
+        if (!_myEnemy) return; // enemy may have died in the interim
+
         //deal damage to enemy
         _myEnemy.Inflict(1, type:ElementType.ZAP, hitPauseDuration:0f);
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class FinalBossFragment : EntityHandler
 {
@@ -13,6 +14,7 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] List<SpriteRenderer> TEMP_SmallLaserVFX; // for now we're just gonna flash these really quickly
     [SerializeField] float CrystalHailDuration = 8.0f;
     [SerializeField] float SmallLaserCooldown = 3.0f;
+    [SerializeField] FinalBossCore bossCore;
     private bool bIsBossDoingSomething = false; // prevents the boss from doing multiple things at a time like a local AOE and also a volley, which probs would suck
     private Vector2 CenterPosition;
 
@@ -103,10 +105,27 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] FragmentDeathShatterController deathShatterController;
     [SerializeField] FragmentDeathShatterController healthBarShatterController;
     [SerializeField] Texture2D PP_ShatterTex_Mask;
-    [SerializeField] Texture2D PP_ShatterTex_MaskWhite;
+    [SerializeField] Texture2D PP_ShatterTex_Cracks;
+    [SerializeField] Texture2D PP_ShatterTex_Offsets;
+    [SerializeField] Texture2D PP_White;
+    [SerializeField] Texture2D PP_Black;
     [SerializeField] GameObject ShatterHealthSystem;
     [SerializeField] GameObject ShatterHealthBarBlock;
     [SerializeField] Sprite ShatterHealthBarNewTexture;
+    [SerializeField] EnvironmentPhysics CorpsePositionEnvtObj; // used to position player relative to the fragment
+    [SerializeField] SpriteRenderer CorpseSprite;
+    [SerializeField] AudioClip DeathSound;
+    [SerializeField] AudioClip FadeInSound;
+    [SerializeField] List<EndingGlitchUIText> GlitchTextPopups;
+    [SerializeField] AnimationCurve GlitchIntensityCurve;
+    [SerializeField] AnimationCurve GlitchMaskCurve;
+    [SerializeField] FadeTransition fadeTransition;
+    [SerializeField] private AudioMixerGroup DuckedSFXMixer;
+    [SerializeField] private AudioMixerGroup UnduckedSFXMixer;
+    [SerializeField] private List<EnvironmentPhysics> holeUnderneath; // for holes
+    [SerializeField] private List<CollapsingPlatform> cascadingFloorStarts;
+    [SerializeField] private EnvironmentPhysics newPlayerFallSavePoint;
+
     bool bIsDead = false;
     private CameraScript _camera;
 
@@ -144,6 +163,7 @@ public class FinalBossFragment : EntityHandler
         {
             //healthBarShatterController.gameObject.SetActive(false);
         }
+        CorpseSprite.enabled = false;
     }
 
     // Update is called once per frame
@@ -492,7 +512,6 @@ public class FinalBossFragment : EntityHandler
         deathShatterController.transform.position = new Vector3(deathShatterController.transform.position.x, deathShatterController.transform.position.y, _camera.transform.position.z + 2);
         deathShatterController.Shatter(DeathVector);
 
-
         ShatterHealthSystem.gameObject.SetActive(true);
         ShatterHealthSystem.transform.position = new Vector3(healthBarShatterController.transform.parent.position.x, healthBarShatterController.transform.parent.position.y, _camera.transform.position.z + 1);
         ShatterHealthBarBlock.GetComponent<SpriteRenderer>().sprite = ShatterHealthBarNewTexture;
@@ -501,24 +520,100 @@ public class FinalBossFragment : EntityHandler
         healthBarShatterController.gameObject.SetActive(true);
         healthBarShatterController.Shatter(DeathVector);
 
-        _camera.SetPostProcessParam("_ShatterMaskTex", PP_ShatterTex_MaskWhite);
+        _camera.SetPostProcessParam("_ShatterMaskTex", PP_White);
+        _camera.SetPostProcessParam("_CrackTex", PP_Black);
+        _camera.SetPostProcessParam("_OffsetTex", PP_Black);
 
 
+        entityPhysics.GetComponent<AudioSource>().outputAudioMixerGroup = UnduckedSFXMixer;
+
+        _player.GetEntityPhysics().GetComponent<AudioSource>().clip = DeathSound;
+        _player.GetEntityPhysics().GetComponent<AudioSource>().outputAudioMixerGroup = UnduckedSFXMixer;
+        _player.GetEntityPhysics().GetComponent<AudioSource>().Play();
 
         _player.ForceHideUI();
         Time.timeScale = 0.0f;
-        yield return new WaitForSecondsRealtime(3.0f);
-        Time.timeScale = 1.0f;
-        _player.ForceShowUI();
 
-        //yield return new WaitForSeconds(0.2f);
+        DuckedSFXMixer.audioMixer.SetFloat("FreezeFrameVolume", -80.0f);
+
+        yield return new WaitForSecondsRealtime(2.5f);
+
+        // show glitch text
+        for (int i = 0; i < GlitchTextPopups.Count; i++)
+        {
+            GlitchTextPopups[i].gameObject.SetActive(true);
+            entityPhysics.GetComponent<AudioSource>().clip = GlitchTextPopups[i].Appear();
+            entityPhysics.GetComponent<AudioSource>().pitch = Random.Range(0.9f, 1.1f);
+            entityPhysics.GetComponent<AudioSource>().Play();
+            yield return new WaitForSecondsRealtime(GlitchTextPopups[i].delayAfterAppear);
+        }
+
+        // everything's been shown. Transition back to realtime with some cool glitchy effects
+        _player.GetEntityPhysics().GetComponent<AudioSource>().clip = FadeInSound;
+        _player.GetEntityPhysics().GetComponent<AudioSource>().Play();
+
+
+        float phaseOutDuration = 1.0f;
+        float timer = 0.0f;
+        float updateInterval = 0.025f;
+        while (timer < phaseOutDuration)
+        {
+            _camera.SetPostProcessParam("_GlitchOffsetStrength", GlitchIntensityCurve.Evaluate(timer / phaseOutDuration));
+            _camera.SetPostProcessParam("_GlitchOffsetMask", GlitchMaskCurve.Evaluate(timer / phaseOutDuration));
+            _camera.SetPostProcessParam("_GlitchTime", timer);
+            yield return new WaitForSecondsRealtime(updateInterval);
+            timer += updateInterval;
+        }
+
+
+        // back to normal!
+
+        _player.GetEntityPhysics().GetComponent<AudioSource>().outputAudioMixerGroup = DuckedSFXMixer;
+        DuckedSFXMixer.audioMixer.SetFloat("FreezeFrameVolume", 0.0f);
+
+        Time.timeScale = 1.0f;
+        _camera.SetPostProcessParam("_GlitchOffsetStrength", 0.0f);
+        _camera.SetPostProcessParam("_GlitchOffsetMask", 0.0f);
+
+        _player.ForceShowUI();
+        fadeTransition.JustPlayFadeIn(Color.white, 2.0f); // TODO : kinda abusing this for a flash. not great for accessibility flashing settings
+        for (int i = 0; i < GlitchTextPopups.Count; i++)
+        {
+            GameObject.Destroy(GlitchTextPopups[i].gameObject); // we done with it
+        }
 
         _player.ShatterHealth();
 
         _camera.SetPostProcessParam("_ShatterMaskTex", PP_ShatterTex_Mask);
+        _camera.SetPostProcessParam("_CrackTex", PP_ShatterTex_Cracks);
+        _camera.SetPostProcessParam("_OffsetTex", PP_ShatterTex_Offsets);
 
         healthBarShatterController.gameObject.SetActive(false);
         ShatterHealthSystem.gameObject.SetActive(false);
+
+        // position player and camera in the correct location relative to the shattered fragment
+        Vector2 fragmentCorpseRoot = CorpsePositionEnvtObj.ObjectCollider.bounds.center;
+        Vector2 fragmentPositon = entityPhysics.transform.position;
+
+        Vector2 playerPosition = _player.GetEntityPhysics().transform.position;
+        _player.GetEntityPhysics().transform.position = (playerPosition - fragmentPositon) + fragmentCorpseRoot;
+        _camera.transform.position = ((Vector2)_camera.transform.position - fragmentPositon) + fragmentCorpseRoot;
+
+        CorpseSprite.enabled = true;
+        _player.StandFromCollapsePlayer();
+        _player.GetEntityPhysics().GetComponent<AudioSource>().outputAudioMixerGroup = DuckedSFXMixer;
+        foreach (var envtPhys in holeUnderneath)
+        {
+            GameObject.Destroy(envtPhys.gameObject);
+        }
+        foreach (var collapsable in cascadingFloorStarts)
+        {
+            collapsable.PropagateInvalidReposition();
+            collapsable.StartCollapse();
+        }
+        _player.GetEntityPhysics().ForceSavePosition(newPlayerFallSavePoint);
+
+        bossCore.GetEntityPhysics().transform.position = fragmentCorpseRoot;
 
         Destroy(gameObject);
     }

@@ -10,15 +10,24 @@ public class FinalBossCore : EntityHandler
     private Vector2 PreviousVelocity;
 
     [SerializeField] private List<FinalBossFragment> OrbitingFragments; // order matters, determines order in which fragments descend
+    [SerializeField] private FinalBossFragment Fragment_North;
+    [SerializeField] private FinalBossFragment Fragment_South;
+    [SerializeField] private FinalBossFragment Fragment_East;
+    [SerializeField] private FinalBossFragment Fragment_West;
     [SerializeField] private float orbitRate; // degrees per second
     [SerializeField] private float orbitRadius; 
     FinalBossFragment CurrentlyDescendedFragment;
 
+    [Header("Superlaser Stuff")] // ALL vfx that occur when you charge the lightning bolt to destroy this guy
     [SerializeField] private RestPlatform SuperlaserRestPlatform;
     [SerializeField] private List<SpriteRenderer> LaserVFX;
     [SerializeField] Animator AttackFlash;
     private float _superlaserCharge = 0.0f;
-    private float _superlaserChargeRate = 0.125f; // superlasers per second
+    private float _superlaserChargeRate = 0.125f; // superlasers per second (1 / duration)
+    // positions that fragments should be in for superlaser to start
+    [SerializeField] AnimationCurve SuperlaserFragmentRepositionCurve; // normalize curve that lets fragments ease in and out of their motion into position.
+    [SerializeField] Vector2 SuperlaserChargeStartPositionalOffset; // fragments are pulled in by this amount (x for east/west, y for north/south) from the SuperlaserPosition_Dir while charging superlaser
+    [SerializeField] Vector2 SuperlaserChargeEndPositionalOffset; // fragments are pulled in by this amount (x for east/west, y for north/south) from the SuperlaserPosition_Dir while charging superlaser
 
     // small laser
     private bool bReadyToAttack = true;
@@ -52,6 +61,7 @@ public class FinalBossCore : EntityHandler
     enum FinalBossState { CHASE, SUPERWEAPON, FLINCH }
     private FinalBossState CurrentState;
     private PlayerHandler _player;
+    private Coroutine CurrentOrbitingFragmentCoroutine;
 
     [Space(10)]
     [Header("AUDIO")]
@@ -63,11 +73,13 @@ public class FinalBossCore : EntityHandler
     {
         _player = GameObject.FindObjectOfType<PlayerHandler>();
         CurrentState = FinalBossState.SUPERWEAPON;
+        if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
+        CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
         foreach (var rend in LaserVFX)
         {
             rend.enabled = false;
         }
-        StartCoroutine(Orbit());
+        //StartCoroutine(Orbit());
     }
 
     // Update is called once per frame
@@ -89,6 +101,8 @@ public class FinalBossCore : EntityHandler
                 if (!CurrentlyDescendedFragment)
                 {
                     CurrentState = FinalBossState.SUPERWEAPON;
+                    if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
+                    CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
                 }
                 break;
             case FinalBossState.SUPERWEAPON:
@@ -160,6 +174,9 @@ public class FinalBossCore : EntityHandler
             if (OrbitingFragments.Count > 0)
             {
                 DropFragment();
+                if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
+                CurrentOrbitingFragmentCoroutine = StartCoroutine(Orbit());
+
                 CurrentState = FinalBossState.FLINCH;
                 _superlaserCharge = 0.0f;
                 _primeAudioSource.Stop();
@@ -250,6 +267,39 @@ public class FinalBossCore : EntityHandler
         bReadyToAttack = true;
     }
 
+    // Gets core and all boss fragments into their rightful positions to charge laser.
+    IEnumerator PositionFragmentsForSuperlaser()
+    {
+        Vector2 offset = SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position - entityPhysics.transform.position;
+        float EstimatedTimeForBossToArrive = offset.magnitude / MaxSpeed - 0.5f;
+        float timer = 0.0f;
+        Vector2 StartPosition_North = Fragment_North == null ? Vector2.zero : (Vector2)Fragment_North.GetEntityPhysics().transform.position; 
+        Vector2 StartPosition_South = Fragment_South == null ? Vector2.zero : (Vector2)Fragment_South.GetEntityPhysics().transform.position; 
+        Vector2 StartPosition_East = Fragment_East == null ? Vector2.zero : (Vector2)Fragment_East.GetEntityPhysics().transform.position; 
+        Vector2 StartPosition_West = Fragment_West == null ? Vector2.zero : (Vector2)Fragment_West.GetEntityPhysics().transform.position;
+
+        // new, edits a field that was previously manually assingned
+        Vector2 EndPosition_North = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(0, 1);
+        Vector2 EndPosition_South = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(0, -1);
+        Vector2 EndPosition_East = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(1, 0) + new Vector2(-2, 0);
+        Vector2 EndPosition_West = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(-1, 0);
+
+
+        while (timer < EstimatedTimeForBossToArrive)
+        {
+            float normalizedProgress = SuperlaserFragmentRepositionCurve.Evaluate(timer / EstimatedTimeForBossToArrive);
+
+            if (Fragment_North) Fragment_North.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_North, EndPosition_North, normalizedProgress);
+            if (Fragment_South) Fragment_South.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_South, EndPosition_South, normalizedProgress);
+            if (Fragment_East) Fragment_East.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_East, EndPosition_East, normalizedProgress);
+            if (Fragment_West) Fragment_West.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_West, EndPosition_West, normalizedProgress);
+
+            timer += Time.deltaTime;
+            yield return null; // should just make this run every frame?
+        }
+
+    }
+
     IEnumerator FireSuperlaser()
     {
         foreach (var rend in LaserVFX)
@@ -260,6 +310,8 @@ public class FinalBossCore : EntityHandler
         _primeAudioSource.Play();
         GetComponent<Animation>().Play("testsuperlaser");
         AttackFlash.GetComponent<SpriteRenderer>().enabled = false;
+        if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
+        CurrentOrbitingFragmentCoroutine = StartCoroutine(AnimateFragmentsDuringSuperlaser());
 
         yield return new WaitForSeconds(7.5f);
         // play lens flare flash thing
@@ -267,6 +319,35 @@ public class FinalBossCore : EntityHandler
         AttackFlash.Play("BigFlare", 0, 0);
         yield return new WaitForSeconds(0.5f);
         AttackFlash.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    IEnumerator AnimateFragmentsDuringSuperlaser()
+    {
+        Vector2 StartPosition_North = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(0, 1);
+        Vector2 StartPosition_South = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(0, -1);
+        Vector2 StartPosition_East = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(1, 0) + new Vector2(-2, 0);
+        Vector2 StartPosition_West = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeStartPositionalOffset * new Vector2(-1, 0);
+
+        Vector2 EndPosition_North = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeEndPositionalOffset * new Vector2(0, 1);
+        Vector2 EndPosition_South = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeEndPositionalOffset * new Vector2(0, -1);
+        Vector2 EndPosition_East = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeEndPositionalOffset * new Vector2(1, 0) + new Vector2(-2, 0);
+        Vector2 EndPosition_West = (Vector2)SuperlaserRestPlatform.GetComponent<EnvironmentPhysics>().TopSprite.transform.position + SuperlaserChargeEndPositionalOffset * new Vector2(-1, 0);
+
+        float timer = 0.0f;
+        float duration = 1.0f / _superlaserChargeRate;
+        while (timer < duration)
+        {
+            float normalizedProgress = SuperlaserFragmentRepositionCurve.Evaluate(timer / duration);
+
+            if (Fragment_North) Fragment_North.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_North, EndPosition_North, normalizedProgress);
+            if (Fragment_South) Fragment_South.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_South, EndPosition_South, normalizedProgress);
+            if (Fragment_East) Fragment_East.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_East, EndPosition_East, normalizedProgress);
+            if (Fragment_West) Fragment_West.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_West, EndPosition_West, normalizedProgress);
+
+            timer += Time.deltaTime;
+            yield return null; // should just make this run every frame?
+        }
+        
     }
 
 

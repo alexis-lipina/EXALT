@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 using Rewired;
+using UnityEngine.Audio;
 
 public enum ElementType
 {
@@ -216,7 +217,7 @@ public class PlayerHandler : EntityHandler
     private bool _changeStyle_HasChanged = false;
 
     // Collapse
-    private const float COLLAPSE_STAND_DURATION = 1.0f;
+    private const float COLLAPSE_STAND_DURATION = 1.5f;
 
     // Taking damage
     private Vector2 _lastHitDirection = Vector2.right;
@@ -304,6 +305,13 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] AudioClip SFX_Death;
 
+    [SerializeField] AudioMixerGroup AudioMixer_Ducked; // mutes sound effects when player dies or other stuff happens
+    [SerializeField] AudioMixerGroup AudioMixer_Unducked; // plays directly to SFX mixer/bus
+    [SerializeField] AnimationCurve AudioFadeInCurve; // mutes sound effects when player dies or other stuff happens
+
+    [SerializeField] Texture2D PP_Black;
+    [SerializeField] Texture2D PP_White;
+
     public ElementType GetStyle()
     {
         return _currentStyle;
@@ -384,6 +392,10 @@ public class PlayerHandler : EntityHandler
         weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
         EyeGlowSprite.material.SetFloat("_CurrentElement", 4);
+        StartCoroutine(FadeInAudio());
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_ShatterMaskTex", PP_White);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_CrackTex", PP_Black);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_OffsetTex", PP_Black);
         Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
         Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
     }
@@ -2291,6 +2303,7 @@ public class PlayerHandler : EntityHandler
         if (StateTimer > COLLAPSE_STAND_DURATION)
         {
             CurrentState = PlayerState.IDLE;
+            currentFaceDirection = FaceDirection.SOUTH;
         }
         StateTimer += Time.deltaTime;
     }
@@ -2485,6 +2498,9 @@ public class PlayerHandler : EntityHandler
         // flash that black + white final slam, freeze time for a moment
         _audioSource.clip = SFX_Death;
         _audioSource.Play();
+        _audioSource.outputAudioMixerGroup = AudioMixer_Unducked;
+        AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", -80.0f);
+
         _deathFlash.SetBlammoDirection(killingBlowDirection);
         _deathFlash.transform.position = new Vector3(characterSprite.transform.position.x, characterSprite.transform.position.y, FollowingCamera.transform.position.z + 2.0f);
         SpriteRenderer[] renderers = _deathFlash.GetComponentsInChildren<SpriteRenderer>();
@@ -2665,6 +2681,21 @@ public class PlayerHandler : EntityHandler
             yield return new WaitForEndOfFrame();
         }
         weaponGlowSprite.material.SetFloat("_Opacity", glowcurve.Evaluate(glowcurve.keys[glowcurve.length - 1].time));
+    }
+
+    private IEnumerator FadeInAudio()
+    {
+        float duration = 1.0f;
+        float startVolume = -80.0f; // this is as low as the dB scale goes
+        float endVolume = 0.0f; // unaltered volume
+        float timer = 0.0f;
+        while (timer < duration)
+        {
+            AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", Mathf.Lerp(startVolume, endVolume, AudioFadeInCurve.Evaluate(timer / duration)));
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", endVolume);
     }
 
     public void ForceHideUI()

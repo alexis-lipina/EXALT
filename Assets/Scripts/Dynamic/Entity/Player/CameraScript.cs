@@ -207,11 +207,29 @@ public class CameraScript : MonoBehaviour
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
+        //Graphics.Blit(source, destination);
+        //Graphics.Blit(destination, source);
+        //Graphics.Blit(source, destination);
+        //Graphics.Blit(destination, source);
+
+        //RenderTexture buffer = new RenderTexture(source.descriptor);
+        RenderTexture temp = RenderTexture.GetTemporary(source.descriptor);
+        //int index = 0;
+        //Graphics.Blit(source, doubleBuffer[index]);
+        int toggle = -1;
+        //Graphics.Blit(source, temp);
+
         foreach (Material ppm in _postProcessMaterials)
         {
-            Graphics.Blit(source, destination, ppm);
+            Graphics.Blit(source, temp, ppm);
+            Graphics.Blit(temp, source);
+            toggle *= -1;
         }
-        //Graphics.Blit(source, destination);
+        RenderTexture.ReleaseTemporary(temp);
+        Graphics.Blit(temp, destination);
+
+        // it inverts over the x (vertically) every other time if I don't run the below nightmare. I don't know why. blitting back and forth just makes it invert?
+        //Graphics.Blit(source, destination, new Vector2(1.0f, toggle), new Vector2(0.0f, toggle == -1 ? 1.0f : 0.0f)); 
     }
 
     public void SetPostProcessParam(string param, Texture2D tex)
@@ -219,6 +237,13 @@ public class CameraScript : MonoBehaviour
         foreach (Material ppm in _postProcessMaterials)
         {
             ppm.SetTexture(param, tex);
+        }
+    }
+    public void SetPostProcessParam(string param, float value)
+    {
+        foreach (Material ppm in _postProcessMaterials)
+        {
+            ppm.SetFloat(param, value);
         }
     }
 }

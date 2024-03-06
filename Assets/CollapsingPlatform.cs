@@ -8,7 +8,7 @@ public class CollapsingPlatform : MonoBehaviour
     [SerializeField] private bool CanCollapseByTrigger = false;
     [SerializeField] private TriggerVolume Trigger;
     [SerializeField] private float RumbleDuration = 1.0f;
-    [SerializeField] private CollapsingPlatform[] DependentCollapsingPlatforms; //nodes which depend on this one for support
+    [SerializeField] private List<CollapsingPlatform> DependentCollapsingPlatforms; //nodes which depend on this one for support
 
 
     private float RumbleTimer;
@@ -17,7 +17,39 @@ public class CollapsingPlatform : MonoBehaviour
     private bool IsCollapsing = false;
 
     private EnvironmentPhysics environmentPhysics;
-    
+
+    [SerializeField] private bool GenerateCollapseDependencies = false;
+
+    private void OnValidate()
+    {
+        if (GenerateCollapseDependencies)
+        {
+            DependentCollapsingPlatforms.Clear();
+            GenerateCollapseDependencies = false;
+            Collider2D[] nearbyColliders = Physics2D.OverlapBoxAll(GetComponent<BoxCollider2D>().bounds.center, GetComponent<BoxCollider2D>().bounds.size + new Vector3(0.25f, 0.25f, 0.0f), 0f);
+            foreach (Collider2D collider in nearbyColliders)
+            {
+                CollapsingPlatform nearbyPlatform = collider.GetComponent<CollapsingPlatform>();
+                if (nearbyPlatform && nearbyPlatform != this)
+                {
+                    DependentCollapsingPlatforms.Add(nearbyPlatform);
+                }
+            }
+        }    
+    }
+
+    //recursively invalidate all dependent platforms as save positions.
+    public void PropagateInvalidReposition() 
+    {
+        GetComponent<EnvironmentPhysics>().IsSavePoint = false;
+        foreach (CollapsingPlatform platform in DependentCollapsingPlatforms)
+        {
+            if (platform.GetComponent<EnvironmentPhysics>().IsSavePoint == true) // only hit platforms that havent been hit already
+            {
+                platform.PropagateInvalidReposition();
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -51,7 +83,7 @@ public class CollapsingPlatform : MonoBehaviour
         float originalBottomHeight = environmentPhysics.BottomHeight;
 
         //propagate collapse
-        for (int i = 0; i < DependentCollapsingPlatforms.Length; i++)
+        for (int i = 0; i < DependentCollapsingPlatforms.Count; i++)
         {
             StartCoroutine(PropagateTo(DependentCollapsingPlatforms[i]));
         }

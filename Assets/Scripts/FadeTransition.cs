@@ -118,4 +118,21 @@ public class FadeTransition : MonoBehaviour
         PlayerHandler.PREVIOUS_SCENE_DOOR = doorName;
         SceneManager.LoadScene(sceneName);
     }
+
+    // when we want to force a fullscreen color fadein animation
+    public void JustPlayFadeIn(Color transitionColor, float rate)
+    {
+        StartCoroutine(JustFadeIn(transitionColor, rate));
+    }
+
+    private IEnumerator JustFadeIn(Color transitionColor, float rate)
+    {
+        while (transitionColor.a > 0)
+        {
+            yield return new WaitForSeconds(0.01f);
+            GetComponent<Image>().color = transitionColor;
+            transitionColor.a -= 0.02f * rate;
+        }
+        GetComponent<Image>().color = new Color(0, 0, 0, 0);
+    }
 }

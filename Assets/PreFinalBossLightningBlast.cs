@@ -22,6 +22,22 @@ public class PreFinalBossLightningBlast : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // init lightning
+        foreach (var asdf in LightningBolts_Near)
+        {
+            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        }
+        // init lightning
+        foreach (var asdf in LightningBolts_Mid)
+        {
+            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        }
+        // init lightning
+        foreach (var asdf in LightningBolts_Far)
+        {
+            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        }
+
         StartCoroutine(RunVFX());
     }
 

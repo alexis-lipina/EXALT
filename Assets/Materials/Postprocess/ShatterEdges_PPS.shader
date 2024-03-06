@@ -1,4 +1,8 @@
-﻿Shader "Unlit/Glitch_PPS"
+﻿/// <summary>
+/// This postprocess effect causes the edges of the screen to shatter like glass. It's intended for the final boss sequence where the player loses
+/// max HP as they defeat fragments of the boss. 
+/// </summary>
+Shader "Unlit/ShatterEdges_PPS"
 {
 	Properties
 	{

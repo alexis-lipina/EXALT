@@ -307,6 +307,13 @@ public class EntityPhysics : DynamicPhysics
 
     }
 
+    public void ForceSavePosition(EnvironmentPhysics newObject)
+    {
+        lastFootHold = new KeyValuePair<Vector2, EnvironmentPhysics>(newObject.ObjectCollider.bounds.center, newObject);
+    }
+
+
+
     /// <summary>
     /// "Teleports" the entity to the last terrain object they were standing on (used when someone falls off a cliff and needs to stay alive)
     /// </summary>

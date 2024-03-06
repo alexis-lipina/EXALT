@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShinyWallMat
-  m_Shader: {fileID: 4800000, guid: adc9b1aec512f714cbc6f871acd944d7, type: 3}
+  m_Name: ShinyPlatformMaterial
+  m_Shader: {fileID: 4800000, guid: 9b60f6fe27212af468500ffd21e7ef50, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -28,7 +28,9 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BottomElevation: 0
     - _Opacity: 1
-    - _TopElevation: 0
-    m_Colors: []
+    - _PlatformElevation: 0
+    m_Colors:
+    - _BGColor: {r: 0.764151, g: 0.26312745, b: 0.44405264, a: 1}
+    - _FGColor: {r: 0.9833998, g: 0.7122642, b: 1, a: 1}
+    - _OpaqueColor: {r: 0.745283, g: 0.63529414, b: 0.71692395, a: 1}

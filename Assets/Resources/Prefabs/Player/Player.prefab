@@ -178,7 +178,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.03, y: 0.03}
+  m_Size: {x: 0.1875, y: 0.1875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -695,7 +695,8 @@ AudioSource:
   m_GameObject: {fileID: 2045082382}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243856126841341690, guid: 474747a46c17dc94fabdff20510ef39a,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 193cdc9ff1c01174e9aa5edc6bdaf0db, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -2370,6 +2371,16 @@ MonoBehaviour:
   SFX_SolFlail_Vanish: {fileID: 8300000, guid: a9e7f5cf707651840878a3fa8d5dcc80, type: 3}
   SFX_SolFlail_Catch: {fileID: 8300000, guid: c821333237ed66c4e8e993f0e25d0ed0, type: 3}
   SFX_Death: {fileID: 8300000, guid: ef36920f38a824a429e61d4a79cc311b, type: 3}
+  AudioMixer_Ducked: {fileID: 0}
+  AudioMixer_Unducked: {fileID: 0}
+  AudioFadeInCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PP_Black: {fileID: 2800000, guid: f47864bb80bcae445bc7580b11f91e39, type: 3}
+  PP_White: {fileID: 2800000, guid: 547ae5d10d966394296a5c1e3c780243, type: 3}
 --- !u!114 &114281109244806438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2920,7 +2931,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.16, y: 0.16}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3473,7 +3484,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 64, y: 4.125}
+  m_Size: {x: 128, y: 4.125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4054,7 +4065,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 64, y: 128}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

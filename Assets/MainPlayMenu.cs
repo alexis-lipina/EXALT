@@ -27,6 +27,11 @@ public class MainPlayMenu : MonoBehaviour
         SceneManager.LoadScene("CampaignStart");
     }
 
+    public void FinalBossButtonPressed()
+    {
+        SceneManager.LoadScene("FinalBoss");
+    }
+
     public void OnBackToMainMenuPressed()
     {
         gameObject.SetActive(false);

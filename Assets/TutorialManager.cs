@@ -19,10 +19,13 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private List<EnemySpawner> _spawners_South;
     [SerializeField] private EnemySpawner _spawnerCenter;
     [SerializeField] private List<EnemySpawner> _spawners_Corners;
+    [SerializeField] private RestPlatform _exitRestPlatform;
+    [SerializeField] private SpriteRenderer _exitRestPlatformGlowSprite;
 
-    private static readonly string[] STEP_FireTransition = { "Hold <ChangeStyle_Fire> to equip |fire|Flame|white| element", "" };
-    private static readonly string[] STEP_VoidTransition = { "Hold <ChangeStyle_Void> to equip |void|void|white| element", "" };
+    private static readonly string[] STEP_FireTransition = { "Hold <ChangeStyle_Fire> to equip |fire|sol|white| element", "" };
+    private static readonly string[] STEP_VoidTransition = { "Hold <ChangeStyle_Void> to equip |void|rift|white| element", "" };
     private static readonly string[] STEP_ZapTransition = { "Hold <ChangeStyle_Zap> to equip |zap|storm|white| element", "" };
+    private static readonly string[] STEP_IchorTransition = { "Hold <ChangeStyle_Ichor> to equip |ichor|ichor|white| element", "" };
 
     private static readonly string[] STEP_Energy_Explanation = { "Energy is spent to cast elemental magic", "" };
     private static readonly string[] STEP_Energy_Recovery = { "Recover energy by meleeing enemies", "or press <Rest> to rest" };
@@ -32,34 +35,42 @@ public class TutorialManager : MonoBehaviour
     private static readonly string[] STEP_SimpleMelee = { "<Melee> to melee attack", "" };
 
     private static readonly string[] STEP_ElementalMelee_Intro = { "Melee 3 times to perform an", "elemental melee" };
-    private static readonly string[] STEP_ElementalMelee_ZapAttack = { "|zap|Zap|white| elemental melee causes", "chain lightning" };
-    private static readonly string[] STEP_ElementalMelee_VoidAttack = { "|void|Void|white| elemental melee", "pushes enemies" };
-    private static readonly string[] STEP_ElementalMelee_FireAttack = { "|fire|Flame|white| elemental melee", "burns enemies" };
+    private static readonly string[] STEP_ElementalMelee_ZapAttack = { "|zap|Storm|white| elemental melee causes", "chain lightning" };
+    private static readonly string[] STEP_ElementalMelee_VoidAttack = { "|void|Rift|white| elemental melee", "pushes enemies" };
+    private static readonly string[] STEP_ElementalMelee_FireAttack = { "|fire|Sol|white| elemental melee", "burns enemies" };
+    private static readonly string[] STEP_ElementalMelee_IchorAttack = { "|ichor|Ichor|white| elemental melee", "crystallizes enemies" };
 
     private static readonly string[] STEP_ElementalRanged_Intro = { "Use <RangedAttack> to throw", "elemental magic" };
     private static readonly string[] STEP_ElementalRanged_Aim_KBM = { "Use mouse cursor to aim", "" };
     private static readonly string[] STEP_ElementalRanged_Aim_Gamepad = { "Use <STICK_R> to aim", "" };
-    private static readonly string[] STEP_ElementalRanged_FireAttack = { "Cast |fire|FIRE|white| elemental magic to throw", "a bouncing fireball" };
-    private static readonly string[] STEP_ElementalRanged_VoidAttack = { "cast |void|Void|white| elemental magic to throw", "a seeking missile" };
-    private static readonly string[] STEP_ElementalRanged_ZapAttack = { "Cast |zap|Zap|white| elemental magic to throw", "a lightning bolt" };
+    private static readonly string[] STEP_ElementalRanged_FireAttack = { "Cast |fire|Sol|white| elemental magic to throw", "a bouncing fireball" };
+    private static readonly string[] STEP_ElementalRanged_VoidAttack = { "cast |void|Rift|white| elemental magic to throw", "a seeking missile" };
+    private static readonly string[] STEP_ElementalRanged_ZapAttack = { "Cast |zap|Storm|white| elemental magic to throw", "a lightning bolt" };
+    private static readonly string[] STEP_ElementalRanged_IchorAttack = { "Cast |ichor|Ichor|white| elemental magic to throw", "a crystallizing shard" };
 
     private static readonly string[] STEP_ElementalPrime_Intro = { "Blink <Blink> through an enemy to place", "an elemental curse on them" }; //Prime = Curse, Detonation = Trigger
     private static readonly string[] STEP_ElementalDetonation_Intro1 = { "CURSES have no effect", "until they are TRIGGERED" };
     private static readonly string[] STEP_ElementalDetonation_Intro2 = { "Use ELEMENTAL MELEE or MAGIC", "to TRIGGER all CURSES on an enemy" };
 
-    private static readonly string[] STEP_ElementalDetonation_Zap = { "|zap|Zap|white| Curses strike the cursed enemy", "with a damaging lightning bolt" };
-    private static readonly string[] STEP_ElementalDetonation_Fire = { "|fire|FIRE|white| Curses cause a fiery explosion", "" };
-    private static readonly string[] STEP_ElementalDetonation_Void = { "|void|Void|white| Curses pull nearby enemies closer", "" };
+    private static readonly string[] STEP_ElementalDetonation_Zap = { "|zap|Storm|white| Curses strike the cursed enemy", "with a damaging lightning bolt" };
+    private static readonly string[] STEP_ElementalDetonation_Fire = { "|fire|Sol|white| Curses cause a fiery explosion", "" };
+    private static readonly string[] STEP_ElementalDetonation_Void = { "|void|Rift|white| Curses pull nearby enemies closer", "" };
+    private static readonly string[] STEP_ElementalDetonation_Ichor1 = { "|ichor|Ichor|white| Curses instantly", "|ichor|crystallize|white| enemies" };
+    private static readonly string[] STEP_ElementalDetonation_Ichor2 = { "Killing |ichor|Crystallized|white| enemies", "drops health pickups" };
 
 
     private static readonly string[] STEP_ElementalDetonation_All1 = { "Many curses can be stacked", "on one enemy" };
-    private static readonly string[] STEP_ElementalDetonation_All2 = { "|void|Stack |fire|many |zap|curses |white|on many enemies", "for widespread destruction" };
+    private static readonly string[] STEP_ElementalDetonation_All2 = { "|void|Stack |fire|many |ichor|different |zap|curses |white|", "for widespread destruction" };
 
     private static readonly string[] STEP_ElementalShield_Intro1 = { "Some enemies have", "elemental shields" };
     private static readonly string[] STEP_ElementalShield_Intro2 = { "Shields can only be broken by", "matching elemental curses" };
 
-    private static readonly string[] STEP_Heal1 = { "Hold <Heal> to spend 4 energy", "to quickly heal" };
-    private static readonly string[] STEP_Heal2 = { "Or press <Rest> to rest", "" };
+    //private static readonly string[] STEP_Heal1 = { "Hold <Heal> to spend 4 energy", "to quickly heal" };
+    private static readonly string[] STEP_Heal = { "Press <Rest> to rest", " to recover energy and health" };
+
+
+    private static readonly string[] STEP_RestPlatform1 = { "Some platforms respond", " to your presence" };
+    private static readonly string[] STEP_RestPlatform2 = { "Rest<Rest> on these platforms", "and use <Melee> to channel energy into them" };
 
     private static readonly string[] STEP_Deflect = { "Melee enemy projectiles", "to deflect them" };
 
@@ -75,7 +86,7 @@ public class TutorialManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _exitBridge.gameObject.SetActive(false);
+        //_exitBridge.gameObject.SetActive(false);
         hintTextManager = HintTextManager.GetInstanceOf();
 
         // This functionality has been moved to LevelManager
@@ -99,6 +110,8 @@ public class TutorialManager : MonoBehaviour
     {
         // hide the bridge! TODO : Probably should do this in a more dignified way, like have it lerp away or something
         _entranceBridge.gameObject.SetActive(false);
+        _exitRestPlatform.IsUseable = false;
+        _exitRestPlatformGlowSprite.enabled = false;
 
         hintTextManager.ShowHintText(STEP_SimpleMelee[0], STEP_SimpleMelee[1]);
 
@@ -283,7 +296,58 @@ public class TutorialManager : MonoBehaviour
         }
         readyToProgress = false;
 
-        // ====================================================| ELEMENTAL RANGED TEST - FIRE
+        //=======================================================| ELEMENTAL MELEE TEST - ICHOR
+        #region Fire Element Test
+        if (_playerHandler.GetElementalAttunement() != ElementType.ICHOR)
+        {
+            hintTextManager.HideHintText();
+
+            hintTextManager.ShowHintText(STEP_IchorTransition[0], STEP_IchorTransition[1]);
+
+            while (!readyToProgress)
+            {
+                readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ICHOR;
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+        readyToProgress = false;
+        #endregion
+
+        hintTextManager.HideHintText();
+        hintTextManager.ShowHintText(STEP_ElementalMelee_IchorAttack[0], STEP_ElementalMelee_IchorAttack[1]);
+
+        yield return new WaitForSeconds(3.0f);
+        enemies.Add(_spawners_East[1].SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
+        enemies.Add(_spawners_East[4].SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
+        enemies.Add(_spawners_West[1].SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
+        enemies.Add(_spawners_West[4].SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
+
+        while (!readyToProgress)
+        {
+            #region Fire Element Test
+            if (_playerHandler.GetElementalAttunement() != ElementType.ICHOR)
+            {
+                hintTextManager.HideHintText();
+
+                hintTextManager.ShowHintText(STEP_IchorTransition[0], STEP_IchorTransition[1]);
+
+                while (!readyToProgress)
+                {
+                    readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ICHOR;
+                    yield return new WaitForSeconds(0.5f);
+                }
+                hintTextManager.HideHintText();
+                hintTextManager.ShowHintText(STEP_ElementalMelee_IchorAttack[0], STEP_ElementalMelee_IchorAttack[1]);
+            }
+            #endregion
+            ClearDeadEnemies(ref enemies);
+
+            readyToProgress = enemies.Count == 0;
+            yield return new WaitForSeconds(0.5f);
+        }
+        readyToProgress = false;
+
+        // ====================================================| ELEMENTAL RANGED TEST - ICHOR
         hintTextManager.HideHintText();
 
         hintTextManager.ShowHintText(STEP_ElementalRanged_Intro[0], STEP_ElementalRanged_Intro[1]);
@@ -300,6 +364,96 @@ public class TutorialManager : MonoBehaviour
             hintTextManager.ShowHintText(STEP_ElementalRanged_Aim_Gamepad[0], STEP_ElementalRanged_Aim_Gamepad[1]);
         }
         yield return new WaitForSeconds(4.0f);
+
+        #region Fire Element Test
+        if (_playerHandler.GetElementalAttunement() != ElementType.ICHOR)
+        {
+            hintTextManager.HideHintText();
+
+            hintTextManager.ShowHintText(STEP_IchorTransition[0], STEP_IchorTransition[1]);
+
+            while (!readyToProgress)
+            {
+                readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ICHOR;
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+        readyToProgress = false;
+        #endregion
+        hintTextManager.HideHintText();
+        hintTextManager.ShowHintText(STEP_ElementalRanged_IchorAttack[0], STEP_ElementalRanged_IchorAttack[1]);
+
+        yield return new WaitForSeconds(3.0f);
+        enemies.Add(_spawners_East[1].SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
+        enemies.Add(_spawners_East[4].SpawnEnemy(isHostile: false).GetComponentInChildren<EntityPhysics>());
+        while (!readyToProgress)
+        {
+            #region Energy Level Test
+            if (_playerHandler.CurrentEnergy < 2)
+            {
+                if (!hasExplainedEnergy)
+                {
+                    hasExplainedEnergy = true;
+                    hintTextManager.HideHintText();
+                    hintTextManager.ShowHintText(STEP_Energy_Explanation[0], STEP_Energy_Explanation[1]);
+                    yield return new WaitForSeconds(4.0f);
+                }
+                hintTextManager.HideHintText();
+                hintTextManager.ShowHintText(STEP_Energy_Recovery[0], STEP_Energy_Recovery[1]);
+                while (!readyToProgress)
+                {
+                    readyToProgress = _playerHandler.CurrentEnergy > 4;
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+            #endregion
+            #region Fire Element Test
+            if (_playerHandler.GetElementalAttunement() != ElementType.ICHOR)
+            {
+                hintTextManager.HideHintText();
+
+                hintTextManager.ShowHintText(STEP_IchorTransition[0], STEP_IchorTransition[1]);
+
+                while (!readyToProgress)
+                {
+                    readyToProgress = _playerHandler.GetElementalAttunement() == ElementType.ICHOR;
+                    yield return new WaitForSeconds(0.5f);
+                }
+                hintTextManager.HideHintText();
+                hintTextManager.ShowHintText(STEP_ElementalRanged_IchorAttack[0], STEP_ElementalRanged_IchorAttack[1]);
+            }
+            #endregion
+
+            ClearDeadEnemies(ref enemies);
+            readyToProgress = enemies.Count == 0;
+            yield return new WaitForSeconds(0.5f);
+        }
+        readyToProgress = false;
+
+        #region Energy Level Test
+        if (_playerHandler.CurrentEnergy < 2)
+        {
+            if (!hasExplainedEnergy)
+            {
+                hasExplainedEnergy = true;
+                hintTextManager.HideHintText();
+                hintTextManager.ShowHintText(STEP_Energy_Explanation[0], STEP_Energy_Explanation[1]);
+                yield return new WaitForSeconds(4.0f);
+            }
+            hintTextManager.HideHintText();
+
+            hintTextManager.ShowHintText(STEP_Energy_Recovery[0], STEP_Energy_Recovery[1]);
+
+            while (!readyToProgress)
+            {
+                readyToProgress = _playerHandler.CurrentEnergy > 4;
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+        #endregion
+
+        // ====================================================| ELEMENTAL RANGED TEST - FIRE
+        hintTextManager.HideHintText();
 
         #region Fire Element Test
         if (_playerHandler.GetElementalAttunement() != ElementType.FIRE)
@@ -830,8 +984,9 @@ public class TutorialManager : MonoBehaviour
         }
 
         int playerHealth = _playerHandler.GetEntityPhysics().GetCurrentHealth();
-        hintTextManager.ShowHintText(STEP_Heal1[0], STEP_Heal1[1]);
-        
+        hintTextManager.ShowHintText(STEP_Heal[0], STEP_Heal[1]);
+
+        /*
         while (!readyToProgress)
         {
             //give player enough energy to heal
@@ -843,18 +998,21 @@ public class TutorialManager : MonoBehaviour
             //check if player has recovered at all
             readyToProgress = playerHealth < _playerHandler.GetEntityPhysics().GetCurrentHealth();
         }
+        */
         readyToProgress = false;
+        /*
 
         hintTextManager.HideHintText();
         
         hintTextManager.ShowHintText(STEP_Heal2[0], STEP_Heal2[1]);
-        
+        */
         while (!readyToProgress)
         {
             yield return new WaitForSeconds(0.2f);
             readyToProgress = _playerHandler.GetEntityPhysics().GetCurrentHealth() == _playerHandler.GetEntityPhysics().GetMaxHealth();
         }
         readyToProgress = false;
+        
 
         //===================================================| DEFLECT INSTRUCTION
 
@@ -876,6 +1034,7 @@ public class TutorialManager : MonoBehaviour
                     }
                 }
             }
+            deflectionExists = true; // tempfix
             //ensure player doesnt die
             if (_playerHandler.GetEntityPhysics().GetCurrentHealth() < 2)
             {
@@ -900,8 +1059,21 @@ public class TutorialManager : MonoBehaviour
         }
         readyToProgress = false;
         hintTextManager.HideHintText();
-        hintTextManager.ShowHintText("DONE!", "You now know everything!");
-        _exitBridge.gameObject.SetActive(true);
+
+        // rest platform
+
+        hintTextManager.ShowHintText(STEP_RestPlatform1[0], STEP_RestPlatform1[1]);
+        _exitRestPlatform.IsUseable = true;
+        _exitRestPlatformGlowSprite.enabled = true;
+
+        yield return new WaitForSeconds(4.0f);
+
+        hintTextManager.ShowHintText(STEP_RestPlatform2[0], STEP_RestPlatform2[1]);
+
+
+
+        //hintTextManager.ShowHintText("DONE!", "You now know everything!");
+        //_exitBridge.gameObject.SetActive(true);
 
     }
 

@@ -23,11 +23,13 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private List<SpriteRenderer> LaserVFX;
     [SerializeField] Animator AttackFlash;
     private float _superlaserCharge = 0.0f;
-    private float _superlaserChargeRate = 0.125f; // superlasers per second (1 / duration)
+    private float _superlaserChargeRate = 0.083333f; // superlasers per second (1 / duration)
     // positions that fragments should be in for superlaser to start
     [SerializeField] AnimationCurve SuperlaserFragmentRepositionCurve; // normalize curve that lets fragments ease in and out of their motion into position.
     [SerializeField] Vector2 SuperlaserChargeStartPositionalOffset; // fragments are pulled in by this amount (x for east/west, y for north/south) from the SuperlaserPosition_Dir while charging superlaser
     [SerializeField] Vector2 SuperlaserChargeEndPositionalOffset; // fragments are pulled in by this amount (x for east/west, y for north/south) from the SuperlaserPosition_Dir while charging superlaser
+    bool ShouldRushToSuperlaserPosition = false;
+    [SerializeField] SpriteRenderer restPlatformGlowSprite;
 
     // small laser
     private bool bReadyToAttack = true;
@@ -56,7 +58,7 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltDurationOverCharge;
 
-    [SerializeField] TriggerVolume BossCameraVolume;
+    [SerializeField] public TriggerVolume BossCameraVolume;
 
     enum FinalBossState { CHASE, SUPERWEAPON, FLINCH }
     private FinalBossState CurrentState;
@@ -73,12 +75,14 @@ public class FinalBossCore : EntityHandler
     {
         _player = GameObject.FindObjectOfType<PlayerHandler>();
         CurrentState = FinalBossState.SUPERWEAPON;
+        SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().CurrentTargetFragment = OrbitingFragments[0];
         if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
         CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
         foreach (var rend in LaserVFX)
         {
             rend.enabled = false;
         }
+        restPlatformGlowSprite.gameObject.active = false;
         //StartCoroutine(Orbit());
     }
 
@@ -89,6 +93,8 @@ public class FinalBossCore : EntityHandler
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_TopElevation", entityPhysics.GetTopHeight());
         entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_BottomElevation", entityPhysics.GetBottomHeight());
         BossCameraVolume.transform.position = entityPhysics.transform.position;
+
+        ShouldRushToSuperlaserPosition = ((Vector2)SuperlaserRestPlatform.transform.position - (Vector2)_player.GetEntityPhysics().transform.position).magnitude < 5.0f; // if player is close to middle we want to hurry up to catch up
     }
 
     protected override void ExecuteState()
@@ -101,6 +107,7 @@ public class FinalBossCore : EntityHandler
                 if (!CurrentlyDescendedFragment)
                 {
                     CurrentState = FinalBossState.SUPERWEAPON;
+                    SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().CurrentTargetFragment = OrbitingFragments[0];
                     if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
                     CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
                 }
@@ -143,6 +150,31 @@ public class FinalBossCore : EntityHandler
     }
 
     
+    public void OnStruckByLightning()
+    {
+        if (SuperlaserRestPlatform.CurrentChargeAmount == 1.0f) // you win!
+        {
+            if (OrbitingFragments.Count > 0)
+            {
+                DropFragment();
+                SuperlaserRestPlatform.IsUseable = false;
+                restPlatformGlowSprite.gameObject.active = false;
+                if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
+                CurrentOrbitingFragmentCoroutine = StartCoroutine(Orbit());
+
+                CurrentState = FinalBossState.FLINCH;
+                _superlaserCharge = 0.0f;
+                _primeAudioSource.Stop();
+            }
+            else
+            {
+                // self destruct
+                StopAllCoroutines();
+                //CurrentState = FragmentState.DEATH;
+                StartCoroutine(Death());
+            }
+        }
+    }
 
     private void State_Superlaser()
     {
@@ -150,7 +182,7 @@ public class FinalBossCore : EntityHandler
         if (offset.magnitude > 1.0f)
         {
             offset.Normalize();
-            Vector2 currentspeed = offset * MaxSpeed * Time.deltaTime;
+            Vector2 currentspeed = offset * MaxSpeed * Time.deltaTime * (ShouldRushToSuperlaserPosition ? 2.0f : 1.0f);
             entityPhysics.MoveWithCollision(currentspeed.x, currentspeed.y);
         }
         else if (offset.magnitude != 0.0f)
@@ -169,6 +201,7 @@ public class FinalBossCore : EntityHandler
         _superlaserCharge += _superlaserChargeRate * Time.deltaTime;
         //SuperlaserProjection.material.SetFloat("_Opacity", _superlaserCharge);
 
+        /*
         if (SuperlaserRestPlatform.CurrentChargeAmount == 1.0f) // you win!
         {
             if (OrbitingFragments.Count > 0)
@@ -188,7 +221,7 @@ public class FinalBossCore : EntityHandler
                 //CurrentState = FragmentState.DEATH;
                 StartCoroutine(Death());
             }
-        }
+        }*/
         if (_superlaserCharge > 1.0f) // you lose!
         {
             _player.GetEntityPhysics().Inflict(1000, hitPauseDuration:0.25f);
@@ -294,7 +327,7 @@ public class FinalBossCore : EntityHandler
             if (Fragment_East) Fragment_East.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_East, EndPosition_East, normalizedProgress);
             if (Fragment_West) Fragment_West.GetEntityPhysics().transform.position = Vector2.Lerp(StartPosition_West, EndPosition_West, normalizedProgress);
 
-            timer += Time.deltaTime;
+            timer += Time.deltaTime * (ShouldRushToSuperlaserPosition ? 2.0f : 1.0f);
             yield return null; // should just make this run every frame?
         }
 
@@ -306,6 +339,9 @@ public class FinalBossCore : EntityHandler
         {
             rend.enabled = true;
         }
+        SuperlaserRestPlatform.IsUseable = true;
+        restPlatformGlowSprite.gameObject.active = true;
+        SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().bShouldRunRampUp = true;
         _primeAudioSource.clip = _superlaserAudioClip;
         _primeAudioSource.Play();
         GetComponent<Animation>().Play("testsuperlaser");
@@ -313,7 +349,7 @@ public class FinalBossCore : EntityHandler
         if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
         CurrentOrbitingFragmentCoroutine = StartCoroutine(AnimateFragmentsDuringSuperlaser());
 
-        yield return new WaitForSeconds(7.5f);
+        yield return new WaitForSeconds(11.5f);
         // play lens flare flash thing
         AttackFlash.GetComponent<SpriteRenderer>().enabled = true;
         AttackFlash.Play("BigFlare", 0, 0);
@@ -361,6 +397,7 @@ public class FinalBossCore : EntityHandler
         while (CurrentState == FinalBossState.SUPERWEAPON)
         {
             currentChargeAmount = SuperlaserRestPlatform.CurrentChargeAmount;
+            /*
             if (currentChargeAmount > 0.0f)
             {
                 if (!hasPlayerStartedCharging) // bunch of stuff that runs the moment player begins charging
@@ -375,7 +412,7 @@ public class FinalBossCore : EntityHandler
                 }
 
                 //StormProjection.material.SetFloat("_Opacity", currentChargeAmount);
-            }
+            }*/
             yield return new WaitForEndOfFrame();
         }
     }

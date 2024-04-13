@@ -14,6 +14,7 @@ public class CameraSizeChangeVolume : MonoBehaviour
     TriggerVolume ourTrigger;
     Vector3 TriggerSize;
     float DampedSizeValue = 1.0f;
+    public bool IsSizeChangeActive = true;
 
     const float DefaultCameraSize = 16.875f;
     float CurrentVelocity = 0.0f;
@@ -33,7 +34,7 @@ public class CameraSizeChangeVolume : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ourTrigger.IsTriggered)
+        if (ourTrigger.IsTriggered && IsSizeChangeActive)
         {
             float value = 1.0f;
             switch (AxisToChangeAlong)

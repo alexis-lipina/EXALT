@@ -141,7 +141,7 @@
 
 				color.a = src_opacity * _Opacity;
 
-				color = color * (1 - _MaskOn) + _MaskColor * _MaskOn;
+				color = color * (1 - _MaskOn) + _MaskColor * _MaskOn * color.a;
 
 				return color;
 			}

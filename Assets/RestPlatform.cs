@@ -9,6 +9,7 @@ public class RestPlatform : MonoBehaviour
     public TriggerVolume PlayerDetectVolume;
     public PlayerHandler Player;
     public float RestDurationToStart = 1.0f;
+    public bool IsPlayerRestingOn = false;
     public bool IsActivated = false;
     float timer = 0.0f;
     float currentGlowAmount = 0.0f;
@@ -36,17 +37,43 @@ public class RestPlatform : MonoBehaviour
     public UnityEvent OnChargeAmountChanged;
     public UnityEvent OnFullyCharged;
 
+    private bool _isUseable = true; // whether player can interact with it at this time.
+    public bool IsUseable
+    {
+        get { return _isUseable; }
+        set
+        {
+            if (!value)
+            {
+                if (IsActionPressed)
+                {
+                    OnActionReleased.Invoke();
+                    IsActionPressed = false;
+                }
+                InputDirection = Vector2.zero;
+                if (IsActivated)
+                {
+                    OnDeactivated.Invoke();
+                    IsActivated = false;
+                }
+            }
+            _isUseable = value;
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
+        if (StaysFullCharge && CurrentChargeAmount == 1.0f) return;
+
         if (GlowEffect_Aura && GlowEffect_Pattern)
         {
             GlowEffect_Pattern.material.SetFloat("_GlowLevel", currentGlowAmount);
             GlowEffect_Aura.material.SetFloat("_GlowLevel", currentGlowAmount);
             currentGlowAmount = Mathf.Lerp(currentGlowAmount, targetGlowAmount, 0.2f);
         }
-        if (IsActionPressed && CurrentChargeAmount != 1.0f)
+        
+        if (IsActionPressed && CurrentChargeAmount != 1.0f && IsUseable)
         {
             CurrentChargeAmount = Mathf.Clamp01(CurrentChargeAmount + ChargeRate * Time.deltaTime);
             OnChargeAmountChanged.Invoke();

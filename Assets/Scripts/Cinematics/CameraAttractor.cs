@@ -30,6 +30,10 @@ public class CameraAttractor : MonoBehaviour
             if (UseCurve) return AttractionCurve.Evaluate(CurrentCurveValue);
             return _pullMagnitude; 
         }
+        set
+        {
+            _pullMagnitude = value;
+        }
     }
 
     // Start is called before the first frame update

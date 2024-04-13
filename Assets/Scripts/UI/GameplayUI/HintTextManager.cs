@@ -39,6 +39,7 @@ public class HintTextManager : MonoBehaviour
         _inputEncoder.Add("ChangeStyle_Fire", '@');
         _inputEncoder.Add("ChangeStyle_Zap", '%');
         _inputEncoder.Add("ChangeStyle_Void", '&');
+        _inputEncoder.Add("ChangeStyle_Ichor", '+');
         _inputEncoder.Add("Rest", '*');
         _inputEncoder.Add("Jump", '$');
         _inputEncoder.Add("Blink", '}');

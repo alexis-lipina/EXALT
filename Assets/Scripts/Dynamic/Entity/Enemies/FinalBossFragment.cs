@@ -25,14 +25,16 @@ public class FinalBossFragment : EntityHandler
     [Space(10)]
     [Header("Storm VFX")] // ALL vfx that occur when you charge the lightning bolt to destroy this guy
     [SerializeField] ZapFXController TopLightningBolt;
-    [SerializeField] GameObject TopBoltZapPoint; // point on the crystal that should be hit with the zap
+    [SerializeField] public GameObject TopBoltZapPoint; // point on the crystal that should be hit with the zap
     [SerializeField] ZapFXController BottomLightningBolt;
-    [SerializeField] GameObject BottomBoltZapPoint; // point on the crystal that should be hit with the zap
+    [SerializeField] public GameObject BottomBoltZapPoint; // point on the crystal that should be hit with the zap
     [SerializeField] List<ZapFXController> RandomAmbientLightningBolts;
     [SerializeField] private AnimationCurve BoltDelayOverCharge;
     [SerializeField] private AnimationCurve BoltSizeOverCharge;
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltDurationOverCharge;
+    [SerializeField] public SpriteRenderer LightningFlashGlow;
+    public SpriteRenderer FullFragmentGlowFX;
 
     [SerializeField] private PlayerProjection _projection;
     [SerializeField] private DynamicPhysics _physics;
@@ -164,6 +166,8 @@ public class FinalBossFragment : EntityHandler
             //healthBarShatterController.gameObject.SetActive(false);
         }
         CorpseSprite.enabled = false;
+        LightningFlashGlow.gameObject.SetActive(false);
+
     }
 
     // Update is called once per frame

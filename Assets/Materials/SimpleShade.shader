@@ -7,6 +7,8 @@ Shader "Custom/SimpleShade"
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
+		_Opacity("Opacity", Float) = 1
+
 	}
 
 	SubShader
@@ -49,12 +51,14 @@ Shader "Custom/SimpleShade"
 
 			sampler2D _MainTex;
 			float4 _Color;
+			float _Opacity;
 
 			float4 frag(vertOutput output) : COLOR
 			{
 				float4 color = tex2D(_MainTex, output.uv);
 				color *= output.color;
-				color.a = output.color.a;
+				color.a = output.color.a * _Opacity;
+				color = color * (_Opacity) + float4(1, 1, 1, 0) * (1 - _Opacity);
 				return color;
 			}
 			ENDCG

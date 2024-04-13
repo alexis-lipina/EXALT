@@ -2215,6 +2215,7 @@ public class PlayerHandler : EntityHandler
 
             if (CurrentRestPlatform) // control rest platform
             {
+                CurrentRestPlatform.IsPlayerRestingOn = true;
                 if (!CurrentRestPlatform.IsActivated)
                 {
                     CurrentRestPlatform.OnActivated.Invoke();
@@ -2252,6 +2253,7 @@ public class PlayerHandler : EntityHandler
         }
         else
         {
+            if (CurrentRestPlatform) CurrentRestPlatform.IsPlayerRestingOn = false;
             currentFaceDirection = FaceDirection.SOUTH;
             CurrentState = PlayerState.IDLE;
             isStanding = false;
@@ -2590,6 +2592,15 @@ public class PlayerHandler : EntityHandler
     {
         StateTimer = 0.0f;
         CurrentState = PlayerState.STAND_FROM_COLLAPSE;
+    }
+
+    public void ForceStandFromRest()
+    {
+        if (CurrentState == PlayerState.REST)
+        {
+            isStanding = true;
+            StateTimer = rest_kneel_duration;
+        }
     }
 
     public void OvertakeElement(ElementType newElement) // Forces player into one element

@@ -2,37 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SpriteRenderer))]
 public class RestPlatformTestSprite : MonoBehaviour
 {
     public RestPlatform ListenedRestPlatform;
     bool IsChargingDisplay = false;
     float DisplayEnergy = 0.0f;
-    public float ChargeRate = 0.1f;
-    public float DecayRate = 0.05f;
+    private SpriteRenderer _spriteRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (ListenedRestPlatform.IsActionPressed)
-        {
-            transform.localScale = new Vector3(0.95f * transform.localScale.x, 0.95f * transform.localScale.y, 0.95f * transform.localScale.z);
-        }
-        if (IsChargingDisplay)
-        {
-            DisplayEnergy += Time.deltaTime * ChargeRate;
-        }
-        else
-        {
-            DisplayEnergy -= Time.deltaTime * DecayRate;
-        }
-        DisplayEnergy = Mathf.Clamp(DisplayEnergy, 0, 1);
-        Shader.SetGlobalFloat("_FadeInMask", DisplayEnergy);
+
+        DisplayEnergy = ListenedRestPlatform.CurrentChargeAmount;
+        _spriteRenderer.material.SetFloat("_FadeInMask", DisplayEnergy);
+        //Shader.SetGlobalFloat("_FadeInMask", DisplayEnergy);
         //GetComponent<SpriteRenderer>().color.a = 0.0f;
     }
 

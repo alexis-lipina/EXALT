@@ -250,7 +250,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 9767676b4a40a0c4695d14d1ac12f40e, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -559,7 +559,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 72404258103f36945ae476e48cb36930, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 3c4edfa723e84884194caa4f5fe235ca, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -811,6 +811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _myEnemy: {fileID: 0}
   _sourcePosition: {x: -28.678423, y: 27.63, z: 0}
+  randomTimeMultiplier: 1
   _plumeFX: {fileID: 3187850318246974128}
   _arcFX: {fileID: 2035752016115595035}
 --- !u!212 &3687533949664289827

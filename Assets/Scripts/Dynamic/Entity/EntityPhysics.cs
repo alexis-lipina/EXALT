@@ -33,6 +33,7 @@ public class EntityPhysics : DynamicPhysics
 
     [SerializeField] protected int currentHP;
     [SerializeField] protected List<AudioClip> HitSounds;
+    [SerializeField] public bool IsImmune = false;
 
     private bool hasBeenHit;
     private bool isInvincible = false;
@@ -439,8 +440,11 @@ public class EntityPhysics : DynamicPhysics
             Debug.Log("Playing damage flash");
             entityHandler.Flinch();
             StartCoroutine(TakeDamageFlash(force.normalized));
-            GetComponent<AudioSource>().clip = HitSounds[UnityEngine.Random.Range(0, HitSounds.Count)];
-            GetComponent<AudioSource>().Play();
+            if (HitSounds.Count > 0)
+            {
+                GetComponent<AudioSource>().clip = HitSounds[UnityEngine.Random.Range(0, HitSounds.Count)];
+                GetComponent<AudioSource>().Play();
+            }
         }
         if (currentHP <= 0)
         {

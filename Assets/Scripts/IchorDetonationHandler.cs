@@ -106,11 +106,14 @@ public class IchorDetonationHandler : ProjectionHandler
         {
             if (collider.gameObject.tag == "Enemy")
             {
-                if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                if (!collider.GetComponent<EntityPhysics>().IsImmune)
                 {
-                    collider.GetComponent<EntityPhysics>().IchorCorrupt(3);
+                    if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                    {
+                        collider.GetComponent<EntityPhysics>().IchorCorrupt(3);
+                    }
+                    else collider.GetComponent<EntityPhysics>().IchorCorrupt(3);
                 }
-                else collider.GetComponent<EntityPhysics>().IchorCorrupt(3);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

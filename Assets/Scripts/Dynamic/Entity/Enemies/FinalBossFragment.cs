@@ -5,16 +5,22 @@ using UnityEngine.Audio;
 
 public class FinalBossFragment : EntityHandler
 {
+    [SerializeField] BossHealthBarManager _bossHealthManager;
+    [SerializeField] string _bossName;
     [SerializeField] MovingEnvironment _mainEnvironmentObject;
     [SerializeField] List<MovingEnvironment> EnvironmentObjects;
     [SerializeField] TriggerVolume PatrolArea; // idle unless player is within this volume
     [SerializeField] RestPlatform SuperlaserRestPlatform;
     [SerializeField] Animator AttackFlash;
     [SerializeField] List<BetterEnemySpawner> EnemySpawners;
+    [SerializeField] List<EnemySpawner> SimpleEnemySpawners;
     [SerializeField] List<SpriteRenderer> TEMP_SmallLaserVFX; // for now we're just gonna flash these really quickly
+    [SerializeField] int FragmentNumber = 0;
     [SerializeField] float CrystalHailDuration = 8.0f;
     [SerializeField] float SmallLaserCooldown = 3.0f;
     [SerializeField] FinalBossCore bossCore;
+    [SerializeField] AudioClip DeathScreenAmbience;
+    [SerializeField] AudioClip FragmentCombatMusic;
     private bool bIsBossDoingSomething = false; // prevents the boss from doing multiple things at a time like a local AOE and also a volley, which probs would suck
     private Vector2 CenterPosition;
 
@@ -86,11 +92,12 @@ public class FinalBossFragment : EntityHandler
     [Space(10)]
     [Header("Hail")]
     [SerializeField] Transform HailPrefab;
-    [SerializeField] float HailDuration = 8.0f;
-    [SerializeField] AnimationCurve HailDelayOverDuration;
+    //[SerializeField] float HailDuration = 8.0f;
+    [SerializeField] AnimationCurve HailDelayOverHealth;
     [SerializeField] Vector2 HailArea;
+    [SerializeField] Vector2 HailCenter;
     [SerializeField] float TargetedHailRadius;
-    [SerializeField] AnimationCurve TargetedHailDelayOverDuration;
+    [SerializeField] AnimationCurve TargetedHailDelayOverHealth;
     bool bIsHailing = false;
 
 
@@ -186,6 +193,8 @@ public class FinalBossFragment : EntityHandler
     }
     void ExecutePhase()
     {
+        if (IsLowered && entityPhysics.GetCurrentHealth() > 0) ExecuteFragmentSpecificState();
+        return;
         switch (CurrentPhase)
         {
             case FragmentPhase.LOWER_SPEARS:
@@ -203,6 +212,50 @@ public class FinalBossFragment : EntityHandler
                 State_Superlaser();
                 break;
             default:
+                break;
+        }
+    }
+
+    void ExecuteFragmentSpecificState()
+    {
+        switch (FragmentNumber)
+        {
+            case 1:
+                Wander();
+                ProximityLaserAOE();
+                break;
+            case 2:
+                Wander();
+                ProximityLaserAOE();
+                if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
+                foreach (EnemySpawner spawner in SimpleEnemySpawners)
+                {
+                    spawner.IsAutomaticallySpawning = true;
+                }
+                break;
+            case 3:
+                if (entityPhysics.GetCurrentHealth() > entityPhysics.GetMaxHealth() / 2)
+                {
+                    if (!bIsHailing) StartCoroutine(HailPlayer());
+                }
+                else
+                {
+                    Wander();
+                    ProximityLaserAOE();
+                    if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
+                    foreach (EnemySpawner spawner in SimpleEnemySpawners)
+                    {
+                        spawner.IsAutomaticallySpawning = true;
+                    }
+                }
+                break;
+            case 4:
+                Wander();
+                if (!bIsHailing)
+                {
+                    StartCoroutine(HailRandom());
+                    StartCoroutine(HailPlayer());
+                }
                 break;
         }
     }
@@ -459,7 +512,6 @@ public class FinalBossFragment : EntityHandler
             EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
             if (hit.tag == "Friend")
             {
-                hit.gameObject.GetComponent<EntityPhysics>().Inflict(1);
                 Debug.Log("Hit player!");
             }
         }
@@ -508,8 +560,23 @@ public class FinalBossFragment : EntityHandler
         */
         //StopCoroutine(_superlaserCoroutine);
         bIsDead = true;
+        bossCore.GetEntityPhysics().Inflict(1);
         if (!deathShatterController) Destroy(gameObject);
-        
+        _bossHealthManager.gameObject.SetActive(false);
+        MusicManager.GetMusicManager().CrossfadeToSong(0.0f, DeathScreenAmbience);
+        foreach (EnemySpawner spawner in SimpleEnemySpawners)
+        {
+            spawner.IsAutomaticallySpawning = false;
+        }
+
+        foreach (SwordEnemyHandler handler in GameObject.FindObjectsOfType<SwordEnemyHandler>())
+        {
+            handler.GetEntityPhysics().Inflict(100);
+        }
+        foreach (HailShard hail in GameObject.FindObjectsOfType<HailShard>())
+        {
+            GameObject.Destroy(hail.gameObject);
+        }
 
 
         deathShatterController.gameObject.SetActive(true);
@@ -542,6 +609,10 @@ public class FinalBossFragment : EntityHandler
 
         yield return new WaitForSecondsRealtime(2.5f);
 
+        if (GlitchTextPopups.Count == 0)
+        {
+            yield return new WaitForSecondsRealtime(3.0f);
+        }
         // show glitch text
         for (int i = 0; i < GlitchTextPopups.Count; i++)
         {
@@ -737,13 +808,29 @@ public class FinalBossFragment : EntityHandler
     {
         bIsHailing = true;
         float timer = 0.0f;
-        while (timer < HailDuration)
+        //while (timer < HailDuration)
+        while (true)
         {
-            float currentDelay = HailDelayOverDuration.Evaluate(timer / HailDuration);
-            Transform newHail = Instantiate(HailPrefab);
-            newHail.position = CenterPosition + new Vector2(Random.Range(-1.0f, 1.0f) * HailArea.x, Random.Range(-1.0f, 1.0f) * HailArea.y);
+            float currentDelay = HailDelayOverHealth.Evaluate(entityPhysics.GetCurrentHealth() / (float)entityPhysics.GetMaxHealth());
+            Vector2 target = HailCenter + new Vector2(Random.Range(-1.0f, 1.0f) * HailArea.x, Random.Range(-1.0f, 1.0f) * HailArea.y);
+            bool shouldDrop = false;
+            foreach (var asdf in Physics2D.OverlapPointAll(target))
+            {
+                if (asdf.GetComponent<EnvironmentPhysics>())
+                {
+                    shouldDrop = true;
+                }
+            }
+            if (shouldDrop)
+            {
+                Transform newHail = Instantiate(HailPrefab);
+                newHail.position = target;
+                newHail.GetComponent<HailShard>().playerPhys = _player.GetEntityPhysics();
+                
+            }
             timer += currentDelay;
             yield return new WaitForSeconds(currentDelay);
+
         }
         bIsHailing = false;
     }
@@ -752,7 +839,8 @@ public class FinalBossFragment : EntityHandler
     {
         bIsHailing = true;
         float timer = 0.0f;
-        while (timer < HailDuration)
+        //while (timer < HailDuration)
+        while (true)
         {
             Vector3 hailPosition = (Quaternion.Euler(0f, 0f, Random.Range(-180f, 180f)) * Vector3.right * Random.Range(0.0f, TargetedHailRadius));
             hailPosition.y *= 0.75f;
@@ -767,7 +855,7 @@ public class FinalBossFragment : EntityHandler
                     break;
                 }
             }
-            float currentDelay = TargetedHailDelayOverDuration.Evaluate(timer / HailDuration);
+            float currentDelay = TargetedHailDelayOverHealth.Evaluate(entityPhysics.GetCurrentHealth() / (float)entityPhysics.GetMaxHealth());
             timer += currentDelay;
             if (hitEnvironment)
             {
@@ -806,7 +894,11 @@ public class FinalBossFragment : EntityHandler
         SetElevation(newElevation);
         IsRaised = false;
         IsLowered = true;
+        MusicManager.GetMusicManager().CrossfadeToSong(0.0f, FragmentCombatMusic);
         CheckPhaseComplete();
+        _bossHealthManager.gameObject.SetActive(true);
+        _bossHealthManager.SetupForBoss(entityPhysics, _bossName);
+        _bossHealthManager.DramaticAppearance(0.5f);
     }
 
     protected override void ExecuteState()
@@ -845,9 +937,9 @@ public class FinalBossFragment : EntityHandler
 
     public override void JustGotHit(Vector2 hitDirection)
     {
-        // idk
-        //stateTimer = 1.0f;
-        //wasJustHit = true;
-        DeathVector = hitDirection;
+        if (hitDirection.sqrMagnitude > 0)
+        {
+            DeathVector = hitDirection;
+        }
     }
 }

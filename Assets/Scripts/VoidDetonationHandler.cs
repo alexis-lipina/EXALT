@@ -109,18 +109,21 @@ public class VoidDetonationHandler : ProjectionHandler
         {
             if (collider.gameObject.tag == "Enemy")
             {
-                if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                if (!collider.GetComponent<EntityPhysics>().IsImmune)
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, type:Element);
-                }
-                else
-                {
-                    Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
-                    collider.GetComponent<EntityPhysics>().Inflict(1, force:enemyToCenter.normalized * 2f, type:ElementType.VOID);
+                    if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                    {
+                        collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
+                    }
+                    else
+                    {
+                        Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
+                        collider.GetComponent<EntityPhysics>().Inflict(1, force: enemyToCenter.normalized * 2f, type: ElementType.VOID);
 
-                    Transform pullVFX = Instantiate(_pullVFXPrefab);
-                    pullVFX.position = collider.GetComponent<EntityPhysics>().ObjectSprite.transform.position;
-                    pullVFX.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, enemyToCenter)));
+                        Transform pullVFX = Instantiate(_pullVFXPrefab);
+                        pullVFX.position = collider.GetComponent<EntityPhysics>().ObjectSprite.transform.position;
+                        pullVFX.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.right, enemyToCenter)));
+                    }
                 }
             }
         }

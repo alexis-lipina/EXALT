@@ -133,18 +133,22 @@ public class FireDetonationHandler : ProjectionHandler
         {
             if (collider.gameObject.tag == "Enemy")
             {
-                if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                if (!collider.GetComponent<EntityPhysics>().IsImmune)
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(2, type: Element);
-                    collider.GetComponent<EntityPhysics>().Stagger();
-                    collider.GetComponent<EntityPhysics>().Burn();
+                    if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                    {
+                        collider.GetComponent<EntityPhysics>().Inflict(2, type: Element);
+                        collider.GetComponent<EntityPhysics>().Stagger();
+                        collider.GetComponent<EntityPhysics>().Burn();
+                    }
+                    else
+                    {
+                        collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
+                        collider.GetComponent<EntityPhysics>().Stagger();
+                        collider.GetComponent<EntityPhysics>().Burn();
+                    }
                 }
-                else
-                {
-                    collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
-                    collider.GetComponent<EntityPhysics>().Stagger();
-                    collider.GetComponent<EntityPhysics>().Burn();
-                }
+                
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);

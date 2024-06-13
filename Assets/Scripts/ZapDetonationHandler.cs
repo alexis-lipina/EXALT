@@ -86,8 +86,19 @@ public class ZapDetonationHandler : ProjectionHandler
         if (!hasDetonated)
         {
             _projection.SetOpacity(1f);
-            MoveTo(_sourceEnemy.transform.position);
-            _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
+            if (_sourceEnemy)
+            {
+                MoveTo(_sourceEnemy.transform.position);
+                _physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
+            }
+            else
+            {
+                AnimationSprite.enabled = false;
+                ColumnGlowSprite.enabled = false;
+                GetComponentInChildren<Animator>().Play("ZapDetonationIdle");
+
+                gameObject.SetActive(false);
+            }
         }
 
     }
@@ -104,11 +115,14 @@ public class ZapDetonationHandler : ProjectionHandler
         {
             if (collider.gameObject.tag == "Enemy")
             {
-                if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                if (!collider.GetComponent<EntityPhysics>().IsImmune)
                 {
-                    collider.GetComponent<EntityPhysics>().Inflict(5, type:Element);
+                    if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
+                    {
+                        collider.GetComponent<EntityPhysics>().Inflict(5, type: Element);
+                    }
+                    else collider.GetComponent<EntityPhysics>().Inflict(5, type: Element);
                 }
-                else collider.GetComponent<EntityPhysics>().Inflict(5, type:Element);
             }
         }
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.6f, 0.15f);
@@ -130,6 +144,8 @@ public class ZapDetonationHandler : ProjectionHandler
             timer -= Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
+        yield return new WaitForSeconds(GetComponent<AudioSource>().clip.length - DETONATION_DURATION);
+
         AnimationSprite.enabled = false;
         ColumnGlowSprite.enabled = false;
 

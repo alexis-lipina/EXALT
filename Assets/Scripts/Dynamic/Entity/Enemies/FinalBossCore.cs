@@ -5,6 +5,7 @@ using UnityEngine;
 // central part of the boss
 public class FinalBossCore : EntityHandler
 {
+    [SerializeField] private BossHealthBarManager _bossHealthBar;
     [SerializeField] private float Acceleration;
     [SerializeField] private float MaxSpeed;
     private Vector2 PreviousVelocity;
@@ -58,16 +59,24 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltDurationOverCharge;
 
+    [SerializeField] private List<Animation> CloudPartAnimations; // play when player is charging lightning bolt
+    [SerializeField] private StarController starController;
+    [SerializeField] private List<float> BackgroundVerticalOffsets; // offsets to background applied each time a fragment is killed - makes sky take up more and more space over the level
+    [SerializeField] private GameObject BackgroundToOffset;
+
     [SerializeField] public TriggerVolume BossCameraVolume;
 
     enum FinalBossState { CHASE, SUPERWEAPON, FLINCH }
     private FinalBossState CurrentState;
     private PlayerHandler _player;
     private Coroutine CurrentOrbitingFragmentCoroutine;
+    private bool _isFlinched = false;
 
     [Space(10)]
     [Header("AUDIO")]
     [SerializeField] private AudioClip _superlaserAudioClip;
+    [SerializeField] private List<AudioClip> _fragmentCombatMusic;
+    [SerializeField] private AudioClip _superlaserMusic;
 
 
     // Start is called before the first frame update
@@ -78,12 +87,20 @@ public class FinalBossCore : EntityHandler
         SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().CurrentTargetFragment = OrbitingFragments[0];
         if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
         CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
+        MusicManager.GetMusicManager().CrossfadeToSong(2.0f, _superlaserMusic);
         foreach (var rend in LaserVFX)
         {
             rend.enabled = false;
         }
         restPlatformGlowSprite.gameObject.active = false;
         //StartCoroutine(Orbit());
+        _bossHealthBar.SetupForBoss(entityPhysics, "ASPECT OF ICHOR");
+        _bossHealthBar.DramaticAppearance(3.0f);
+        
+        foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
+        {
+            asdf.OffsetOriginalPosition(new Vector2(0, 5));
+        }
     }
 
     // Update is called once per frame
@@ -102,14 +119,27 @@ public class FinalBossCore : EntityHandler
         switch (CurrentState)
         {
             case FinalBossState.CHASE:
-                ProximityLaserAOE();
-                ChasePlayer();
                 if (!CurrentlyDescendedFragment)
                 {
+                    Debug.Log("Changing boss state from chase to superweapon!");
                     CurrentState = FinalBossState.SUPERWEAPON;
                     SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().CurrentTargetFragment = OrbitingFragments[0];
                     if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
                     CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
+                    MusicManager.GetMusicManager().CrossfadeToSong(0.0f, _superlaserMusic);
+                    CloudPartAnimations[0].gameObject.SetActive(false); // we want to hide clouds from previous iteration since they dont always move offscreen, I think? may want to not do this, not sure
+                    starController.AdvancePhase();
+                    CloudPartAnimations.RemoveAt(0);
+                    foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
+                    {
+                        asdf.OffsetOriginalPosition(new Vector2(0, BackgroundVerticalOffsets[0]));
+                    }
+                    BackgroundVerticalOffsets.RemoveAt(0);
+                }
+                else
+                {
+                    ProximityLaserAOE();
+                    ChasePlayer();
                 }
                 break;
             case FinalBossState.SUPERWEAPON:
@@ -130,6 +160,7 @@ public class FinalBossCore : EntityHandler
                 CurrentlyDescendedFragment = OrbitingFragments[0];
                 OrbitingFragments.RemoveAt(0);
                 CurrentlyDescendedFragment.Descend();
+                CurrentlyDescendedFragment.GetEntityPhysics().IsImmune = false;
             }
             else
             {
@@ -244,7 +275,7 @@ public class FinalBossCore : EntityHandler
 
     void State_Flinch()
     {
-        StartCoroutine(DoFlinch());
+        if (!_isFlinched) StartCoroutine(DoFlinch());
     }
 
     void ProximityLaserAOE()
@@ -397,6 +428,11 @@ public class FinalBossCore : EntityHandler
         while (CurrentState == FinalBossState.SUPERWEAPON)
         {
             currentChargeAmount = SuperlaserRestPlatform.CurrentChargeAmount;
+            if (!CloudPartAnimations[0].isPlaying && currentChargeAmount > 0.1f)
+            {
+                CloudPartAnimations[0].Play();
+                CloudPartAnimations[0].GetComponent<AudioSource>().Play();
+            }
             /*
             if (currentChargeAmount > 0.0f)
             {
@@ -483,6 +519,7 @@ public class FinalBossCore : EntityHandler
 
     IEnumerator DoFlinch()
     {
+        _isFlinched = true;
         foreach (var rend in LaserVFX)
         {
             rend.enabled = false;
@@ -491,6 +528,8 @@ public class FinalBossCore : EntityHandler
         //entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = flinchSprite;
         yield return new WaitForSeconds(flinchDuration);
         //entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = normalSprite;
+        Debug.Log("Changing boss state to CHASE in DoFlinch");
         CurrentState = FinalBossState.CHASE;
+        _isFlinched = false;
     }
 }

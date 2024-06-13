@@ -47,7 +47,7 @@ public class LightningChainNode : MonoBehaviour
     private void Update()
     {
         if (numUpdatesSinceRun == 2) StartCoroutine(Spread());
-        else numUpdatesSinceRun++;
+        else numUpdatesSinceRun++; // TODO : I'm extremely sus of this but I dont wanna deal with it rn
     }
 
     IEnumerator PlayVFX()
@@ -80,7 +80,7 @@ public class LightningChainNode : MonoBehaviour
             if (nearbyEnemies[i].GetComponent<EntityPhysics>())
             {
                 numEnemiesNear++;
-                if (nearbyEnemies[i].gameObject.tag == "Enemy")
+                if (nearbyEnemies[i].gameObject.tag == "Enemy" && !nearbyEnemies[i].GetComponent<EntityPhysics>().IsImmune)
                 {
                     enemies.Add(nearbyEnemies[i].GetComponent<EntityPhysics>());
                     Debug.Log(nearbyEnemies[i].gameObject);
@@ -107,6 +107,7 @@ public class LightningChainNode : MonoBehaviour
         
 
         //return to pool
+        yield return new WaitForSeconds(1.0f); // TODO : This just lets sfx play out
         numUpdatesSinceRun = 0;
         ReturnNode(gameObject);
     }

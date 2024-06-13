@@ -114,6 +114,7 @@ MonoBehaviour:
   currentHP: 0
   HitSounds:
   - {fileID: 8300000, guid: 28e4fa48f00a1b34b9127791e2c3099f, type: 3}
+  IsImmune: 0
   currentNavEnvironmentObject: {fileID: 0}
   _spawner: {fileID: 0}
   IchorCorruptionAmount: 0
@@ -370,7 +371,7 @@ MonoBehaviour:
   entityPhysics: {fileID: 114302638073707500}
   navManager: {fileID: 0}
   target: {fileID: 0}
-  detectionRange: 60
+  detectionRange: 200
 --- !u!1 &1368671692545778
 GameObject:
   m_ObjectHideFlags: 0

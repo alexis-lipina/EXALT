@@ -919,6 +919,10 @@ public class SwordEnemyHandler : EntityHandler
         {
             Debug.Log("Returning melee enemy to pool");
             entityPhysics._spawner.ReturnToPool(transform.parent.gameObject.GetInstanceID());
+            if (!entityPhysics._spawner.UseObjectPooling)
+            {
+                Destroy(transform.parent.gameObject);
+            }
         }
         else
         {

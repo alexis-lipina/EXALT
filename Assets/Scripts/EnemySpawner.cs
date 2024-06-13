@@ -9,7 +9,8 @@ using UnityEngine;
 /// </summary>
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private bool IsAutomaticallySpawning = false;
+    [SerializeField] public bool IsAutomaticallySpawning = false;
+    [SerializeField] public bool UseObjectPooling = false; // im tired man. fix this later. maybe.
     [SerializeField] private int _maxEnemies;
     [SerializeField] private Transform _prefab;
     [SerializeField] private float _spawnInterval;
@@ -32,6 +33,8 @@ public class EnemySpawner : MonoBehaviour
         if (_enemyPool != null) return;
 
         //Debug.Log("Pool populating...");
+        if (!UseObjectPooling) return;
+
         _enemyPool = new Dictionary<int, GameObject>();
         GameObject tempEnemy;
         for (int i = 0; i < _maxEnemies; i++)
@@ -110,6 +113,7 @@ public class EnemySpawner : MonoBehaviour
         {
             tempEnemy.GetComponentInChildren<PathfindingAI>().SetDetectionRange(0.0f);
         }
+        tempPhysics.Heal(tempPhysics.GetMaxHealth() - tempPhysics.GetCurrentHealth());
 
         //give shield
         EntityHandler tempHandler = tempEnemy.GetComponentInChildren<EntityHandler>();
@@ -125,16 +129,19 @@ public class EnemySpawner : MonoBehaviour
 
     public GameObject GetFromPool()
     {
-        foreach (KeyValuePair<int, GameObject> entry in _enemyPool)
+        if (UseObjectPooling)
         {
-            if (entry.Value == null) continue; 
-            if (!entry.Value.activeSelf)
+            foreach (KeyValuePair<int, GameObject> entry in _enemyPool)
             {
-                enemiesAlive++;
-                
-                entry.Value.SetActive(true);
-                Debug.Log("Deploying");
-                return entry.Value;
+                if (entry.Value == null) continue;
+                if (!entry.Value.activeSelf)
+                {
+                    enemiesAlive++;
+
+                    entry.Value.SetActive(true);
+                    Debug.Log("Deploying");
+                    return entry.Value;
+                }
             }
         }
 
@@ -144,18 +151,23 @@ public class EnemySpawner : MonoBehaviour
         tempEnemy.GetComponentInChildren<EntityPhysics>().navManager = _navManager;
         tempEnemy.GetComponentInChildren<PathfindingAI>().target = _playerPhysics;
         tempEnemy.GetComponentInChildren<EntityPhysics>()._spawner = this;
-
-
         //tempEnemy.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
-        _enemyPool.Add(tempEnemy.GetInstanceID(), tempEnemy);
         tempEnemy.SetActive(true);
         enemiesAlive++;
 
+        if (!UseObjectPooling) return tempEnemy;
+
+        _enemyPool.Add(tempEnemy.GetInstanceID(), tempEnemy);
         return tempEnemy;
     }
 
     public void ReturnToPool(int instanceID)
     {
+        if (!UseObjectPooling)
+        {
+            enemiesAlive--;
+            return;
+        }
         if (!canRespawnEnemies)
         {
             _enemyPool[instanceID].gameObject.SetActive(false);

@@ -397,7 +397,7 @@ public class PlayerHandler : EntityHandler
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_CrackTex", PP_Black);
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_OffsetTex", PP_Black);
         Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
-        Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
+        //Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
     }
 
 
@@ -1696,7 +1696,7 @@ public class PlayerHandler : EntityHandler
                     Debug.Log("Owch!");
                     enemyPhysics.Inflict(HEAVYMELEE_ICHOR_DAMAGE, force: aimDirection.normalized * HEAVYMELEE_ICHOR_FORCE, type: ElementType.ICHOR);
                     obj.GetComponent<EntityPhysics>().Stagger();
-                    enemyPhysics.IchorCorrupt(1);                    
+                    enemyPhysics.IchorCorrupt(2);                    
                 }
             }
             else if (obj.GetComponent<ProjectilePhysics>())

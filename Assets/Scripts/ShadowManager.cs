@@ -97,6 +97,7 @@ public class ShadowManager : MonoBehaviour
         //Look at terrainTouched, get all lines which are within the sprite/collider, exclude overlaps
         foreach (GameObject obj in _terrainTouched.Keys)
         {
+            if (!obj) continue;
             tempBounds = obj.GetComponent<Collider2D>().bounds;
             tempPos = tempBounds.min;
 

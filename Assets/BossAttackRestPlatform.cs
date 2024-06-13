@@ -7,9 +7,10 @@ public class BossAttackRestPlatform : MonoBehaviour
     
     [SerializeField] ZapFXController TopLightningBolt;
     [SerializeField] ZapFXController BottomLightningBolt;
-    [SerializeField] List<ZapFXController> LightningBolts_Near; // these are all background
-    [SerializeField] List<ZapFXController> LightningBolts_Mid;
-    [SerializeField] List<ZapFXController> LightningBolts_Far;
+    [SerializeField] List<ZapFXController> LightningBolts_1; // these are all background
+    [SerializeField] List<ZapFXController> LightningBolts_2;
+    [SerializeField] List<ZapFXController> LightningBolts_3;
+    [SerializeField] List<ZapFXController> LightningBolts_4;
     
     // Note that these animation curves store 2 "normalized" value ranges. The range x=0...1 defines the value as charge builds, and the range 1...2 defines the value over the duration that the bolt takes to call down.
     [SerializeField] AnimationCurve BoltThicknessModifierOverCharge;
@@ -23,6 +24,7 @@ public class BossAttackRestPlatform : MonoBehaviour
     [SerializeField] private AnimationCurve ZapTargetPointScaleOverCharge;
     [SerializeField] private AnimationCurve CameraSizeOverCharge;
     [SerializeField] private AnimationCurve CameraAttractorPullOverCharge;
+    [SerializeField] private float CameraAttractorYPositionOffset = 50.0f; // adds this vertical offset to the camera attractor every time so the camera gets pulled closer to the sky & the sky takes up more of the frame
     [SerializeField] private List<SpriteRenderer> ColumnGlows;
     [SerializeField] private List<SpriteRenderer> AmbientGlows;
     [SerializeField] private List<GameObject> TargetTrackingObjects; // these follow the target on the x axis
@@ -37,30 +39,37 @@ public class BossAttackRestPlatform : MonoBehaviour
 
     [Space(10)]
     [Header("Play Lightning Bolt")]
+    public float BoltAnticipationDuration = 1.0f; // time between full-charged plate and the bolt being called down
     public FinalBossFragment CurrentTargetFragment;
     public FinalBossCore FinalBoss;
     [SerializeField] private GameObject TopBoltSource;
+    [SerializeField] private StarController starController;
 
 
     float timer = 0.0f;
     float charge = 0.0f;
+    int waveNumber = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         restPlatform = GetComponent<RestPlatform>();
         // init lightning
-        foreach (var asdf in LightningBolts_Near)
+        foreach (var asdf in LightningBolts_1)
         {
             asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
         }
         // init lightning
-        foreach (var asdf in LightningBolts_Mid)
+        foreach (var asdf in LightningBolts_2)
         {
             asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
         }
         // init lightning
-        foreach (var asdf in LightningBolts_Far)
+        foreach (var asdf in LightningBolts_3)
+        {
+            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        }
+        foreach (var asdf in LightningBolts_4)
         {
             asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
         }
@@ -69,6 +78,12 @@ public class BossAttackRestPlatform : MonoBehaviour
         _player = GameObject.FindObjectOfType<PlayerHandler>();
         foreach (SpriteRenderer asdf in ColumnGlows)
         {
+            asdf.enabled = true;
+            asdf.material.SetFloat("_Opacity", 0.0f);
+        }
+        foreach (SpriteRenderer asdf in AmbientGlows)
+        {
+            asdf.enabled = true;
             asdf.material.SetFloat("_Opacity", 0.0f);
         }
         _audioSource = GetComponent<AudioSource>();
@@ -101,19 +116,23 @@ public class BossAttackRestPlatform : MonoBehaviour
 
             ZapFXController bolt = null;
             float boltOffset = 0f;
-            switch (Random.Range(0, 3))
+            switch (Random.Range(waveNumber, 4)) // only run vfx for visible clouds
             {
                 case 0:
-                    bolt = LightningBolts_Near[Random.Range(0, LightningBolts_Near.Count)];
+                    bolt = LightningBolts_1[Random.Range(0, LightningBolts_1.Count)];
                     boltOffset = 25.0f;
                     break;
                 case 1:
-                    bolt = LightningBolts_Mid[Random.Range(0, LightningBolts_Mid.Count)];
+                    bolt = LightningBolts_2[Random.Range(0, LightningBolts_2.Count)];
                     boltOffset = 15.0f;
                     break;
                 case 2:
-                    bolt = LightningBolts_Far[Random.Range(0, LightningBolts_Far.Count)];
+                    bolt = LightningBolts_3[Random.Range(0, LightningBolts_3.Count)];
                     boltOffset = 7.5f;
+                    break;
+                case 3:
+                    bolt = LightningBolts_3[Random.Range(0, LightningBolts_4.Count)];
+                    boltOffset = 3.75f;
                     break;
             }
                     
@@ -137,21 +156,35 @@ public class BossAttackRestPlatform : MonoBehaviour
     // calls one bolt of lightning
     IEnumerator PulseLightningGlow(SpriteRenderer sprite, float duration)
     {
+        SpriteRenderer plumeGlow = sprite.transform.parent.GetComponentsInChildren<SpriteRenderer>()[2];
+        SpriteRenderer plumeWhite = sprite.transform.parent.GetComponentsInChildren<SpriteRenderer>()[1];
+
         sprite.enabled = true;
+        plumeWhite.enabled = true;
+        plumeGlow.enabled = true;
 
         float scaleModifier = FlashScaleOverCharge.Evaluate(charge);
 
         sprite.transform.localScale *= scaleModifier;
+        //plumeGlow.transform.localScale *= scaleModifier;
+        //plumeWhite.transform.localScale *= scaleModifier;
 
         float timer = 0.0f;
         while (timer < duration)
         {
             sprite.material.SetFloat("_Opacity", BoltGlowOverTime.Evaluate(timer / duration));
+            plumeGlow.material.SetFloat("_Opacity", BoltGlowOverTime.Evaluate(timer / duration));
+            plumeWhite.transform.localScale = new Vector3(BoltGlowOverTime.Evaluate(timer / duration), plumeWhite.transform.localScale.y, plumeWhite.transform.localScale.z);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         sprite.transform.localScale /= scaleModifier;
+        //plumeWhite.transform.localScale /= scaleModifier;
+        //plumeGlow.transform.localScale /= scaleModifier;
+
         sprite.enabled = false;
+        plumeWhite.enabled = false;
+        plumeGlow.enabled = false;
     }
 
     public void LightningBolt()
@@ -197,9 +230,11 @@ public class BossAttackRestPlatform : MonoBehaviour
 
                 FinalBoss.BossCameraVolume.GetComponent<CameraSizeChangeVolume>().IsSizeChangeActive = false;
                 Camera.main.GetComponent<CameraScript>().SetCameraSizeImmediate(CameraSizeOverCharge.Evaluate(charge));
-                Debug.Log(CameraSizeOverCharge.Evaluate(charge));
+                //Debug.Log(CameraSizeOverCharge.Evaluate(charge));
                 Camera.main.GetComponent<CameraScript>().AddAttractor(platformAttractor);
                 platformAttractor.PullMagnitude = CameraAttractorPullOverCharge.Evaluate(charge);
+
+                starController.PlatformCharge = charge;
 
                 // particle effects?
             }
@@ -216,30 +251,29 @@ public class BossAttackRestPlatform : MonoBehaviour
 
         // ANTICIPATION sees the sky start to glow, a column start to appear 
 
-        //yield return new WaitForSecondsRealtime(1.0f);
 
         //CallLightningAnimation.Play();
         //bLightningBoltActive = true;
         bShouldRunRampUp = false;
-        const float anticipationDuration = 1.0f;
         float anticipationTimer = 0;
-        while (anticipationTimer < anticipationDuration)
+        while (anticipationTimer < BoltAnticipationDuration)
         {
+            starController.PlatformCharge = 1 + anticipationTimer / BoltAnticipationDuration;
             foreach (SpriteRenderer sr in ColumnGlows)
             {
-                sr.material.SetFloat("_Opacity", ColumnGlowOverCharge.Evaluate(1 + anticipationTimer / anticipationDuration));
+                sr.material.SetFloat("_Opacity", ColumnGlowOverCharge.Evaluate(1 + anticipationTimer / BoltAnticipationDuration));
             }
             foreach (SpriteRenderer asdf in AmbientGlows)
             {
-                asdf.material.SetFloat("_Opacity", AmbientGlowOverCharge.Evaluate(1 + anticipationTimer / anticipationDuration));
+                asdf.material.SetFloat("_Opacity", AmbientGlowOverCharge.Evaluate(1 + anticipationTimer / BoltAnticipationDuration));
             }
             // these follow the target's x position
             foreach (GameObject o in TargetTrackingObjects)
             {
                 o.transform.position = new Vector3(CurrentTargetFragment.GetEntityPhysics().ObjectSprite.transform.position.x, o.transform.position.y, o.transform.position.z);
             }
-            CurrentTargetFragment.TopBoltZapPoint.GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", ZapTargetPointBrightnessOverCharge.Evaluate(1 + anticipationTimer / anticipationDuration));
-            CurrentTargetFragment.TopBoltZapPoint.transform.localScale = new Vector3(ZapTargetPointScaleOverCharge.Evaluate(1 + anticipationTimer / anticipationDuration) * 20, ZapTargetPointScaleOverCharge.Evaluate(1 + anticipationTimer / anticipationDuration) * 5, 1);
+            CurrentTargetFragment.TopBoltZapPoint.GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", ZapTargetPointBrightnessOverCharge.Evaluate(1 + anticipationTimer / BoltAnticipationDuration));
+            CurrentTargetFragment.TopBoltZapPoint.transform.localScale = new Vector3(ZapTargetPointScaleOverCharge.Evaluate(1 + anticipationTimer / BoltAnticipationDuration) * 20, ZapTargetPointScaleOverCharge.Evaluate(1 + anticipationTimer / BoltAnticipationDuration) * 5, 1);
 
             anticipationTimer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
@@ -263,15 +297,19 @@ public class BossAttackRestPlatform : MonoBehaviour
             {
                 asdf.material.SetFloat("_Opacity", 1);
             }
-            foreach (var sdf in LightningBolts_Far)
+            foreach (var sdf in LightningBolts_1)
             {
                 sdf.gameObject.SetActive(false);
             }
-            foreach (var sdf in LightningBolts_Mid)
+            foreach (var sdf in LightningBolts_2)
             {
                 sdf.gameObject.SetActive(false);
             }
-            foreach (var sdf in LightningBolts_Near)
+            foreach (var sdf in LightningBolts_3)
+            {
+                sdf.gameObject.SetActive(false);
+            }
+            foreach (var sdf in LightningBolts_4)
             {
                 sdf.gameObject.SetActive(false);
             }
@@ -333,30 +371,38 @@ public class BossAttackRestPlatform : MonoBehaviour
         {
             asdf.material.SetFloat("_Opacity", AmbientGlowOverCharge.Evaluate(0));
         }
+        starController.PlatformCharge = 0;
 
 
         CurrentTargetFragment.LightningFlashGlow.gameObject.SetActive(false);
-        foreach (var sdf in LightningBolts_Far)
+        foreach (var sdf in LightningBolts_1)
         {
             sdf.gameObject.SetActive(true);
         }
-        foreach (var sdf in LightningBolts_Mid)
+        foreach (var sdf in LightningBolts_2)
         {
             sdf.gameObject.SetActive(true);
         }
-        foreach (var sdf in LightningBolts_Near)
+        foreach (var sdf in LightningBolts_3)
+        {
+            sdf.gameObject.SetActive(true);
+        }
+        foreach (var sdf in LightningBolts_4)
         {
             sdf.gameObject.SetActive(true);
         }
 
         _player.ForceStandFromRest();
-        
+        waveNumber++;
+
+
         foreach (SpriteRenderer sr in ColumnGlows)
         {
             sr.material.SetFloat("_Opacity", 0.0f);
         }
         //bLightningBoltActive = false;
         platformAttractor.PullMagnitude = CameraAttractorPullOverCharge.Evaluate(0);
+        platformAttractor.transform.position += new Vector3(0, CameraAttractorYPositionOffset, 0);
         //restPlatform.CurrentChargeAmount = 0.99f;
     }
 }

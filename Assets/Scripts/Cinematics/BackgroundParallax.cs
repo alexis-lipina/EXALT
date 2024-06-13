@@ -19,17 +19,19 @@ public class BackgroundParallax : MonoBehaviour
     private Vector3 _originalScale;
     const float DefaultCameraSize = 16.875f;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         _originalPosition = transform.position + new Vector3(_offset.x, _offset.y, 0f);
         _originalLocalPosition = transform.localPosition;
         _originalScale = transform.localScale;
+    }
+
+    void Start()
+    {
         //_originalPosition.x *= _strength.x;
         //_originalPosition.y *= _strength.x;
     }
 
-    // Update is called once per frame
     void LateUpdate()
     {
 
@@ -50,5 +52,12 @@ public class BackgroundParallax : MonoBehaviour
             transform.position = new Vector3(_camera.transform.position.x + _originalLocalPosition.x * cameraSize, _camera.transform.position.y + _originalLocalPosition.y * cameraSize, transform.position.z);
         }
         transform.localScale = Vector3.Lerp(_originalScale, _originalScale * cameraSize, _scaleChangeWithCamera);
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, 1);
+    }
+
+    public void OffsetOriginalPosition(Vector2 offset)
+    {
+        _originalPosition += new Vector3(offset.x, offset.y, 0);
+        _originalLocalPosition += new Vector3(offset.x, offset.y, 0);
     }
 }

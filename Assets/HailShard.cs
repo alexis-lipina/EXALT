@@ -9,6 +9,7 @@ public class HailShard : MonoBehaviour
     private SpriteRenderer HailShardSprite;
     private Animation HailShardAnim;
     [SerializeField] string FallAnimationName;
+    [SerializeField] bool CanKillPlayer = false; // I like the idea of these being threats that weaken you but which can't actually kill you. Makes them a perceived threat but not actually lethal in final phase
     [SerializeField] float FallAnimationDuration;
     [SerializeField] string ImpactAnimationName;
     [SerializeField] float ImpactAnimationDuration;
@@ -43,7 +44,10 @@ public class HailShard : MonoBehaviour
             EntityPhysics hitEntity = hit.gameObject.GetComponent<EntityPhysics>();
             if (hit.tag == "Friend")
             {
-                hitEntity.Inflict(1);
+                if (!(hitEntity.GetCurrentHealth() == 1 && !CanKillPlayer)) // annoying to read. this just makes sure it doesnt kill the player if it shouldnt
+                {
+                    hitEntity.Inflict(1);
+                }
                 Debug.Log("Hit player!");
             }
         }

@@ -12,12 +12,13 @@ public class ZapFXController : MonoBehaviour
     [SerializeField] private AnimationCurve _randomization;
     [SerializeField] private AnimationCurve _wavelength;
     [SerializeField] private AudioSource _soundEffect;
+    [SerializeField] private List<AudioClip> _soundEffects;
+    [SerializeField] private List<SpriteRenderer> _optionalPlume;
 
     private float _timer = 0f;
 
-	
-	// Update is called once per frame
-	void Update ()
+    // Update is called once per frame
+    void Update ()
     {
         /*
         if (_timer > 0)
@@ -246,8 +247,15 @@ public class ZapFXController : MonoBehaviour
         _outlineBolt.GetComponent<MeshRenderer>().enabled = false;
         */
 
-        if (_soundEffect) _soundEffect.Play();
-
+        if (_soundEffect)
+        {
+            if (_soundEffects != null && _soundEffects.Count > 0)
+            {
+                _soundEffect.clip = _soundEffects[Random.Range(0, _soundEffects.Count)];
+            }
+            _soundEffect.pitch = Random.Range(0.9f, 1.1f);
+            _soundEffect.Play();
+        }
         _coreBolt.GetComponent<MeshRenderer>().enabled = true;
         _outlineBolt.GetComponent<MeshRenderer>().enabled = true;
 

@@ -23,6 +23,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _OpacityTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _ShinyTex:
         m_Texture: {fileID: 2800000, guid: bec6330b6ec3fd54d8feb916807c9d4d, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -31,6 +35,6 @@ Material:
     - _Opacity: 1
     - _PlatformElevation: 0
     m_Colors:
-    - _BGColor: {r: 0.764151, g: 0.26312745, b: 0.44405264, a: 1}
-    - _FGColor: {r: 0.9833998, g: 0.7122642, b: 1, a: 1}
-    - _OpaqueColor: {r: 0.745283, g: 0.63529414, b: 0.71692395, a: 1}
+    - _BGColor: {r: 1, g: 0.6462264, b: 0.7734731, a: 1}
+    - _FGColor: {r: 1, g: 1, b: 1, a: 1}
+    - _OpaqueColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}

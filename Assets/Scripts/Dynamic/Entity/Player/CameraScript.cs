@@ -22,7 +22,7 @@ public class CameraScript : MonoBehaviour
     [SerializeField] List<Material> _postProcessMaterials;
 
     private List<CameraAttractor> _currentAttractors;
-
+    public bool TrackPlayer = true;
 
     public bool IsUsingMouse
     {
@@ -87,6 +87,7 @@ public class CameraScript : MonoBehaviour
     /// </summary>
     Vector3 UpdateTargetPosition()
     {
+        if (!TrackPlayer) { return transform.position; }
         Vector3 pos = player.TransformPoint(new Vector3(0f, 0f, -300f));
         Vector2 offset;
         if (_isUsingCursor)

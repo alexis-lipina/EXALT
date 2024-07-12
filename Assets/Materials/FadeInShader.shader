@@ -5,7 +5,7 @@
 		_MainTex("Texture", 2D) = "white" {}
 		_FadeGradientTex("Fade Gradient", 2D) = "white" {}
 		_SourceColor("Source Color", Color) = (1, 1, 1, 1)
-		//_FadeInMask("Fade-in Mask", Float) = 0.5
+		_FadeInMask("Fade-in Mask", Float) = 0.0
 		_GradientSize("Gradient size", Float) = 1.0
 	}
 	SubShader
@@ -18,7 +18,7 @@
 		Pass
 		{
 			//ZWrite Off
-			Blend SrcAlpha OneMinusSrcAlpha
+			Blend SrcAlpha One//OneMinusSrcAlpha
 
 			CGPROGRAM
 			#pragma vertex vert             

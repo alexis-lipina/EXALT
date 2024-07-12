@@ -6,7 +6,6 @@ Shader "Custom/ShinyPlatformShader"
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
-		_OpacityTex("Opacity Texture", 2D) = "white" {}
 		_ShinyTex("ShinyTexture", 2D) = "white" {} // this texture scrolls and changes offset based on camera position
 		//_HighColor("High Color", Color) = (0.0, 0.0, 0.0, 1.0)
 		//_LowColor("Low Color", Color) = (1.0, 1.0, 1.0, 1.0)
@@ -56,7 +55,6 @@ Shader "Custom/ShinyPlatformShader"
 			}
 
 			sampler2D _MainTex;
-			sampler2D _OpacityTex;
 			sampler2D _ShinyTex;
 			float4 _HighColor;
 			float4 _LowColor;
@@ -77,9 +75,8 @@ Shader "Custom/ShinyPlatformShader"
 				color +=	   lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.003f + _WorldSpaceCameraPos.xy * 0.005f /*+ unity_ObjectToWorld._m03_m13_m23 * 0.03*/) * float2(2, 0.2)));
 				color *= 0.333;
 				color = lerp(color, tex2D(_MainTex, output.uv), tex2D(_MainTex, output.uv).a);
-				color.a = 1;
+				color.a = 1.0f;
 				float src_opacity = color.a;
-
 
 				//get diff for top and bottom
 				float diff = _PlatformElevation - _PlayerElevation;

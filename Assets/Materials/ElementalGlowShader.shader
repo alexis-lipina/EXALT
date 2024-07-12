@@ -59,9 +59,9 @@ Shader "Custom/ElementalGlowShader"
 				float bloom = clamp(1, 10, _Opacity); // allows overloading opacity for overbrightness
 				float intensity = clamp(0, 1, _Opacity);
 				float4 color = tex2D(_MainTex, output.uv); // sample glow sprite for intensity
-				color *= intensity; // scale intensity
+				color *= _Opacity; // used to be Intensity, but I want the bright-colors to become more dominant when overloaded
 				color = tex2D(_ElementGradients, float2(color.r, elementMapOffset));
-				return color * bloom * 1;
+				return color /* * bloom*/ * 1;
 			}
 			ENDCG
 		}

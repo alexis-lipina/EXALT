@@ -184,7 +184,7 @@ public class ZapFXController : MonoBehaviour
         runningTotalIncrements += _wavelength.Evaluate(1);
 
         //add end nodes
-        currentPoint = Vector3.Lerp(start, end, 0.95f); //prevents overpenetration, since mesh draws a bit deeper than the actual end node
+        currentPoint = Vector3.Lerp(start, end, 0.99f); //prevents overpenetration, since mesh draws a bit deeper than the actual end node
         v1 = currentPoint;
         if (isHorizontal)
         {

@@ -43,6 +43,7 @@ public class FinalBossCore : EntityHandler
     [Space(10)]
     [SerializeField] float flinchDuration = 4.0f;
     [SerializeField] Sprite normalSprite;
+    [SerializeField] Sprite dyingSprite;
     //[SerializeField] Sprite flinchSprite;
 
 
@@ -63,10 +64,12 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private StarController starController;
     [SerializeField] private List<float> BackgroundVerticalOffsets; // offsets to background applied each time a fragment is killed - makes sky take up more and more space over the level
     [SerializeField] private GameObject BackgroundToOffset;
+    [SerializeField] private Animation BossDeathLaserVFXAnimator;
+    [SerializeField] private StarLightningManager StarLightning;
 
     [SerializeField] public TriggerVolume BossCameraVolume;
 
-    enum FinalBossState { CHASE, SUPERWEAPON, FLINCH }
+    enum FinalBossState { CHASE, SUPERWEAPON, FLINCH, DYING }
     private FinalBossState CurrentState;
     private PlayerHandler _player;
     private Coroutine CurrentOrbitingFragmentCoroutine;
@@ -82,6 +85,9 @@ public class FinalBossCore : EntityHandler
     // Start is called before the first frame update
     void Start()
     {
+        GetComponent<Animation>().Play("BossKillAnimation");
+        GetComponent<Animation>().Stop();
+
         _player = GameObject.FindObjectOfType<PlayerHandler>();
         CurrentState = FinalBossState.SUPERWEAPON;
         SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().CurrentTargetFragment = OrbitingFragments[0];
@@ -100,6 +106,31 @@ public class FinalBossCore : EntityHandler
         foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
         {
             asdf.OffsetOriginalPosition(new Vector2(0, 5));
+        }
+
+
+        // skip to final phase for boss
+        if (false)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                CloudPartAnimations[0].gameObject.SetActive(false); // we want to hide clouds from previous iteration since they dont always move offscreen, I think? may want to not do this, not sure
+                starController.AdvancePhase();
+                CloudPartAnimations.RemoveAt(0);
+                foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
+                {
+                    asdf.OffsetOriginalPosition(new Vector2(0, BackgroundVerticalOffsets[0]));
+                }
+                BackgroundVerticalOffsets.RemoveAt(0);
+            }
+
+            foreach (var asdf in OrbitingFragments)
+            {
+                GameObject.Destroy(asdf.gameObject);
+            }
+
+            OrbitingFragments.Clear();
+            SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().CurrentTargetFragment = null;
         }
     }
 
@@ -147,6 +178,9 @@ public class FinalBossCore : EntityHandler
                 break;
             case FinalBossState.FLINCH:
                 State_Flinch();
+                break;
+            case FinalBossState.DYING:
+                State_Dying();
                 break;
         }
     }
@@ -205,6 +239,12 @@ public class FinalBossCore : EntityHandler
                 StartCoroutine(Death());
             }
         }
+    }
+
+    public void BeginDeath()
+    {
+        CurrentState = FinalBossState.DYING;
+        StartCoroutine(Death());
     }
 
     private void State_Superlaser()
@@ -276,6 +316,11 @@ public class FinalBossCore : EntityHandler
     void State_Flinch()
     {
         if (!_isFlinched) StartCoroutine(DoFlinch());
+    }
+
+    void State_Dying()
+    {
+        // dont think we do much
     }
 
     void ProximityLaserAOE()
@@ -486,6 +531,8 @@ public class FinalBossCore : EntityHandler
     // everything that should happen when the boss is killed by the lightning strike, starting the moment the killing blow strikes it
     IEnumerator Death()
     {
+        // idk what this does honestly
+        /*
         TopLightningBolt.SetThickness(1.0f, 1.125f);
         TopLightningBolt.SetupLine(TopBoltZapPoint.transform.position + new Vector3(0, 26, 0), TopBoltZapPoint.transform.position);
         BottomLightningBolt.SetThickness(1.0f, 1.125f);
@@ -495,8 +542,37 @@ public class FinalBossCore : EntityHandler
 
         //StopCoroutine(_superlaserCoroutine);
         yield return new WaitForSeconds(0.2f);
+        */
 
+        //StopCoroutine(_superlaserCoroutine);
+        _primeAudioSource.Stop();
+        MusicManager.GetMusicManager().CrossfadeToSong(1.0f, null);
+        GetComponent<Animation>().Play("BossKillAnimation");
+        yield return new WaitForSeconds(2.0f);
+
+        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().sprite = dyingSprite; //first gets struck by the lightning beam, starts cracking
+        _player.GetEntityPhysics().ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_MaskOn", 1.0f);
+        _player.GetEntityPhysics().ObjectSprite.GetComponent<SpriteRenderer>().material.SetColor("_MaskColor", Color.white);
+        _player.GetEntityPhysics().ObjectSprite.transform.localScale = new Vector3(1.5f, 1.5f, 1);
+        _player.GetEntityPhysics().transform.position = new Vector3(0, 62, 0);
+        StarLightning.StartStarLightning();
+
+        yield return new WaitForSeconds(8.0f);
+
+        BossDeathLaserVFXAnimator.gameObject.active = true;
+        BossDeathLaserVFXAnimator.Play();
+        BossDeathLaserVFXAnimator.gameObject.GetComponent<BossDeathBeamScene>().PlayDeathScene();
         Destroy(gameObject);
+        _player.GetEntityPhysics().Gravity = 0.0f;
+        //_player.transform.position += new Vector3(0, 0, 1000);
+        Destroy(_player);
+        GameObject.Find("CAMERA").GetComponent<CameraScript>().TrackPlayer = false;
+        _bossHealthBar.gameObject.active = false;
+
+        foreach (var asdf in GameObject.FindObjectsOfType<EnvironmentPhysics>())
+        {
+            Destroy(asdf.gameObject);
+        }
     }
 
     IEnumerator Orbit()

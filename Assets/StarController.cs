@@ -16,7 +16,7 @@ public class StarController : MonoBehaviour
     [SerializeField] AnimationCurve StarFlashCurve;
     [SerializeField] AnimationCurve StarFloorBrightness; // flashcurve is added to this
     [SerializeField] AnimationCurve StarCurveScalar;
-    [SerializeField] AnimationCurve StarYScale;
+    [SerializeField] AnimationCurve StarYScaleOverChargeCurve;
 
     [SerializeField] SpriteRenderer GreenNebula;
     [SerializeField] SpriteRenderer BlueNebula;
@@ -61,9 +61,13 @@ public class StarController : MonoBehaviour
         // twinkle stars
         foreach (var entry in ActiveStars)
         {
-            entry.Key.material.SetFloat("_LowerBound", StarFlashCurve.Evaluate(Time.time * (entry.Value.x * 1  + 1) % 1.0f) * 5.0f - 5.0f);
-            entry.Key.transform.GetChild(0).GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", StarFlashCurve.Evaluate(Time.time * (entry.Value.x * 1 + 1) % 1.0f) * StarCurveScalar.Evaluate(PlatformCharge) + StarFloorBrightness.Evaluate(PlatformCharge));
-            
+            float cyclicPulse = Time.time * (entry.Value.x * 1 + 1) % 1.0f;
+            entry.Key.material.SetFloat("_LowerBound", StarFlashCurve.Evaluate(cyclicPulse) * 5.0f - 5.0f);
+            entry.Key.transform.GetChild(0).GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", StarFlashCurve.Evaluate(cyclicPulse) * StarCurveScalar.Evaluate(PlatformCharge) + StarFloorBrightness.Evaluate(PlatformCharge));
+            entry.Key.transform.localScale = new Vector3(
+                entry.Key.transform.localScale.x,
+                entry.Value.y * StarYScaleOverChargeCurve.Evaluate(PlatformCharge) * (1+ StarFlashCurve.Evaluate(cyclicPulse)), // I was trying to make the stars flash vertically when charging harder but idk if that came through...
+                1);
         }
 
         // nebula
@@ -84,7 +88,7 @@ public class StarController : MonoBehaviour
                     asdf.gameObject.SetActive(true);
                     float randomscale = Random.Range(0.75f, 1.25f);
                     asdf.gameObject.transform.localScale = new Vector3(randomscale, randomscale, 1);
-                    ActiveStars.Add(asdf, new Vector2(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f)));
+                    ActiveStars.Add(asdf, new Vector2(Random.Range(0.0f, 1.0f), randomscale));
                 }
                 break;
             case 2:

@@ -73,12 +73,14 @@ Shader "Custom/WallShader"
 			{
 				//---------------------------------------------------------------------------| scale of the texture |----|   camera scroll rate    |----|  offset by position
 				//---------------------------------------------------------------------------|  high = more dense   |----|     higher = faster     |----|
-				float4 color =	lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.0005f + _WorldSpaceCameraPos.xy * 0.012f + unity_ObjectToWorld._m03_m13_m23 * 0.03) * float2(2, 0.3)));
-				color +=		lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.001f + _WorldSpaceCameraPos.xy * 0.008f + unity_ObjectToWorld._m03_m13_m23 * 0.03) * float2(2, 0.3)));
-				color +=		lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.003f + _WorldSpaceCameraPos.xy * 0.005f + unity_ObjectToWorld._m03_m13_m23 * 0.03) * float2(2, 0.2)));
+				float4 color =	lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.0005f + _WorldSpaceCameraPos.xy * 0.012f/* + unity_ObjectToWorld._m03_m13_m23 * 0.03*/) * float2(2, 0.3)));
+				color +=		lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.001f + _WorldSpaceCameraPos.xy * 0.008f/* + unity_ObjectToWorld._m03_m13_m23 * 0.03*/) * float2(2, 0.3)));
+				color +=		lerp(_FGColor, _BGColor, tex2D(_ShinyTex, (output.pos * 0.003f + _WorldSpaceCameraPos.xy * 0.005f/* + unity_ObjectToWorld._m03_m13_m23 * 0.03*/) * float2(2, 0.2)));
 				color *= 0.333;
-				color = lerp(color, _OpaqueColor, tex2D(_MainTex, output.uv));
+				color = lerp(color, tex2D(_MainTex, output.uv), tex2D(_MainTex, output.uv).a);
+				color.a = 1.0f;
 				float src_opacity = color.a;
+
 				//get diff for top and bottom
 				float top_diff = _TopElevation - _PlayerElevation;
 				float bottom_diff = _BottomElevation - _PlayerElevation;

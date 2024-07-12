@@ -57,21 +57,33 @@ public class BossAttackRestPlatform : MonoBehaviour
         // init lightning
         foreach (var asdf in LightningBolts_1)
         {
-            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+            foreach (var sdfsdjkf in asdf.GetComponentsInChildren<SpriteRenderer>())
+            {
+                sdfsdjkf.enabled = false;
+            }
         }
         // init lightning
         foreach (var asdf in LightningBolts_2)
         {
-            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+            foreach (var sdfsdjkf in asdf.GetComponentsInChildren<SpriteRenderer>())
+            {
+                sdfsdjkf.enabled = false;
+            }
         }
         // init lightning
         foreach (var asdf in LightningBolts_3)
         {
-            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+            foreach (var sdfsdjkf in asdf.GetComponentsInChildren<SpriteRenderer>())
+            {
+                sdfsdjkf.enabled = false;
+            }
         }
         foreach (var asdf in LightningBolts_4)
         {
-            asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
+            foreach (var sdfsdjkf in asdf.GetComponentsInChildren<SpriteRenderer>())
+            {
+                sdfsdjkf.enabled = false;
+            }
         }
         StartCoroutine(RunVFX());
         StartCoroutine(RampVFX());
@@ -120,19 +132,19 @@ public class BossAttackRestPlatform : MonoBehaviour
             {
                 case 0:
                     bolt = LightningBolts_1[Random.Range(0, LightningBolts_1.Count)];
-                    boltOffset = 25.0f;
+                    boltOffset = 40.0f;
                     break;
                 case 1:
                     bolt = LightningBolts_2[Random.Range(0, LightningBolts_2.Count)];
-                    boltOffset = 15.0f;
+                    boltOffset = 25.0f;
                     break;
                 case 2:
                     bolt = LightningBolts_3[Random.Range(0, LightningBolts_3.Count)];
-                    boltOffset = 7.5f;
+                    boltOffset = 15f;
                     break;
                 case 3:
-                    bolt = LightningBolts_3[Random.Range(0, LightningBolts_4.Count)];
-                    boltOffset = 3.75f;
+                    bolt = LightningBolts_4[Random.Range(0, LightningBolts_4.Count)];
+                    boltOffset = 9f;
                     break;
             }
                     
@@ -156,8 +168,8 @@ public class BossAttackRestPlatform : MonoBehaviour
     // calls one bolt of lightning
     IEnumerator PulseLightningGlow(SpriteRenderer sprite, float duration)
     {
-        SpriteRenderer plumeGlow = sprite.transform.parent.GetComponentsInChildren<SpriteRenderer>()[2];
-        SpriteRenderer plumeWhite = sprite.transform.parent.GetComponentsInChildren<SpriteRenderer>()[1];
+        SpriteRenderer plumeGlow = sprite.transform.parent.GetComponentsInChildren<SpriteRenderer>()[1];
+        SpriteRenderer plumeWhite = sprite.transform.parent.GetComponentsInChildren<SpriteRenderer>()[2];
 
         sprite.enabled = true;
         plumeWhite.enabled = true;
@@ -189,7 +201,18 @@ public class BossAttackRestPlatform : MonoBehaviour
 
     public void LightningBolt()
     {
-        StartCoroutine(PlayLightningBolt());
+        if (CurrentTargetFragment)
+        {
+            StartCoroutine(PlayLightningBolt());
+        }
+        else
+        {
+            FinalBoss.BeginDeath();
+            bShouldRunRampUp = false;
+
+        }
+        //FinalBoss.BeginDeath();
+
     }
 
     IEnumerator RampVFX()
@@ -214,15 +237,20 @@ public class BossAttackRestPlatform : MonoBehaviour
                 {
                     asdf.material.SetFloat("_Opacity", AmbientGlowOverCharge.Evaluate(charge));
                 }
-                // these follow the target's x position
-                foreach (GameObject o in TargetTrackingObjects)
+                
+                if (CurrentTargetFragment)
                 {
-                    o.transform.position = new Vector3(CurrentTargetFragment.GetEntityPhysics().ObjectSprite.transform.position.x, o.transform.position.y, o.transform.position.z);
-                }
+                    // these follow the target's x position
+                    foreach (GameObject o in TargetTrackingObjects)
+                    {
+                        o.transform.position = new Vector3(CurrentTargetFragment.GetEntityPhysics().ObjectSprite.transform.position.x, o.transform.position.y, o.transform.position.z);
+                    }
 
-                // electrical zaps start to flicker in at the tips of the target
-                CurrentTargetFragment.TopBoltZapPoint.GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", ZapTargetPointBrightnessOverCharge.Evaluate(charge));
-                CurrentTargetFragment.TopBoltZapPoint.transform.localScale = new Vector3(ZapTargetPointScaleOverCharge.Evaluate(charge) * 20, ZapTargetPointScaleOverCharge.Evaluate(charge) * 5, 1);
+                    // electrical zaps start to flicker in at the tips of the target
+                    CurrentTargetFragment.TopBoltZapPoint.GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", ZapTargetPointBrightnessOverCharge.Evaluate(charge));
+                    CurrentTargetFragment.TopBoltZapPoint.transform.localScale = new Vector3(ZapTargetPointScaleOverCharge.Evaluate(charge) * 20, ZapTargetPointScaleOverCharge.Evaluate(charge) * 5, 1);
+                }
+                
                 //CurrentTargetFragment.BottomBoltZapPoint.GetComponent<SpriteRenderer>().material.SetFloat("_Opacity", ZapTargetPointBrightnessOverCharge.Evaluate(charge));
                 //CurrentTargetFragment.BottomBoltZapPoint.transform.localScale = new Vector3(ZapTargetPointScaleOverCharge.Evaluate(charge) * 20, ZapTargetPointScaleOverCharge.Evaluate(charge) * 5, 1);
                 //CurrentTargetFragment.FullFragmentGlowFX.material.SetFloat("_CurrentElement", 4);

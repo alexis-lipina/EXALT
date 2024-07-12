@@ -513,6 +513,7 @@ public class FinalBossFragment : EntityHandler
             if (hit.tag == "Friend")
             {
                 Debug.Log("Hit player!");
+                hitEntity.Inflict(1);
             }
         }
         AttackFlash.GetComponent<SpriteRenderer>().enabled = false;

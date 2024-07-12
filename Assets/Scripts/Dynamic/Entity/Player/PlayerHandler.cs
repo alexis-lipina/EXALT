@@ -360,8 +360,8 @@ public class PlayerHandler : EntityHandler
         SolFlailProjectile.transform.parent.gameObject.SetActive(false);
         //weaponSprite.transform.right = new Vector3(0, 1, 0);
 
-        entityPhysics.SetMaxHealth(5 - NumberOfShatteredHealthBlocks);
-        _healthBar.ShatterHealthBarSegment(5-NumberOfShatteredHealthBlocks);
+        //entityPhysics.SetMaxHealth(5 - NumberOfShatteredHealthBlocks);
+        //_healthBar.ShatterHealthBarSegment(5-NumberOfShatteredHealthBlocks);
 
         
 

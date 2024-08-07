@@ -61,6 +61,7 @@ public class FinalBossCore : EntityHandler
     [SerializeField] private AnimationCurve BoltDurationOverCharge;
 
     [SerializeField] private List<Animation> CloudPartAnimations; // play when player is charging lightning bolt
+    [SerializeField] private int CloudPartAnimationIndex = 0; // 
     [SerializeField] private StarController starController;
     [SerializeField] private List<float> BackgroundVerticalOffsets; // offsets to background applied each time a fragment is killed - makes sky take up more and more space over the level
     [SerializeField] private GameObject BackgroundToOffset;
@@ -114,9 +115,10 @@ public class FinalBossCore : EntityHandler
         {
             for (int i = 0; i < 4; i++)
             {
-                CloudPartAnimations[0].gameObject.SetActive(false); // we want to hide clouds from previous iteration since they dont always move offscreen, I think? may want to not do this, not sure
+                CloudPartAnimations[CloudPartAnimationIndex].gameObject.SetActive(false); // we want to hide clouds from previous iteration since they dont always move offscreen, I think? may want to not do this, not sure
                 starController.AdvancePhase();
-                CloudPartAnimations.RemoveAt(0);
+                //CloudPartAnimations.RemoveAt(0);
+                CloudPartAnimationIndex++;
                 foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
                 {
                     asdf.OffsetOriginalPosition(new Vector2(0, BackgroundVerticalOffsets[0]));
@@ -158,14 +160,15 @@ public class FinalBossCore : EntityHandler
                     if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
                     CurrentOrbitingFragmentCoroutine = StartCoroutine(PositionFragmentsForSuperlaser());
                     MusicManager.GetMusicManager().CrossfadeToSong(0.0f, _superlaserMusic);
-                    CloudPartAnimations[0].gameObject.SetActive(false); // we want to hide clouds from previous iteration since they dont always move offscreen, I think? may want to not do this, not sure
+                    CloudPartAnimations[CloudPartAnimationIndex].gameObject.SetActive(false); // we want to hide clouds from previous iteration since they dont always move offscreen, I think? may want to not do this, not sure
+                    CloudPartAnimationIndex++;
                     starController.AdvancePhase();
-                    CloudPartAnimations.RemoveAt(0);
+                    //CloudPartAnimations.RemoveAt(0);
                     foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
                     {
-                        asdf.OffsetOriginalPosition(new Vector2(0, BackgroundVerticalOffsets[0]));
+                        asdf.OffsetOriginalPosition(new Vector2(0, BackgroundVerticalOffsets[3 - OrbitingFragments.Count]));
                     }
-                    BackgroundVerticalOffsets.RemoveAt(0);
+                    //BackgroundVerticalOffsets.RemoveAt(0);
                 }
                 else
                 {
@@ -295,7 +298,7 @@ public class FinalBossCore : EntityHandler
         }*/
         if (_superlaserCharge > 1.0f) // you lose!
         {
-            _player.GetEntityPhysics().Inflict(1000, hitPauseDuration:0.25f);
+            _player.GetEntityPhysics().Inflict(1000, hitPauseDuration:0.0f);
         }
     }
 
@@ -333,6 +336,51 @@ public class FinalBossCore : EntityHandler
                 StartCoroutine(FireSmallLaser(SmallLaserCooldown));
             }
         }
+    }
+
+    public void ResetOnPlayerResurrect()
+    {
+        if (CurrentlyDescendedFragment)
+        {
+            OrbitingFragments.Insert(0, CurrentlyDescendedFragment);
+
+            CurrentlyDescendedFragment.Ascend_Instantaneous();
+            CurrentlyDescendedFragment.GetEntityPhysics().IsImmune = true;
+            CurrentlyDescendedFragment.GetEntityPhysics().Heal(1000);
+            CurrentlyDescendedFragment.OnPlayerResurrected();
+            CurrentlyDescendedFragment = null;
+        }
+        MusicManager.GetMusicManager().CrossfadeToSong(2.0f, _superlaserMusic);
+        CurrentState = FinalBossState.CHASE;
+        _superlaserCharge = 0;
+        entityPhysics.transform.position = _player.GetEntityPhysics().transform.position;
+        CloudPartAnimations[CloudPartAnimationIndex].gameObject.SetActive(true);
+        CloudPartAnimationIndex = 3 - OrbitingFragments.Count;
+        CloudPartAnimations[CloudPartAnimationIndex].gameObject.SetActive(true);
+        //CloudPartAnimations[CloudPartAnimationIndex].Rewind();
+
+        // undo vertical offset
+        foreach (var asdf in BackgroundToOffset.GetComponentsInChildren<BackgroundParallax>())
+        {
+            asdf.OffsetOriginalPosition(new Vector2(0, -1.0f * BackgroundVerticalOffsets[3 - OrbitingFragments.Count]));
+
+        }
+
+        foreach (var bullet in FindObjectsOfType<ProjectilePhysics>())
+        {
+            Destroy(bullet.gameObject.transform.parent.gameObject);
+        }
+        
+
+        StartCoroutine(ResetAnimationQuick());
+    }
+
+    IEnumerator ResetAnimationQuick()
+    {
+        yield return new WaitForSeconds(0.1f);
+        CloudPartAnimations[CloudPartAnimationIndex].Play();
+        yield return new WaitForSeconds(0.1f);
+        CloudPartAnimations[CloudPartAnimationIndex].Stop();
     }
 
 
@@ -465,7 +513,7 @@ public class FinalBossCore : EntityHandler
 
     IEnumerator LightningBuildupVFX()
     {
-        bool hasPlayerStartedCharging = false;
+        bool hasCloudPartAnimStarted = false;
         //BottomLightningBolt.ShowBolt();
         //TopLightningBolt.ShowBolt();
         float currentChargeAmount;
@@ -473,10 +521,11 @@ public class FinalBossCore : EntityHandler
         while (CurrentState == FinalBossState.SUPERWEAPON)
         {
             currentChargeAmount = SuperlaserRestPlatform.CurrentChargeAmount;
-            if (!CloudPartAnimations[0].isPlaying && currentChargeAmount > 0.1f)
+            if (!hasCloudPartAnimStarted && currentChargeAmount > 0.1f)
             {
-                CloudPartAnimations[0].Play();
-                CloudPartAnimations[0].GetComponent<AudioSource>().Play();
+                CloudPartAnimations[CloudPartAnimationIndex].Play();
+                CloudPartAnimations[CloudPartAnimationIndex].GetComponent<AudioSource>().Play();
+                hasCloudPartAnimStarted = true;
             }
             /*
             if (currentChargeAmount > 0.0f)

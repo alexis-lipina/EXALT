@@ -14,9 +14,16 @@ public class PlayerHealthBarHandler : MonoBehaviour
     [SerializeField] private List<Sprite> _shatterSprites; // rightmost
 
     private int _currentPlayerHealth = 5;
-    private int _numberOfShatteredHealthCells = 0;
     private static float TimeToFadeOut = 3.0f;
+    private float originalCellHeight;
 
+    private List<Coroutine> HealthCellCoroutines;
+
+    private void Awake()
+    {
+        originalCellHeight =_healthBarSegments[0].GetComponent<RectTransform>().rect.height;
+        HealthCellCoroutines = new List<Coroutine>() { null, null, null, null, null};
+    }
 
     // Update is called once per frame
     void Update()
@@ -53,11 +60,19 @@ public class PlayerHealthBarHandler : MonoBehaviour
         {
             if (i < _currentPlayerHealth && i >= _previousPlayerHealth)
             {
-                StartCoroutine(TurnOn(_healthBarSegments[i]));
+                if (HealthCellCoroutines[i] != null)
+                {
+                    StopCoroutine(HealthCellCoroutines[i]);
+                }
+                HealthCellCoroutines[i] = StartCoroutine(TurnOn(_healthBarSegments[i]));
             }
             else if (i >= _currentPlayerHealth && i < _previousPlayerHealth)
             {
-                StartCoroutine(TurnOff(_healthBarSegments[i]));
+                if (HealthCellCoroutines[i] != null)
+                {
+                    StopCoroutine(HealthCellCoroutines[i]);
+                }
+                HealthCellCoroutines[i] = StartCoroutine(TurnOff(_healthBarSegments[i]));
             }
         }
     }
@@ -65,9 +80,9 @@ public class PlayerHealthBarHandler : MonoBehaviour
     IEnumerator TurnOff(Image segment)
     {
         segment.sprite = _flashSprite;
-        float originalHeight = segment.GetComponent<RectTransform>().rect.height;
+        originalCellHeight = segment.GetComponent<RectTransform>().rect.height;
 
-        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight * 100f);
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalCellHeight * 100f);
         segment.sprite = _flashSprite;
 
         yield return new WaitForSeconds(0.02f);
@@ -80,7 +95,7 @@ public class PlayerHealthBarHandler : MonoBehaviour
 
         yield return new WaitForSeconds(0.02f);
 
-        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight);
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalCellHeight);
         segment.sprite = _darkSprite;
 
         yield return new WaitForSeconds(0.02f);
@@ -90,19 +105,18 @@ public class PlayerHealthBarHandler : MonoBehaviour
     IEnumerator TurnOn(Image segment)
     {
         segment.sprite = _flashSprite;
-        float originalHeight = segment.GetComponent<RectTransform>().rect.height;
 
-        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight * 100f);
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalCellHeight * 100f);
         segment.sprite = _flashSprite;
 
         yield return new WaitForSeconds(0.04f);
 
-        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight * 2f);
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalCellHeight * 2f);
         segment.sprite = _flashSprite;
 
         yield return new WaitForSeconds(0.04f);
 
-        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalHeight );
+        segment.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originalCellHeight);
         segment.sprite = _onSprite;
     }
 

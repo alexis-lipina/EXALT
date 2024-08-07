@@ -80,10 +80,11 @@ public class FinalBossFragment : EntityHandler
     private float _phaseTimer = 0.0f;
     private bool bReadyToAttack = true;
 
-    private Coroutine _superlaserCoroutine;
+    private Coroutine _volleyCoroutine;
 
     private Vector2 WanderPosition;
     [SerializeField] private Vector2 WanderAreaSize;
+    [SerializeField] private Vector2 WanderAreaCenter;
     [SerializeField] private float WanderAcceleration = 7.0f;
     [SerializeField] private float WanderMaxSpeed = 10.0f;
     [SerializeField] private float WanderTargetSwitchDelay = 4.0f;
@@ -134,6 +135,7 @@ public class FinalBossFragment : EntityHandler
     [SerializeField] private List<EnvironmentPhysics> holeUnderneath; // for holes
     [SerializeField] private List<CollapsingPlatform> cascadingFloorStarts;
     [SerializeField] private EnvironmentPhysics newPlayerFallSavePoint;
+    [SerializeField] private Vector2 PlayerAwakenLocation;
 
     bool bIsDead = false;
     private CameraScript _camera;
@@ -200,7 +202,7 @@ public class FinalBossFragment : EntityHandler
             case FragmentPhase.LOWER_SPEARS:
                 //lower boss to ground, chase player on the ground, fire projectiles intermittently
                 if (IsRaised) StartCoroutine(RaiseOrLower(false, 1.0f));
-                if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
+                if (bVolleyReady && !bIsBossDoingSomething) _volleyCoroutine = StartCoroutine(FireVolley());
                 ProximityLaserAOE();
                 //ChasePlayer();
                 Wander();
@@ -227,7 +229,7 @@ public class FinalBossFragment : EntityHandler
             case 2:
                 Wander();
                 ProximityLaserAOE();
-                if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
+                if (bVolleyReady && !bIsBossDoingSomething) _volleyCoroutine = StartCoroutine(FireVolley());
                 foreach (EnemySpawner spawner in SimpleEnemySpawners)
                 {
                     spawner.IsAutomaticallySpawning = true;
@@ -242,7 +244,7 @@ public class FinalBossFragment : EntityHandler
                 {
                     Wander();
                     ProximityLaserAOE();
-                    if (bVolleyReady && !bIsBossDoingSomething) StartCoroutine(FireVolley());
+                    if (bVolleyReady && !bIsBossDoingSomething) _volleyCoroutine = StartCoroutine(FireVolley());
                     foreach (EnemySpawner spawner in SimpleEnemySpawners)
                     {
                         spawner.IsAutomaticallySpawning = true;
@@ -318,7 +320,7 @@ public class FinalBossFragment : EntityHandler
         if (offset.sqrMagnitude < 1 || WanderPosition.sqrMagnitude == 0 || WanderTimer > WanderTargetSwitchDelay) // get new random point
         {
             WanderTimer = 0.0f;
-            WanderPosition = CenterPosition + new Vector2(Random.Range(-1.0f, 1.0f) * WanderAreaSize.x, Random.Range(-1.0f, 1.0f) * WanderAreaSize.y);
+            WanderPosition = CenterPosition + WanderAreaCenter + new Vector2(Random.Range(-1.0f, 1.0f) * WanderAreaSize.x, Random.Range(-1.0f, 1.0f) * WanderAreaSize.y);
         }
         offset.Normalize();
         PreviousVelocity += offset * WanderAcceleration * Time.deltaTime;
@@ -355,8 +357,8 @@ public class FinalBossFragment : EntityHandler
         // we are over it. it's superlaser time.
         if (_superlaserCharge == 0.0f)
         {
-            _superlaserCoroutine = StartCoroutine(FireSuperlaser());
-            StartCoroutine(LightningBuildupVFX());
+            //_superlaserCoroutine = StartCoroutine(FireSuperlaser());
+            //StartCoroutine(LightningBuildupVFX());
         }
         _superlaserCharge += _superlaserChargeRate * Time.deltaTime;
 
@@ -671,9 +673,13 @@ public class FinalBossFragment : EntityHandler
         Vector2 fragmentCorpseRoot = CorpsePositionEnvtObj.ObjectCollider.bounds.center;
         Vector2 fragmentPositon = entityPhysics.transform.position;
 
+        // cool idea, but not that valuable and error prone
+        /*
         Vector2 playerPosition = _player.GetEntityPhysics().transform.position;
         _player.GetEntityPhysics().transform.position = (playerPosition - fragmentPositon) + fragmentCorpseRoot;
-        _camera.transform.position = ((Vector2)_camera.transform.position - fragmentPositon) + fragmentCorpseRoot;
+        _camera.transform.position = ((Vector2)_camera.transform.position - fragmentPositon) + fragmentCorpseRoot; */
+
+        _player.GetEntityPhysics().transform.position = PlayerAwakenLocation;
 
         CorpseSprite.enabled = true;
         _player.StandFromCollapsePlayer();
@@ -690,6 +696,17 @@ public class FinalBossFragment : EntityHandler
         _player.GetEntityPhysics().ForceSavePosition(newPlayerFallSavePoint);
 
         bossCore.GetEntityPhysics().transform.position = fragmentCorpseRoot;
+
+        foreach (HailShard hail in GameObject.FindObjectsOfType<HailShard>())
+        {
+            GameObject.Destroy(hail.gameObject);
+        }
+
+        _player.BossFightDeathResurrection_Position = PlayerAwakenLocation;
+        _player.BossFightDeathResurrection_CrackTex = PP_ShatterTex_Cracks;
+        _player.BossFightDeathResurrection_OffsetTex = PP_ShatterTex_Offsets;
+        _player.BossFightDeathResurrection_ShatterMaskTex = PP_ShatterTex_Mask;
+        _player.BossFightDeathResurrection_CollapsingPlatforms = cascadingFloorStarts;
 
         Destroy(gameObject);
     }
@@ -874,6 +891,14 @@ public class FinalBossFragment : EntityHandler
         yield return new WaitForSeconds(duration);
     }
 
+    public void Ascend_Instantaneous()
+    {
+        SetElevation(RaisedElevation);
+        _bossHealthManager.gameObject.SetActive(false);
+        IsRaised = true;
+        IsLowered = false;
+    }
+
     public void Descend()
     {
         StartCoroutine(DescendToFightPlayer(DescentDuration));
@@ -900,6 +925,12 @@ public class FinalBossFragment : EntityHandler
         _bossHealthManager.gameObject.SetActive(true);
         _bossHealthManager.SetupForBoss(entityPhysics, _bossName);
         _bossHealthManager.DramaticAppearance(0.5f);
+    }
+
+    public void OnPlayerResurrected()
+    {
+        // cleanup any shit thats left over
+        if (_volleyCoroutine != null) StopCoroutine(_volleyCoroutine);
     }
 
     protected override void ExecuteState()

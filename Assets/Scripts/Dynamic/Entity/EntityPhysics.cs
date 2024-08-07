@@ -448,6 +448,7 @@ public class EntityPhysics : DynamicPhysics
         }
         if (currentHP <= 0)
         {
+            currentHP = 0; // no underflow allowed
             _burnTimer = 0.0f;
         }
     }

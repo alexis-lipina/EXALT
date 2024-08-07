@@ -18,6 +18,12 @@ public class CollapsingPlatform : MonoBehaviour
 
     private EnvironmentPhysics environmentPhysics;
 
+    private Vector3 originalPosition;
+    private float originalTopHeight;
+    private float originalBottomHeight;
+    private Vector3 originalTopSpritePos;
+    private Vector3 originalFrontSpritePos;
+
     [SerializeField] private bool GenerateCollapseDependencies = false;
 
     private void OnValidate()
@@ -78,9 +84,11 @@ public class CollapsingPlatform : MonoBehaviour
 
     private IEnumerator BeginCollapseCoroutine()
     {
-        Vector3 originalPosition = transform.position;
-        float originalTopHeight = environmentPhysics.TopHeight;
-        float originalBottomHeight = environmentPhysics.BottomHeight;
+        ; originalPosition = transform.position;
+        originalTopHeight = environmentPhysics.TopHeight;
+        originalBottomHeight = environmentPhysics.BottomHeight;
+        originalTopSpritePos = environmentPhysics.TopSprite.transform.localPosition;
+        originalFrontSpritePos = environmentPhysics.FrontSprite.transform.localPosition;
 
         //propagate collapse
         for (int i = 0; i < DependentCollapsingPlatforms.Count; i++)
@@ -123,5 +131,32 @@ public class CollapsingPlatform : MonoBehaviour
     {
         yield return new WaitForSeconds(Random.Range(PropagateDelayMin, PropagateDelayMax));
         other.StartCollapse();
+    }
+
+    public void RestoreRecursive()
+    {
+        StopAllCoroutines();
+        if (!IsCollapsing)
+        {
+            return;
+        }
+        IsCollapsing = false;
+
+        transform.position = originalPosition;
+
+        environmentPhysics.TopHeight    = originalTopHeight;
+        environmentPhysics.BottomHeight = originalBottomHeight;
+        
+        environmentPhysics.TopSprite.material.SetFloat("_Opacity", 1);
+        environmentPhysics.FrontSprite.material.SetFloat("_Opacity", 1);
+
+        environmentPhysics.TopSprite.gameObject.transform.localPosition      = originalTopSpritePos;
+        environmentPhysics.FrontSprite.gameObject.transform.localPosition    = originalFrontSpritePos;
+        //GetComponent<EnvironmentPhysics>().IsSavePoint = true;
+
+        foreach (var asdf in DependentCollapsingPlatforms)
+        {
+            asdf.RestoreRecursive();
+        }
     }
 }

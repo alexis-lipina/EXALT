@@ -304,6 +304,7 @@ public class PlayerHandler : EntityHandler
     [SerializeField] AudioClip SFX_SolFlail_Catch;
 
     [SerializeField] AudioClip SFX_Death;
+    [SerializeField] AudioClip DeathScreenAmbience;
 
     [SerializeField] AudioMixerGroup AudioMixer_Ducked; // mutes sound effects when player dies or other stuff happens
     [SerializeField] AudioMixerGroup AudioMixer_Unducked; // plays directly to SFX mixer/bus
@@ -311,6 +312,17 @@ public class PlayerHandler : EntityHandler
 
     [SerializeField] Texture2D PP_Black;
     [SerializeField] Texture2D PP_White;
+
+    [SerializeField] List<GameObject> ResurrectionWidgets_1;
+    [SerializeField] List<GameObject> ResurrectionWidgets_2;
+    [SerializeField] List<GameObject> ResurrectionWidgets_3;
+    [SerializeField] List<GameObject> ResurrectionWidgets_4;
+    public Vector2 BossFightDeathResurrection_Position;
+    public Texture2D BossFightDeathResurrection_ShatterMaskTex;
+    public Texture2D BossFightDeathResurrection_CrackTex;
+    public Texture2D BossFightDeathResurrection_OffsetTex;
+
+    public List<CollapsingPlatform> BossFightDeathResurrection_CollapsingPlatforms;
 
     public ElementType GetStyle()
     {
@@ -2209,8 +2221,11 @@ public class PlayerHandler : EntityHandler
             {
                 StateTimer = rest_kneel_duration;
                 isStanding = true;
-                CurrentRestPlatform.OnActionReleased.Invoke();
-                CurrentRestPlatform.InputDirection = new Vector2(0, 0);
+                if (CurrentRestPlatform)
+                {
+                    CurrentRestPlatform.OnActionReleased.Invoke();
+                    CurrentRestPlatform.InputDirection = new Vector2(0, 0);
+                }
             }
 
             if (CurrentRestPlatform) // control rest platform
@@ -2350,9 +2365,14 @@ public class PlayerHandler : EntityHandler
 
     public override void OnDeath()
     {
-        //Debug.Log("<color=pink>HEY!</color>");
-        StartCoroutine(PlayDeathAnimation(_lastHitDirection));
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (BossFightDeathResurrection_Position == Vector2.zero)
+        {
+            StartCoroutine(PlayDeathAnimation(_lastHitDirection));
+        }
+        else
+        {
+            StartCoroutine(PlayResurrectionAnimation(_lastHitDirection));
+        }
     }
 
     //Misc Animations
@@ -2508,7 +2528,7 @@ public class PlayerHandler : EntityHandler
         SpriteRenderer[] renderers = _deathFlash.GetComponentsInChildren<SpriteRenderer>();
         for (int i = 0; i < renderers.Length; i++)
         {
-            /*if (renderers[i].name != "Background")*/ renderers[i].enabled = true;
+            renderers[i].enabled = true;
         }
 
         _gameplayUI.GetComponent<CanvasGroup>().alpha = 0.0f; // Disable visibility game ui for a moment 
@@ -2530,6 +2550,120 @@ public class PlayerHandler : EntityHandler
         Time.timeScale = 1.0f;
         _fadeTransition.FadeToScene(SceneManager.GetActiveScene().name, "");
         // play death animation, stop for a bit, then fade to black
+    }
+
+    IEnumerator PlayResurrectionAnimation(Vector2 killingBlowDirection)
+    {
+        Debug.Log("Playing RESURRECTION");
+        // --- FREEZE
+        _audioSource.clip = SFX_Death;
+        _audioSource.Play();
+        _audioSource.outputAudioMixerGroup = AudioMixer_Unducked;
+        AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", -80.0f);
+        MusicManager.GetMusicManager().CrossfadeToSong(0.0f, DeathScreenAmbience);
+
+        _deathFlash.SetBlammoDirection(killingBlowDirection);
+        _deathFlash.transform.position = new Vector3(characterSprite.transform.position.x, characterSprite.transform.position.y, FollowingCamera.transform.position.z + 2.0f);
+        SpriteRenderer[] renderers = _deathFlash.GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].enabled = true;
+        }
+
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_ShatterMaskTex", PP_White);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_CrackTex", PP_Black);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_OffsetTex", PP_Black);
+
+        _gameplayUI.GetComponent<CanvasGroup>().alpha = 0.0f; // Disable visibility game ui for a moment 
+
+        yield return new WaitForEndOfFrame();
+        Time.timeScale = 0f;
+
+        // --- SHOW COOL TEXT
+        yield return new WaitForSecondsRealtime(2.0f);
+        List<GameObject> list;
+        switch ( UnityEngine.Random.Range(0, 4))
+        {
+            case (0):
+                list = ResurrectionWidgets_1;
+                break;
+            case (1):
+                list = ResurrectionWidgets_2;
+                break;
+            case (2):
+                list = ResurrectionWidgets_3;
+                break;
+            default:
+                list = ResurrectionWidgets_4;
+                break;
+        }
+
+        foreach (var word in list)
+        {
+            word.SetActive(true);
+            yield return new WaitForSecondsRealtime(0.5f);
+        }
+
+        yield return new WaitForSecondsRealtime(1.0f);
+
+        float phaseOutDuration = 0.5f;
+        float timer = 0.0f;
+        float updateInterval = 0.025f;
+        while (timer < phaseOutDuration)
+        {
+            FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_GlitchOffsetStrength", Mathf.Pow(timer / phaseOutDuration, 3));
+            FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_GlitchOffsetMask", 1.0f);
+            FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_GlitchTime", timer);
+            yield return new WaitForSecondsRealtime(updateInterval);
+            timer += updateInterval;
+        }
+
+        // --- RESUME FROM PREVIOUS STATE
+        foreach (var asdf in BossFightDeathResurrection_CollapsingPlatforms)
+        {
+            asdf.RestoreRecursive();
+        }
+        foreach (var asdf in BossFightDeathResurrection_CollapsingPlatforms)
+        {
+            asdf.StartCollapse();
+        }
+
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_ShatterMaskTex", BossFightDeathResurrection_ShatterMaskTex);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_CrackTex", BossFightDeathResurrection_CrackTex);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_OffsetTex", BossFightDeathResurrection_OffsetTex);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_GlitchOffsetStrength", 0.0f);
+        FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_GlitchOffsetMask", 0.0f);
+
+        entityPhysics.Heal(5);
+        CurrentState = PlayerState.IDLE;
+        entityPhysics.IsDead = false;
+        StandFromCollapsePlayer();
+        Time.timeScale = 1f;
+
+        AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", 0.0f);
+
+        GameObject.FindObjectOfType<FinalBossCore>().ResetOnPlayerResurrect();
+
+        foreach (var guy in GameObject.FindObjectsOfType<SwordEnemyHandler>())
+        {
+            GameObject.Destroy(guy.transform.parent.gameObject);
+        }
+
+        foreach (var spawner in GameObject.FindObjectsOfType<EnemySpawner>())
+        {
+            spawner.IsAutomaticallySpawning = false;
+        }
+            _gameplayUI.GetComponent<CanvasGroup>().alpha = 1.0f;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].enabled = false;
+        }
+        foreach (var word in list)
+        {
+            word.SetActive(false);
+        }
+        entityPhysics.transform.position = BossFightDeathResurrection_Position;
+
     }
 
     public ElementType GetElementalAttunement()

@@ -30,7 +30,6 @@ public class FinalBossCore : EntityHandler
     [SerializeField] Vector2 SuperlaserChargeStartPositionalOffset; // fragments are pulled in by this amount (x for east/west, y for north/south) from the SuperlaserPosition_Dir while charging superlaser
     [SerializeField] Vector2 SuperlaserChargeEndPositionalOffset; // fragments are pulled in by this amount (x for east/west, y for north/south) from the SuperlaserPosition_Dir while charging superlaser
     bool ShouldRushToSuperlaserPosition = false;
-    [SerializeField] SpriteRenderer restPlatformGlowSprite;
 
     // small laser
     private bool bReadyToAttack = true;
@@ -99,7 +98,6 @@ public class FinalBossCore : EntityHandler
         {
             rend.enabled = false;
         }
-        restPlatformGlowSprite.gameObject.active = false;
         //StartCoroutine(Orbit());
         _bossHealthBar.SetupForBoss(entityPhysics, "ASPECT OF ICHOR");
         _bossHealthBar.DramaticAppearance(3.0f);
@@ -226,7 +224,6 @@ public class FinalBossCore : EntityHandler
             {
                 DropFragment();
                 SuperlaserRestPlatform.IsUseable = false;
-                restPlatformGlowSprite.gameObject.active = false;
                 if (CurrentOrbitingFragmentCoroutine != null) StopCoroutine(CurrentOrbitingFragmentCoroutine);
                 CurrentOrbitingFragmentCoroutine = StartCoroutine(Orbit());
 
@@ -464,7 +461,6 @@ public class FinalBossCore : EntityHandler
             rend.enabled = true;
         }
         SuperlaserRestPlatform.IsUseable = true;
-        restPlatformGlowSprite.gameObject.active = true;
         SuperlaserRestPlatform.GetComponent<BossAttackRestPlatform>().bShouldRunRampUp = true;
         _primeAudioSource.clip = _superlaserAudioClip;
         _primeAudioSource.Play();

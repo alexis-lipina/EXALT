@@ -1357,6 +1357,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _soundEffect: {fileID: 697635614}
+  _soundEffects: []
+  _optionalPlume: []
 --- !u!114 &6156453291870521015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2372,8 +2374,11 @@ MonoBehaviour:
   SFX_SolFlail_Vanish: {fileID: 8300000, guid: a9e7f5cf707651840878a3fa8d5dcc80, type: 3}
   SFX_SolFlail_Catch: {fileID: 8300000, guid: c821333237ed66c4e8e993f0e25d0ed0, type: 3}
   SFX_Death: {fileID: 8300000, guid: ef36920f38a824a429e61d4a79cc311b, type: 3}
-  AudioMixer_Ducked: {fileID: 0}
-  AudioMixer_Unducked: {fileID: 0}
+  DeathScreenAmbience: {fileID: 0}
+  AudioMixer_Ducked: {fileID: 243856126841341690, guid: 474747a46c17dc94fabdff20510ef39a,
+    type: 2}
+  AudioMixer_Unducked: {fileID: 243103734617792534, guid: 474747a46c17dc94fabdff20510ef39a,
+    type: 2}
   AudioFadeInCurve:
     serializedVersion: 2
     m_Curve: []
@@ -2382,6 +2387,15 @@ MonoBehaviour:
     m_RotationOrder: 4
   PP_Black: {fileID: 2800000, guid: f47864bb80bcae445bc7580b11f91e39, type: 3}
   PP_White: {fileID: 2800000, guid: 547ae5d10d966394296a5c1e3c780243, type: 3}
+  ResurrectionWidgets_1: []
+  ResurrectionWidgets_2: []
+  ResurrectionWidgets_3: []
+  ResurrectionWidgets_4: []
+  BossFightDeathResurrection_Position: {x: 0, y: 0}
+  BossFightDeathResurrection_ShatterMaskTex: {fileID: 0}
+  BossFightDeathResurrection_CrackTex: {fileID: 0}
+  BossFightDeathResurrection_OffsetTex: {fileID: 0}
+  BossFightDeathResurrection_CollapsingPlatforms: []
 --- !u!114 &114281109244806438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3839,6 +3853,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _soundEffect: {fileID: 2292144595231625523}
+  _soundEffects: []
+  _optionalPlume: []
 --- !u!114 &7640388416182083311
 MonoBehaviour:
   m_ObjectHideFlags: 0

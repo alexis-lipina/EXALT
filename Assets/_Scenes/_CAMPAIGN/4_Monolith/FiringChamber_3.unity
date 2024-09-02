@@ -2923,7 +2923,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48622a000a338a640be9b0465b5499bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destination: CornerRoom_4
+  _destination: Corner4
   _doorName: 
 --- !u!114 &81114684
 MonoBehaviour:
@@ -11579,7 +11579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48622a000a338a640be9b0465b5499bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destination: CornerRoom_3
+  _destination: Corner3
   _doorName: 
 --- !u!114 &592020141
 MonoBehaviour:
@@ -16352,6 +16352,7 @@ MonoBehaviour:
   playerPhysics: {fileID: 1611882267}
   camera: {fileID: 234684703}
   LerpRate: 0.5
+  IsSizeChangeActive: 1
 --- !u!114 &855441514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20379,6 +20380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 1
+  UseObjectPooling: 0
   _maxEnemies: 2
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 5
@@ -36321,6 +36323,7 @@ MonoBehaviour:
   depthsColor: {r: 0, g: 0.38117123, b: 0.5, a: 1}
   heightsColor: {r: 1, g: 0, b: 0.49803922, a: 0}
   elevationOffset: 30
+  killPlaneElevation: -20
 --- !u!4 &1886258109
 Transform:
   m_ObjectHideFlags: 0
@@ -43265,6 +43268,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -48
       objectReference: {fileID: 0}
+    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: _playerHandler
+      value: 
+      objectReference: {fileID: 23052731}
     - target: {fileID: 3196830636154884526, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -43275,11 +43283,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 471874197136581764, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: _playerHandler
-      value: 
-      objectReference: {fileID: 23052731}
     - target: {fileID: 7689713314710873934, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_Color.a

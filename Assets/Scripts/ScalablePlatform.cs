@@ -38,6 +38,8 @@ public class ScalablePlatform : MonoBehaviour {
     [Space(5)]
     [Header("Custom Scaling Buttons")]
     [Space(10)]
+    [SerializeField] private float Delta = 1.0f;
+    [Space(10)]
     [SerializeField] private bool X_Up = false;
     [SerializeField] private bool X_Down = false;
     [Space(10)]
@@ -61,33 +63,33 @@ public class ScalablePlatform : MonoBehaviour {
 
     private void OnDrawGizmosSelected()
     {
-        
+        //return; // improve editor perf
         //find the sprite renderers
-        SpriteRenderer top = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        SpriteRenderer side = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        //SpriteRenderer top = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        //SpriteRenderer side = transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         //human error checking
-        Assert.IsNotNull(top, gameObject.name + " requires top section child object");
-        Assert.IsNotNull(side, gameObject.name + " requires side section child object");
+        Assert.IsNotNull(transform.GetChild(0).GetComponent<SpriteRenderer>(), gameObject.name + " requires top section child object");
+        Assert.IsNotNull(transform.GetChild(1).GetComponent<SpriteRenderer>(), gameObject.name + " requires side section child object");
         //Assert.IsFalse(drawMode == SpriteDrawMode.Simple, gameObject.name + "'s Draw mode can't be simple");
 
         //set renderer properties
         if (forceDrawMode)
         {
-            top.drawMode = drawMode;
-            side.drawMode = drawMode;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().drawMode = drawMode;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().drawMode = drawMode;
         }
         else
         {
-            top.drawMode = SpriteDrawMode.Simple;
-            side.drawMode = SpriteDrawMode.Simple;
-            top.transform.localScale = new Vector3(1, 1, 1);
-            side.transform.localScale = new Vector3(1, 1, 1);
+            transform.GetChild(0).GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Simple;
+            transform.GetChild(1).GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Simple;
+            transform.GetChild(0).GetComponent<SpriteRenderer>().transform.localScale = new Vector3(1, 1, 1);
+            transform.GetChild(1).GetComponent<SpriteRenderer>().transform.localScale = new Vector3(1, 1, 1);
         }
-        top.size = new Vector2(dimensions.x, dimensions.y);
-        side.size = new Vector2(dimensions.x, dimensions.z);
-        side.transform.localPosition = Vector2.down * ((dimensions.y / 2) + (dimensions.z / 2) - elevation);
-        top.transform.localPosition = Vector2.up * elevation;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(dimensions.x, dimensions.y);
+        transform.GetChild(1).GetComponent<SpriteRenderer>().size = new Vector2(dimensions.x, dimensions.z);
+        transform.GetChild(1).GetComponent<SpriteRenderer>().transform.localPosition = Vector2.down * ((dimensions.y / 2) + (dimensions.z / 2) - elevation);
+        transform.GetChild(0).GetComponent<SpriteRenderer>().transform.localPosition = Vector2.up * elevation;
 
         //set collider properties
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
@@ -102,49 +104,49 @@ public class ScalablePlatform : MonoBehaviour {
         #region BUTTONS
         if (X_Up)
         {
-            dimensions.x++;
+            dimensions.x += Delta;
             Debug.Log("X++");
             X_Up = false;
         }
         if (X_Down)
         {
-            dimensions.x--;
+            dimensions.x -= Delta;
             Debug.Log("X--");
             X_Down = false;
         }
         if (Y_Up)
         {
-            dimensions.y++;
+            dimensions.y += Delta;
             Debug.Log("Y++");
             Y_Up = false;
         }
         if (Y_Down)
         {
-            dimensions.y--;
+            dimensions.y -= Delta;
             Debug.Log("Y--");
             Y_Down = false;
         }
         if (Z_Up)
         {
-            dimensions.z++;
+            dimensions.z += Delta;
             Debug.Log("Z++");
             Z_Up = false;
         }
         if (Z_Down)
         {
-            dimensions.z--;
+            dimensions.z -= Delta;
             Debug.Log("Z--");
             Z_Down = false;
         }
         if (Raise)
         {
-            elevation++;
+            elevation += Delta;
             Debug.Log("Elevation++");
             Raise = false;
         }
         if (Lower)
         {
-            elevation--;
+            elevation -= Delta;
             Debug.Log("Elevation--");
             Lower = false;
         }

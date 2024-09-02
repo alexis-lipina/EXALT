@@ -36,6 +36,7 @@ public class PlanetSelectorUI : MonoBehaviour
 
     void Update()
     {
+        /*
         if (restPlatform.IsActivated)
         {
             Debug.Log("Processing directional input");
@@ -59,6 +60,7 @@ public class PlanetSelectorUI : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     public void HoverRight()

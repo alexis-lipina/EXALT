@@ -95,6 +95,10 @@ public class BetterEnemySpawner : MonoBehaviour
     {
         foreach (GameObject enemy in SpawnedEnemies)
         {
+            if (!enemy)
+            {
+                continue;
+            }
             if (enemy.active) return false;
         }
         return numberOfEnemiesToSpawn == 0;

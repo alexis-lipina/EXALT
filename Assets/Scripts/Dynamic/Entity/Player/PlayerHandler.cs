@@ -247,7 +247,7 @@ public class PlayerHandler : EntityHandler
     private bool hasHealed = false;
 
     //======================| REST
-    private const float rest_kneel_duration = 0.51f;
+    private const float rest_kneel_duration = 0.47f;//0.51f;
     private bool isStanding = false;
     private const float _rest_recover_health_duration = 2.0f;
     private float _rest_recover_health_timer = 0f;
@@ -607,6 +607,8 @@ public class PlayerHandler : EntityHandler
         LightMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
         HeavyMeleeSprite.transform.SetPositionAndRotation(new Vector3(characterSprite.transform.position.x + aimDirection.normalized.x * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.y + aimDirection.normalized.y * heavymelee_hitbox.x / 2.0f, characterSprite.transform.position.z + aimDirection.normalized.y), Quaternion.identity);
         HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
+        
+        RefreshRestPlatformWhileGrounded();
 
         //------------------------------------------------| STATE CHANGE
         if (!BlockInput)
@@ -626,6 +628,7 @@ public class PlayerHandler : EntityHandler
                 //Debug.Log("IDLE -> JUMP");
                 Vibrate(.5f, 0.05f);
                 entityPhysics.ZVelocity = JumpImpulse;
+                ClearRestPlatform();
                 CurrentState = PlayerState.JUMP;
             }
 
@@ -653,6 +656,7 @@ public class PlayerHandler : EntityHandler
         if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
         {
             entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
             CurrentState = PlayerState.JUMP;
         }
         else
@@ -752,6 +756,7 @@ public class PlayerHandler : EntityHandler
             Quaternion.identity);
         HeavyMeleeSprite.transform.Rotate(new Vector3(0, 0, Vector2.SignedAngle(Vector2.up, aimDirection)));
 
+
         //------------------------------------------------| MOVE
 
         Vector2 vec = entityPhysics.MoveAvoidEntities(direction);
@@ -766,12 +771,15 @@ public class PlayerHandler : EntityHandler
         if (entityPhysics.GetObjectElevation() > maxheight)
         {
             entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
             CurrentState = PlayerState.JUMP;
         }
         else
         {
             entityPhysics.SetObjectElevation(maxheight);
         }
+        RefreshRestPlatformWhileGrounded();
+
         //------------------------------------------------| STATE CHANGE
         //Debug.Log("X:" + xInput + "Y:" + yInput);
         if (Mathf.Abs(xInput) < 0.1 && Mathf.Abs(yInput) < 0.1)
@@ -785,6 +793,7 @@ public class PlayerHandler : EntityHandler
             entityPhysics.SavePosition();
             //Debug.Log("RUN -> JUMP");
             entityPhysics.ZVelocity = JumpImpulse;
+            ClearRestPlatform();
             CurrentState = PlayerState.JUMP;
         }
         if (controller.GetButtonDown("Melee"))
@@ -1014,6 +1023,7 @@ public class PlayerHandler : EntityHandler
         _blinkTimer = 0f;
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
+        ClearRestPlatform();
         CurrentState = PlayerState.JUMP;
     }
 
@@ -2181,14 +2191,26 @@ public class PlayerHandler : EntityHandler
             characterAnimator.Play("PlayerRestTransition");
             _rest_recover_energy_timer = _rest_recover_energy_duration;
             _rest_recover_health_timer = _rest_recover_health_duration;
+
+            // zoop player to the middle of the platform so it looks nice
+            if (CurrentRestPlatform)
+            {
+                Vector2 vectorToPlatform = CurrentRestPlatform.GetComponent<EnvironmentPhysics>().ObjectCollider.bounds.center - entityPhysics.transform.position;
+                if (vectorToPlatform.magnitude > 0.0f)
+                {
+                    //vectorToPlatform.Normalize();
+                    vectorToPlatform = vectorToPlatform * (1 - (StateTimer / rest_kneel_duration));
+                    entityPhysics.MoveCharacterPositionPhysics(vectorToPlatform.x, vectorToPlatform.y); 
+                }
+            }
         }
         else if (isStanding && StateTimer > 0) // transition OUT OF rest state
         {
             characterAnimator.Play("PlayerRestStanding");
-            if (CurrentRestPlatform && CurrentRestPlatform.IsActivated)
+            if (CurrentRestPlatform/* && CurrentRestPlatform.IsActivated*/)
             {
-                CurrentRestPlatform.OnDeactivated.Invoke();
-                CurrentRestPlatform.IsActivated = false;
+                //CurrentRestPlatform.OnDeactivated.Invoke();
+                //CurrentRestPlatform.IsActivated = false;
                 CurrentRestPlatform.IsActionPressed = false;
             }
         }
@@ -2231,24 +2253,23 @@ public class PlayerHandler : EntityHandler
             if (CurrentRestPlatform) // control rest platform
             {
                 CurrentRestPlatform.IsPlayerRestingOn = true;
+                /*
                 if (!CurrentRestPlatform.IsActivated)
                 {
                     CurrentRestPlatform.OnActivated.Invoke();
                     CurrentRestPlatform.IsActivated = true;
-                }
+                }*/
                 if (CurrentRestPlatform.DoesPlatformUseActionPress)
                 {
                     if (controller.GetButtonDown("Melee"))
                     {
                         CurrentRestPlatform.OnActionPressed.Invoke();
-                        CurrentRestPlatform.SetTargetGlowAmount(1.0f);
                         CurrentRestPlatform.IsActionPressed = true;
                         Debug.Log("Rest platform PRESSED!");
                     }
                     if (controller.GetButtonUp("Melee"))
                     {
                         CurrentRestPlatform.OnActionReleased.Invoke();
-                        CurrentRestPlatform.SetTargetGlowAmount(0.5f);
                         CurrentRestPlatform.IsActionPressed = false;
                     }
                 }
@@ -2826,6 +2847,41 @@ public class PlayerHandler : EntityHandler
             yield return new WaitForEndOfFrame();
         }
         weaponGlowSprite.material.SetFloat("_Opacity", glowcurve.Evaluate(glowcurve.keys[glowcurve.length - 1].time));
+    }
+
+    private void RefreshRestPlatformWhileGrounded()
+    {
+        RestPlatform newRestPlatform = entityPhysics.currentNavEnvironmentObject.GetComponent<RestPlatform>();
+        if (!CurrentRestPlatform && newRestPlatform)
+        {
+            CurrentRestPlatform = newRestPlatform;
+            CurrentRestPlatform.IsPlayerRestingOn = false;
+            CurrentRestPlatform.IsPlayerStandingOn = true;
+        }
+        else if (CurrentRestPlatform != newRestPlatform)
+        {
+            CurrentRestPlatform.IsPlayerRestingOn = false;
+            CurrentRestPlatform.IsPlayerStandingOn = false;
+            if (newRestPlatform)
+            {
+                CurrentRestPlatform = newRestPlatform;
+                CurrentRestPlatform.IsPlayerRestingOn = false;
+                CurrentRestPlatform.IsPlayerStandingOn = true;
+            }
+            else
+            {
+                CurrentRestPlatform = null;
+            }
+        }
+    }
+    private void ClearRestPlatform()
+    {
+        if (CurrentRestPlatform)
+        {
+            CurrentRestPlatform.IsPlayerRestingOn = false;
+            CurrentRestPlatform.IsPlayerStandingOn = false;
+            CurrentRestPlatform = null;
+        }
     }
 
     private IEnumerator FadeInAudio()

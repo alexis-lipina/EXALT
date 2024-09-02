@@ -740,7 +740,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1340802446491156, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_Name
-      value: Start_Corner4
+      value: Start_Corner3
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -909,9 +909,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3776f47892f2e2498554e3409bc5f55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sourceScene: CornerRoom_4
+  _sourceScene: Corner3
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!4 &110063531 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4188580789797398, guid: 9dba7b926b1d30b4da5768e90b5db8d4,
@@ -2920,8 +2925,8 @@ Transform:
   - {fileID: 1784292188}
   - {fileID: 2004717561}
   - {fileID: 1903800324}
-  - {fileID: 1090645742}
   - {fileID: 2061060520}
+  - {fileID: 1090645742}
   m_Father: {fileID: 1630629251}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3195,7 +3200,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1340802446491156, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_Name
-      value: Start_Corner5
+      value: Start_Corner4
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3364,9 +3369,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3776f47892f2e2498554e3409bc5f55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sourceScene: CornerRoom_5
+  _sourceScene: Corner4
   _sourceDoor: 
   _playerPhysics: {fileID: 1611882267}
+  OnPlayerStartHere:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1001 &700162290
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7424,7 +7434,7 @@ GameObject:
   - component: {fileID: 1446986945}
   - component: {fileID: 1446986944}
   m_Layer: 0
-  m_Name: Exit_Corner4
+  m_Name: Exit_Corner3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7456,7 +7466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48622a000a338a640be9b0465b5499bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destination: CornerRoom_4
+  _destination: Corner3
   _doorName: 
 --- !u!114 &1446986945
 MonoBehaviour:
@@ -8079,7 +8089,7 @@ GameObject:
   - component: {fileID: 1600706139}
   - component: {fileID: 1600706138}
   m_Layer: 0
-  m_Name: Exit_Corner5
+  m_Name: Exit_Corner4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8111,7 +8121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48622a000a338a640be9b0465b5499bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _destination: CornerRoom_5
+  _destination: Corner4
   _doorName: 
 --- !u!114 &1600706139
 MonoBehaviour:
@@ -8827,6 +8837,7 @@ MonoBehaviour:
   depthsColor: {r: 0, g: 0.38117123, b: 0.5, a: 1}
   heightsColor: {r: 1, g: 0, b: 0.49803922, a: 0}
   elevationOffset: 30
+  killPlaneElevation: -20
 --- !u!4 &1886258109
 Transform:
   m_ObjectHideFlags: 0

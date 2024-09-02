@@ -67,7 +67,7 @@ public class BossHealthBarManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (bossEntityPhysics.GetCurrentHealth() < displayedHealthAmount)
+        if (bossEntityPhysics && bossEntityPhysics.GetCurrentHealth() < displayedHealthAmount)
         {
             StartCoroutine(TakeDamageFlash());
         }

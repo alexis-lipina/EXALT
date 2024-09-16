@@ -98,7 +98,7 @@ public class EnemySpawner : MonoBehaviour
     /// Returns enemy spawned
     /// </summary>
     /// <returns></returns>
-    public GameObject SpawnEnemy(ElementType shieldType = ElementType.NONE, bool isHostile = true)
+    public GameObject SpawnEnemy(ElementType shieldType = ElementType.NONE, bool isHostile = true, float overrideDetectionRange = -1.0f)
     {
         GameObject tempEnemy = GetFromPool();
         EntityPhysics tempPhysics = tempEnemy.GetComponentInChildren<EntityPhysics>();
@@ -109,6 +109,10 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset);
         tempPhysics.GetComponent<Rigidbody2D>().MovePosition((Vector2)_startEnvironment.transform.position + _startEnvironment.GetComponent<BoxCollider2D>().offset + new Vector2(Random.Range(-2.0f, 2.0f), Random.Range(-1.5f, 1.5f))); //- new Vector2(0f, 2f); 
         tempEnemy.GetComponentInChildren<PathfindingAI>().SetPath(_startEnvironment);
+        if (overrideDetectionRange > 0)
+        {
+            tempEnemy.GetComponentInChildren<PathfindingAI>().SetDetectionRange(overrideDetectionRange);
+        }
         if (!isHostile)
         {
             tempEnemy.GetComponentInChildren<PathfindingAI>().SetDetectionRange(0.0f);

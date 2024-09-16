@@ -51,25 +51,22 @@ public class LightningChainNode : MonoBehaviour
     }
 
     IEnumerator PlayVFX()
-    {
-        
-        _arcFX.SetupLine(Vector2.up * _myEnemy.GetBottomHeight(), _sourcePosition - _myEnemy.transform.position);
+    {        
+        _arcFX.SetupLine(Vector2.up * _myEnemy.GetBottomHeight(), (Vector2)_sourcePosition - (Vector2)_myEnemy.transform.position + Vector2.up * _myEnemy.GetObjectElevation());
         _arcFX.Play(_timeToArc * 0.75f * randomTimeMultiplier);
         yield return new WaitForSeconds(_timeToArc * 0.5f * randomTimeMultiplier);
         _plumeFX.SetupLine(Vector2.up * _myEnemy.GetBottomHeight(), Vector2.up * (_myEnemy.GetBottomHeight() + _heightOfPlume));
         _plumeFX.Play(_timeToArc * 0.5f * randomTimeMultiplier);
-
     }
 
     IEnumerator Spread()
     {
+        // TODO : PERFORMANCE here is dogshit. newing up lists, adding items to them, instantiating objects in here is going to cause the game to stutter a lot.
         yield return new WaitForSeconds(_timeToArc * randomTimeMultiplier);
         yield return new WaitForEndOfFrame();
         //Later, check all enemies in radius 
         Collider2D[] nearbyEnemies = Physics2D.OverlapAreaAll((Vector2)transform.position - new Vector2(_chainRadius, _chainRadius), (Vector2)transform.position + new Vector2(_chainRadius, _chainRadius));
         Debug.DrawLine((Vector2)transform.position - new Vector2(_chainRadius, _chainRadius), (Vector2)transform.position + new Vector2(_chainRadius, _chainRadius), Color.cyan, 1f, false);
-
-
 
         int numEnemiesNear = 0;
 
@@ -83,7 +80,6 @@ public class LightningChainNode : MonoBehaviour
                 if (nearbyEnemies[i].gameObject.tag == "Enemy" && !nearbyEnemies[i].GetComponent<EntityPhysics>().IsImmune)
                 {
                     enemies.Add(nearbyEnemies[i].GetComponent<EntityPhysics>());
-                    Debug.Log(nearbyEnemies[i].gameObject);
                 }
             }
         }
@@ -94,7 +90,7 @@ public class LightningChainNode : MonoBehaviour
             if (!_wavefront.AlreadyHit.Contains(enemies[i].gameObject.GetInstanceID())) //if hasnt already been hit by the chain
             {
                 //new up a boi
-                GameObject newNode = GetNode();
+                GameObject newNode = GetNode(); 
                 newNode.GetComponent<LightningChainNode>()._wavefront = _wavefront;
                 newNode.GetComponent<LightningChainNode>().randomTimeMultiplier = Random.Range(0.75f, 1.25f);
                 newNode.GetComponent<LightningChainNode>()._myEnemy = enemies[i];

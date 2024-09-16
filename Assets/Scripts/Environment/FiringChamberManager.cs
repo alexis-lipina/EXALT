@@ -6,6 +6,7 @@ using UnityEngine;
 /// Manages firing chamber behavior in the Monolith's central area. Keeps anything
 /// that should synchronize with the firing of the main cannon synchronized.
 /// </summary>
+[RequireComponent(typeof(AudioSource))]
 public class FiringChamberManager : MonoBehaviour
 {
 
@@ -16,7 +17,10 @@ public class FiringChamberManager : MonoBehaviour
     private int SecondsUntilNextShot;
     [SerializeField] private SpriteRenderer[] GlowGradients;
     [SerializeField] private AnimationCurve GradientGlowOverTime;
+    private AudioSource LaserAudioSource;
     float Timer = 0.0f;
+    [SerializeField] MovingEnvironment CannonSyncMovingEnvironment;
+    public float GlowScalar = 1.0f;
 
 
     // Start is called before the first frame update
@@ -24,6 +28,7 @@ public class FiringChamberManager : MonoBehaviour
     {
         SecondsUntilNextShot = SecondsBetweenShots;
         StartCoroutine(PulseLaserBeam());
+        LaserAudioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -31,7 +36,7 @@ public class FiringChamberManager : MonoBehaviour
         Timer += Time.deltaTime;
         foreach (SpriteRenderer renderer in GlowGradients)
         {
-            renderer.material.SetFloat("_Opacity", GradientGlowOverTime.Evaluate(Timer/SecondsBetweenShots)); 
+            renderer.material.SetFloat("_Opacity", GradientGlowOverTime.Evaluate(Timer/SecondsBetweenShots) * GlowScalar); 
         }
     }
 
@@ -59,6 +64,7 @@ public class FiringChamberManager : MonoBehaviour
 
             if (SecondsUntilNextShot == 1)
             {
+                CannonSyncMovingEnvironment.SetAnimRate(1.25f);
                 StartCoroutine(RampGlow(0.3f, 1.0f, 0.9f));
             }
 
@@ -69,7 +75,9 @@ public class FiringChamberManager : MonoBehaviour
                 LaserAnimation.Play("FiringChamber_Fire", -1, 0.0f);
                 StartCoroutine(RampGlow(1.0f, 0.0f, 2.0f));
                 Timer = 0.0f;
-
+                LaserAudioSource.Play();
+                CannonSyncMovingEnvironment.SetAnimRate(1.0f);
+                CannonSyncMovingEnvironment.PlayAnim();
             }
         }
     }

@@ -149,6 +149,11 @@ public class PathfindingAI : EntityAI
     {
 
         Vector2 direction = new Vector2(target.transform.position.x - entityPhysics.transform.position.x, target.transform.position.y - entityPhysics.transform.position.y);
+//         if (NeedsToJump())
+//         {
+//             if (testhandler is SwordEnemyHandler) ((SwordEnemyHandler)testhandler).SetJumpPressed(true);
+//             else if (testhandler is RangedEnemyHandler) ((RangedEnemyHandler)testhandler).SetJumpPressed(true);
+//         }
         if (direction.magnitude > 4)
         {
             testhandler.SetXYAnalogInput(direction.normalized.x, direction.normalized.y);
@@ -165,7 +170,7 @@ public class PathfindingAI : EntityAI
     {
         Debug.Log("got here");
         //check if bounds of this collider are too far from the other
-        Debug.Log(testhandler.GetEntityPhysics().GetCurrentNavObject().name);
+        //Debug.Log(testhandler.GetEntityPhysics().GetCurrentNavObject().name);
 
         Collider2D[] objectsbelow = Physics2D.OverlapPointAll(testhandler.GetEntityPhysics().transform.position);
         float max = -1000;

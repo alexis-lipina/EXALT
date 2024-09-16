@@ -18,6 +18,8 @@ Shader "Custom/ShinyPlatformShader"
 		_OpaqueColor("Opaque Color", Color) = (1,1,1,1)
 
 		_Opacity("Opacity", Float) = 1.0
+		_OcclusionOpacity("Opacity", Float) = 1.0
+
 	}
 
 	SubShader
@@ -62,6 +64,7 @@ Shader "Custom/ShinyPlatformShader"
 			float _PlayerElevation;
 			float _MaxElevationOffset;
 			float _Opacity;
+			float _OcclusionOpacity;
 			float4 _BGColor;
 			float4 _FGColor;
 			float4 _OpaqueColor;
@@ -100,7 +103,7 @@ Shader "Custom/ShinyPlatformShader"
 					color = (1 - ratio) * color + ratio * _LowColor;
 				}
 				//color.a = _Opacity; //change this in the future so that half-transparent pixels dont get screwed up
-				color.a = src_opacity * _Opacity;
+				color.a = src_opacity * _Opacity * _OcclusionOpacity;
 				return color;
 			}
 			ENDCG

@@ -40,6 +40,8 @@ public class MovingEnvironment : MonoBehaviour
 
     public EnvironmentPhysics environmentPhysics;
 
+    public float ZVelocityForElevator = 0.0f;
+
     void Awake()
     {
         environmentPhysics = GetComponent<EnvironmentPhysics>();
@@ -68,7 +70,7 @@ public class MovingEnvironment : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (bIsRestPlatformPotentiometer && RestPlatformToListen)
         {
@@ -176,6 +178,7 @@ public class MovingEnvironment : MonoBehaviour
         foreach (MovingEnvironment envt in SynchronizedEnvironment)
         {
             envt.PlayAnim();
+            envt.ZVelocityForElevator = ZVelocityForElevator;
         }
     }
 

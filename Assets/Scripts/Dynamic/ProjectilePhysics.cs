@@ -556,7 +556,7 @@ public class ProjectilePhysics : DynamicPhysics
     private IEnumerator PlayDespawnAndReset(float duration)
     {
         speed = 0;
-        ZVelocity = 0;
+        //ZVelocity = 0;
         if (_isPooled)
         {
             float timer = 0;
@@ -566,7 +566,7 @@ public class ProjectilePhysics : DynamicPhysics
                 GlowSprite.material.SetFloat("_Opacity", GlowDespawnAlphaAnimationCurve.Evaluate(timer / duration));
                 GlowSprite.transform.localScale = Vector3.one * GlowDespawnScaleAnimationCurve.Evaluate(timer / duration);
                 speed = 0;
-                ZVelocity = 0;
+                //ZVelocity = 0;
                 yield return new WaitForEndOfFrame();
             }
             if (trackingArea) trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
@@ -593,7 +593,7 @@ public class ProjectilePhysics : DynamicPhysics
         _targetsTouched = new Dictionary<EntityPhysics, bool>();
         _timer = 0f;
         TerrainTouched = new Dictionary<int, EnvironmentPhysics>();
-        ZVelocity = 0f;
+        //ZVelocity = 0f;
         if (trackingArea && trackingAreaSeeker) trackingAreaSeeker.trackedTargets = new List<EntityPhysics>();
         _whoToHurt = _whoToHurt_original;
         speed = _speed_original;

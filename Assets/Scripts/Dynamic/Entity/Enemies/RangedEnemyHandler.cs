@@ -74,7 +74,7 @@ public class RangedEnemyHandler : EntityHandler
     }
     private TempTexDirection tempDirection;
     private const float AttackMovementSpeed = 0.2f;
-    private const float JumpImpulse = 40f;
+    private const float JumpImpulse = 60f;
 
     private Weapon _enemyProjectileLauncher;
 
@@ -395,7 +395,7 @@ public class RangedEnemyHandler : EntityHandler
         }
 
         //Debug.Log("JUMPING!!!");
-        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput) * 1.8f); // 1.8x lets them jump laterally further
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         //Debug.Log("FORCES : " + velocityAfterForces);
         entityPhysics.FreeFall();
@@ -425,6 +425,7 @@ public class RangedEnemyHandler : EntityHandler
     {
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
 
         //========| Draw
         if (stateTimer == 0)
@@ -470,6 +471,15 @@ public class RangedEnemyHandler : EntityHandler
             GameObject bullet = _enemyProjectileLauncher.FireBullet( aimVector );
             bullet.GetComponentInChildren<ProjectilePhysics>().SetObjectElevation(entityPhysics.GetObjectElevation() + 2f);
             bullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
+            foreach (var floor in entityPhysics.TerrainTouching)
+            {
+                MovingEnvironment movingEnvt = floor.Key.GetComponent<MovingEnvironment>();
+                if (movingEnvt)
+                {
+                    bullet.GetComponentInChildren<ProjectilePhysics>().ZVelocity = movingEnvt.ZVelocityForElevator;
+                    break;
+                }
+            }
             hasSwung = true;
         }
         stateTimer += Time.deltaTime;
@@ -479,7 +489,18 @@ public class RangedEnemyHandler : EntityHandler
             currentState = TestEnemyState.SWING;
             hasSwung = false;
         }
-
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            currentState = TestEnemyState.FALL;
+        }
+        else
+        {
+            entityPhysics.SavePosition();
+            entityPhysics.SetObjectElevation(maxheight);
+        }
 
     }
     //telegraph about to swing, called in AttackState()
@@ -506,6 +527,7 @@ public class RangedEnemyHandler : EntityHandler
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.4) //if 500 ms have passed
         {
@@ -515,6 +537,20 @@ public class RangedEnemyHandler : EntityHandler
         {
             stateTimer = 0;
             currentState = TestEnemyState.ATTACK;
+        }
+
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            currentState = TestEnemyState.FALL;
+        }
+
+        else
+        {
+            entityPhysics.SavePosition();
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
 
@@ -538,6 +574,8 @@ public class RangedEnemyHandler : EntityHandler
         //Physics
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
+
 
         stateTimer += Time.deltaTime;
         if (stateTimer < 0.5) //if 500 ms have passed
@@ -549,6 +587,19 @@ public class RangedEnemyHandler : EntityHandler
             stateTimer = 0;
             currentState = TestEnemyState.RUN;
         }
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            currentState = TestEnemyState.FALL;
+        }
+
+        else
+        {
+            entityPhysics.SavePosition();
+            entityPhysics.SetObjectElevation(maxheight);
+        }
     }
 
 
@@ -556,6 +607,7 @@ public class RangedEnemyHandler : EntityHandler
     {
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
+        entityPhysics.SnapToFloor();
         characterAnimator.Play(FLINCH_Anim);
         fxAnimator.Play(FLINCH_Anim);
     }

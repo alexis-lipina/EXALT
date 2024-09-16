@@ -79,7 +79,7 @@ public class SwordEnemyHandler : EntityHandler
     }
     private TempTexDirection tempDirection;
     private const float AttackMovementSpeed = 0.2f;
-    private const float JumpImpulse = 45f;
+    private const float JumpImpulse = 60f;
 
     private float attackCoolDown;
     float xInput;
@@ -396,7 +396,7 @@ public class SwordEnemyHandler : EntityHandler
         }
 
         //Debug.Log("JUMPING!!!");
-        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput));
+        Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(xInput, yInput) * 1.8f); // multiplier is for jump lateral movement to be fast to allow gap crossing
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         entityPhysics.FreeFall();
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
@@ -626,6 +626,17 @@ public class SwordEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(new Vector2(0, 0));
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         entityPhysics.SnapToFloor();
+
+        //fall
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.FreeFall();
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
 
         //state transitions
         stateTimer += Time.deltaTime;

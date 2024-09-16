@@ -79,17 +79,15 @@ public class FireDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
-        RadialGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
-        StarGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2, pos.y - 10);
+        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + 2 + _sourceEnemy.GetObjectElevation(), pos.y - 10);
+        RadialGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2 + _sourceEnemy.GetObjectElevation(), pos.y - 10);
+        StarGlowSprite.transform.position = new Vector3(pos.x, pos.y + 2 + _sourceEnemy.GetObjectElevation(), pos.y - 10);
     }
 
     private void OnEnable()
     {
         hasDetonated = false;
         Debug.Log("Deployed!");
-        MoveTo(DesiredPosition);
-        //_physics.SetObjectElevation(_sourceEnemy.GetObjectElevation());
         _projection.SetOpacity(1.0f);
         
         // I'm canceling sparks, sparks are canceled

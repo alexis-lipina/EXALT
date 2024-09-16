@@ -15,6 +15,7 @@ Shader "Custom/WallShader"
 		//_LowColor("Low Color", Color) = (0, 0, 0, 1)
 
 		_Opacity("Opacity", Float) = 1.0
+		_OcclusionOpacity("Opacity", Float) = 1.0
 	}
 
 		SubShader
@@ -64,6 +65,7 @@ Shader "Custom/WallShader"
 			float _BottomSpriteRect;
 
 			float _Opacity;
+			float _OcclusionOpacity;
 
 			//right now just a regular gradient from top to bottom
 			float4 frag(vertOutput output) : COLOR
@@ -95,7 +97,7 @@ Shader "Custom/WallShader"
 					color = (1 - ratio) * color + ratio * _LowColor;
 				}
 				//color.a = _Opacity; //change this in the future so that half-transparent pixels dont get screwed up
-				color.a = src_opacity * _Opacity;
+				color.a = src_opacity * _Opacity * _OcclusionOpacity;
 				return color;
 			}
 

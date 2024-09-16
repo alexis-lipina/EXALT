@@ -1012,6 +1012,7 @@ public class PlayerHandler : EntityHandler
             }
         }
 
+        _blinkAudioSource.pitch = UnityEngine.Random.Range(0.97f, 1.02f);
         _blinkAudioSource.Play();
         //Debug.Log(aimDirection);
 
@@ -1306,6 +1307,18 @@ public class PlayerHandler : EntityHandler
                 _readyForThirdHit = false;
             }
         }
+        // ground
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
     }
 
     // Should be called by the 2nd light melee in a combo. Makes the sol flail orbit the player. Should work even if sol flail hasnt fully returned to player position yet
@@ -1468,6 +1481,19 @@ public class PlayerHandler : EntityHandler
         //entityPhysics.MoveCharacterPositionPhysics(thrustDirection.x * AttackMovementSpeed, thrustDirection.y * AttackMovementSpeed);
 
         StateTimer -= Time.deltaTime;
+
+        // ground
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
 
         //allow "animation-cancel" teleport after a certain time
         if (StateTimer < 0.1 && controller.GetButtonDown("Blink"))
@@ -1846,6 +1872,19 @@ public class PlayerHandler : EntityHandler
         {
             CurrentState = PlayerState.IDLE;
         }
+
+        // stick to floor
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
     }
 
     /// <summary>
@@ -1989,6 +2028,15 @@ public class PlayerHandler : EntityHandler
         tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<Rigidbody2D>().position = (entityPhysics.GetComponent<Rigidbody2D>().position);
         tempBullet.GetComponentInChildren<ProjectilePhysics>().ObjectSprite.transform.position = entityPhysics.ObjectSprite.transform.position;
         tempBullet.GetComponentInChildren<ProjectilePhysics>().Spawn();
+        foreach (var floor in entityPhysics.TerrainTouching)
+        {
+            MovingEnvironment movingEnvt = floor.Key.GetComponent<MovingEnvironment>();
+            if (movingEnvt)
+            {
+                tempBullet.GetComponentInChildren<ProjectilePhysics>().ZVelocity = movingEnvt.ZVelocityForElevator;
+                break;
+            }
+        }
     }
 
     #endregion
@@ -2177,6 +2225,18 @@ public class PlayerHandler : EntityHandler
         {
             PlayerBlinkTransitionAttempt();
             _changeStyle_HasChanged = false;
+        }
+        // stick to floor on elevator
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight)
+        {
+            entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
 

@@ -529,7 +529,7 @@ public class DynamicPhysics : PhysicsObject
     {
         TerrainTouched.Clear();
         TerrainTouching.Clear();
-        ZVelocity = 0;
+        //ZVelocity = 0;
     }
 
 }

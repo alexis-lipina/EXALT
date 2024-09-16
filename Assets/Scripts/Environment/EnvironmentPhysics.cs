@@ -186,8 +186,8 @@ public class EnvironmentPhysics : PhysicsObject
                 if (_playerPhysics.GetBottomHeight() + _opacityHeightTolerance > TopHeight) desiredOpacity = 1f;
                 _opacity = Mathf.Lerp(_opacity, desiredOpacity, 0.1f);
             }
-            if (TopSprite) TopSprite.material.SetFloat("_Opacity", _opacity);
-            if (FrontSprite) FrontSprite.material.SetFloat("_Opacity", _opacity);
+            if (TopSprite) TopSprite.material.SetFloat("_OcclusionOpacity", _opacity);
+            if (FrontSprite) FrontSprite.material.SetFloat("_OcclusionOpacity", _opacity);
         }
     }
 

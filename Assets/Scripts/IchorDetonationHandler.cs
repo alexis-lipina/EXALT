@@ -70,16 +70,15 @@ public class IchorDetonationHandler : ProjectionHandler
     public void MoveTo(Vector2 pos)
     {
         _physics.transform.position = pos;
-        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
-        RadialGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
-        StarGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset(), pos.y);
+        AnimationSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset() + _sourceEnemy.GetObjectElevation(), pos.y);
+        RadialGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset() + _sourceEnemy.GetObjectElevation(), pos.y);
+        StarGlowSprite.transform.position = new Vector3(pos.x, pos.y + _physics.GetSpriteZOffset() + _sourceEnemy.GetObjectElevation(), pos.y);
     }
 
     private void OnEnable()
     {
         hasDetonated = false;
         Debug.Log("Deployed!");
-        MoveTo(DesiredPosition);
         _projection.SetOpacity(1.0f);
     }
 

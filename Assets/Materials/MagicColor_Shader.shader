@@ -2,6 +2,7 @@
 {
     Properties
     {
+		_Color("Tint", Color) = (1,1,1,1)
         _MainTex ("Texture", 2D) = "white" {}
 		_SourceColor("Source Color", Color) = (1, 1, 1, 1)
 		_Transparency("Transparency", Float) = 1.0
@@ -44,6 +45,7 @@
 			}
 
 			sampler2D _MainTex;
+			float4 _Color;
 			float4 _MagicColor;
 			float4 _SourceColor;
 			float _Transparency;
@@ -55,7 +57,7 @@
 				{
 					color = _MagicColor;
 				}
-				color.a = _Transparency * color.a;
+				color.a = _Transparency * color.a * _Color.a;
 				return color;
 			}
 			ENDCG

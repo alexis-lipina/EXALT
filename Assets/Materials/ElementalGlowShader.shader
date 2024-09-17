@@ -9,6 +9,8 @@ Shader "Custom/ElementalGlowShader"
 		_ElementGradients("Element Gradients", 2D) = "white"
 		_CurrentElement("Current Element", Float) = 1
 		_Opacity("Opacity", Float) = 1
+		_OcclusionOpacity("Occlusion Opacity", Float) = 1
+
 	}
 
 	SubShader
@@ -52,6 +54,7 @@ Shader "Custom/ElementalGlowShader"
 			sampler2D _ElementGradients;
 			float _CurrentElement; // (1=ichor, 2=sol, 3=rift, 4=storm)
 			float _Opacity;
+			float _OcclusionOpacity;
 
 			float4 frag(vertOutput output) : COLOR
 			{
@@ -59,7 +62,7 @@ Shader "Custom/ElementalGlowShader"
 				float bloom = clamp(1, 10, _Opacity); // allows overloading opacity for overbrightness
 				float intensity = clamp(0, 1, _Opacity);
 				float4 color = tex2D(_MainTex, output.uv); // sample glow sprite for intensity
-				color *= _Opacity; // used to be Intensity, but I want the bright-colors to become more dominant when overloaded
+				color *= _Opacity * _OcclusionOpacity; // used to be Intensity, but I want the bright-colors to become more dominant when overloaded
 				color = tex2D(_ElementGradients, float2(color.r, elementMapOffset));
 				return color * bloom * 1; // note that I had bloom commented out, idk why
 			}

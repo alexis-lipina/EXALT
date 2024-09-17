@@ -34,5 +34,6 @@ public class OcclusionSprite : MonoBehaviour
         _currentOpacity = Mathf.Lerp(_currentOpacity, _targetOpacity, 0.1f);
 
         GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, _currentOpacity);
+        GetComponent<SpriteRenderer>().material.SetFloat("_OcclusionOpacity", _currentOpacity);
     }
 }

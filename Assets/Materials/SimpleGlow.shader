@@ -7,6 +7,7 @@ Shader "Custom/SimpleGlow"
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
+		_Opacity("Opacity", Float) = 1
 	}
 
 	SubShader
@@ -49,11 +50,13 @@ Shader "Custom/SimpleGlow"
 
 			sampler2D _MainTex;
 			float4 _Color;
+			float _Opacity;
 
 			float4 frag(vertOutput output) : COLOR
 			{
 				float4 color = tex2D(_MainTex, output.uv);
 				color *= output.color;
+				color.a *= _Opacity;
 				return color;
 			}
 			ENDCG

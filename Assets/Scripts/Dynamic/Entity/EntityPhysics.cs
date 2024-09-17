@@ -417,7 +417,7 @@ public class EntityPhysics : DynamicPhysics
     /// <param name="damage">Quantity of health to subtract from the entity</param>
     public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
     {
-        if (isInvincible || _isDead) return;
+        if (isInvincible || _isDead || !entityHandler) return;
 
         entityHandler.PerformDetonations(type);
 

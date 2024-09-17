@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class HugeElevatorArenaManager : MonoBehaviour
 {
-    private float ElevatorRideDuration; // pulled from tracking object
     [SerializeField] private EnvironmentPhysics TrackingEnvironmentObject;
 
     [SerializeField] EnemySpawner[] WaveOneSpawners;
@@ -21,7 +20,12 @@ public class HugeElevatorArenaManager : MonoBehaviour
     private const int MAX_ENEMIES = 1;
     private FiringChamberManager _firingChamberManager;
 
+    private float ElevatorRideDuration; // pulled from tracking object
+    private float elevatorTimer = 0.0f;
+
+
     [SerializeField] AnimationCurve SpawnRate;
+    [SerializeField] AnimationCurve EnemyCap;
     [SerializeField] AnimationCurve GlowScalar;
 
     // Start is called before the first frame update
@@ -45,7 +49,6 @@ public class HugeElevatorArenaManager : MonoBehaviour
 
     IEnumerator RunElevator()
     {
-        float elevatorTimer = 0.0f;
         ElevatorRideDuration = TrackingEnvironmentObject.GetComponent<MovingEnvironment>().CycleDuration;
         TrackingEnvironmentObject.GetComponent<MovingEnvironment>().ZVelocityForElevator = 400.0f / TrackingEnvironmentObject.GetComponent<MovingEnvironment>().CycleDuration;
         TrackingEnvironmentObject.GetComponent<MovingEnvironment>().PlayAnim();
@@ -95,7 +98,7 @@ public class HugeElevatorArenaManager : MonoBehaviour
         while (true)// for now this is just gonna go forever
         {
             RefreshDeadEnemies();
-            if (_spawnedEnemies.Count < MAX_ENEMIES)
+            if (_spawnedEnemies.Count < EnemyCap.Evaluate(elevatorTimer / ElevatorRideDuration))
             {
                 goodIndices.Clear();
                 // refresh player distances
@@ -110,7 +113,7 @@ public class HugeElevatorArenaManager : MonoBehaviour
                 _spawnedEnemies.Add(spawners[goodIndices[Random.Range(0, goodIndices.Count)]].SpawnEnemy(ElementType.NONE, true, 10000.0f));
             }
             
-            yield return new WaitForSeconds(timeBetweenSpawns);
+            yield return new WaitForSeconds(SpawnRate.Evaluate(elevatorTimer / ElevatorRideDuration));
         }
     }
 

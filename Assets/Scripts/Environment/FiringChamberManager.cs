@@ -16,11 +16,14 @@ public class FiringChamberManager : MonoBehaviour
     [SerializeField] private int SecondsBetweenShots = 8;
     private int SecondsUntilNextShot;
     [SerializeField] private SpriteRenderer[] GlowGradients;
+    [SerializeField] private SpriteRenderer[] FinalSpikeGlows;
     [SerializeField] private AnimationCurve GradientGlowOverTime;
+    [SerializeField] private AnimationCurve SpikeGlowOverTime;
     private AudioSource LaserAudioSource;
     float Timer = 0.0f;
     [SerializeField] MovingEnvironment CannonSyncMovingEnvironment;
     public float GlowScalar = 1.0f;
+    [SerializeField] GameObject DamageOrigin;
 
 
     // Start is called before the first frame update
@@ -37,6 +40,10 @@ public class FiringChamberManager : MonoBehaviour
         foreach (SpriteRenderer renderer in GlowGradients)
         {
             renderer.material.SetFloat("_Opacity", GradientGlowOverTime.Evaluate(Timer/SecondsBetweenShots) * GlowScalar); 
+        }
+        foreach (SpriteRenderer renderer in FinalSpikeGlows)
+        {
+            renderer.material.SetFloat("_Opacity", SpikeGlowOverTime.Evaluate(Timer / SecondsBetweenShots) * GlowScalar);
         }
     }
 
@@ -121,12 +128,13 @@ public class FiringChamberManager : MonoBehaviour
                 }
             }
         }
+        
 
-        foreach (EntityPhysics entity in KillableThings)
+        foreach (EntityPhysics entity in GameObject.FindObjectsOfType<EntityPhysics>())
         {
             if (!safeEntities.Contains(entity) && entity)
             {
-                entity.Inflict(1000, 0);
+                entity.Inflict(1000, 0.0f, ElementType.NONE, (entity.transform.position - DamageOrigin.transform.position).normalized * 10);
             }
         }
     }

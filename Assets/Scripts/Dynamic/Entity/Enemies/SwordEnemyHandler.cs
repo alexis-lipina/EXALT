@@ -232,7 +232,7 @@ public class SwordEnemyHandler : EntityHandler
             //currentState = TestEnemyState.WOUNDED;
         }
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
@@ -296,7 +296,7 @@ public class SwordEnemyHandler : EntityHandler
             stateTimer = 0;
             currentState = TestEnemyState.READY;
         }
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             entityPhysics.ZVelocity = 0;
             currentState = TestEnemyState.FALL;
@@ -427,7 +427,7 @@ public class SwordEnemyHandler : EntityHandler
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         //free fall
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             entityPhysics.FreeFall();
         }
@@ -538,7 +538,7 @@ public class SwordEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             entityPhysics.FreeFall();
         }
@@ -586,7 +586,7 @@ public class SwordEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             entityPhysics.FreeFall();
         }
@@ -629,7 +629,7 @@ public class SwordEnemyHandler : EntityHandler
 
         //fall
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             entityPhysics.FreeFall();
         }
@@ -711,6 +711,19 @@ public class SwordEnemyHandler : EntityHandler
             Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(DeathVector);
             entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
             entityPhysics.SnapToFloor(); //TODO - Maybe have death animation be a two stage "fall" and "land" anim
+
+            //fall
+            float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+
+            if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
+            {
+                //entityPhysics.ZVelocity = 0;
+                entityPhysics.FreeFall();
+            }
+            else
+            {
+                entityPhysics.SetObjectElevation(maxheight);
+            }
             DeathVector *= 0.95f;
         }
     }
@@ -758,7 +771,7 @@ public class SwordEnemyHandler : EntityHandler
         //fall
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
 
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
             //entityPhysics.ZVelocity = 0;
             entityPhysics.FreeFall();

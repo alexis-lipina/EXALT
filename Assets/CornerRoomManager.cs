@@ -20,13 +20,18 @@ public class CornerRoomManager : MonoBehaviour
 
     [Space(10)]
     [Header("Combat Phase")]
-    [SerializeField] List<BetterEnemySpawner> EnemySpawners; // these all trigger when combat begins and exhaust themselves to complete combat
+    [SerializeField] List<EnemySpawner> EnemySpawners; // these all trigger when combat begins and exhaust themselves to complete combat
+    [SerializeField] int LiveEnemiesPerSpawner;
+    [SerializeField] int TotalEnemiesPerSpawner;
+    [SerializeField] float SpawnDelay;
+    [SerializeField] ElementType ShieldElement = ElementType.NONE;
 
     [Space(10)]
     [Header("Puzzle Phase")]
     [SerializeField] List<RestPlatform> PuzzleRestPlatforms;
     [SerializeField] RestPlatform SealRestPlatform;
     private bool ShouldRunRoom = true;
+    private List<bool> CoroutinesComplete;
 
 
     // Start is called before the first frame update
@@ -47,6 +52,7 @@ public class CornerRoomManager : MonoBehaviour
         }
 
         SealRestPlatform.IsUseable = false;
+        CoroutinesComplete = new List<bool>();
 
         StartCoroutine(RunRoom());
     }
@@ -80,7 +86,9 @@ public class CornerRoomManager : MonoBehaviour
         }
         foreach (var spawner in EnemySpawners)
         {
-            spawner.QueueEnemies(1, 1.0f, false, ElementType.NONE);
+            //spawner.QueueEnemies(1, 1.0f, false, ElementType.NONE);
+            CoroutinesComplete.Add(false);
+            StartCoroutine(RunEnemySpawner(spawner, LiveEnemiesPerSpawner, TotalEnemiesPerSpawner, SpawnDelay, ShieldElement, CoroutinesComplete.Count-1));
         }
 
         bool isDoneCombat = false;
@@ -88,9 +96,9 @@ public class CornerRoomManager : MonoBehaviour
         {
             yield return new WaitForSeconds(1.0f);
             isDoneCombat = true;
-            foreach (var spawner in EnemySpawners)
+            foreach (bool bIsComplete in CoroutinesComplete)
             {
-                if (!spawner.IsWaveComplete())
+                if (!bIsComplete)
                 {
                     isDoneCombat = false;
                 }
@@ -170,5 +178,41 @@ public class CornerRoomManager : MonoBehaviour
         }
 
         RoomSealTrigger.enabled = false;
+    }
+
+    IEnumerator RunEnemySpawner(EnemySpawner spawner, int MaxLiveEnemies, int TotalEnemies, float SpawnDelay, ElementType ShieldType = ElementType.NONE, int CoroutinesCompleteIndex = 0)
+    {
+        List<GameObject> LivingEnemies = new List<GameObject>();
+        while (TotalEnemies > 0)
+        {
+            for (int i = LivingEnemies.Count-1; i >= 0; i--)
+            {
+                if (!LivingEnemies[i])
+                {
+                    LivingEnemies.RemoveAt(i);
+                }
+            }
+
+            if (LivingEnemies.Count < MaxLiveEnemies)
+            {
+                yield return new WaitForSeconds(SpawnDelay);
+                LivingEnemies.Add(spawner.SpawnEnemy(ShieldType, true, 100000));
+                TotalEnemies--;
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        while (LivingEnemies.Count > 0)
+        {
+            for (int i = LivingEnemies.Count - 1; i >= 0; i--)
+            {
+                if (!LivingEnemies[i])
+                {
+                    LivingEnemies.RemoveAt(i);
+                }
+            }
+            yield return new WaitForSeconds(1.0f); // prevents coroutine from evaporating so we can track completion
+        }
+        CoroutinesComplete[CoroutinesCompleteIndex] = true;
     }
 }

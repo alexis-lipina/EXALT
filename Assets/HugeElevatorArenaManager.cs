@@ -28,6 +28,8 @@ public class HugeElevatorArenaManager : MonoBehaviour
     [SerializeField] AnimationCurve EnemyCap;
     [SerializeField] AnimationCurve GlowScalar;
 
+    [SerializeField] List<RestPlatform> StartRestPlatforms;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +46,13 @@ public class HugeElevatorArenaManager : MonoBehaviour
 
     public void StartElevatorManager()
     {
+        foreach (var platform in StartRestPlatforms)
+        {
+            if (platform.CurrentChargeAmount < 1.0f)
+            {
+                return;
+            }
+        }
         StartCoroutine(RunElevator());
     }
 

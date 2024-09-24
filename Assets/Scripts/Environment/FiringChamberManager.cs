@@ -71,7 +71,10 @@ public class FiringChamberManager : MonoBehaviour
 
             if (SecondsUntilNextShot == 1)
             {
-                CannonSyncMovingEnvironment.SetAnimRate(1.25f);
+                if (CannonSyncMovingEnvironment)
+                {
+                    CannonSyncMovingEnvironment.SetAnimRate(1.25f);
+                }
                 StartCoroutine(RampGlow(0.3f, 1.0f, 0.9f));
             }
 
@@ -83,8 +86,11 @@ public class FiringChamberManager : MonoBehaviour
                 StartCoroutine(RampGlow(1.0f, 0.0f, 2.0f));
                 Timer = 0.0f;
                 LaserAudioSource.Play();
-                CannonSyncMovingEnvironment.SetAnimRate(1.0f);
-                CannonSyncMovingEnvironment.PlayAnim();
+                if (CannonSyncMovingEnvironment)
+                {
+                    CannonSyncMovingEnvironment.SetAnimRate(1.0f);
+                    CannonSyncMovingEnvironment.PlayAnim();
+                }
             }
         }
     }
@@ -134,7 +140,7 @@ public class FiringChamberManager : MonoBehaviour
         {
             if (!safeEntities.Contains(entity) && entity)
             {
-                entity.Inflict(1000, 0.0f, ElementType.NONE, (entity.transform.position - DamageOrigin.transform.position).normalized * 10);
+                entity.Inflict(1000, 0.0f, ElementType.NONE, (entity.transform.position - DamageOrigin.transform.position).normalized * 2);
             }
         }
     }

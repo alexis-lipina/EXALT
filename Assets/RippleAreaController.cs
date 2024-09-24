@@ -5,8 +5,8 @@ using UnityEngine;
 public class RippleAreaController : MonoBehaviour
 {
     List<MovingEnvironment> RipplePillars;
-    List<float> RipplePillarNormalizedHeights;
-    List<Vector2> RipplePillarPositions;
+    public List<float> RipplePillarNormalizedHeights;
+    public List<Vector2> RipplePillarPositions;
     List<EntityPhysics> EnemyColliders;
 
     [SerializeField] float ShockwaveDuration = 2.0f;
@@ -35,6 +35,7 @@ public class RippleAreaController : MonoBehaviour
             RipplePillarNormalizedHeights.Add(0.0f);
             RipplePillarPositions.Add(RipplePillars[i].GetComponent<BoxCollider2D>().bounds.center);
         }
+        EnemyColliders.Add(GameObject.FindObjectOfType<PlayerHandler>().GetEntityPhysics());
     }
 
     void Update()
@@ -47,9 +48,13 @@ public class RippleAreaController : MonoBehaviour
             {
                 if (phys.GetCurrentHealth() == 0)
                 {
-                    removeThese.Add(phys);
+                    //removeThese.Add(phys);
                 }
                 RaisePillarsNearEntity(phys);
+            }
+            else
+            {
+                removeThese.Add(phys);
             }
         }
         foreach (EntityPhysics phys in removeThese)
@@ -60,8 +65,8 @@ public class RippleAreaController : MonoBehaviour
 
         for (int i = 0; i < RipplePillars.Count; i++)
         {
-            RipplePillars[i].SetToElevation(RipplePillarNormalizedHeights[i] * 12.0f - 24);
-            RipplePillarNormalizedHeights[i] = Mathf.Lerp(0, RipplePillarNormalizedHeights[i], 0.9f);
+            RipplePillars[i].SetToElevation(RipplePillarNormalizedHeights[i] * 20.0f - 40.0f);
+            RipplePillarNormalizedHeights[i] = Mathf.Lerp(0, RipplePillarNormalizedHeights[i], 0.9f); // push toward ground
         }
     }
 
@@ -79,7 +84,7 @@ public class RippleAreaController : MonoBehaviour
             float heightItShouldBe = EnemyRaisedPlatformPattern.Evaluate(NormalizedDistance);
             if (heightItShouldBe > RipplePillarNormalizedHeights[i])
             {
-                RipplePillarNormalizedHeights[i] = heightItShouldBe;
+                RipplePillarNormalizedHeights[i] = Mathf.Lerp(RipplePillarNormalizedHeights[i], heightItShouldBe, heightItShouldBe); // pull up
             }
         }
     }
@@ -105,8 +110,21 @@ public class RippleAreaController : MonoBehaviour
         }
     }
 
-    public void AddTrackedEnemy(GameObject enemy)
+    /// <summary>
+    /// EXPENSIVE.
+    /// </summary>
+    public void RefreshEnemyList()
     {
-        EnemyColliders.Add(enemy.GetComponentInChildren<EntityPhysics>());
+        foreach (EntityPhysics phys in GameObject.FindObjectsOfType<EntityPhysics>())
+        {
+            if (!phys.Handler) // ignore reticle, which has no entity handler
+            {
+                continue;
+            }
+            if (!EnemyColliders.Contains(phys))
+            {
+                EnemyColliders.Add(phys);
+            }
+        }
     }
 }

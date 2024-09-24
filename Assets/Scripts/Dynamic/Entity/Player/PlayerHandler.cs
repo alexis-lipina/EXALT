@@ -653,7 +653,7 @@ public class PlayerHandler : EntityHandler
         
         //gravity
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight) //override other states to trigger fall
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f) //override other states to trigger fall
         {
             entityPhysics.ZVelocity = 0;
             ClearRestPlatform();
@@ -768,7 +768,7 @@ public class PlayerHandler : EntityHandler
         //-------| Z Azis Traversal 
         // handles falling if player is above ground
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f)
         {
             entityPhysics.ZVelocity = 0;
             ClearRestPlatform();
@@ -1309,7 +1309,7 @@ public class PlayerHandler : EntityHandler
         }
         // ground
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f)
         {
             entityPhysics.ZVelocity = 0;
             ClearRestPlatform();
@@ -1484,7 +1484,7 @@ public class PlayerHandler : EntityHandler
 
         // ground
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f)
         {
             entityPhysics.ZVelocity = 0;
             ClearRestPlatform();
@@ -1875,7 +1875,7 @@ public class PlayerHandler : EntityHandler
 
         // stick to floor
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f)
         {
             entityPhysics.ZVelocity = 0;
             ClearRestPlatform();
@@ -2228,7 +2228,7 @@ public class PlayerHandler : EntityHandler
         }
         // stick to floor on elevator
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f)
         {
             entityPhysics.ZVelocity = 0;
             ClearRestPlatform();

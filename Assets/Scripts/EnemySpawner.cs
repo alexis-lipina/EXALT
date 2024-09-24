@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+[System.Serializable]
+public class OnEnemySpawnEvent : UnityEvent<GameObject> { }
 
 
 /// <summary>
@@ -20,6 +24,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private NavigationManager _navManager;
     [SerializeField] private bool canRespawnEnemies; //toggle object pooling
     [SerializeField] private ElementType _shieldElementType = ElementType.NONE;
+    public OnEnemySpawnEvent OnEnemySpawn;
     private Dictionary<int, GameObject> _enemyPool;
     private float _timer;
     private int enemiesAlive;
@@ -126,6 +131,7 @@ public class EnemySpawner : MonoBehaviour
             tempHandler.ActivateShield(shieldType);
         }
         else { Debug.LogError("Spawned enemy without EntityHandler!"); }
+        OnEnemySpawn.Invoke(tempEnemy);
         return tempEnemy;
     }
 

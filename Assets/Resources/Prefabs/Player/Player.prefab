@@ -697,7 +697,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243856126841341690, guid: 474747a46c17dc94fabdff20510ef39a,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 193cdc9ff1c01174e9aa5edc6bdaf0db, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 08ed246f67edb804b9b31a59f6f528f8, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -902,6 +902,7 @@ MonoBehaviour:
   IsImmune: 0
   currentNavEnvironmentObject: {fileID: 0}
   _spawner: {fileID: 0}
+  BurnAudioSource: {fileID: 0}
   IchorCorruptionAmount: 0
   IsFrozen: 0
 --- !u!114 &114891063356589102
@@ -2333,6 +2334,54 @@ MonoBehaviour:
     m_RotationOrder: 4
   HEAVYMELEE_STORM_GLOWSPRITE: {fileID: 21300000, guid: a401c299df8a68b49a158978e3c5c670,
     type: 3}
+  _blinkCooldownChainCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.2
+      inSlope: -0.036517773
+      outSlope: -0.036517773
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.17252931
+    - serializedVersion: 3
+      time: 8
+      value: 0.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _blinkChainPitchCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 8
+      value: 1.2
+      inSlope: 0.024319718
+      outSlope: 0.024319718
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.085427165
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   JumpImpulse: 40
   JumpHeldGravity: -100
   JumpFallGravity: -300
@@ -2373,6 +2422,14 @@ MonoBehaviour:
   SFX_SolFlail_Summon: {fileID: 8300000, guid: 0f62e5b56ba521b41b47ebe3ddc86ff7, type: 3}
   SFX_SolFlail_Vanish: {fileID: 8300000, guid: a9e7f5cf707651840878a3fa8d5dcc80, type: 3}
   SFX_SolFlail_Catch: {fileID: 8300000, guid: c821333237ed66c4e8e993f0e25d0ed0, type: 3}
+  SFX_ChangeStyle_Ichor: {fileID: 8300000, guid: 43c7e97a908c15a4f8b96f7dd3266a37,
+    type: 3}
+  SFX_ChangeStyle_Rift: {fileID: 8300000, guid: 79d20b41be7567843915e3e8da08b98b,
+    type: 3}
+  SFX_ChangeStyle_Storm: {fileID: 8300000, guid: 4b6394aa6feb82943a09d9b6b93b4e7b,
+    type: 3}
+  SFX_ChangeStyle_Solar: {fileID: 8300000, guid: 199a39783f93c16439173a5323ee874d,
+    type: 3}
   SFX_Death: {fileID: 8300000, guid: ef36920f38a824a429e61d4a79cc311b, type: 3}
   DeathScreenAmbience: {fileID: 0}
   AudioMixer_Ducked: {fileID: 243856126841341690, guid: 474747a46c17dc94fabdff20510ef39a,
@@ -2396,6 +2453,12 @@ MonoBehaviour:
   BossFightDeathResurrection_CrackTex: {fileID: 0}
   BossFightDeathResurrection_OffsetTex: {fileID: 0}
   BossFightDeathResurrection_CollapsingPlatforms: []
+  OnCheckpointLoad:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  DeathFreezeDuration: 1
 --- !u!114 &114281109244806438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2417,7 +2480,8 @@ AudioSource:
   m_GameObject: {fileID: 1758790477538848}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243856126841341690, guid: 474747a46c17dc94fabdff20510ef39a,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 4b0fa7a63aaa9bd41a2712b5c00d5a3d, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1

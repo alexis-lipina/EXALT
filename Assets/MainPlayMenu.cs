@@ -29,7 +29,7 @@ public class MainPlayMenu : MonoBehaviour
 
     public void FinalBossButtonPressed()
     {
-        SceneManager.LoadScene("FinalBoss");
+        SceneManager.LoadScene("MonolithStart");
     }
 
     public void OnBackToMainMenuPressed()

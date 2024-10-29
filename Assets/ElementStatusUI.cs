@@ -13,8 +13,12 @@ public class ElementStatusUI : MonoBehaviour
     [SerializeField] private Sprite spriteZap_KBM;
     [SerializeField] private Sprite spriteFire_KBM;
     [SerializeField] private Sprite spriteIchor_KBM;
-    [SerializeField] private Sprite spriteIchorOvertaken_KBM;
-    [SerializeField] private Sprite spriteIchorOvertaken_Gamepad;
+    [SerializeField] private Sprite spriteIchorOvertaken1_KBM;
+    [SerializeField] private Sprite spriteIchorOvertaken1_Gamepad;    
+    [SerializeField] private Sprite spriteIchorOvertaken2_KBM;
+    [SerializeField] private Sprite spriteIchorOvertaken2_Gamepad;
+    [SerializeField] private Sprite spriteIchorOvertaken3_KBM;
+    [SerializeField] private Sprite spriteIchorOvertaken3_Gamepad;
     [SerializeField] private Sprite spriteStormOvertaken_KBM;
     [SerializeField] private Sprite spriteStormOvertaken_Gamepad;
     [SerializeField] private PlayerHandler _playerHandler;
@@ -47,13 +51,38 @@ public class ElementStatusUI : MonoBehaviour
             switch (_playerHandler.OvertakenElement)
             {
                 case ElementType.ICHOR:
-                    if (_isUsingMouse)
+                    switch (_playerHandler.OvertakenElementAmount)
                     {
-                        GetComponent<Image>().sprite = spriteIchorOvertaken_KBM;
-                    }
-                    else
-                    {
-                        GetComponent<Image>().sprite = spriteIchorOvertaken_Gamepad;
+                        case 1:
+                            if (_isUsingMouse)
+                            {
+                                GetComponent<Image>().sprite = spriteIchorOvertaken1_KBM;
+                            }
+                            else
+                            {
+                                GetComponent<Image>().sprite = spriteIchorOvertaken1_Gamepad;
+                            }
+                            break;
+                        case 2:
+                            if (_isUsingMouse)
+                            {
+                                GetComponent<Image>().sprite = spriteIchorOvertaken2_KBM;
+                            }
+                            else
+                            {
+                                GetComponent<Image>().sprite = spriteIchorOvertaken2_Gamepad;
+                            }
+                            break;
+                        case 3:
+                            if (_isUsingMouse)
+                            {
+                                GetComponent<Image>().sprite = spriteIchorOvertaken3_KBM;
+                            }
+                            else
+                            {
+                                GetComponent<Image>().sprite = spriteIchorOvertaken3_Gamepad;
+                            }
+                            break;
                     }
                     break;
                 case ElementType.ZAP:

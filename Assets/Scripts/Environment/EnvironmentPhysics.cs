@@ -120,15 +120,19 @@ public class EnvironmentPhysics : PhysicsObject
     {
         //Debug.Log("POSITION BEFORE:" + parent.transform.position.z);
         //Debug.Log("POSITION OF ME NOW:" + parent.transform.position.z);
-        foreach(GameObject neighbor in neighbors)
+        if (neighbors != null)
         {
-            //Debug.Log("Neighbor visited in " + gameObject.name);
-            NavEdge temp = new NavEdge();
-            temp.EnvironmentObject = neighbor.GetComponent<EnvironmentPhysics>();
-            temp.HeightDifference = neighbor.GetComponent<EnvironmentPhysics>().GetTopHeight() - topHeight;
-            temp.Distance = Vector2.Distance(neighbor.transform.position, gameObject.transform.position); //change when using elevated objects, take into account collider offset
-            neighborEdges.Add(temp);
+            foreach (GameObject neighbor in neighbors)
+            {
+                //Debug.Log("Neighbor visited in " + gameObject.name);
+                NavEdge temp = new NavEdge();
+                temp.EnvironmentObject = neighbor.GetComponent<EnvironmentPhysics>();
+                temp.HeightDifference = neighbor.GetComponent<EnvironmentPhysics>().GetTopHeight() - topHeight;
+                temp.Distance = Vector2.Distance(neighbor.transform.position, gameObject.transform.position); //change when using elevated objects, take into account collider offset
+                neighborEdges.Add(temp);
+            }
         }
+        
         // Debug.Log("navedge number:" + neighborEdges.Count);
         if (!isTransparentOnOcclude)
         {

@@ -23,6 +23,7 @@ public class VoidballLauncher : Weapon
         GameObject tempBullet = GetFromPool();
         tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = direction.normalized;
         tempBullet.SetActive(true);
+        tempBullet.GetComponentInChildren<AudioSource>().clip = tempBullet.GetComponentInChildren<BulletHandler>().SpawnSFX;
         tempBullet.GetComponentInChildren<AudioSource>().Play();
         //tempBullet.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
 

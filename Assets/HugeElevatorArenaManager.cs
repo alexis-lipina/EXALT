@@ -113,13 +113,13 @@ public class HugeElevatorArenaManager : MonoBehaviour
                 // refresh player distances
                 for (int i = 0; i < spawners.Length; i++)
                 {
-                    if (Vector3.Scale(spawners[i].GetComponent<BoxCollider2D>().bounds.center - _player.GetEntityPhysics().transform.position, new Vector3(1, 1, 0)).sqrMagnitude > 10000)
+                    if (Vector3.Scale(spawners[i].GetComponent<BoxCollider2D>().bounds.center - _player.GetEntityPhysics().transform.position, new Vector3(1, 1, 0)).sqrMagnitude > 1000)
                     {
                         goodIndices.Add(i);
                     }
                 }
 
-                _spawnedEnemies.Add(spawners[goodIndices[Random.Range(0, goodIndices.Count)]].SpawnEnemy(ElementType.NONE, true, 10000.0f));
+                _spawnedEnemies.Add(spawners[goodIndices[Random.Range(0, goodIndices.Count)]].SpawnEnemy((ElementType)Random.Range(0, 4), true, 10000.0f));
             }
             
             yield return new WaitForSeconds(SpawnRate.Evaluate(elevatorTimer / ElevatorRideDuration));

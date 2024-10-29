@@ -5,12 +5,12 @@ using System;
 using UnityEngine.SceneManagement;
 using Rewired;
 using UnityEngine.Audio;
+using UnityEngine.Events;
 
 public enum ElementType
 {
     ZAP, FIRE, VOID, ICHOR, NONE
 }
-
 
 /// <summary>
 /// This class controls player state and contains methods for each state. It also receives input from the InputHandler and acts in accordance with said input.
@@ -57,6 +57,7 @@ public class PlayerHandler : EntityHandler
     private PlayerInventory inventory;
 
     public ElementType OvertakenElement = ElementType.NONE; // if the player is suffused with a single element, this is the element they're hit with
+    public int OvertakenElementAmount = 0; // extremely hacky thing to allow ichor to overtake you gradually
 
 
     //[SerializeField] private UIHealthBar _healthBar;
@@ -91,7 +92,7 @@ public class PlayerHandler : EntityHandler
     private PlayerState CurrentState;
     private PlayerState PreviousState;
 
-    private ElementType _currentStyle;
+    private static ElementType _currentStyle = ElementType.ZAP;
     private ElementType _newStyle;
 
     private FaceDirection currentFaceDirection;
@@ -186,6 +187,7 @@ public class PlayerHandler : EntityHandler
 
     private const float DEFLECT_AIMASSIST_RADIUS = 4.0f;
     private const float DEFLECT_AIMASSIST_DISTANCE = 30.0f;
+    private const float DEFLECT_HITBOX_SCALAR = 2.0f;
 
     //Charge Stuff
     //private const float time_Charge = 1.45f; //total time before player is charged up
@@ -237,9 +239,15 @@ public class PlayerHandler : EntityHandler
     private Player controller;
 
     //=====================| BLINK
+    [SerializeField] private AnimationCurve _blinkCooldownChainCurve; // still not certain about this tbh
+    [SerializeField] private AnimationCurve _blinkChainPitchCurve; 
     private const float BLINK_COOLDOWN = 0.2f;
+    private const float BLINK_GRACE_PERIOD = 0.1f; // how long after the "perfect blink" time another perfect-blink chain can be done
     private float _blinkTimer = 0f; //time since last blink
     private bool _hasAlreadyBlinkedInMidAir = false;
+    private int _blinkInputBuffer = 0; // how many blink keypresses have happened during the cooldown, if one is active
+    private int _blinkCurrentChainLength = 0; // how many perfect-blinks the player has done
+
 
     //=====================| HEAL
     private const float heal_duration = 0.95f;
@@ -303,6 +311,11 @@ public class PlayerHandler : EntityHandler
     [SerializeField] AudioClip SFX_SolFlail_Vanish;
     [SerializeField] AudioClip SFX_SolFlail_Catch;
 
+    [SerializeField] AudioClip SFX_ChangeStyle_Ichor;
+    [SerializeField] AudioClip SFX_ChangeStyle_Rift;
+    [SerializeField] AudioClip SFX_ChangeStyle_Storm;
+    [SerializeField] AudioClip SFX_ChangeStyle_Solar;
+
     [SerializeField] AudioClip SFX_Death;
     [SerializeField] AudioClip DeathScreenAmbience;
 
@@ -324,6 +337,10 @@ public class PlayerHandler : EntityHandler
 
     public List<CollapsingPlatform> BossFightDeathResurrection_CollapsingPlatforms;
 
+    private static bool bUsesRoomCheckpoint = false;// if the player dies, this is true & OnCheckpointLoad is called
+    public UnityEvent OnCheckpointLoad;
+
+
     public ElementType GetStyle()
     {
         return _currentStyle;
@@ -339,6 +356,8 @@ public class PlayerHandler : EntityHandler
     {
         return CurrentState == PlayerState.REST;
     }
+
+    public float DeathFreezeDuration = 1.0f;
 
     void Awake()
     {
@@ -396,20 +415,63 @@ public class PlayerHandler : EntityHandler
         _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
 
-        // TODO : Element should persist across scenes, default ichor if anything
-        _currentStyle = ElementType.ZAP;
-        Shader.SetGlobalColor("_MagicColor",  new Color(0.0f, 1f, 0.5f, 1f));
-        if (_currentStyle == ElementType.ZAP) _lightRangedEnergyCost = 1;
-        weaponGlowSprite.material.SetFloat("_CurrentElement", 4);
-        weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
-        entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
-        EyeGlowSprite.material.SetFloat("_CurrentElement", 4);
-        StartCoroutine(FadeInAudio());
+        switch (_currentStyle)
+        {
+            case ElementType.ICHOR:
+                Shader.SetGlobalColor("_MagicColor", new Color(1.0f, 0.0f, 0.5f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 1);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 1);
+                _haloSprite.sprite = Halo_Ichor;
+                _lightRangedEnergyCost = 1;
+                weaponSprite.GetComponent<Animator>().Play("IchorBlade_Summon", 0, 0.0f);
+                weaponSprite.transform.right = Vector3.right;
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 1);
+                weaponGlowSprite.sprite = HEAVYMELEE_ICHOR_GLOWSPRITE;
+                break;
+            case ElementType.FIRE:
+                Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 2);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 2);
+                SwapWeapon("WEST");
+                _haloSprite.sprite = Halo_Fire;
+                _lightRangedEnergyCost = 2;
+                weaponSprite.transform.right = Vector3.right;
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 2);
+                weaponGlowSprite.sprite = HEAVYMELEE_SOL_GLOWSPRITE;
+                break;
+            case ElementType.VOID:
+                Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 3);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 3);
+                SwapWeapon("NORTH");
+                _haloSprite.sprite = Halo_Void;
+                _lightRangedEnergyCost = 2;
+                weaponSprite.transform.right = Vector3.right;
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 3);
+                weaponGlowSprite.sprite = HEAVYMELEE_RIFT_GLOWSPRITE;
+                break;
+            case ElementType.ZAP:
+                Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
+                entityPhysics.ObjectSprite.GetComponent<SpriteRenderer>().material.SetFloat("_CurrentElement", 4);
+                EyeGlowSprite.material.SetFloat("_CurrentElement", 4);
+                _haloSprite.sprite = Halo_Zap;
+                _lightRangedEnergyCost = 1;
+                weaponSprite.transform.right = Vector3.right;
+                weaponGlowSprite.material.SetFloat("_CurrentElement", 4);
+                weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
+                break;
+        }
+                StartCoroutine(FadeInAudio());
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_ShatterMaskTex", PP_White);
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_CrackTex", PP_Black);
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_OffsetTex", PP_Black);
         Debug.Log("Number of joysticks : " + controller.controllers.joystickCount);
-        //Debug.Log("Joystick name : " + controller.controllers.Joysticks[0].name);
+
+        if (bUsesRoomCheckpoint)
+        {
+            OnCheckpointLoad.Invoke();
+        }
+        bUsesRoomCheckpoint = false;
     }
 
 
@@ -428,7 +490,23 @@ public class PlayerHandler : EntityHandler
 
         //Debug.Log(TimeSinceCombat);
         //increment timers
-        _blinkTimer += Time.deltaTime;
+        if (_blinkTimer < _blinkCooldownChainCurve.Evaluate(_blinkCurrentChainLength))
+        {
+            _blinkTimer += Time.deltaTime;
+            if (_blinkTimer > _blinkCooldownChainCurve.Evaluate(_blinkCurrentChainLength) && _blinkInputBuffer > 0)
+            {
+                PlayerBlinkTransitionAttempt();
+            }
+        }
+        else if (_blinkTimer < _blinkCooldownChainCurve.Evaluate(_blinkCurrentChainLength) + BLINK_GRACE_PERIOD)
+        {
+            _blinkTimer += Time.deltaTime;
+        }
+        else
+        {
+            _blinkCurrentChainLength = 0;
+        }
+        
         
         xInput = controller.GetAxisRaw("MoveHorizontal");
         yInput = controller.GetAxisRaw("MoveVertical");
@@ -558,7 +636,46 @@ public class PlayerHandler : EntityHandler
             StateTimer = _changeStyleDuration;
             _newStyle = ElementType.ICHOR;
         }
-
+        else if (controller.GetButton("ChangeStyle_L") || controller.GetButton("ChangeStyle_R"))
+        {
+            bool bLeft = controller.GetButton("ChangeStyle_L");
+            CurrentState = PlayerState.CHANGE_STYLE;
+            StateTimer = _changeStyleDuration;
+            switch (_currentStyle)
+            {
+                case ElementType.FIRE:
+                    _newStyle = bLeft ? ElementType.ICHOR : ElementType.VOID;
+                    break;
+                case ElementType.VOID:
+                    _newStyle = bLeft ? ElementType.FIRE : ElementType.ZAP;
+                    break;
+                case ElementType.ZAP:
+                    _newStyle = bLeft ? ElementType.VOID : ElementType.ICHOR;
+                    break;
+                case ElementType.ICHOR:
+                    _newStyle = bLeft ? ElementType.ZAP : ElementType.FIRE;
+                    break;
+            }
+        }
+        if (_newStyle != _currentStyle)
+        {
+            switch (_newStyle)
+            {
+                case ElementType.FIRE:
+                    _audioSource.clip = SFX_ChangeStyle_Solar;
+                    break;
+                case ElementType.VOID:
+                    _audioSource.clip = SFX_ChangeStyle_Rift;
+                    break;
+                case ElementType.ZAP:
+                    _audioSource.clip = SFX_ChangeStyle_Storm;
+                    break;
+                case ElementType.ICHOR:
+                    _audioSource.clip = SFX_ChangeStyle_Ichor;
+                    break;
+            }
+            _audioSource.Play();
+        }
     }
 
     private void FlipCharacterSprite()
@@ -1012,23 +1129,108 @@ public class PlayerHandler : EntityHandler
             }
         }
 
-        _blinkAudioSource.pitch = UnityEngine.Random.Range(0.97f, 1.02f);
+        _blinkAudioSource.pitch = _blinkChainPitchCurve.Evaluate(_blinkCurrentChainLength);
         _blinkAudioSource.Play();
         //Debug.Log(aimDirection);
 
-        entityPhysics.MoveWithCollision(blinkDirection.x * 7f, blinkDirection.y * 7f); //buggy, occasionally player teleports a much shorter distance than they should
+        //entityPhysics.MoveWithCollision(blinkDirection.x * 7f, blinkDirection.y * 7f); //buggy, occasionally player teleports a much shorter distance than they should
+        DoBlink(blinkDirection, 7.0f);
         //entityPhysics.GetComponent<Rigidbody2D>().position = entityPhysics.GetComponent<Rigidbody2D>().position + aimDirection * 7f;
 
 
         //setup timer
         _blinkTimer = 0f;
+        _blinkInputBuffer = 0;
+        _blinkCurrentChainLength++;
 
         //TeleportVFX.DeployEffectFromPool(characterSprite.transform.position);
         ClearRestPlatform();
-        CurrentState = PlayerState.JUMP;
+        CurrentState = PlayerState.RUN;
     }
 
-    
+    // performs actual blink movement, but with some extra pizzazz (magnetizing to environment, allowing climbing/descending stairs
+    private void DoBlink(Vector2 blinkDirection, float blinkDistance)
+    {
+        // boxcast in movement direction 
+        // get all terrain boxcast hits
+        // in order of hits...
+        //      if able to step up based on current elevation, step up current elevation to elevation
+        //      if able to walk through based on (possibly newly) current elevation, continue
+        //      else, stop at this object.
+        //      if this is the last object we're able to step on, ensure we end on it (nudge our center to within its bounds)
+        // perform MoveWithCollision()
+
+        RaycastHit2D[] impendingCollisions = Physics2D.BoxCastAll(entityPhysics.transform.position, entityPhysics.ObjectCollider.size, 0f, blinkDirection, distance: blinkDistance);
+
+        RaycastHit2D EndingHit = new RaycastHit2D();
+        const float StepTolerance = 2.0f;
+        float endingElevation = entityPhysics.GetObjectElevation();
+
+        foreach (RaycastHit2D hit in impendingCollisions)
+        {
+            EnvironmentPhysics envt = hit.collider.gameObject.GetComponent<EnvironmentPhysics>();
+            if (!envt) continue;
+            if (envt.GetTopHeight() < endingElevation + StepTolerance && envt.GetTopHeight() > endingElevation - StepTolerance) // can step down/up, save
+            {
+                // we are AT LEAST going this far. step up, save it.
+                EndingHit = hit;
+                endingElevation = envt.GetTopHeight();
+            }
+            else if (envt.GetTopHeight() < entityPhysics.GetBottomHeight() || envt.GetBottomHeight() < entityPhysics.GetTopHeight() ) // gap, continue and hope for another good landing
+            {
+                continue;
+            }
+            else // blocking collision, stop
+            {
+                break;
+            }
+        }
+
+        // if we like where we're at, dont worry about it
+        Collider2D[] endingoverlap = Physics2D.OverlapBoxAll(entityPhysics.transform.position + (Vector3)blinkDirection * blinkDistance, entityPhysics.ObjectCollider.size, 0f);
+        bool bGoodEnd = false;
+        foreach (Collider2D area in endingoverlap)
+        {
+            if (area.GetComponent<EnvironmentPhysics>())
+            {
+                if (area.GetComponent<EnvironmentPhysics>().GetTopHeight() - endingElevation < 0.5f) // close enough to ending target
+                {
+                    bGoodEnd = true;
+                }
+            }
+        }
+
+        if (bGoodEnd == false && EndingHit.collider != null) // if we have a "furthest object" in this direction, constrain distance to ensure we lie on its edge
+        {
+            Bounds movedbound = entityPhysics.ObjectCollider.bounds;
+            Bounds environmentbound = EndingHit.collider.bounds;
+            movedbound.center = (entityPhysics.transform.position + (Vector3)blinkDirection * blinkDistance);
+            environmentbound.center = new Vector3(environmentbound.center.x, environmentbound.center.y, 0.0f);
+            movedbound.center = new Vector3(movedbound.center.x, movedbound.center.y, 0.0f);
+
+            movedbound.extents += new Vector3(0, 0, 10);
+            environmentbound.extents += new Vector3(0, 0, 10);
+            if (!environmentbound.Intersects(movedbound)) // if current blink distance doesnt intersect the furthest valid platform, we need to shorten it so that it does
+            {
+                float distanceBack;
+                if (environmentbound.IntersectRay(new Ray(movedbound.center, -blinkDirection), out distanceBack)) // shoot ray backwards
+                {
+                    blinkDistance -= distanceBack;
+                }
+            }
+        }
+        blinkDirection *= blinkDistance;
+        if (endingElevation > entityPhysics.GetObjectElevation()) // probably climbing stairs
+        {
+            entityPhysics.SetElevation(endingElevation);
+        }
+        entityPhysics.MoveWithCollision(blinkDirection.x, blinkDirection.y);
+        if (endingElevation < entityPhysics.GetObjectElevation()) // probably descending stairs
+        {
+            entityPhysics.SetElevation(endingElevation);
+        }
+    }
+
 
     #endregion
 
@@ -1054,9 +1256,6 @@ public class PlayerHandler : EntityHandler
 
             thrustDirection = aimDirection;
 
-            //Debug.DrawRay(entityPhysics.transform.position, thrustDirection*5.0f, Color.cyan, 0.2f);
-
-
             Vector2 hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (lightmelee_hitbox.x / 2.0f);
             Collider2D[] hitobjects = Physics2D.OverlapBoxAll(hitboxpos, lightmelee_hitbox, Vector2.SignedAngle(Vector2.right, thrustDirection));
             Debug.DrawLine(hitboxpos, entityPhysics.transform.position, Color.cyan, 0.2f);
@@ -1075,10 +1274,17 @@ public class PlayerHandler : EntityHandler
                         ChangeEnergy(1);
                     }
                 }
-                else if (obj.GetComponent<ProjectilePhysics>())
+            }
+
+            // more generous hitbox for projectiles 
+            hitboxpos = (Vector2)entityPhysics.transform.position + thrustDirection * (lightmelee_hitbox.x / 2.0f) * DEFLECT_HITBOX_SCALAR;
+            hitobjects = Physics2D.OverlapBoxAll(hitboxpos, lightmelee_hitbox * DEFLECT_HITBOX_SCALAR, Vector2.SignedAngle(Vector2.right, thrustDirection));
+            foreach (Collider2D obj in hitobjects)
+            {
+                if (obj.GetComponent<ProjectilePhysics>())
                 {
-                    if (obj.GetComponent<ProjectilePhysics>().canBeDeflected && 
-                        obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() && 
+                    if (obj.GetComponent<ProjectilePhysics>().canBeDeflected &&
+                        obj.GetComponent<ProjectilePhysics>().GetTopHeight() > entityPhysics.GetBottomHeight() &&
                         obj.GetComponent<ProjectilePhysics>().GetBottomHeight() < entityPhysics.GetTopHeight())
                     {
                         Vibrate(1.0f, 0.15f);
@@ -2042,60 +2248,7 @@ public class PlayerHandler : EntityHandler
     #endregion
 
     //---------------------------------------------| Misc
-    /*
-    public void PlayerHeal()
-    {
-        if (StateTimer == heal_duration )
-        {
-            characterAnimator.Play(HEAL_ANIM);
-            Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.0f, 0.5f, 1f));
-        }
-        else if (StateTimer < _changeStyleColorChangeTime && !hasHealed )
-        {
-            switch (_currentStyle)
-            {
-                case ElementType.FIRE:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
-                    break;
-                case ElementType.VOID:
-                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
-                    break;
-                case ElementType.ZAP:
-                    Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
-                    break;
-                default:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
-                    break;
-            }
-            ChangeEnergy(-4);
-            entityPhysics.Heal(1);
-            Vibrate(1f, 0.1f);
-            hasHealed = true;
-        }
-        else if (StateTimer < 0 || !controller.GetButton("Heal"))
-        {
-            CurrentState = PlayerState.IDLE;
-            hasHealed = false;
-            switch (_currentStyle)
-            {
-                case ElementType.FIRE:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.5f, 0f, 1f));
-                    break;
-                case ElementType.VOID:
-                    Shader.SetGlobalColor("_MagicColor", new Color(0.5f, 0.0f, 1.0f, 1f));
-                    break;
-                case ElementType.ZAP:
-                    Shader.SetGlobalColor("_MagicColor", new Color(0.0f, 1.0f, 0.5f, 1f));
-                    break;
-                default:
-                    Shader.SetGlobalColor("_MagicColor", new Color(1f, 0.2f, 0.1f, 1f));
-                    break;
-            }
-        }
-
-        StateTimer -= Time.deltaTime;
-    }*/
-
+ 
     private void PlayerChangeStyle()
     {
         characterAnimator.Play(STYLE_CHANGE_Anim);
@@ -2297,8 +2450,7 @@ public class PlayerHandler : EntityHandler
                 controller.GetButtonDown("Jump") ||
                 //controller.GetButtonDown("Melee") ||
                 controller.GetButton("RangedAttack") ||
-                controller.GetButtonDown("Blink") ||
-                controller.GetButtonDown("Heal")
+                controller.GetButtonDown("Blink")
                 )
             {
                 StateTimer = rest_kneel_duration;
@@ -2313,12 +2465,6 @@ public class PlayerHandler : EntityHandler
             if (CurrentRestPlatform) // control rest platform
             {
                 CurrentRestPlatform.IsPlayerRestingOn = true;
-                /*
-                if (!CurrentRestPlatform.IsActivated)
-                {
-                    CurrentRestPlatform.OnActivated.Invoke();
-                    CurrentRestPlatform.IsActivated = true;
-                }*/
                 if (CurrentRestPlatform.DoesPlatformUseActionPress)
                 {
                     if (controller.GetButtonDown("Melee"))
@@ -2422,11 +2568,26 @@ public class PlayerHandler : EntityHandler
 
     private void PlayerBlinkTransitionAttempt()
     {
-        if (_blinkTimer > BLINK_COOLDOWN)
+        if (CurrentState != PlayerState.RUN && 
+            CurrentState != PlayerState.JUMP &&
+            CurrentState != PlayerState.IDLE &&
+            CurrentState != PlayerState.LIGHT_MELEE &&
+            CurrentState != PlayerState.HEAVY_MELEE &&
+            CurrentState != PlayerState.LIGHT_RANGED &&
+            CurrentState != PlayerState.CHANGE_STYLE)  // may need to add more states here
+        {
+            return;
+        }
+
+        if (_blinkTimer > _blinkCooldownChainCurve.Evaluate(_blinkCurrentChainLength))
         {
             if (CurrentState == PlayerState.JUMP) _hasAlreadyBlinkedInMidAir = true;
             CurrentState = PlayerState.BLINK;
-        }        
+        }
+        else
+        {
+            _blinkInputBuffer++;
+        }
     }
 
     //==================================================================================| MISC
@@ -2616,9 +2777,9 @@ public class PlayerHandler : EntityHandler
 
         yield return new WaitForEndOfFrame();
         Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(1.0f);
+        yield return new WaitForSecondsRealtime(DeathFreezeDuration);
 
-        Time.timeScale = 0.5f; // -------------| RESUME TIME |--------------
+        Time.timeScale = 1.0f; // -------------| RESUME TIME |--------------
 
         _gameplayUI.GetComponent<CanvasGroup>().alpha = 1.0f;
         for (int i = 0; i < renderers.Length; i++)
@@ -2627,9 +2788,9 @@ public class PlayerHandler : EntityHandler
         }
         characterAnimator.Play(DEATH_WEST_Anim);
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(2.0f);
         Time.timeScale = 1.0f;
-        _fadeTransition.FadeToScene(SceneManager.GetActiveScene().name, "");
+        _fadeTransition.FadeOnDeath();
         // play death animation, stop for a bit, then fade to black
     }
 
@@ -2818,7 +2979,7 @@ public class PlayerHandler : EntityHandler
         }
     }
 
-    public void OvertakeElement(ElementType newElement) // Forces player into one element
+    public void OvertakeElement(ElementType newElement, int incrementCount = 0) // Forces player into one element
     {
         OvertakenElement = newElement;
         switch (newElement)
@@ -2893,7 +3054,7 @@ public class PlayerHandler : EntityHandler
                 Debug.LogError("HOWDY : Somehow, the player changed style to a nonexistent style!");
                 break;
         }
-
+        OvertakenElementAmount += incrementCount;
     }
 
     private IEnumerator PlayWeaponSpriteGlow(AnimationCurve glowcurve)
@@ -2966,5 +3127,15 @@ public class PlayerHandler : EntityHandler
     public void ForceShowUI()
     {
         _healthBar.transform.parent.gameObject.SetActive(true);
+    }
+
+    public void SetCheckpointReached(bool value)
+    {
+        bUsesRoomCheckpoint = value;
+    }
+
+    public bool GetCheckpointReached()
+    {
+        return bUsesRoomCheckpoint;
     }
 }

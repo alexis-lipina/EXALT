@@ -297,7 +297,7 @@ public class TutorialManager : MonoBehaviour
         readyToProgress = false;
 
         //=======================================================| ELEMENTAL MELEE TEST - ICHOR
-        #region Fire Element Test
+        #region Ichor Element Test
         if (_playerHandler.GetElementalAttunement() != ElementType.ICHOR)
         {
             hintTextManager.HideHintText();

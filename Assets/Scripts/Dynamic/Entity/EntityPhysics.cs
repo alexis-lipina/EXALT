@@ -65,6 +65,7 @@ public class EntityPhysics : DynamicPhysics
     private float _burnTimeBetweenInflicts = 1.0f;
     private float _burnTimer_Inflicts = 0f;
     private float _burnDuration = 2.5f;
+    [SerializeField] private AudioSource BurnAudioSource;
 
     //ichor corruption stuff
     public int IchorCorruptionAmount = 0;
@@ -125,7 +126,8 @@ public class EntityPhysics : DynamicPhysics
             _burnTimer_Inflicts -= Time.deltaTime;
             if (_burnTimer_Inflicts < 0) //if times up, damage and reset
             {
-                Inflict(1, type: ElementType.FIRE);
+                Inflict(1, type: ElementType.FIRE, playHitSound:false);
+                BurnAudioSource.Play();
                 _burnTimer_Inflicts = _burnTimeBetweenInflicts;
             }
             if (_burnTimer <= 0) // can only happen one time
@@ -415,7 +417,7 @@ public class EntityPhysics : DynamicPhysics
     /// Deal this entity damage, causing them to flash and lose health
     /// </summary>
     /// <param name="damage">Quantity of health to subtract from the entity</param>
-    public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2())
+    public virtual void Inflict(int damage, float hitPauseDuration = 0.03f, ElementType type = ElementType.NONE, Vector2 force = new Vector2(), bool playHitSound = true)
     {
         if (isInvincible || _isDead || !entityHandler) return;
 
@@ -440,7 +442,8 @@ public class EntityPhysics : DynamicPhysics
             Debug.Log("Playing damage flash");
             entityHandler.Flinch();
             StartCoroutine(TakeDamageFlash(force.normalized));
-            if (HitSounds.Count > 0)
+
+            if (playHitSound && HitSounds.Count > 0)
             {
                 GetComponent<AudioSource>().clip = HitSounds[UnityEngine.Random.Range(0, HitSounds.Count)];
                 GetComponent<AudioSource>().Play();
@@ -476,7 +479,7 @@ public class EntityPhysics : DynamicPhysics
         }
 
         _burnTimer = _burnDuration;
-        _burnTimer_Inflicts = _burnTimeBetweenInflicts;
+        //_burnTimer_Inflicts = _burnTimeBetweenInflicts;
     }
 
     public virtual void IchorCorrupt(int amountToAdd)

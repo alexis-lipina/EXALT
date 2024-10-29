@@ -168,4 +168,9 @@ public class RestPlatform : MonoBehaviour
             renderer.material.SetFloat("_Opacity", 0);
         }
     }
+
+    public void SetCharged()
+    {
+        CurrentChargeAmount = 1.0f;
+    }
 }

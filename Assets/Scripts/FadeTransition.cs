@@ -27,6 +27,15 @@ public class FadeTransition : MonoBehaviour
         FadeColor = new Color(float.Parse(rgba[0]), float.Parse(rgba[1]), float.Parse(rgba[2]), float.Parse(rgba[3]));
     }
 
+    public void FadeOnDeath()
+    {
+        if (!_hasBeganToExit)
+        {
+            StartCoroutine(FadeOutTransition(SceneManager.GetActiveScene().name, PlayerHandler.PREVIOUS_SCENE_DOOR, 2, true));
+            _hasBeganToExit = true;
+        }
+    }
+
     public void FadeToScene(string levelName, string doorName)
     {
         if (!_hasBeganToExit)
@@ -101,7 +110,7 @@ public class FadeTransition : MonoBehaviour
         GetComponent<Image>().color = new Color(0, 0, 0, 0);
     }
 
-    private IEnumerator FadeOutTransition(string sceneName, string doorName, float rate = 2f)
+    private IEnumerator FadeOutTransition(string sceneName, string doorName, float rate = 2f, bool bisDeath = false)
     {
         Color transitionColor = FadeColor;
         transitionColor.a = 0.0f;
@@ -114,8 +123,11 @@ public class FadeTransition : MonoBehaviour
         }
         transitionColor.a = 1.0f;
         GetComponent<Image>().color = transitionColor;
-        PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
-        PlayerHandler.PREVIOUS_SCENE_DOOR = doorName;
+        if (!bisDeath)
+        {
+            PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
+            PlayerHandler.PREVIOUS_SCENE_DOOR = doorName;
+        }
         SceneManager.LoadScene(sceneName);
     }
 

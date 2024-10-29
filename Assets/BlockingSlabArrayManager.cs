@@ -17,6 +17,7 @@ public class BlockingSlabArrayManager : MonoBehaviour
     List<int> SlabsToRaise;
     Vector3 SlabSprite0LocalTransform;
     Vector3 SlabSprite1LocalTransform;
+    private MonolithPersistent _monolithPersistent;
 
     // Start is called before the first frame update
     void Start()
@@ -34,14 +35,15 @@ public class BlockingSlabArrayManager : MonoBehaviour
         }
         SlabSprite0LocalTransform = Slabs[0].TopSprite.gameObject.transform.localPosition;
         SlabSprite1LocalTransform = Slabs[0].FrontSprite.gameObject.transform.localPosition;
-
-        StartCoroutine(CycleSlabs());
+        _monolithPersistent = MonolithPersistent.GetInstance();
+        _monolithPersistent.OnLaserFire.AddListener(RenewCycleSlabs);
     }
 
     IEnumerator CycleSlabs()
     {
+        TimeSinceStart = 0.0f;
         bool HasChangedSlabs = false;
-        while (true)
+        while (TimeSinceStart < 7.1f)
         {
             //1 second 
             TimeSinceStart += Time.deltaTime;
@@ -94,6 +96,11 @@ public class BlockingSlabArrayManager : MonoBehaviour
                 SlabBackWallShadowSprites[index].transform.position.z
                 );
         }
+    }
+
+    public void RenewCycleSlabs()
+    {
+        StartCoroutine(CycleSlabs());
     }
 
     void SelectRandomSlabs()

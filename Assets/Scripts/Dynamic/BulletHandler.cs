@@ -9,11 +9,13 @@ using UnityEngine;
 public class BulletHandler : ProjectileHandler
 {
     [SerializeField] protected ProjectilePhysics _projectilePhysics;
+    [SerializeField] public AudioClip SpawnSFX;
     [SerializeField] protected float _bulletSpeed;
     protected Vector2 _moveDirection;
     protected Weapon _sourceWeapon;
 
     private bool _canBounce;
+    private bool _hasBeenHit = false;
 
 
 
@@ -28,6 +30,16 @@ public class BulletHandler : ProjectileHandler
         get { return _sourceWeapon;  }
     }
 
+    public bool HasBeenHit
+    {
+        get { return _hasBeenHit; }
+    }
+
+    public virtual void OnPlayerDeflect()
+    {
+        // do something unique
+        _hasBeenHit = true;
+    }
 
 	// Use this for initialization
 	virtual protected void Start ()

@@ -175,6 +175,7 @@ TextureImporter:
     21300340: FiringChamber_1_Top_0_4
     21300342: FiringChamber_1_Top_0_5
     21300344: FiringChamber_1_Top_0_6
+    21300346: FiringChamber_1_Top_0_7
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -3634,7 +3635,7 @@ TextureImporter:
         width: 64
         height: 96
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3654,7 +3655,7 @@ TextureImporter:
         width: 256
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3674,7 +3675,7 @@ TextureImporter:
         width: 256
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3694,13 +3695,33 @@ TextureImporter:
         width: 64
         height: 96
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: dffb0f15d1d5cb2499c27e69bb6d148f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FiringChamber_1_Top_0_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 16
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f16f18f334e7a88409bcf30bb4745f01
       vertices: []
       indices: 
       edges: []

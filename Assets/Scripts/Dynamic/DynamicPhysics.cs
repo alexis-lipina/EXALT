@@ -532,4 +532,10 @@ public class DynamicPhysics : PhysicsObject
         //ZVelocity = 0;
     }
 
+    public void SetPosition(GameObject positionObj)
+    {
+        gameObject.transform.position = positionObj.transform.position;
+    }
+
+
 }

@@ -707,6 +707,8 @@ public class FinalBossFragment : EntityHandler
         _player.BossFightDeathResurrection_OffsetTex = PP_ShatterTex_Offsets;
         _player.BossFightDeathResurrection_ShatterMaskTex = PP_ShatterTex_Mask;
         _player.BossFightDeathResurrection_CollapsingPlatforms = cascadingFloorStarts;
+        bossCore.BossCameraVolume.GetComponent<CameraSizeChangeVolume>().IsSizeChangeActive = false;
+        Camera.main.GetComponent<CameraScript>().SetCameraSizeImmediate(4.0f);
 
         Destroy(gameObject);
     }

@@ -23,6 +23,7 @@ public class FireballLauncher : Weapon
         GameObject tempBullet = GetFromPool();
         tempBullet.GetComponentInChildren<BulletHandler>().MoveDirection = direction.normalized;
         tempBullet.SetActive(true);
+        tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<AudioSource>().clip = tempBullet.GetComponentInChildren<BulletHandler>().SpawnSFX;
         tempBullet.GetComponentInChildren<ProjectilePhysics>().GetComponent<AudioSource>().Play();
         //tempBullet.GetComponentInChildren<BulletHandler>().SourceWeapon = this;
 

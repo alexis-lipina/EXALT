@@ -11,7 +11,7 @@ public class FireDetonationHandler : ProjectionHandler
     [SerializeField] private AnimationCurve RadialGlowCurve;
 
 
-    private const float DETONATION_DURATION = 1.0f;
+    private const float DETONATION_DURATION = 2.0f;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -110,7 +110,11 @@ public class FireDetonationHandler : ProjectionHandler
 
     protected void Update()
     {
-        if (!hasDetonated)
+        if (!_sourceEnemy)
+        {
+            gameObject.SetActive(false);
+        }
+        else if (!hasDetonated)
         {
             _projection.SetOpacity(1f);
             MoveTo(_sourceEnemy.transform.position);
@@ -179,6 +183,7 @@ public class FireDetonationHandler : ProjectionHandler
         //_projection.SetColor(Color.black);
         //yield return new WaitForSeconds(0.02f);
         //_projection.SetColor(Color.white);
+        _projection.SetOpacity(0.0f);
         float timer = DETONATION_DURATION;
         while (timer > 0)
         {

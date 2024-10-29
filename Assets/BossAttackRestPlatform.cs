@@ -259,7 +259,7 @@ public class BossAttackRestPlatform : MonoBehaviour
                 FinalBoss.BossCameraVolume.GetComponent<CameraSizeChangeVolume>().IsSizeChangeActive = false;
                 Camera.main.GetComponent<CameraScript>().SetCameraSizeImmediate(CameraSizeOverCharge.Evaluate(charge));
                 //Debug.Log(CameraSizeOverCharge.Evaluate(charge));
-                Camera.main.GetComponent<CameraScript>().AddAttractor(platformAttractor);
+                //Camera.main.GetComponent<CameraScript>().AddAttractor(platformAttractor); // NOTE I COMMENTED THIS OUT PROBABLY ERRONEOUSLY
                 platformAttractor.PullMagnitude = CameraAttractorPullOverCharge.Evaluate(charge);
 
                 starController.PlatformCharge = charge;
@@ -431,6 +431,18 @@ public class BossAttackRestPlatform : MonoBehaviour
         //bLightningBoltActive = false;
         platformAttractor.PullMagnitude = CameraAttractorPullOverCharge.Evaluate(0);
         platformAttractor.transform.position += new Vector3(0, CameraAttractorYPositionOffset, 0);
+
+        const float CameraTransitionDuration = 1.0f;
+        float CameraTransitionTimer = CameraTransitionDuration;
+        while (CameraTransitionTimer > 0)
+        {
+            Camera.main.GetComponent<CameraScript>().SetCameraSizeImmediate(CameraSizeOverCharge.Evaluate(CameraTransitionTimer / CameraTransitionDuration));
+            yield return new WaitForEndOfFrame();
+            CameraTransitionTimer -= Time.deltaTime;
+        }
+        FinalBoss.BossCameraVolume.GetComponent<CameraSizeChangeVolume>().IsSizeChangeActive = true;
+
+        //Camera.main.GetComponent<CameraScript>().SetCameraSizeImmediate(CameraSizeOverCharge.Evaluate(0));
         //restPlatform.CurrentChargeAmount = 0.99f;
     }
 }

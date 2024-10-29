@@ -34,7 +34,7 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] private float _zVelocityDamping = 1f;
     // minimum vertical velocity to give projectile on a bounce
     [SerializeField] private float _zMinimumVelocity = 20f;
-    [SerializeField] private AudioSource _deflectSFX;
+    [SerializeField] private AudioClip _deflectSFX;
     [SerializeField] private Animator ProjectileAnimator;
     [SerializeField] private string Animator_SpawnStateName;
     [SerializeField] private string Animator_IdleStateName;
@@ -45,28 +45,16 @@ public class ProjectilePhysics : DynamicPhysics
     [SerializeField] public SpriteRenderer GlowSprite; // all projectiles should have an emissive glow sprite
     [SerializeField] private AnimationCurve GlowDespawnAlphaAnimationCurve;
     [SerializeField] private AnimationCurve GlowDespawnScaleAnimationCurve;
+    [SerializeField] private AudioClip HitSFX;
     private Vector3 DefaultGlowScale;
 
 
-    private bool _isCurrentlyTracking = false;
+    private EntityPhysics _trackedTarget;
     private bool IsCurrentlyTracking
     {
         get
         {
-            return _isCurrentlyTracking;
-        }
-        set
-        {
-            if (_isCurrentlyTracking && !value)
-            {
-                _isCurrentlyTracking = value;
-                //speed -= trackingAddedSpeed;
-            }
-            else if (!_isCurrentlyTracking && value)
-            {
-                _isCurrentlyTracking = value;
-                //speed += trackingAddedSpeed;
-            }
+            return _trackedTarget;
         }
     }
     public float Speed
@@ -151,6 +139,7 @@ public class ProjectilePhysics : DynamicPhysics
         // Set original Fields
         _speed_original = speed;
         _whoToHurt_original = _whoToHurt;
+        _trackedTarget = null;
         if (trackingArea)
         {
             trackingAreaSeeker = trackingArea.GetComponent<ProjectileSeeker>();
@@ -313,6 +302,11 @@ public class ProjectilePhysics : DynamicPhysics
             if (_damageType == ElementType.FIRE) other.gameObject.GetComponent<EntityPhysics>().Burn();
             else if (_damageType == ElementType.ICHOR) other.gameObject.GetComponent<EntityPhysics>().IchorCorrupt(1);
             else if (_damageType == ElementType.VOID) other.Stagger(); // might want all to stagger? idk
+            if (HitSFX)
+            {
+                GetComponent<AudioSource>().clip = HitSFX;
+                GetComponent<AudioSource>().Play();
+            }
         }
         else 
         {
@@ -449,9 +443,8 @@ public class ProjectilePhysics : DynamicPhysics
     private Vector2 Seek(Vector2 currentVelocity)
     {
         Vector2 desiredVelocity = Vector2.zero;
-        IsCurrentlyTracking = false;
         //float NearestTargetDistance = 1000.0f;
-        float proximityScalar = 0.0f; // 0...1, 1 = on top of enemy, 0 = far from / no enemy
+        float proximityScalar = 0.1f; // 0...1, 1 = on top of enemy, 0 = far from / no enemy
 
         //searches through objects within range
         foreach (EntityPhysics other in trackingAreaSeeker.trackedTargets)
@@ -459,8 +452,15 @@ public class ProjectilePhysics : DynamicPhysics
             if (other.tag == "Enemy" && _whoToHurt == "ENEMY")
             {
 
-                IsCurrentlyTracking = true;
-                
+                if (_trackedTarget == null)
+                {
+                    _trackedTarget = other;
+                }
+                if ((_trackedTarget.transform.position - transform.position).sqrMagnitude > (other.transform.position - transform.position).sqrMagnitude)
+                {
+                    _trackedTarget = other;
+                }
+                /*
                 Vector2 positiondifferential = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
                 //make the force applied inversely proportional to distance
                 desiredVelocity = positiondifferential.normalized * (1 / (positiondifferential.magnitude * 2f) );
@@ -471,11 +471,18 @@ public class ProjectilePhysics : DynamicPhysics
                 {
                     proximityScalar = Mathf.Max(proximityScalar, 1 - positiondifferential.magnitude / trackingAreaSeeker.GetComponent<CircleCollider2D>().radius);
                 }
-                if (speed > 0) ZVelocity = ( desiredZ - currentZ );
+                if (speed > 0) ZVelocity = ( desiredZ - currentZ );*/
             }
             else if (other.tag == "Friend" && _whoToHurt == "FRIEND")
             {
-                IsCurrentlyTracking = true;
+                if (_trackedTarget == null)
+                {
+                    _trackedTarget = other;
+                }
+                if ((other.transform.position - transform.position).sqrMagnitude > (other.transform.position - transform.position).sqrMagnitude)
+                {
+                    _trackedTarget = other;
+                }
                 desiredVelocity = other.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
                 //make the force applied inversely proportional to distance
                 desiredVelocity = desiredVelocity.normalized * (1 / (desiredVelocity.magnitude * 2f));
@@ -485,6 +492,25 @@ public class ProjectilePhysics : DynamicPhysics
                 if (speed > 0) ZVelocity = (desiredZ - currentZ); 
             }
         }
+        if (_trackedTarget)
+        {
+            Vector2 positiondifferential = _trackedTarget.GetComponent<Rigidbody2D>().position - GetComponent<Rigidbody2D>().position;
+            //make the force applied inversely proportional to distance
+            desiredVelocity = positiondifferential.normalized * (1 / (positiondifferential.magnitude * 2f / trackingArea.bounds.size.magnitude));
+            //Z tracking
+            float desiredZ = (_trackedTarget.GetBottomHeight() + _trackedTarget.GetTopHeight()) / 2.0f;
+            float currentZ = (GetBottomHeight() + GetTopHeight()) / 2.0f;
+            if (isSpeedScaledByProximity)
+            {
+                proximityScalar = Mathf.Max(proximityScalar, 1 - positiondifferential.magnitude / trackingAreaSeeker.GetComponent<CircleCollider2D>().radius);
+            }
+            else
+            {
+                proximityScalar = 1.0f;
+            }
+            if (speed > 0) ZVelocity = (desiredZ - currentZ);
+        }
+        
 
         //currentVelocity += desiredVelocity;
         currentVelocity = Vector2.Lerp(currentVelocity, desiredVelocity, Mathf.Sqrt(proximityScalar)); // modulates direction 
@@ -505,10 +531,12 @@ public class ProjectilePhysics : DynamicPhysics
         _whoToHurt = newWhoToHurt;
         _timer = 0f;
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
+        bulletHandler.OnPlayerDeflect();
 
         if (_deflectSFX)
         {
-            _deflectSFX.Play();
+            GetComponent<AudioSource>().clip = _deflectSFX;
+            GetComponent<AudioSource>().Play();
         }
         else
         {
@@ -601,11 +629,12 @@ public class ProjectilePhysics : DynamicPhysics
         GlowSprite.material.SetFloat("_Opacity", 1.0f);
         GlowSprite.transform.localScale = DefaultGlowScale;
         bIsDespawning = false;
+        _trackedTarget = null;
 
-        //trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
-        //transform.position = new Vector3(-999, -999, transform.position.z);
+    //trackingArea.transform.position = new Vector3(-999, -999, trackingArea.transform.position.z);
+    //transform.position = new Vector3(-999, -999, transform.position.z);
 
-    }
+}
 
 
 

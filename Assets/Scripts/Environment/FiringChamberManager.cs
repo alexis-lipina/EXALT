@@ -14,7 +14,6 @@ public class FiringChamberManager : MonoBehaviour
     [SerializeField] private List<EntityPhysics> KillableThings;
     [SerializeField] private Animator LaserAnimation;
     [SerializeField] private int SecondsBetweenShots = 8;
-    private int SecondsUntilNextShot;
     [SerializeField] private SpriteRenderer[] GlowGradients;
     [SerializeField] private SpriteRenderer[] FinalSpikeGlows;
     [SerializeField] private AnimationCurve GradientGlowOverTime;
@@ -24,19 +23,25 @@ public class FiringChamberManager : MonoBehaviour
     [SerializeField] MovingEnvironment CannonSyncMovingEnvironment;
     public float GlowScalar = 1.0f;
     [SerializeField] GameObject DamageOrigin;
+    [SerializeField] Vector2 OverrideDamageDirection = Vector2.zero;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        SecondsUntilNextShot = SecondsBetweenShots;
-        StartCoroutine(PulseLaserBeam());
+        //StartCoroutine(PulseLaserBeam());
         LaserAudioSource = GetComponent<AudioSource>();
+        Timer = MonolithPersistent.GetInstance().SuperweaponTimer;
+        if (Timer != 0.0f && Timer != 0.5f) // either of these values being exact is unlikely except for at startup of the persistent cannon, and I dunno if OnSceneLoad will have run so
+        {
+            StartCoroutine(PulseLaserBeam(Timer));
+        }
+
     }
 
     private void Update()
     {
-        Timer += Time.deltaTime;
+        Timer = MonolithPersistent.GetInstance().SuperweaponTimer;
         foreach (SpriteRenderer renderer in GlowGradients)
         {
             renderer.material.SetFloat("_Opacity", GradientGlowOverTime.Evaluate(Timer/SecondsBetweenShots) * GlowScalar); 
@@ -49,73 +54,47 @@ public class FiringChamberManager : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(0, 0, 300, 300), SecondsUntilNextShot.ToString());
+        GUI.Label(new Rect(0, 0, 300, 300), Timer.ToString());
     }
 
-    IEnumerator PulseLaserBeam()
+    IEnumerator PulseLaserBeam(float startTime = 0.0f)
     {
-        while (true)
+        if (startTime < 6)
         {
-            yield return new WaitForSeconds(1.0f);
-            SecondsUntilNextShot -= 1;
+            yield return new WaitForSeconds(6.0f - startTime);
 
-            if (SecondsUntilNextShot == 4)
-            {
-                StartCoroutine(RampGlow(0.0f, 0.3f, 2.0f));
-            }
+        }
 
-            if (SecondsUntilNextShot == 2)
-            {
-                LaserAnimation.Play("FiringChamber_WarmUp", -1, 0.0f);
-            }
+        if (startTime > 6 && startTime < 8)
+        {
+            LaserAnimation.Play("FiringChamber_WarmUp", -1, (startTime - 6.0f) / 2.0f); // 2.0 = duration of animation
+        }
+        else
+        {
+            LaserAnimation.Play("FiringChamber_WarmUp", -1, 0.0f);
+        }
+        yield return new WaitForSeconds(1.0f);
 
-            if (SecondsUntilNextShot == 1)
-            {
-                if (CannonSyncMovingEnvironment)
-                {
-                    CannonSyncMovingEnvironment.SetAnimRate(1.25f);
-                }
-                StartCoroutine(RampGlow(0.3f, 1.0f, 0.9f));
-            }
-
-            if (SecondsUntilNextShot == 0)
-            {
-                KillAllUnshieldedThings();
-                SecondsUntilNextShot = SecondsBetweenShots;
-                LaserAnimation.Play("FiringChamber_Fire", -1, 0.0f);
-                StartCoroutine(RampGlow(1.0f, 0.0f, 2.0f));
-                Timer = 0.0f;
-                LaserAudioSource.Play();
-                if (CannonSyncMovingEnvironment)
-                {
-                    CannonSyncMovingEnvironment.SetAnimRate(1.0f);
-                    CannonSyncMovingEnvironment.PlayAnim();
-                }
-            }
+        if (CannonSyncMovingEnvironment)
+        {
+            CannonSyncMovingEnvironment.SetAnimRate(1.25f); // this may need to be adjusted
         }
     }
 
-    IEnumerator RampGlow(float startNormalized, float endNormalized, float duration)
-    {
-        yield return null;
-        /*
-        float increment = 0.025f;
-        float timer = duration;
-        while (timer > 0.0f)
-        {
-            foreach (SpriteRenderer renderer in GlowGradients)
-            {
-                renderer.material.SetFloat("_Opacity", Mathf.Lerp(endNormalized, startNormalized, timer / duration)); //timer/duration starts at 1.0f (x/x), ends at 0.0f (0/x)
-            }
-            timer -= increment;
-            yield return new WaitForSeconds(increment);
-        }
-        foreach (SpriteRenderer renderer in GlowGradients)
-        {
-            renderer.material.SetFloat("_Opacity", endNormalized);
-        }*/
-    }
 
+    public void FireCannon()
+    {
+        KillAllUnshieldedThings();
+        LaserAnimation.Play("FiringChamber_Fire", -1, 0.0f);
+        Timer = 0.0f;
+        //LaserAudioSource.Play();
+        if (CannonSyncMovingEnvironment)
+        {
+            CannonSyncMovingEnvironment.SetAnimRate(1.0f);
+            CannonSyncMovingEnvironment.PlayAnim();
+        }
+        StartCoroutine(PulseLaserBeam());
+    }
 
     void KillAllUnshieldedThings()
     {
@@ -140,7 +119,13 @@ public class FiringChamberManager : MonoBehaviour
         {
             if (!safeEntities.Contains(entity) && entity)
             {
-                entity.Inflict(1000, 0.0f, ElementType.NONE, (entity.transform.position - DamageOrigin.transform.position).normalized * 2);
+                Vector2 direction = OverrideDamageDirection.sqrMagnitude > 0 ? OverrideDamageDirection : (Vector2)(entity.transform.position - DamageOrigin.transform.position).normalized;
+                entity.Inflict(1000, 0.0f, ElementType.ICHOR, direction * 2);
+                PlayerHandler playerHandler = (PlayerHandler)entity.Handler;
+                if (playerHandler)
+                {
+                    playerHandler.DeathFreezeDuration = 0.1f;
+                }
             }
         }
     }

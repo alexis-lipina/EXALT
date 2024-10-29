@@ -25,7 +25,7 @@ public class HintTextManager : MonoBehaviour
     private Dictionary<string, char> _inputEncoder;
 
     //higher rate = shorter duration
-    private const float FadeOutRate = 1.0f;
+    private const float FadeOutRate = 2.0f;
     private const float FadeInRate = 1.0f;
 
     private Vector2 FONTRECT_NORMAL;
@@ -162,11 +162,38 @@ public class HintTextManager : MonoBehaviour
             if (i != rowTwo.Length - 1) builtLineTwo += " ";
             yield return new WaitForSeconds(delays[rowOne.Length + i]);
         }
+        //HideHintText();
     }
 
     private string FillWithSpaces(string substring, string originalstring)
     {
-        for (int i = 0; i < originalstring.Length - substring.Length; i++)
+        int sizeReductionOriginal = 0;
+        int sizeReductionSubstring = 0;
+        for (int i = 0; i < originalstring.Length; i++)
+        {
+            //color code check
+            if (originalstring[i] == '|')
+            {
+                int tempoffset = DecodeColor(originalstring.Substring(i, originalstring.Length - i), false);
+                sizeReductionOriginal += tempoffset;
+                i += tempoffset - 1;
+            }
+
+        }
+        for (int i = 0; i < substring.Length; i++)
+        {
+            //color code check
+            if (originalstring[i] == '|')
+            {
+                int tempoffset = DecodeColor(substring.Substring(i, substring.Length - i), false);
+                sizeReductionSubstring += tempoffset;
+                i += tempoffset - 1;
+            }
+
+        }
+
+        int numSpaces = (originalstring.Length - sizeReductionOriginal) - (substring.Length - sizeReductionSubstring);
+        for (int i = 0; i < numSpaces; i++)
         {
             substring += "_";
         }
@@ -252,6 +279,14 @@ public class HintTextManager : MonoBehaviour
         {
             characterSprite = _fontMapping["EXCLAMATION"];
         }
+        else if (character == ',')
+        {
+            characterSprite = _fontMapping[","];
+        }
+        else if (character == '.')
+        {
+            characterSprite = _fontMapping["."];
+        }
         else if (character == ' ')
         {
             characterSprite = _fontMapping["SPACE"];
@@ -334,7 +369,7 @@ public class HintTextManager : MonoBehaviour
     /// </summary>
     /// <param name="substring">substring from i onwards including the first pipe (|)</param>
     /// <returns>Number to add to i to skip color tag</returns>
-    private int DecodeColor(string substring)
+    private int DecodeColor(string substring, bool bSetColor = true)
     {
         Debug.Log("Color tailing substring : " + substring);
         int iterationJumpSize = 0;
@@ -350,23 +385,23 @@ public class HintTextManager : MonoBehaviour
                 switch (decodedColor)
                 {
                     case "ZAP":
-                        CurrentFontColor = PlayerHandler.GetElementColor(ElementType.ZAP);
+                        if (bSetColor) CurrentFontColor = PlayerHandler.GetElementColor(ElementType.ZAP);
                         break;
                     case "FIRE":
-                        CurrentFontColor = PlayerHandler.GetElementColor(ElementType.FIRE);
+                        if (bSetColor) CurrentFontColor = PlayerHandler.GetElementColor(ElementType.FIRE);
                         break;
                     case "VOID":
-                        CurrentFontColor = PlayerHandler.GetElementColor(ElementType.VOID);
+                        if (bSetColor) CurrentFontColor = PlayerHandler.GetElementColor(ElementType.VOID);
                         //CurrentFontColor = new Color(0.7f, 0.3f, 1.0f, 1.0f);
                         break;
                     case "ICHOR":
-                        CurrentFontColor = PlayerHandler.GetElementColor(ElementType.ICHOR);
+                        if (bSetColor) CurrentFontColor = PlayerHandler.GetElementColor(ElementType.ICHOR);
                         break;
                     case "WHITE":
-                        CurrentFontColor = Color.white;
+                        if (bSetColor) CurrentFontColor = Color.white;
                         break;
                     default:
-                        CurrentFontColor = Color.magenta;
+                        if (bSetColor) CurrentFontColor = Color.magenta;
                         Debug.LogWarning("Alert! Font color \"" + decodedColor + "\" does not exist!");
                         break;
                 }

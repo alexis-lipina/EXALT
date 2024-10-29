@@ -712,7 +712,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &45499060
 Transform:
   m_ObjectHideFlags: 0
@@ -1580,6 +1580,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -1588,6 +1589,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &116699703
 GameObject:
   m_ObjectHideFlags: 0
@@ -2907,6 +2913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 5
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 0
@@ -2915,6 +2922,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &178590668
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3159,6 +3171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 4
   _prefab: {fileID: 1508240309, guid: 406fce316d013b54490ec75f0d6f9db8, type: 3}
   _spawnInterval: 3
@@ -3167,6 +3180,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &195805321
 GameObject:
   m_ObjectHideFlags: 0
@@ -4287,6 +4305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -4295,6 +4314,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &243891061
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4835,6 +4859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -4843,6 +4868,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!4 &270635394 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -7341,6 +7371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -7349,6 +7380,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &376261041
 GameObject:
   m_ObjectHideFlags: 0
@@ -8370,20 +8406,33 @@ MonoBehaviour:
   PlayerDetectVolume: {fileID: 36435692}
   Player: {fileID: 23052731}
   RestDurationToStart: 2
+  IsPlayerStandingOn: 0
   IsPlayerRestingOn: 0
-  IsActivated: 0
-  GlowEffect_Pattern: {fileID: 0}
-  GlowEffect_Aura: {fileID: 0}
-  OnActivated:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  OnDeactivated:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+  GlowOnPulseEmissives: []
+  GlowCurve_ChargeUp_LowerBound:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  GlowCurve_ChargeUp_UpperBound:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  GlowCurve_OutlinePulse:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  GlowCurve_ChargedFlash:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   DoesPlatformUseActionPress: 1
   IsActionPressed: 0
   DoesPlatformUseInputDirection: 0
@@ -8417,6 +8466,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+  _isUseable: 1
 --- !u!1 &468630728
 GameObject:
   m_ObjectHideFlags: 0
@@ -9089,6 +9139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 4
   _prefab: {fileID: 1508240309, guid: 406fce316d013b54490ec75f0d6f9db8, type: 3}
   _spawnInterval: 3
@@ -9097,6 +9148,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &491092070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10009,6 +10065,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -10017,6 +10074,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &544560580
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11836,6 +11898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -11844,6 +11907,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &669976471
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12797,6 +12865,7 @@ MonoBehaviour:
   heightsColor: {r: 0.3254717, g: 0.8722296, b: 1, a: 0}
   elevationOffset: 30
   killPlaneElevation: -20
+  _canvas: {fileID: 1079977793}
 --- !u!4 &717008638
 Transform:
   m_ObjectHideFlags: 0
@@ -13718,6 +13787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -13726,6 +13796,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &780655920
 GameObject:
   m_ObjectHideFlags: 0
@@ -14404,6 +14479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -14412,6 +14488,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &810056007
 GameObject:
   m_ObjectHideFlags: 0
@@ -14517,6 +14598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -14525,6 +14607,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &833604721
 GameObject:
   m_ObjectHideFlags: 0
@@ -15852,6 +15939,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -15860,6 +15948,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &885581768
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16488,6 +16581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -16496,6 +16590,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &932906121
 GameObject:
   m_ObjectHideFlags: 0
@@ -18537,6 +18636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -18545,6 +18645,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &1076788832 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114111860982509164, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -20611,6 +20716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 4
   _prefab: {fileID: 1508240309, guid: 406fce316d013b54490ec75f0d6f9db8, type: 3}
   _spawnInterval: 3
@@ -20619,6 +20725,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!4 &1175233784 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -21941,6 +22052,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -21949,6 +22061,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &1293139485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22313,6 +22430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -22321,6 +22439,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!4 &1300874019 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -22362,6 +22485,7 @@ MonoBehaviour:
   CycleDuration: 8
   StandingTrigger: {fileID: 0}
   RestPlatformToListen: {fileID: 0}
+  bIsRestPlatformPotentiometer: 0
   keyframes: []
   XPositionOverTime:
     serializedVersion: 2
@@ -22382,6 +22506,12 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   TestCurves: []
+  SynchronizedEnvironment: []
+  OnAnimationStart:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   OnAnimationComplete:
     m_PersistentCalls:
       m_Calls: []
@@ -22389,6 +22519,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   Cycle: 0
   environmentPhysics: {fileID: 1076788832}
+  ZVelocityForElevator: 0
 --- !u!1 &1308683690
 GameObject:
   m_ObjectHideFlags: 0
@@ -23919,26 +24050,6 @@ PrefabInstance:
       propertyPath: _postProcessMaterials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 68febdd9c3093df4192709b040c0af80, type: 2}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0.14150941
-      objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_BackGroundColor.a
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2483427670111390352, guid: d6992525f44238a4b8a4a9eaee44f7cc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -23998,6 +24109,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0.14150941
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_BackGroundColor.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6992525f44238a4b8a4a9eaee44f7cc, type: 3}
@@ -26427,6 +26558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -26435,6 +26567,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &1572780946
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28986,6 +29123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -28994,6 +29132,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &1703808219
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29577,6 +29720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -29585,6 +29729,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &1735529925
 GameObject:
   m_ObjectHideFlags: 0
@@ -29723,6 +29872,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -29731,6 +29881,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &1737192080
 GameObject:
   m_ObjectHideFlags: 0
@@ -31725,6 +31880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -31733,6 +31889,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &1877431413
 GameObject:
   m_ObjectHideFlags: 0
@@ -32457,6 +32618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -32465,6 +32627,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &1932139014
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33451,6 +33618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -33459,6 +33627,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &2019711092
 GameObject:
   m_ObjectHideFlags: 0
@@ -33503,6 +33676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 4
   _prefab: {fileID: 1508240309, guid: 406fce316d013b54490ec75f0d6f9db8, type: 3}
   _spawnInterval: 3
@@ -33511,6 +33685,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &2024914126
 GameObject:
   m_ObjectHideFlags: 0
@@ -34093,6 +34272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -34101,6 +34281,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!4 &2044426892 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,
@@ -35509,6 +35694,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -35517,6 +35703,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1001 &2110334118
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38608,52 +38799,52 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4018193813658258919, guid: da7bb31c46d30024ca198e692321c33d,
+    - target: {fileID: 5522022115326302273, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -41842,86 +42033,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 50e64f1ecb0429a45af27c14bcb9fe45,
         type: 3}
-    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2434426894349719053, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_Sprite
@@ -42116,26 +42227,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4136176239543457618, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -42818,6 +42909,106 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Padding.m_Left
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5745764645515416766, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934301075217611387, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6978645850957099794, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820898643105069373, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7391407480700139183, guid: da7bb31c46d30024ca198e692321c33d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7689713314415702434, guid: da7bb31c46d30024ca198e692321c33d,
         type: 3}
@@ -46878,6 +47069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsAutomaticallySpawning: 0
+  UseObjectPooling: 0
   _maxEnemies: 3
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 3
@@ -46886,6 +47078,11 @@ MonoBehaviour:
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
   _shieldElementType: 3
+  OnEnemySpawn:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: OnEnemySpawnEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!4 &2140605396 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b,

@@ -17,6 +17,7 @@ public class PreFinalBossLightningBlast : MonoBehaviour
     [SerializeField] private AnimationCurve BoltDistanceOverCharge;
     [SerializeField] private AnimationCurve BoltGlowOverTime;
     [SerializeField] private List<SpriteRenderer> GlowGradientSprites;
+    public bool PlayBoltsWhileNoCharge = true;
     
     private float charge = 0.0f;
     // Start is called before the first frame update
@@ -37,8 +38,10 @@ public class PreFinalBossLightningBlast : MonoBehaviour
         {
             asdf.GetComponentInChildren<SpriteRenderer>().enabled = false;
         }
-
-        StartCoroutine(RunVFX());
+        if (PlayBoltsWhileNoCharge)
+        {
+            StartCoroutine(RunVFX());
+        }
     }
 
     // Update is called once per frame
@@ -48,6 +51,11 @@ public class PreFinalBossLightningBlast : MonoBehaviour
         foreach (SpriteRenderer sprite in GlowGradientSprites)
         {
             sprite.material.SetFloat("_Opacity", AmbientGlowOverTime.Evaluate(charge));
+        }
+        if (!PlayBoltsWhileNoCharge && ControllingRestPlatform.CurrentChargeAmount > 0)
+        {
+            StartCoroutine(RunVFX());
+            PlayBoltsWhileNoCharge = true;
         }
     }
 

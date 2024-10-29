@@ -26,6 +26,7 @@ public class MovingEnvironment : MonoBehaviour
 
     public AnimationCurve[] TestCurves;
     public List<MovingEnvironment> SynchronizedEnvironment; // these are used to move other stuff in concert with this.
+    public UnityEvent OnAnimationStart;
     public UnityEvent OnAnimationComplete;
     private bool bUsesOnAnimationComplete = true;
 
@@ -162,6 +163,10 @@ public class MovingEnvironment : MonoBehaviour
             }
         }
 
+        if (RestPlatformToListen.CurrentChargeAmount != 0 && restPlatformPreviousCharge == 0)
+        {
+            OnAnimationStart.Invoke();
+        }
 
         if (RestPlatformToListen.CurrentChargeAmount == 1 && restPlatformPreviousCharge != 1 && bUsesOnAnimationComplete)
         {
@@ -174,7 +179,7 @@ public class MovingEnvironment : MonoBehaviour
     {
         isPlaying = true;
         Timer = 0.0f;
-
+        OnAnimationStart.Invoke();
         foreach (MovingEnvironment envt in SynchronizedEnvironment)
         {
             envt.PlayAnim();

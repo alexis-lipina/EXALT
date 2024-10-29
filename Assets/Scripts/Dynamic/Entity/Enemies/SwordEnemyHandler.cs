@@ -879,10 +879,18 @@ public class SwordEnemyHandler : EntityHandler
         Vector2 velocityAfterForces = entityPhysics.MoveAvoidEntities(Vector2.zero);
         entityPhysics.MoveCharacterPositionPhysics(velocityAfterForces.x, velocityAfterForces.y);
         entityPhysics.SnapToFloor();
+        //fall
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        if (entityPhysics.GetObjectElevation() > maxheight)
+
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1)
         {
+            //entityPhysics.ZVelocity = 0;
             entityPhysics.FreeFall();
+        }
+        else
+        {
+            entityPhysics.SavePosition();
+            entityPhysics.SetObjectElevation(maxheight);
         }
     }
 

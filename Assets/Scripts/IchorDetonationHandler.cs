@@ -84,7 +84,11 @@ public class IchorDetonationHandler : ProjectionHandler
 
     protected void Update()
     {
-        if (!hasDetonated)
+        if (!_sourceEnemy)
+        {
+            gameObject.SetActive(false);
+        }
+        else if (!hasDetonated)
         {
             _projection.SetOpacity(1f);
             MoveTo(_sourceEnemy.transform.position);
@@ -98,6 +102,8 @@ public class IchorDetonationHandler : ProjectionHandler
     /// </summary>
     public void Detonate()
     {
+        GetComponent<AudioSource>().pitch = Random.Range(0.9f, 1.1f);
+
         GetComponent<AudioSource>().Play();
         hasDetonated = true;
         Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, _damageVolume.bounds.size * 0.5f, 0.0f);

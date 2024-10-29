@@ -72,6 +72,8 @@ TextureImporter:
     21300134: ']'
     21300136: '['
     21300138: COLON
+    21300140: ','
+    21300142: .
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -917,7 +919,7 @@ TextureImporter:
       name: SPACE
       rect:
         serializedVersion: 2
-        x: 73
+        x: 89
         y: 23
         width: 6
         height: 12
@@ -982,13 +984,53 @@ TextureImporter:
         width: 6
         height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: 4b898a9c14d1aa143802c7fd202716bb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ','
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 23
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fbacc39f91f6364891545d3ab933cb3
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: .
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 23
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44096e5ddbc4b6148bbad00f53f271ef
       vertices: []
       indices: 
       edges: []

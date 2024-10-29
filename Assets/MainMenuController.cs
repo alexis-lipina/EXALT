@@ -92,6 +92,6 @@ public class MainMenuController : MonoBehaviour
     IEnumerator DelayStartMusic()
     {
         yield return new WaitForSeconds(_timeBetweenMusicAndUI);
-        GetComponent<AudioSource>().Play();
+        //GetComponent<AudioSource>().Play();
     }
 }

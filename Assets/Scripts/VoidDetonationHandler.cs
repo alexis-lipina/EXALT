@@ -5,11 +5,12 @@ using UnityEngine;
 public class VoidDetonationHandler : ProjectionHandler
 {
     //private const float DETONATION_DURATION = 0.1875f;
-    private const float DETONATION_DURATION = 0.25f;
+    private const float DETONATION_DURATION = 2.0f;
 
     [SerializeField] private SpriteRenderer AnimationSprite;
     [SerializeField] private SpriteRenderer SuckGlowSprite;
     [SerializeField] private AnimationCurve SuckGlowCurve;
+    [SerializeField] private AudioSource audio;
 
     //global/static stuff
     private static List<GameObject> _objectPool;
@@ -87,7 +88,11 @@ public class VoidDetonationHandler : ProjectionHandler
 
     protected void Update()
     {
-        if (!hasDetonated)
+        if (!_sourceEnemy)
+        {
+            gameObject.SetActive(false);
+        }
+        else if (!hasDetonated)
         {
             _projection.SetOpacity(1f);
             MoveTo(_sourceEnemy.transform.position);
@@ -101,9 +106,11 @@ public class VoidDetonationHandler : ProjectionHandler
     /// </summary>
     public void Detonate()
     {
-        GetComponent<AudioSource>().Play();
+        audio.pitch = Random.Range(0.9f, 1.1f);
+        audio.Play();
         hasDetonated = true;
         Collider2D[] collidersHit = Physics2D.OverlapBoxAll(_damageVolume.bounds.center, new Vector2(32f, 24f), 0.0f);
+        _projection.SetOpacity(0.0f);
         foreach (Collider2D collider in collidersHit)
         {
             if (collider.gameObject.tag == "Enemy")
@@ -112,12 +119,12 @@ public class VoidDetonationHandler : ProjectionHandler
                 {
                     if (collider.GetComponent<EntityPhysics>().GetInstanceID() == _sourceEnemy.GetInstanceID())
                     {
-                        collider.GetComponent<EntityPhysics>().Inflict(1, type: Element);
+                        collider.GetComponent<EntityPhysics>().Inflict(1, type: Element, playHitSound:false);
                     }
                     else
                     {
                         Vector2 enemyToCenter = _physics.transform.position - collider.transform.position;
-                        collider.GetComponent<EntityPhysics>().Inflict(1, force: enemyToCenter.normalized * 2f, type: ElementType.VOID);
+                        collider.GetComponent<EntityPhysics>().Inflict(1, force: enemyToCenter.normalized * 2f, type: ElementType.VOID, playHitSound:false);
 
                         Transform pullVFX = Instantiate(_pullVFXPrefab);
                         pullVFX.position = collider.GetComponent<EntityPhysics>().ObjectSprite.transform.position;

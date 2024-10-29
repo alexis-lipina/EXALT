@@ -9,8 +9,9 @@ public class LevelManager : MonoBehaviour
 {
     [SerializeField] private Color depthsColor;
     [SerializeField] private Color heightsColor;
-    [SerializeField] private float elevationOffset = 30.0f;
+    public float elevationOffset = 30.0f;
     [SerializeField] public float killPlaneElevation = -20.0f;
+    [SerializeField] Canvas _canvas;
 
     // Start is called before the first frame update
     void Start()
@@ -19,7 +20,7 @@ public class LevelManager : MonoBehaviour
         Shader.SetGlobalColor("_HighColor", heightsColor);
         Shader.SetGlobalColor("_LowColor", depthsColor);
         Shader.SetGlobalFloat("_MaxElevationOffset", elevationOffset);
-        GameObject.Find("Canvas").SetActive(true); // in case its been disabled
+        _canvas.gameObject.SetActive(true); // in case its been disabled
         EntityPhysics.KILL_PLANE_ELEVATION = killPlaneElevation;
 
         //Shader.SetGlobalColor("_HighColor", heightsColor);
@@ -27,6 +28,7 @@ public class LevelManager : MonoBehaviour
 
 
     }
+
 
     //// Update is called once per frame
     //void Update()

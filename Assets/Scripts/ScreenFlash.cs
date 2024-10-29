@@ -32,6 +32,12 @@ public class ScreenFlash : MonoBehaviour
         GetComponent<Image>().color = new Color(1, 1, 1, 0);
     }
 
+    public void SetTexture(Sprite newSprite)
+    {
+        GetComponent<Image>().sprite = newSprite;
+    }
+
+
     /// <summary>
     /// Triggers a screen-flash.
     /// </summary>
@@ -41,6 +47,7 @@ public class ScreenFlash : MonoBehaviour
     {
         PlayFlash(maxIntensity, duration, Color.white);
     }
+
 
     public void PlayFlash(float maxIntensity, float duration, Color color, ElementType element = ElementType.NONE)
     {

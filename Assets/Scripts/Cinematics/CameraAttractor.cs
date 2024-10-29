@@ -39,28 +39,34 @@ public class CameraAttractor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TriggerSize = new Vector3(
+        if (_activateVolume)
+        {
+            TriggerSize = new Vector3(
             _activateVolume.GetComponent<BoxCollider2D>().size.x,
             _activateVolume.GetComponent<BoxCollider2D>().size.y,
             _activateVolume.GetTopHeight() - _activateVolume.GetBottomHeight()
             );
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         //when player first enters volume
-        if (_activateVolume.IsTriggered && !_isPullingCamera)
+        if (_activateVolume)
         {
-            _isPullingCamera = true;
-            _camera.AddAttractor(this);
+            if (_activateVolume.IsTriggered && !_isPullingCamera)
+            {
+                _isPullingCamera = true;
+                _camera.AddAttractor(this);
+            }
+            else if (!_activateVolume.IsTriggered && _isPullingCamera)
+            {
+                _isPullingCamera = false;
+                _camera.RemoveAttractor(this);
+            }
         }
-        else if (!_activateVolume.IsTriggered && _isPullingCamera)
-        {
-            _isPullingCamera = false;
-            _camera.RemoveAttractor(this);
-        }
-
+        
         if (_isPullingCamera)
         {
             switch (AttractionAxis)

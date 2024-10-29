@@ -20,7 +20,7 @@ public class StartPlatform : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {                                                       // v- should eval true for normal cases where theres just one unlabeled door
-		if (PlayerHandler.PREVIOUS_SCENE == _sourceScene && PlayerHandler.PREVIOUS_SCENE_DOOR == _sourceDoor)
+		if (PlayerHandler.PREVIOUS_SCENE == _sourceScene && PlayerHandler.PREVIOUS_SCENE_DOOR == _sourceDoor && !GameObject.FindObjectOfType<PlayerHandler>().GetCheckpointReached())
         {
             OnPlayerStartHere.Invoke();
             //move player here
@@ -29,7 +29,7 @@ public class StartPlatform : MonoBehaviour
             _playerPhysics.ZVelocity = 0.0f;
             Debug.Log("TELEPORT!");
             Camera.main.transform.position = transform.position + (Vector3)GetComponent<BoxCollider2D>().offset;
-            PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
+            //PlayerHandler.PREVIOUS_SCENE = SceneManager.GetActiveScene().name;
         }
 	}
 }

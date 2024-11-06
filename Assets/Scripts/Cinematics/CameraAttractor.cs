@@ -65,21 +65,20 @@ public class CameraAttractor : MonoBehaviour
                 _isPullingCamera = false;
                 _camera.RemoveAttractor(this);
             }
-        }
-        
-        if (_isPullingCamera)
-        {
-            switch (AttractionAxis)
+            if (_isPullingCamera)
             {
-                case Axis.x:
-                    CurrentCurveValue = (PlayerPhysics.transform.position.x - _activateVolume.transform.position.x) / TriggerSize.x + 0.5f;
-                    break;
-                case Axis.y:
-                    CurrentCurveValue = (PlayerPhysics.transform.position.y - _activateVolume.transform.position.y) / TriggerSize.y + 0.5f;
-                    break;
-                case Axis.z:
-                    CurrentCurveValue = Mathf.InverseLerp(_activateVolume.GetBottomHeight(), _activateVolume.GetTopHeight(), PlayerPhysics.GetObjectElevation());
-                    break;
+                switch (AttractionAxis)
+                {
+                    case Axis.x:
+                        CurrentCurveValue = (PlayerPhysics.transform.position.x - _activateVolume.transform.position.x) / TriggerSize.x + 0.5f;
+                        break;
+                    case Axis.y:
+                        CurrentCurveValue = (PlayerPhysics.transform.position.y - _activateVolume.transform.position.y) / TriggerSize.y + 0.5f;
+                        break;
+                    case Axis.z:
+                        CurrentCurveValue = Mathf.InverseLerp(_activateVolume.GetBottomHeight(), _activateVolume.GetTopHeight(), PlayerPhysics.GetObjectElevation());
+                        break;
+                }
             }
         }
     }

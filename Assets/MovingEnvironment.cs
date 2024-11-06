@@ -163,7 +163,7 @@ public class MovingEnvironment : MonoBehaviour
             }
         }
 
-        if (RestPlatformToListen.CurrentChargeAmount != 0 && restPlatformPreviousCharge == 0)
+        if (RestPlatformToListen.CurrentChargeAmount != 0 && restPlatformPreviousCharge == 0 && bUsesOnAnimationComplete)
         {
             OnAnimationStart.Invoke();
         }
@@ -179,7 +179,10 @@ public class MovingEnvironment : MonoBehaviour
     {
         isPlaying = true;
         Timer = 0.0f;
-        OnAnimationStart.Invoke();
+        if (bUsesOnAnimationComplete)
+        {
+            OnAnimationStart.Invoke();
+        }
         foreach (MovingEnvironment envt in SynchronizedEnvironment)
         {
             envt.PlayAnim();

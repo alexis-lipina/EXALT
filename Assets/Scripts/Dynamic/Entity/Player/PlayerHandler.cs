@@ -63,7 +63,7 @@ public class PlayerHandler : EntityHandler
     //[SerializeField] private UIHealthBar _healthBar;
     [SerializeField] private PlayerHealthBarHandler _healthBar;
     
-    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST, DEAD, COLLAPSE, STAND_FROM_COLLAPSE};
+    enum PlayerState {IDLE, RUN, JUMP, LIGHT_MELEE, HEAVY_MELEE, CHARGE, BURST, LIGHT_RANGED, CHARGED_RANGE, BLINK, CHANGE_STYLE, HEAL, REST, DEAD, COLLAPSE, STAND_FROM_COLLAPSE, LIFTED};
 
     const string IDLE_EAST_Anim = "New_IdleEast";
     const string IDLE_WEST_Anim = "New_IdleWest";
@@ -592,6 +592,8 @@ public class PlayerHandler : EntityHandler
             case PlayerState.STAND_FROM_COLLAPSE:
                 Player_StandingFromCollapsed();
                 break;
+            case PlayerState.LIFTED:
+
             default:
                 throw new Exception("Unhandled player state");
         }
@@ -2548,6 +2550,17 @@ public class PlayerHandler : EntityHandler
         {
             CurrentState = PlayerState.IDLE;
             currentFaceDirection = FaceDirection.SOUTH;
+        }
+        StateTimer += Time.deltaTime;
+    }
+
+    private void Player_Lifted() // player has been lifted by a magical force and is probably having their soul yoinked out
+    {
+        //entityPhysics.SnapToFloor();
+        //entityPhysics.MoveAvoidEntities(Vector2.zero);
+        if (StateTimer == 0.0f)
+        {
+            characterAnimator.Play("PlayerHover");
         }
         StateTimer += Time.deltaTime;
     }

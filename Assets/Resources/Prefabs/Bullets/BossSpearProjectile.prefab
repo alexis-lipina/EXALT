@@ -202,7 +202,7 @@ MonoBehaviour:
   _damageType: 3
   _zVelocityDamping: 0
   _zMinimumVelocity: 20
-  _deflectSFX: {fileID: 6542477324081055573}
+  _deflectSFX: {fileID: 8300000, guid: f5e38975d204e9947bb8bdd81f4dfbb2, type: 3}
   ProjectileAnimator: {fileID: 0}
   Animator_SpawnStateName: 
   Animator_IdleStateName: 
@@ -249,6 +249,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  HitSFX: {fileID: 0}
   _whoToHurt: FRIEND
   _timeToDestroy: 5
 --- !u!82 &82092737103430188
@@ -406,6 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectilePhysics: {fileID: 114544661598577844}
+  SpawnSFX: {fileID: 0}
   _bulletSpeed: 50
 --- !u!82 &6542477324081055573
 AudioSource:

@@ -165,6 +165,7 @@ public class ProjectilePhysics : DynamicPhysics
 
     void Update()
     {
+        transform.position.Scale(new Vector3(1, 1, 0)); // should NEVER not be zero depth.
         _timer += Time.deltaTime;
         topHeight = bottomHeight + _objectHeight;
 
@@ -533,14 +534,14 @@ public class ProjectilePhysics : DynamicPhysics
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(0.5f, 0.1f);
         bulletHandler.OnPlayerDeflect();
 
-        if (_deflectSFX)
+        if (_deflectSFX != null)
         {
             GetComponent<AudioSource>().clip = _deflectSFX;
             GetComponent<AudioSource>().Play();
         }
         else
         {
-            Debug.LogError("Deflect SFX is null for object " + this);
+            Debug.Log("Deflect SFX is null for object " + this);
         }
         SlashDeflectVFX.DeployFromPool(ObjectSprite.transform.position, redirection_vector);
         DeflectFlareVFX.DeployFromPool(ObjectSprite.transform.position);

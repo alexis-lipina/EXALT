@@ -5,6 +5,7 @@ using UnityEngine;
 public class VaultCutsceneManager : MonoBehaviour
 {
     [SerializeField] private MovingEnvironment VaultMovingEnvironment;
+    [SerializeField] private MovingEnvironment InvisiblePlatform;
     [SerializeField] private AnimationCurve NormalizedDarknessFade;
     [SerializeField] private float DarknessFadeDuration = 1.0f;
     [SerializeField] private ExitVolume ExitToFinalBoss;
@@ -17,7 +18,7 @@ public class VaultCutsceneManager : MonoBehaviour
     [SerializeField] private List<GameObject> InvisibleWalls;
     [SerializeField] private List<GameObject> DestroyAtEnd;
 
-    enum VaultCutsceneOrbitState { Compressed, Expanding, Hovering, Orbiting}
+    enum VaultCutsceneOrbitState { Compressed, Expanding, Hovering, Orbiting }
     private VaultCutsceneOrbitState cutsceneOrbitState = VaultCutsceneOrbitState.Compressed;
     [SerializeField] private GameObject BossCore;
     [SerializeField] private GameObject BossFragment_N;
@@ -30,13 +31,18 @@ public class VaultCutsceneManager : MonoBehaviour
     [SerializeField] private AnimationCurve BreathingCurve;
     [SerializeField] private AudioClip StrongVoice;
     [SerializeField] private AudioClip WeakVoice;
+    [SerializeField] private AudioClip AmbienceLoop;
     [SerializeField] private List<SpriteRenderer> GlowSprites;
     [SerializeField] private AnimationCurve GlowSpeakCurve;
     [SerializeField] private AnimationCurve SpeakPitchCurve; // not actual pitch, just for the glowy band to shift
     [SerializeField] private SpriteRenderer GlowyElementOrbSprite;
     [SerializeField] private SpriteRenderer GlowyElementOrbGlowSprite;
     [SerializeField] private SpriteRenderer SuspensionBeam;
-    private float SuspensionBeamGlowAmount = 0.8f;
+    private float SuspensionBeamGlowAmount = 0.0f;
+    [SerializeField] private AnimationCurve PlayerLiftAnimCurve;
+    [SerializeField] private AnimationCurve PlayerDropAnimCurve;
+    private const float PlayerLiftedElevation = 5.0f;
+    private const float PlayerDroppedElevation = 1.6f;
 
 
     private void Awake()
@@ -113,37 +119,45 @@ public class VaultCutsceneManager : MonoBehaviour
         //_player.ForceHideUI();
         _player.ForceStandFromRest();
 
+        MusicManager.GetMusicManager().CrossfadeToSong(1.0f, AmbienceLoop);
+
         // idea - little voice blurbs from the orbiting fragments as the main one says its thing, like whispering crowd
         // fix trickle-in text
 
-        StartCoroutine(TrickleInTextWithAudio("welcome home.", "", new[] { 0.5f, 0.5f }, new[] { false, false }));
+        StartCoroutine(TrickleInTextWithAudio("welcome home.", "", new[] { 0.5f, 0.0f, 0.5f }, new[] { false, false, false }));
         yield return new WaitForSeconds(4.0f);
-        StartCoroutine(TrickleInTextWithAudio("you seem confused.", "", new[] { 0.3f, 0.3f, 1.5f }, new[] { false, false, false }));
+        StartCoroutine(TrickleInTextWithAudio("you seem confused.", "", new[] { 0.3f, 0.3f, 0.0f, 1.5f }, new[] { false, false, false, false }));
         yield return new WaitForSeconds(4.0f);
-        StartCoroutine(TrickleInTextWithAudio("|WHITE|your mind is |FIRE|wracked |WHITE|with", "|VOID|chaos |WHITE|and |ZAP|discord.|WHITE|", new[] { 0.3f, 0.4f, 0.4f, 0.5f, 0.4f, 0.55f, 0.4f, 1.5f }, new[] { false, false, false, true, false, true, false, true }));
+        StartCoroutine(TrickleInTextWithAudio("|WHITE|your mind is |FIRE|wracked |WHITE|with", "|VOID|chaos |WHITE|and |ZAP|discord.|WHITE|", new[] { 0.3f, 0.4f, 0.4f, 0.5f, 0.4f, 0.55f, 0.4f, 1.5f }, new[] { false, false, false, true, false, true, false, true, false }));
         yield return new WaitForSeconds(6.0f);
-        StartCoroutine(TrickleInTextWithAudio("you dont even know", "what you are, do you?", new[] { 0.2f, 0.2f, 0.4f, 0.3f, 0.2f, 0.2f, 0.6f, 0.2f, 1.5f }, new[] {false, false, false, false, false, false, false, false, false }));
-        
+        StartCoroutine(TrickleInTextWithAudio("you dont even know", "what you are, do you?", new[] { 0.2f, 0.2f, 0.4f, 0.3f, 0.2f, 0.2f, 0.6f, 0.2f, 1.5f }, new[] { false, false, false, false, false, false, false, false, false, false }));
+
         yield return new WaitForSeconds(6.0f);
 
-        StartCoroutine(TrickleInTextWithAudio("|ICHOR|let me remind you.|WHITE|", "", new[] { 0.3f, 0.3f, 0.4f, 1.2f }, new[] { true, true, true, true }));
-        yield return new WaitForSeconds(1.0f);
-        Camera.main.gameObject.GetComponent<CameraScript>().SmoothToSize(2.0f, 3.0f);
-        StartCoroutine(TranslateCamera(3.0f, -20.0f));
+        StartCoroutine(TrickleInTextWithAudio("|ICHOR|let me remind you.|WHITE|", "", new[] { 0.3f, 0.3f, 0.4f, 0.0f, 1.2f}, new[] { true, true, true, true, true }));
+        yield return new WaitForSeconds(0.5f);
+        
+        StartCoroutine(RampSuspensionBeam(0.5f, 0.8f));
         _player.TimeSinceCombat = 0.0f;
         _player.ForceShowUI();
         _player.ForceUIVisible = true;
-        yield return new WaitForSeconds(4.0f);
+        _player.Lift();
+        _player.GetEntityPhysics().transform.position = new Vector3(0, -12, 0);
+        StartCoroutine(LiftPlayer(1.0f));
+        yield return new WaitForSeconds(1.0f);
+
+        Camera.main.gameObject.GetComponent<CameraScript>().SmoothToSize(1.5f, 3.0f);
+        StartCoroutine(TranslateCamera(3.0f, -35.0f));
+        yield return new WaitForSeconds(3.0f);
 
         GlowyElementOrbSprite.gameObject.SetActive(true);
         GlowyElementOrbSprite.material.SetColor("_MagicColor", new Color(1.0f, 0.5f, 0.0f));
         GlowyElementOrbGlowSprite.material.SetFloat("_CurrentElement", 2);
         GlowyElementOrbSprite.GetComponent<Animator>().Play("ElementOrb_Absorb");
 
-        StartCoroutine(TrickleInTextWithAudio("you are my |ICHOR|blood.|WHITE|", "", new[] { 1.0f, 1.0f, 1.0f, 2.0f }, new[] { false, false, false, true }));
-        yield return new WaitForSeconds(3.0f);
+        StartCoroutine(TrickleInTextWithAudio("you are my |ICHOR|blood.|WHITE|", "", new[] { 0.66f, 0.66f, 0.66f, 0.0f, 2.0f }, new[] { false, false, false, true, true }));
+        yield return new WaitForSeconds(2.0f);
         GlowyElementOrbSprite.GetComponent<Animator>().Play("ElementOrb_Burst");
-        _player.CollapsePlayer();
         ScreenFlash.InstanceOfScreenFlash.SetTexture(GlowVFXSprite);
         _player.OvertakeElement(ElementType.ICHOR, 1);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.7f, Color.white, ElementType.ICHOR);
@@ -153,8 +167,8 @@ public class VaultCutsceneManager : MonoBehaviour
         GlowyElementOrbGlowSprite.material.SetFloat("_CurrentElement", 3);
         GlowyElementOrbSprite.GetComponent<Animator>().Play("ElementOrb_Absorb");
 
-        StartCoroutine(TrickleInTextWithAudio("you are my |ICHOR|flesh.|WHITE|", "", new[] { 1.0f, 1.0f, 1.0f, 2.0f }, new[] { false, false, false, true }));
-        yield return new WaitForSeconds(3.0f);
+        StartCoroutine(TrickleInTextWithAudio("you are my |ICHOR|flesh.|WHITE|", "", new[] { 0.66f, 0.66f, 0.66f, 0.0f, 2.0f }, new[] { false, false, false, true, true }));
+        yield return new WaitForSeconds(2.0f);
         GlowyElementOrbSprite.GetComponent<Animator>().Play("ElementOrb_Burst");
         _player.OvertakeElement(ElementType.ICHOR, 1);
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.7f, Color.white, ElementType.ICHOR);
@@ -165,14 +179,16 @@ public class VaultCutsceneManager : MonoBehaviour
         GlowyElementOrbSprite.GetComponent<Animator>().Play("ElementOrb_Absorb");
 
         // zoop, only ichor
-        StartCoroutine(TrickleInTextWithAudio("you are |ICHOR|mine.|WHITE|", "", new[] { 1.5f, 1.5f, 2.0f }, new[] { false, false, true }));
-        yield return new WaitForSeconds(3.0f);
+        StartCoroutine(TrickleInTextWithAudio("you are |ICHOR|mine.|WHITE|", "", new[] { 1.0f, 1.0f, 0.0f, 2.0f }, new[] { false, false, true, true }));
+        yield return new WaitForSeconds(2.0f);
         GlowyElementOrbSprite.GetComponent<Animator>().Play("ElementOrb_Burst");
         _player.OvertakeElement(ElementType.ICHOR, 1);
+        _player.CollapsePlayer();
+        StartCoroutine(DropPlayer(0.5f));
+        StartCoroutine(RampSuspensionBeam(1.0f, 0.0f));
         ScreenFlash.InstanceOfScreenFlash.PlayFlash(1.0f, 0.7f, Color.white, ElementType.ICHOR);
         yield return new WaitForSeconds(3.0f);
-
-        StartCoroutine(TrickleInTextWithAudio("now kneel, and", "accept my forgiveness", new[] { 0.2f, 0.6f, 0.2f, 0.4f, 0.2f, 0.4f }, new[] { false, true, false, false, false, false })); // this line sucks
+        StartCoroutine(TrickleInTextWithAudio("now kneel, and", "accept my forgiveness", new[] { 0.3f, 0.6f, 0.2f, 0.4f, 0.2f, 0.4f }, new[] { false, true, false, false, false, false })); // this line sucks
         yield return new WaitForSeconds(2.0f);
 
         Camera.main.gameObject.GetComponent<CameraScript>().SmoothToSize(3.0f, 3.0f);
@@ -220,10 +236,10 @@ public class VaultCutsceneManager : MonoBehaviour
         { //                                                                                                            Random floaty
             float breathingNormalized = BreathingCurve.Evaluate(((Time.time - startTime) % breathingDuration) / breathingDuration);
             hoverRadius = Mathf.Lerp(hoverRadiusMin, hoverRadiusMax, breathingNormalized);
-            BossFragment_N.transform.position = originalPos_N + new Vector3(0, hoverRadius, hoverRadius)      + new Vector3(Mathf.Sin(Time.time * 0.64f) + 0.2f, Mathf.Sin(Time.time * 0.62f) + 0.2f, 0) * breathingNormalized * 2.0f;
-            BossFragment_S.transform.position = originalPos_S + new Vector3(0, -hoverRadius, -hoverRadius)    + new Vector3(Mathf.Sin(Time.time * 0.71f) + 0.1f, Mathf.Sin(Time.time * 0.53f) + 0.1f, 0) * breathingNormalized * 2.0f;
-            BossFragment_W.transform.position = originalPos_W + new Vector3(-hoverRadius, 0, 0)               + new Vector3(Mathf.Sin(Time.time * 0.65f) + 0.3f, Mathf.Sin(Time.time * 0.60f) + 0.3f, 0) * breathingNormalized * 2.0f;
-            BossFragment_E.transform.position = originalPos_E + new Vector3(hoverRadius, 0, 0)                + new Vector3(Mathf.Sin(Time.time * 0.70f) + 0.0f, Mathf.Sin(Time.time * 0.58f) + 0.2f, 0) * breathingNormalized * 2.0f;
+            BossFragment_N.transform.position = originalPos_N + new Vector3(0, hoverRadius, hoverRadius) + new Vector3(Mathf.Sin(Time.time * 0.64f) + 0.2f, Mathf.Sin(Time.time * 0.62f) + 0.2f, 0) * breathingNormalized * 2.0f;
+            BossFragment_S.transform.position = originalPos_S + new Vector3(0, -hoverRadius, -hoverRadius) + new Vector3(Mathf.Sin(Time.time * 0.71f) + 0.1f, Mathf.Sin(Time.time * 0.53f) + 0.1f, 0) * breathingNormalized * 2.0f;
+            BossFragment_W.transform.position = originalPos_W + new Vector3(-hoverRadius, 0, 0) + new Vector3(Mathf.Sin(Time.time * 0.65f) + 0.3f, Mathf.Sin(Time.time * 0.60f) + 0.3f, 0) * breathingNormalized * 2.0f;
+            BossFragment_E.transform.position = originalPos_E + new Vector3(hoverRadius, 0, 0) + new Vector3(Mathf.Sin(Time.time * 0.70f) + 0.0f, Mathf.Sin(Time.time * 0.58f) + 0.2f, 0) * breathingNormalized * 2.0f;
             BossCore.transform.position = originalPos_Core + new Vector3(0, -breathingNormalized * 2.0f, 0);
             yield return new WaitForEndOfFrame();
         }
@@ -267,17 +283,17 @@ public class VaultCutsceneManager : MonoBehaviour
         //float _RippleIntensity;
         //float _RipplePosition;
 
-        float bossPitchOld =    BossCore.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
-        float northPitchOld =   BossFragment_N.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
-        float southPitchOld =   BossFragment_S.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
-        float eastPitchOld =    BossFragment_E.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
-        float westPitchOld =    BossFragment_W.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
+        float bossPitchOld = BossCore.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
+        float northPitchOld = BossFragment_N.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
+        float southPitchOld = BossFragment_S.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
+        float eastPitchOld = BossFragment_E.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
+        float westPitchOld = BossFragment_W.GetComponent<SpriteRenderer>().material.GetFloat("_RipplePosition");
 
-        float bossPitchNew =   Random.Range(0.2f, 0.8f);
-        float northPitchNew =  Random.Range(0.2f, 0.8f);
-        float southPitchNew =  Random.Range(0.2f, 0.8f);
-        float eastPitchNew =   Random.Range(0.2f, 0.8f);
-        float westPitchNew =   Random.Range(0.2f, 0.8f);
+        float bossPitchNew = Random.Range(0.2f, 0.8f);
+        float northPitchNew = Random.Range(0.2f, 0.8f);
+        float southPitchNew = Random.Range(0.2f, 0.8f);
+        float eastPitchNew = Random.Range(0.2f, 0.8f);
+        float westPitchNew = Random.Range(0.2f, 0.8f);
 
 
         while (timer < duration)
@@ -287,13 +303,13 @@ public class VaultCutsceneManager : MonoBehaviour
                 renderer.material.SetFloat("_Opacity", Mathf.Lerp(minGlow, maxGlow, GlowSpeakCurve.Evaluate(timer / duration)));
             }
 
-            BossCore.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition",        Mathf.Lerp(bossPitchOld, bossPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
-            BossFragment_N.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition",  Mathf.Lerp(northPitchOld, northPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
-            BossFragment_S.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition",  Mathf.Lerp(southPitchOld, southPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
-            BossFragment_E.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition",  Mathf.Lerp(eastPitchOld, eastPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
-            BossFragment_W.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition",  Mathf.Lerp(westPitchOld, westPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
+            BossCore.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition", Mathf.Lerp(bossPitchOld, bossPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
+            BossFragment_N.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition", Mathf.Lerp(northPitchOld, northPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
+            BossFragment_S.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition", Mathf.Lerp(southPitchOld, southPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
+            BossFragment_E.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition", Mathf.Lerp(eastPitchOld, eastPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
+            BossFragment_W.GetComponent<SpriteRenderer>().material.SetFloat("_RipplePosition", Mathf.Lerp(westPitchOld, westPitchNew, SpeakPitchCurve.Evaluate(timer / Mathf.Min(0.5f, duration))));
 
-            BossCore.GetComponent<SpriteRenderer>().material.SetFloat("_RippleIntensity",       Mathf.Lerp(minGlow, maxGlow, GlowSpeakCurve.Evaluate(timer / duration)) * 2.0f);
+            BossCore.GetComponent<SpriteRenderer>().material.SetFloat("_RippleIntensity", Mathf.Lerp(minGlow, maxGlow, GlowSpeakCurve.Evaluate(timer / duration)) * 2.0f);
             BossFragment_N.GetComponent<SpriteRenderer>().material.SetFloat("_RippleIntensity", Mathf.Lerp(minGlow, maxGlow, GlowSpeakCurve.Evaluate(timer / duration)) * 2.0f);
             BossFragment_S.GetComponent<SpriteRenderer>().material.SetFloat("_RippleIntensity", Mathf.Lerp(minGlow, maxGlow, GlowSpeakCurve.Evaluate(timer / duration)) * 2.0f);
             BossFragment_E.GetComponent<SpriteRenderer>().material.SetFloat("_RippleIntensity", Mathf.Lerp(minGlow, maxGlow, GlowSpeakCurve.Evaluate(timer / duration)) * 2.0f);
@@ -330,6 +346,18 @@ public class VaultCutsceneManager : MonoBehaviour
         }
     }
 
+    private IEnumerator RampSuspensionBeam(float duration, float target)
+    {
+        float timer = 0.0f;
+        float original = SuspensionBeamGlowAmount;
+        while (timer < duration)
+        {
+            SuspensionBeamGlowAmount = Mathf.Lerp(original, target, timer / duration);
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     private IEnumerator RunSuspensionBeam()
     {
         //SuspensionBeamGlowAmount;
@@ -344,5 +372,28 @@ public class VaultCutsceneManager : MonoBehaviour
             yield return null;
         }
 
+    }
+    private IEnumerator LiftPlayer(float duration)
+    {
+        float timer = 0;
+        while (timer < duration)
+        {
+            InvisiblePlatform.SetToElevation(Mathf.Lerp(PlayerDroppedElevation, PlayerLiftedElevation, PlayerLiftAnimCurve.Evaluate(timer / duration)));
+            timer += Time.deltaTime;
+            Debug.Log("lift");
+            yield return null;
+        }
+        InvisiblePlatform.SetToElevation(PlayerLiftedElevation);
+    }
+    private IEnumerator DropPlayer(float duration)
+    {
+        float timer = 0;
+        while (timer < duration)
+        {
+            InvisiblePlatform.SetToElevation(Mathf.Lerp(PlayerLiftedElevation, PlayerDroppedElevation, PlayerDropAnimCurve.Evaluate(timer / duration)));
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        InvisiblePlatform.SetToElevation(PlayerLiftedElevation);
     }
 }

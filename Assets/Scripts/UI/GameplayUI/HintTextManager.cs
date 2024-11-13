@@ -15,14 +15,14 @@ public class HintTextManager : MonoBehaviour
 
     [SerializeField] private string InputSpritesheet_ResourceName;
 
-    private static Dictionary<string, Sprite> _fontMapping;
-    private static Dictionary<char, Sprite> _inputMapping;
+    private static Dictionary<string, Sprite> _fontMapping; // maps a character to a sprite matching that character
+    private static Dictionary<char, Sprite> _inputMapping; // matches an encoded input verb character to the corresponding sprite for its input
     private bool IsFadingOut = false;
     private bool IsFadingIn = false;
     private bool TopIsActive = false;
     private bool BottomIsActive = false;
 
-    private Dictionary<string, char> _inputEncoder;
+    private Dictionary<string, char> _inputEncoder; // used to map an input action to a character that is otherwise unused in text
 
     //higher rate = shorter duration
     private const float FadeOutRate = 2.0f;

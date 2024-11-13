@@ -97,10 +97,10 @@ public class MonolithPersistent : MonoBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        GUI.Label(new Rect(300, 300, 0, 300), SuperweaponTimer.ToString());
-    }
+//    void OnGUI()
+//    {
+//        GUI.Label(new Rect(300, 300, 0, 300), SuperweaponTimer.ToString());
+//    }
 
     private void OnApplicationPause(bool pause)
     {

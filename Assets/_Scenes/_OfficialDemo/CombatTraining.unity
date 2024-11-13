@@ -2811,8 +2811,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bottomHeight: 0
   topHeight: 0
-  _startTopHeight: -20
-  _startBottomHeight: 20
+  _startTopHeight: 200
+  _startBottomHeight: -20
   _isTriggeredByPlayer: 1
   _isTriggeredByFriend: 1
   _isTriggeredByEnemy: 0
@@ -2833,7 +2833,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -2857,7 +2857,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 147801390}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 57, y: 0, z: 0}
+  m_LocalPosition: {x: 58, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2917,7 +2917,7 @@ MonoBehaviour:
   _maxEnemies: 5
   _prefab: {fileID: 4544289410517422, guid: 66a611ff00050a44ea4c5594b9cc8df9, type: 3}
   _spawnInterval: 0
-  _startEnvironment: {fileID: 1123390101}
+  _startEnvironment: {fileID: 467697693}
   _playerPhysics: {fileID: 1331704056}
   _navManager: {fileID: 1827577049}
   canRespawnEnemies: 0
@@ -8391,6 +8391,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 940671007}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &467697693 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114111860982509164, guid: 7c11a17e2fbd75b49afdda49de71200b,
+    type: 3}
+  m_PrefabInstance: {fileID: 940671007}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467697691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &467697694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19886,18 +19898,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
---- !u!114 &1123390101 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114111860982509164, guid: 7c11a17e2fbd75b49afdda49de71200b,
-    type: 3}
-  m_PrefabInstance: {fileID: 1446354225}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7db8d1f10bfce648bc4d5811814dc57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1132999228
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21081,51 +21081,6 @@ PrefabInstance:
     - target: {fileID: 4779677611064048, guid: 277fe7b4660cf1340aa23285b18b6d65, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[9]._descriptiveName
-      value: RangedAttack
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[3]._descriptiveName
-      value: Melee
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[7]._descriptiveName
-      value: MouseSwitch
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[8]._descriptiveName
-      value: GamepadSwitch
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[10]._descriptiveName
-      value: ChangeStyle_Fire
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[11]._descriptiveName
-      value: ChangeStyle_Void
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[12]._descriptiveName
-      value: ChangeStyle_Zap
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[13]._descriptiveName
-      value: Heal
-      objectReference: {fileID: 0}
-    - target: {fileID: 114748837663659956, guid: 277fe7b4660cf1340aa23285b18b6d65,
-        type: 3}
-      propertyPath: _userData.actions.Array.data[14]._descriptiveName
-      value: Blink
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 277fe7b4660cf1340aa23285b18b6d65, type: 3}
@@ -24105,11 +24060,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2483427670111390356, guid: d6992525f44238a4b8a4a9eaee44f7cc,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2483427670111390359, guid: d6992525f44238a4b8a4a9eaee44f7cc,
         type: 3}
       propertyPath: m_BackGroundColor.r
@@ -24129,6 +24079,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_BackGroundColor.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2483427670111390356, guid: d6992525f44238a4b8a4a9eaee44f7cc,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6992525f44238a4b8a4a9eaee44f7cc, type: 3}
@@ -24819,15 +24774,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -29
+      value: -24
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -57.5
+      value: -56.5
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -55
+      value: -54
       objectReference: {fileID: 0}
     - target: {fileID: 4219121991181272, guid: 7c11a17e2fbd75b49afdda49de71200b, type: 3}
       propertyPath: m_LocalRotation.x

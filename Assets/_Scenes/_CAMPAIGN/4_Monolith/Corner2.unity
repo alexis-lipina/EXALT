@@ -9268,6 +9268,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe580137ad40aa4fa1b3f87e57a1921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BGM_Ambience: {fileID: 8300000, guid: e82cbd0a777ffb249a9e8ef26980ebba, type: 3}
+  BGM_Combat: {fileID: 8300000, guid: e82cbd0a777ffb249a9e8ef26980ebba, type: 3}
   RoomSealingObjects: []
   CombatGlows:
   - {fileID: 1879871730}
@@ -19948,6 +19950,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestPlatform_Final
       objectReference: {fileID: 0}
+    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
+      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
+      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
+      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
+      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 87283240}
+    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
+      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
+      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 405229741, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
       propertyPath: m_LocalPosition.x
       value: -251
@@ -19991,30 +20017,6 @@ PrefabInstance:
     - target: {fileID: 405229741, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
-      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
-      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
-      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
-      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 87283240}
-    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
-      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ChangeLevel
-      objectReference: {fileID: 0}
-    - target: {fileID: 405229736, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
-      propertyPath: OnFullyCharged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 405229739, guid: 01f0e22725ec597479a87689568c24ac, type: 3}
       propertyPath: neighbors.Array.size

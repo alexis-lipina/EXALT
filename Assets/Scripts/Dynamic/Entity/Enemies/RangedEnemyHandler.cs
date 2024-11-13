@@ -74,7 +74,7 @@ public class RangedEnemyHandler : EntityHandler
     }
     private TempTexDirection tempDirection;
     private const float AttackMovementSpeed = 0.2f;
-    private const float JumpImpulse = 60f;
+    private const float JumpImpulse = 30f;
 
     private Weapon _enemyProjectileLauncher;
 

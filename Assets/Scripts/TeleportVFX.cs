@@ -12,6 +12,7 @@ public class TeleportVFX : MonoBehaviour
         _objectPool = new List<GameObject>();
         _objectPool.Add(Instantiate(Resources.Load("Prefabs/Player/Effects/TeleportEffect", typeof(GameObject)) as GameObject));
         _objectPool.Add(Instantiate(Resources.Load("Prefabs/Player/Effects/TeleportEffect", typeof(GameObject)) as GameObject));
+        _objectPool.Add(Instantiate(Resources.Load("Prefabs/Player/Effects/TeleportEffect", typeof(GameObject)) as GameObject));
         
         foreach (GameObject o in _objectPool)
         {
@@ -33,8 +34,7 @@ public class TeleportVFX : MonoBehaviour
             }
         }
         //if no inactive objects exist, make a new one and deploy it
-        _objectPool.Add(Instantiate(Resources.Load("Prefabs/Player/Effects/TeleportEffect", typeof(GameObject)) as GameObject));
-        DeployEffectFromPool(position);
+        //_objectPool.Add(Instantiate(Resources.Load("Prefabs/Player/Effects/TeleportEffect", typeof(GameObject)) as GameObject));
         return;
     }
 

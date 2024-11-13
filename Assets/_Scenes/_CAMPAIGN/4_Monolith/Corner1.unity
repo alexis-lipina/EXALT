@@ -2813,7 +2813,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &198652839
 Transform:
   m_ObjectHideFlags: 0
@@ -9602,6 +9602,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe580137ad40aa4fa1b3f87e57a1921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BGM_Ambience: {fileID: 8300000, guid: e82cbd0a777ffb249a9e8ef26980ebba, type: 3}
+  BGM_Combat: {fileID: 8300000, guid: e82cbd0a777ffb249a9e8ef26980ebba, type: 3}
   RoomSealingObjects:
   - {fileID: 1974689321}
   CombatGlows:

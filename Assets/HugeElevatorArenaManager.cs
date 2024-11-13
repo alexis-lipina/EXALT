@@ -22,6 +22,7 @@ public class HugeElevatorArenaManager : MonoBehaviour
 
     private float ElevatorRideDuration; // pulled from tracking object
     private float elevatorTimer = 0.0f;
+    private ElementType CurrentShieldType = ElementType.ICHOR;
 
 
     [SerializeField] AnimationCurve SpawnRate;
@@ -62,6 +63,7 @@ public class HugeElevatorArenaManager : MonoBehaviour
         TrackingEnvironmentObject.GetComponent<MovingEnvironment>().ZVelocityForElevator = 400.0f / TrackingEnvironmentObject.GetComponent<MovingEnvironment>().CycleDuration;
         TrackingEnvironmentObject.GetComponent<MovingEnvironment>().PlayAnim();
         StartCoroutine(RunEnemies());
+        StartCoroutine(ChangeShields(ElevatorRideDuration));
         while (elevatorTimer < ElevatorRideDuration)
         {
             EntityPhysics.KILL_PLANE_ELEVATION = TrackingEnvironmentObject.BottomHeight - 20.0f;
@@ -69,6 +71,17 @@ public class HugeElevatorArenaManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
             elevatorTimer += Time.deltaTime;
         }
+    }
+
+    IEnumerator ChangeShields(float totalduration)
+    {
+        CurrentShieldType = ElementType.ICHOR;
+        yield return new WaitForSeconds(totalduration / 4.0f);
+        CurrentShieldType = ElementType.FIRE;
+        yield return new WaitForSeconds(totalduration / 4.0f);
+        CurrentShieldType = ElementType.VOID;
+        yield return new WaitForSeconds (totalduration / 4.0f);
+        CurrentShieldType = ElementType.ZAP;
     }
 
 
@@ -119,7 +132,7 @@ public class HugeElevatorArenaManager : MonoBehaviour
                     }
                 }
 
-                _spawnedEnemies.Add(spawners[goodIndices[Random.Range(0, goodIndices.Count)]].SpawnEnemy((ElementType)Random.Range(0, 4), true, 10000.0f));
+                _spawnedEnemies.Add(spawners[goodIndices[Random.Range(0, goodIndices.Count)]].SpawnEnemy(CurrentShieldType, true, 10000.0f));
             }
             
             yield return new WaitForSeconds(SpawnRate.Evaluate(elevatorTimer / ElevatorRideDuration));

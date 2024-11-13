@@ -202,23 +202,32 @@ public abstract class EntityHandler : MonoBehaviour
             switch (element)
             {
                 case ElementType.FIRE:
-                    //FireDetonationHandler.DeployFromPool(entityPhysics);
-                    Debug.Log("DETONATING FIRE!!!");
-                    _firePrimeVfx.GetComponent<FireDetonationHandler>().Detonate();
-                    _firePrimeVfx = null;
+                    if (_firePrimeVfx)
+                    {
+                        _firePrimeVfx.GetComponent<FireDetonationHandler>().Detonate();
+                        _firePrimeVfx = null;
+                    }
                     break;
                 case ElementType.VOID:
-                    //VoidDetonationHandler.DeployFromPool(entityPhysics);
-                    _voidPrimeVfx.GetComponent<VoidDetonationHandler>().Detonate();
-                    _voidPrimeVfx = null;
+                    if (_voidPrimeVfx)
+                    {
+                        _voidPrimeVfx.GetComponent<VoidDetonationHandler>().Detonate();
+                        _voidPrimeVfx = null;
+                    }
                     break;
                 case ElementType.ZAP:
-                    _zapPrimeVfx.GetComponent<ZapDetonationHandler>().Detonate();
-                    _zapPrimeVfx = null;
+                    if (_zapPrimeVfx)
+                    {
+                        _zapPrimeVfx.GetComponent<ZapDetonationHandler>().Detonate();
+                        _zapPrimeVfx = null;
+                    }
                     break;
                 case ElementType.ICHOR:
-                    _ichorPrimeVfx.GetComponent<IchorDetonationHandler>().Detonate();
-                    _ichorPrimeVfx = null;
+                    if (_ichorPrimeVfx)
+                    {
+                        _ichorPrimeVfx.GetComponent<IchorDetonationHandler>().Detonate();
+                        _ichorPrimeVfx = null;
+                    }
                     break;
             }
             Stagger();

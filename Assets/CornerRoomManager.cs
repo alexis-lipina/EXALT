@@ -8,6 +8,8 @@ using UnityEngine;
 //      3) a "seal tablet" that gets charged up over the course of the puzzle and, when interacted with, shows the player a seal being removed from the boss' vault
 public class CornerRoomManager : MonoBehaviour
 {
+    [SerializeField] AudioClip BGM_Ambience;
+    [SerializeField] AudioClip BGM_Combat;
     [Header("Initial Room Sealing")]
     [SerializeField] List<MovingEnvironment> RoomSealingObjects; // these will play forward to lock the room when the player triggers the "trap", and will play backwards (or just be open) when it is unlocked
     [SerializeField] List<SpriteRenderer> CombatGlows; // these will flash when combat begins
@@ -55,6 +57,7 @@ public class CornerRoomManager : MonoBehaviour
         CoroutinesComplete = new List<bool>();
 
         StartCoroutine(RunRoom());
+        MusicManager.GetMusicManager().CrossfadeToSong(2.0f, BGM_Ambience);
     }
 
     // Update is called once per frame
@@ -71,6 +74,7 @@ public class CornerRoomManager : MonoBehaviour
         }
 
         //combat start
+        MusicManager.GetMusicManager().CrossfadeToSong(2.0f, BGM_Combat);
         StartCoroutine(FlashCombatStartGlows());
         foreach (GameObject thing in DestroyOnCombatStart)
         {
@@ -106,6 +110,7 @@ public class CornerRoomManager : MonoBehaviour
         }
 
         // puzzle phase
+        MusicManager.GetMusicManager().CrossfadeToSong(2.0f, BGM_Ambience);
         foreach (SpriteRenderer renderer in CombatGlows)
         {
             renderer.material.SetFloat("_Opacity", 0.0f);

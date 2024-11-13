@@ -414,7 +414,7 @@ public class PlayerHandler : EntityHandler
         hitEnemies = new List<int>();
         _lengthOfLightMeleeAnimation = LightMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
         _lengthOfHeavyMeleeAnimation = HeavyMeleeSprite.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length;
-
+        _newStyle = _currentStyle;
         switch (_currentStyle)
         {
             case ElementType.ICHOR:
@@ -461,7 +461,7 @@ public class PlayerHandler : EntityHandler
                 weaponGlowSprite.sprite = HEAVYMELEE_STORM_GLOWSPRITE;
                 break;
         }
-                StartCoroutine(FadeInAudio());
+        StartCoroutine(FadeInAudio());
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_ShatterMaskTex", PP_White);
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_CrackTex", PP_Black);
         FollowingCamera.GetComponent<CameraScript>().SetPostProcessParam("_OffsetTex", PP_Black);
@@ -477,6 +477,16 @@ public class PlayerHandler : EntityHandler
 
     void Update ()
     {
+
+
+
+        // REMOVE
+        if (Input.GetKeyDown(KeyCode.Mouse3))
+        {
+            Debug.Break();
+        }
+        // REMOVE
+
         if (Time.timeScale == 0) return;
 
         if (_currentEnergy == MaxEnergy && entityPhysics.GetCurrentHealth() == 5)
@@ -593,7 +603,8 @@ public class PlayerHandler : EntityHandler
                 Player_StandingFromCollapsed();
                 break;
             case PlayerState.LIFTED:
-
+                Player_Lifted();
+                break;
             default:
                 throw new Exception("Unhandled player state");
         }
@@ -2534,8 +2545,18 @@ public class PlayerHandler : EntityHandler
         }
         StateTimer += Time.deltaTime;
 
+        //gravity
         float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
-        entityPhysics.SetObjectElevation(maxheight);
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f) //override other states to trigger fall
+        {
+            entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
+        }
     }
 
     private void Player_StandingFromCollapsed()
@@ -2556,11 +2577,24 @@ public class PlayerHandler : EntityHandler
 
     private void Player_Lifted() // player has been lifted by a magical force and is probably having their soul yoinked out
     {
-        //entityPhysics.SnapToFloor();
+        entityPhysics.SnapToFloor();
         //entityPhysics.MoveAvoidEntities(Vector2.zero);
         if (StateTimer == 0.0f)
         {
             characterAnimator.Play("PlayerHover");
+        }
+
+        //gravity
+        float maxheight = entityPhysics.GetMaxTerrainHeightBelow();
+        if (entityPhysics.GetObjectElevation() > maxheight + 0.1f) //override other states to trigger fall
+        {
+            entityPhysics.ZVelocity = 0;
+            ClearRestPlatform();
+            CurrentState = PlayerState.JUMP;
+        }
+        else
+        {
+            entityPhysics.SetObjectElevation(maxheight);
         }
         StateTimer += Time.deltaTime;
     }
@@ -3129,8 +3163,10 @@ public class PlayerHandler : EntityHandler
             AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", Mathf.Lerp(startVolume, endVolume, AudioFadeInCurve.Evaluate(timer / duration)));
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
+            Debug.Log("fading in audio...");
         }
         AudioMixer_Ducked.audioMixer.SetFloat("FreezeFrameVolume", endVolume);
+        Debug.Log("Done fading in audio");
     }
 
     public void ForceHideUI()
@@ -3140,6 +3176,12 @@ public class PlayerHandler : EntityHandler
     public void ForceShowUI()
     {
         _healthBar.transform.parent.gameObject.SetActive(true);
+    }
+
+    public void Lift()
+    {
+        CurrentState = PlayerState.LIFTED;
+        StateTimer = 0.0f;
     }
 
     public void SetCheckpointReached(bool value)

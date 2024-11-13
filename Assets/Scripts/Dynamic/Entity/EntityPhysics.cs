@@ -107,6 +107,7 @@ public class EntityPhysics : DynamicPhysics
 
     protected virtual void Update()
     {
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0); // should NEVER not be zero depth.
         MoveCharacterPosition();
         if (bottomHeight < KILL_PLANE_ELEVATION)
         {
@@ -150,6 +151,7 @@ public class EntityPhysics : DynamicPhysics
             }
 
         }
+        transform.position.Scale(new Vector3(1, 1, 0)); // should NEVER not be zero depth.
     }
 
     public void Freeze()

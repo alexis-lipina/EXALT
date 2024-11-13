@@ -4899,7 +4899,7 @@ MonoBehaviour:
   _damageType: 4
   _zVelocityDamping: 0
   _zMinimumVelocity: 20
-  _deflectSFX: {fileID: 6542477324081055573}
+  _deflectSFX: {fileID: 0}
   ProjectileAnimator: {fileID: 9137006740547230500}
   Animator_SpawnStateName: IchorHeart_Spawn
   Animator_IdleStateName: IchorHeart_Idle
@@ -4940,6 +4940,13 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  GlowDespawnScaleAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  HitSFX: {fileID: 0}
   _whoToHurt: FRIEND
   _timeToDestroy: 20
 --- !u!82 &82092737103430188
@@ -5096,6 +5103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _projectilePhysics: {fileID: 114544661598577844}
+  SpawnSFX: {fileID: 0}
   _bulletSpeed: 0
 --- !u!82 &6542477324081055573
 AudioSource:

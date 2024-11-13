@@ -85,69 +85,6 @@ public class ControlMappingManager : MonoBehaviour
         ReInput.ControllerConnectedEvent -= OnControllerChanged;
         ReInput.ControllerDisconnectedEvent -= OnControllerChanged;
     }
-    /*
-    private void RedrawUI()
-    {
-        //old redraw shit
-        
-        if (controller == null)
-        { // no controller is selected
-            ClearUI();
-            return;
-        }
-
-        // Update joystick name in UI
-        //controllerNameUIText.text = controller.name;
-        
-        // Update each button label with the currently mapped element identifier
-        for (int i = 0; i < rows.Count; i++)
-        {
-            InputMapperDbRow row = rows[i];
-            InputAction action = rows[i].action;
-
-            string name = string.Empty;
-            int actionElementMapId = -1;
-
-            // Find the first ActionElementMap that maps to this Action and is compatible with this field type
-            foreach (var actionElementMap in controllerMap.ElementMapsWithAction(action.id))
-            {
-                if (actionElementMap.ShowInField(row.range))
-                {
-                    name = actionElementMap.elementIdentifierName;
-                    actionElementMapId = actionElementMap.id;
-                    break;
-                }
-            }
-
-            // Set the label in the field button
-            row.text.text = name;
-
-            // Set the field button callback
-            row.button.onClick.RemoveAllListeners(); // clear the button event listeners first
-            int index = i; // copy variable for closure
-            row.button.onClick.AddListener(() => OnInputFieldClicked(index, actionElementMapId));
-        }
-        
-
-        //Update each row based on current mapping (done in ControlMenuManager)
-        //menuManager.UpdateUI();
-    }*/
-
-    /*
-    private void ClearUI()
-    {
-
-        // Clear the controller name
-        if (selectedControllerType == ControllerType.Joystick) controllerNameUIText.text = "No joysticks attached";
-        else controllerNameUIText.text = string.Empty;
-
-        // Clear button labels
-        for (int i = 0; i < rows.Count; i++)
-        {
-            rows[i].text.text = string.Empty;
-        }
-    }*/
-
     
     public void InitializeUI()
     {

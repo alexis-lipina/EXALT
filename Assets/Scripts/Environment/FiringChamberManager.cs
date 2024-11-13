@@ -52,10 +52,10 @@ public class FiringChamberManager : MonoBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        GUI.Label(new Rect(0, 0, 300, 300), Timer.ToString());
-    }
+//    void OnGUI()
+//    {
+//        GUI.Label(new Rect(0, 0, 300, 300), Timer.ToString());
+//    }
 
     IEnumerator PulseLaserBeam(float startTime = 0.0f)
     {
@@ -121,9 +121,9 @@ public class FiringChamberManager : MonoBehaviour
             {
                 Vector2 direction = OverrideDamageDirection.sqrMagnitude > 0 ? OverrideDamageDirection : (Vector2)(entity.transform.position - DamageOrigin.transform.position).normalized;
                 entity.Inflict(1000, 0.0f, ElementType.ICHOR, direction * 2);
-                PlayerHandler playerHandler = (PlayerHandler)entity.Handler;
-                if (playerHandler)
+                if (entity.Handler is PlayerHandler)
                 {
+                    PlayerHandler playerHandler = (PlayerHandler)entity.Handler;
                     playerHandler.DeathFreezeDuration = 0.1f;
                 }
             }

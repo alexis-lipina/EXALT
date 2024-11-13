@@ -106,16 +106,6 @@ public class BossAttackRestPlatform : MonoBehaviour
     {
         timer += Time.deltaTime;
         charge = restPlatform.CurrentChargeAmount;
-        /*
-        if (timer > 1.0f)
-        {
-            timer = 0.0f;
-            TopLightningBolt.SetupLine(Vector3.zero, new Vector3(0, 36, 0));
-            TopLightningBolt.Play(0.5f);
-            BottomLightningBolt.SetupLine(Vector3.zero, new Vector3(0, 36, 0));
-            BottomLightningBolt.Play(0.5f);
-            Debug.LogError("Lightning!");
-        }*/
     }
 
 

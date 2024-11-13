@@ -19,17 +19,17 @@ public class MainPlayMenu : MonoBehaviour
 
     public void ArenaButtonPressed()
     {
-        SceneManager.LoadScene("Demo_Arena");
+        ((FadeTransition)GameObject.FindObjectOfType(typeof(FadeTransition))).FadeToScene("Demo_Arena", "");
     }
 
     public void DemoStoryButtonPressed()
     {
-        SceneManager.LoadScene("CampaignStart");
+        ((FadeTransition)GameObject.FindObjectOfType(typeof(FadeTransition))).FadeToScene("HugeElevator", "");
     }
 
     public void FinalBossButtonPressed()
     {
-        SceneManager.LoadScene("MonolithStart");
+        ((FadeTransition)GameObject.FindObjectOfType(typeof(FadeTransition))).FadeToScene("MonolithStart", "");
     }
 
     public void OnBackToMainMenuPressed()

@@ -168,7 +168,6 @@ public class PathfindingAI : EntityAI
 
     private bool NeedsToJump()
     {
-        Debug.Log("got here");
         //check if bounds of this collider are too far from the other
         //Debug.Log(testhandler.GetEntityPhysics().GetCurrentNavObject().name);
 
